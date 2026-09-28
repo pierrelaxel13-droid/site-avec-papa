@@ -1,0 +1,30 @@
+# Netlify : reconstruit et republie le site à chaque envoi sur la branche reliée.
+# Le dépôt peut rester privé, le site est public.
+
+[build]
+  command = "node build.mjs"
+  publish = "_site"
+
+[build.environment]
+  NODE_VERSION = "22"
+
+# Le fil du Journal officiel est réécrit toutes les heures : il ne doit jamais
+# être servi depuis un cache, sinon la « veille en direct » affiche du périmé.
+[[headers]]
+  for = "/data/veille-feed.json"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+
+# Les pages doivent être revalidées pour que les modifications se voient.
+[[headers]]
+  for = "/*.html"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+
+# Feuilles de style et scripts : une heure, le temps qu'une correction se propage.
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=3600"
