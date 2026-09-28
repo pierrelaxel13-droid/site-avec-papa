@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pierrel &amp; Co — Conseil en organisation et conformité</title>
+<meta name="description" content="Conseil en organisation, prévention et conformité réglementaire pour les entreprises, tous secteurs : pilotage, sécurité, maîtrise des coûts et veille réglementaire. Premier échange sous 48h.">
+<meta name="theme-color" content="#101820">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Pierrel &amp; Co — Conseil en organisation et conformité">
+<meta property="og:description" content="Pilotage, prévention, maîtrise des coûts et veille réglementaire. Tous secteurs.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%23101820'/%3E%3Cline x1='0' y1='24' x2='64' y2='24' stroke='%233f7cb0' stroke-width='4'/%3E%3Cline x1='40' y1='0' x2='40' y2='64' stroke='%233f7cb0' stroke-width='4'/%3E%3Crect x='36' y='20' width='8' height='8' fill='%23f1f2ef'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Archivo:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#101820;
+    --concrete:#6d7680;
+    --concrete-light:#ccd1d5;
+    --paper:#f1f2ef;
+    --accent:#204f7a;
+    --accent-bright:#3f7cb0;
+    --accent-deep:#163a5c;
+    --steel:#3d5361;
+    --error:#a3372c;
+    --line: rgba(16,24,32,0.14);
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'Archivo', sans-serif;
+    font-size:16px;
+    line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3{
+    font-family:'Archivo Black', sans-serif;
+    margin:0;
+    line-height:0.98;
+    letter-spacing:-0.015em;
+    text-wrap:balance;
+  }
+  p{text-wrap:pretty;}
+  .mono{
+    font-family:'IBM Plex Mono', monospace;
+    letter-spacing:0.02em;
+    font-variant-numeric:tabular-nums;
+  }
+  a{color:inherit;}
+  .wrap{max-width:1180px;margin:0 auto;padding:0 32px;}
+
+  /* Skip link — keyboard/screen-reader users can bypass the nav */
+  .skip-link{
+    position:absolute; left:16px; top:-60px;
+    background:var(--accent); color:var(--paper);
+    font-family:'IBM Plex Mono', monospace; font-size:13px; font-weight:700;
+    padding:10px 16px; z-index:100; transition:top .2s;
+  }
+  .skip-link:focus{top:16px;}
+
+  /* Blueprint grid background */
+  .blueprint{
+    background-image:
+      linear-gradient(var(--line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--line) 1px, transparent 1px);
+    background-size:48px 48px;
+  }
+
+  /* Fixed grain overlay — breaks the flat digital surface */
+  .grain{
+    position:fixed; inset:0; z-index:60; pointer-events:none;
+    opacity:0.02; mix-blend-mode:multiply;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  @media (prefers-reduced-motion: no-preference){
+    .reveal{opacity:0; transform:translateY(16px); transition:opacity .7s ease, transform .7s ease;}
+    .reveal.in{opacity:1; transform:translateY(0);}
+
+    /* Hero load-in: headline, lede and CTAs cascade in once, on page load */
+    @keyframes rise-in{
+      from{opacity:0; transform:translateY(18px);}
+      to{opacity:1; transform:translateY(0);}
+    }
+    .hero-load{opacity:0; animation:rise-in .8s cubic-bezier(.2,.7,.2,1) forwards;}
+    .hero-load:nth-child(1){animation-delay:.05s;}
+    .hero-load:nth-child(2){animation-delay:.2s;}
+    .hero-load:nth-child(3){animation-delay:.35s;}
+    .hero-load:nth-child(4){animation-delay:.5s;}
+    .plan-card.hero-load{animation-delay:.6s;}
+  }
+  @media (prefers-reduced-motion: reduce){
+    .hero-load{opacity:1;}
+  }
+
+  /* ===== HEADER ===== */
+  header{
+    position:sticky; top:0; z-index:50;
+    background:rgba(241,242,239,0.92);
+    backdrop-filter:blur(6px);
+    border-bottom:3px solid var(--accent);
+  }
+  .nav{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:20px 32px; max-width:1180px; margin:0 auto;
+  }
+  .logo{
+    font-family:'Archivo Black', sans-serif;
+    font-size:19px;
+    display:flex; align-items:center; gap:10px;
+    text-decoration:none; white-space:nowrap;
+  }
+  nav ul{list-style:none; display:flex; gap:32px; margin:0; padding:0;}
+  nav a{
+    text-decoration:none; font-weight:600; font-size:14px;
+    padding-bottom:3px; border-bottom:2px solid transparent;
+    transition:border-color .2s;
+  }
+  nav a:hover, nav a:focus-visible{border-color:var(--accent);}
+  nav a[aria-current="page"]{border-color:var(--ink);}
+  .btn{
+    display:inline-block;
+    background:var(--ink); color:var(--paper);
+    font-weight:700; font-size:14px;
+    padding:14px 26px;
+    text-decoration:none;
+    border:1px solid var(--ink);
+    transition:background .2s, color .2s, transform .2s, box-shadow .2s;
+    position:relative;
+    cursor:pointer;
+  }
+  .btn:hover, .btn:focus-visible{background:var(--accent); color:var(--paper); border-color:var(--accent); transform:translateY(-2px); box-shadow:0 12px 24px -10px rgba(16,24,32,0.45);}
+  .btn:active{transform:translateY(0); box-shadow:none;}
+  .btn:focus-visible{outline:2px solid var(--accent-bright); outline-offset:2px;}
+  .btn-outline{
+    background:transparent; color:var(--ink); border:1px solid var(--ink);
+  }
+  .btn-outline:hover{background:var(--ink); color:var(--paper); box-shadow:0 12px 24px -10px rgba(16,24,32,0.35);}
+  .btn-outline:active{transform:translateY(0); box-shadow:none;}
+
+  /* ===== HERO ===== */
+  .hero{
+    padding:112px 0 100px;
+    position:relative;
+    overflow:hidden;
+    background:var(--ink);
+    color:var(--paper);
+  }
+  .hero.blueprint{
+    background-image:
+      linear-gradient(rgba(241,242,239,0.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(241,242,239,0.05) 1px, transparent 1px);
+    background-size:48px 48px;
+  }
+  .hero-art{
+    position:absolute; right:-4%; top:8%; width:56%; height:84%;
+    opacity:0.55; pointer-events:none; z-index:0;
+  }
+  .hero-art path, .hero-art line, .hero-art polyline, .hero-art rect, .hero-art circle{
+    fill:none; stroke:var(--accent-bright); stroke-width:1.4; stroke-linecap:round; stroke-linejoin:round;
+  }
+  .hero-art .fill-dim{fill:rgba(63,124,176,0.08); stroke:none;}
+  .hero-inner{
+    display:grid; grid-template-columns:1.2fr 0.8fr; gap:60px; align-items:end;
+    position:relative; z-index:1;
+  }
+  .eyebrow{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12px; text-transform:uppercase; letter-spacing:0.12em;
+    color:var(--accent-bright); font-weight:600;
+    display:flex; align-items:center; gap:10px; margin-bottom:22px;
+  }
+  .eyebrow::before{content:"";width:26px;height:2px;background:var(--accent-bright);}
+  .hero h1{
+    font-size:clamp(42px, 6.4vw, 84px);
+    color:var(--paper);
+  }
+  .hero h1 .accent{color:var(--accent-bright);}
+  .hero p.lede{
+    margin-top:26px; font-size:20px; max-width:46ch; color:var(--concrete-light);
+  }
+  .hero-cta{margin-top:40px; display:flex; gap:16px; flex-wrap:wrap;}
+  .hero .btn{background:var(--paper); color:var(--ink); border-color:var(--paper);}
+  .hero .btn:hover{background:var(--accent-bright); color:var(--paper); border-color:var(--accent-bright); box-shadow:0 12px 28px -10px rgba(0,0,0,0.5);}
+  .hero .btn-outline{background:transparent; color:var(--paper); border-color:rgba(241,242,239,0.55);}
+  .hero .btn-outline:hover{background:rgba(241,242,239,0.08); color:var(--paper); box-shadow:none;}
+
+  .plan-card{
+    border:1px solid rgba(241,242,239,0.3); background:rgba(241,242,239,0.03); color:var(--paper);
+    padding:26px; position:relative; margin-left:24px; backdrop-filter:blur(2px);
+  }
+  .plan-card::before{
+    content:"FICHE / 01";
+    position:absolute; top:-11px; left:20px;
+    background:var(--ink); padding:0 8px; color:var(--accent-bright);
+    font-family:'IBM Plex Mono', monospace; font-size:11px; letter-spacing:0.08em;
+  }
+  .plan-card dl{margin:0; display:grid; grid-template-columns:auto 1fr; gap:10px 18px; font-size:14px;}
+  .plan-card dt{font-family:'IBM Plex Mono', monospace; color:var(--concrete-light);}
+  .plan-card dd{margin:0; font-weight:600; color:var(--paper);}
+  .corner-ticks{position:absolute; inset:0; pointer-events:none;}
+  .corner-ticks span{position:absolute; width:14px; height:14px; border:2px solid var(--accent-bright);}
+  .corner-ticks span:nth-child(1){top:-2px; left:-2px; border-right:none; border-bottom:none;}
+  .corner-ticks span:nth-child(2){top:-2px; right:-2px; border-left:none; border-bottom:none;}
+  .corner-ticks span:nth-child(3){bottom:-2px; left:-2px; border-right:none; border-top:none;}
+  .corner-ticks span:nth-child(4){bottom:-2px; right:-2px; border-left:none; border-top:none;}
+
+  /* ===== STATS ===== */
+  .stats{
+    background:var(--ink); color:var(--paper);
+    padding:52px 0;
+    border-top:4px solid var(--accent);
+  }
+  .stats-grid{
+    display:grid; grid-template-columns:repeat(4,1fr); gap:24px;
+    list-style:none; margin:0; padding:0;
+  }
+  .stat{border-left:1px solid rgba(241,242,239,0.25); padding-left:20px;}
+  .stat .num{font-family:'Archivo Black'; font-size:46px; color:var(--accent-bright);}
+  .stat .label{font-family:'IBM Plex Mono', monospace; font-size:12.5px; color:var(--concrete-light); margin-top:6px;}
+
+  /* ===== SECTION HEADS ===== */
+  .section{padding:104px 0 116px;}
+  .section-head{
+    display:flex; justify-content:space-between; align-items:flex-end;
+    margin-bottom:56px; gap:24px; flex-wrap:wrap;
+    border-bottom:1px solid var(--line); padding-bottom:24px;
+  }
+  .section-head h2{font-size:clamp(28px,3.4vw,42px);}
+  .section-head .sub{max-width:40ch; color:#4a4c47; font-size:15px;}
+
+  /* ===== SERVICES ===== */
+  .services-grid{
+    display:grid; grid-template-columns:repeat(3,1fr); grid-auto-rows:1fr; gap:1px;
+    background:var(--line); border:1px solid var(--line);
+  }
+  .service{
+    background:var(--paper); padding:34px 28px; position:relative;
+    transition:background .2s;
+  }
+  .service:hover{background:#fff;}
+  .service:first-child{
+    grid-column:span 2; background:var(--ink); color:var(--paper);
+  }
+  .service:first-child p{color:var(--concrete-light);}
+  .service:first-child .idx{color:var(--accent-bright);}
+  .service:last-child{grid-column:span 2;}
+  .service:last-child p{max-width:none;}
+  .service .idx{
+    font-family:'IBM Plex Mono', monospace; font-size:12px; color:var(--accent); font-weight:700;
+  }
+  .service h3{font-size:21px; margin-top:14px;}
+  .service p{margin-top:12px; font-size:14.5px; color:#4a4c47; max-width:46ch;}
+
+  /* ===== PROCESS (real sequence -> numbered ok) ===== */
+  .process{
+    display:grid; grid-template-columns:repeat(4,1fr); gap:0;
+    position:relative; list-style:none; margin:0; padding:0;
+  }
+  .process::before{
+    content:""; position:absolute; top:26px; left:0; right:0; height:1px;
+    background:var(--line);
+  }
+  .step{padding:0 20px 0 0; position:relative;}
+  .step .num{
+    font-family:'IBM Plex Mono', monospace;
+    width:52px; height:52px; border:1px solid var(--ink); background:var(--paper);
+    display:flex; align-items:center; justify-content:center;
+    font-size:15px; position:relative; z-index:1; margin-bottom:20px;
+  }
+  .step h3{font-size:17px;}
+  .step p{font-size:14px; color:#4a4c47; margin-top:8px; max-width:32ch;}
+
+  /* ===== ABOUT ===== */
+  .about{display:grid; grid-template-columns:0.9fr 1.1fr; gap:60px; align-items:center;}
+  .about-photo{
+    aspect-ratio:4/5; background:var(--concrete-light);
+    border:1px solid var(--ink);
+    display:flex; align-items:center; justify-content:center;
+    font-family:'IBM Plex Mono', monospace; font-size:13px; color:var(--concrete);
+    text-align:center; padding:20px;
+  }
+  .about-text p{font-size:16px; color:#333; margin-bottom:16px; max-width:56ch;}
+  .quote-mark{font-family:'Archivo Black'; font-size:52px; color:var(--accent); line-height:0.6; display:block; margin-bottom:6px;}
+
+  /* ===== FUTURE / GROWTH BANNER ===== */
+  .growth{
+    background:var(--ink); color:var(--paper);
+    padding:72px 0; border-top:1px solid var(--accent-deep); border-bottom:1px solid var(--accent-deep);
+  }
+  .growth-inner{display:flex; justify-content:space-between; align-items:center; gap:40px; flex-wrap:wrap;}
+  .growth h2{font-size:clamp(26px,3.4vw,38px); max-width:22ch; color:var(--paper);}
+  .growth h2 .accent{color:var(--accent-bright);}
+  .growth p{max-width:42ch; font-size:15.5px; color:var(--concrete-light); margin-top:14px; font-weight:500;}
+
+  /* ===== CONTACT ===== */
+  .contact-grid{display:grid; grid-template-columns:1fr 1fr; gap:60px;}
+  .field{margin-bottom:20px;}
+  .field label{
+    display:block; font-family:'IBM Plex Mono', monospace; font-size:12px;
+    text-transform:uppercase; letter-spacing:0.06em; margin-bottom:8px; color:var(--steel);
+  }
+  .field input, .field textarea{
+    width:100%; border:1px solid var(--ink); background:transparent;
+    padding:12px 14px; font-family:'Archivo'; font-size:15px; color:var(--ink);
+    transition:border-color .15s, box-shadow .15s;
+  }
+  .field input:focus, .field textarea:focus{outline:2px solid var(--accent-bright); outline-offset:1px;}
+  .field input[aria-invalid="true"], .field textarea[aria-invalid="true"]{border-color:var(--error);}
+  .field .error-msg{
+    display:none; font-family:'IBM Plex Mono', monospace; font-size:12.5px;
+    color:var(--error); margin-top:6px;
+  }
+  .field .error-msg.show{display:block;}
+  .form-status{
+    margin-top:18px; padding:14px 16px; font-size:14px; display:none;
+    border:1px solid var(--ink);
+  }
+  .form-status.show{display:block;}
+  .form-status.success{border-color:#2f5d3a; background:#eef3ec; color:#1f3d27;}
+  .form-status.error{border-color:var(--error); background:#faeae7; color:#6e2019;}
+  .contact-info dl{display:grid; grid-template-columns:auto 1fr; gap:14px 20px; font-size:15px;}
+  .contact-info dt{font-family:'IBM Plex Mono', monospace; color:var(--concrete); font-size:12px; text-transform:uppercase; padding-top:3px;}
+  .contact-info dd{margin:0; font-weight:600;}
+
+  footer{
+    border-top:1px solid var(--line); padding:32px 0; font-size:13px; color:var(--concrete);
+  }
+  .footer-row{
+    display:flex; justify-content:space-between; flex-wrap:wrap; gap:16px; align-items:center;
+  }
+  .footer-links{display:flex; gap:20px; list-style:none; margin:0; padding:0; flex-wrap:wrap;}
+  .footer-links a{text-decoration:underline; text-underline-offset:2px;}
+  .footer-links a:hover, .footer-links a:focus-visible{color:var(--ink);}
+  footer details{
+    margin-top:20px; border-top:1px solid var(--line); padding-top:16px;
+    font-size:13px; color:#4a4c47;
+  }
+  footer details summary{cursor:pointer; font-weight:600; color:var(--ink); list-style:none;}
+  footer details summary::-webkit-details-marker{display:none;}
+  footer details summary::before{content:"+ "; color:var(--accent); font-family:'IBM Plex Mono', monospace;}
+  footer details[open] summary::before{content:"– ";}
+  footer details p{max-width:70ch; margin:10px 0 0;}
+
+  @media (max-width: 880px){
+    .hero-inner, .about, .contact-grid{grid-template-columns:1fr; gap:36px;}
+    .stats-grid{grid-template-columns:repeat(2,1fr);}
+    .services-grid{grid-template-columns:1fr;}
+    .service:first-child, .service:last-child{grid-column:span 1;}
+    .process{grid-template-columns:repeat(2,1fr); row-gap:32px;}
+    .process::before{display:none;}
+    nav ul{display:none;}
+    .growth-inner{flex-direction:column; align-items:flex-start;}
+    .plan-card{margin-left:0;}
+  }
+</style>
+</head>
+<body>
+
+<a class="skip-link mono" href="#main">Aller au contenu</a>
+<div class="grain" aria-hidden="true"></div>
+
+<header>
+  <div class="nav">
+    <a class="logo" href="index.html">PIERREL &amp; CO</a>
+    <nav aria-label="Navigation principale">
+      <ul>
+        <li><a href="#services">Prestations</a></li>
+        <li><a href="veille-reglementaire.html">Veille réglementaire</a></li>
+        <li><a href="#methode">Méthode</a></li>
+        <li><a href="#profil">Profil</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ul>
+    </nav>
+    <a class="btn" href="#contact">Prendre contact</a>
+  </div>
+</header>
+
+<main id="main">
+
+<section class="hero blueprint">
+  <svg class="hero-art" viewBox="0 0 640 760" preserveAspectRatio="xMidYMid meet" aria-hidden="true" focusable="false">
+    <!-- schéma d'organisation : flux, points de contrôle et jalons -->
+    <rect class="fill-dim" x="150" y="150" width="340" height="440"/>
+    <rect x="150" y="150" width="340" height="440"/>
+    <line x1="150" y1="210" x2="490" y2="210"/>
+    <!-- quatre blocs reliés : le process -->
+    <rect x="185" y="255" width="110" height="70"/>
+    <rect x="345" y="255" width="110" height="70"/>
+    <rect x="185" y="400" width="110" height="70"/>
+    <rect x="345" y="400" width="110" height="70"/>
+    <line x1="295" y1="290" x2="345" y2="290"/>
+    <line x1="240" y1="325" x2="240" y2="400"/>
+    <line x1="400" y1="325" x2="400" y2="400"/>
+    <line x1="295" y1="435" x2="345" y2="435"/>
+    <!-- point de contrôle validé -->
+    <circle cx="400" cy="290" r="27"/>
+    <line x1="387" y1="291" x2="396" y2="301"/>
+    <line x1="396" y1="301" x2="414" y2="279"/>
+    <!-- indicateurs de suivi -->
+    <line x1="185" y1="520" x2="455" y2="520"/>
+    <line x1="185" y1="545" x2="380" y2="545"/>
+    <line x1="185" y1="570" x2="300" y2="570"/>
+    <!-- lignes de cote, convention de dessin technique -->
+    <line x1="150" y1="640" x2="490" y2="640"/>
+    <line x1="150" y1="630" x2="150" y2="650"/>
+    <line x1="490" y1="630" x2="490" y2="650"/>
+    <line x1="530" y1="150" x2="530" y2="590"/>
+    <line x1="522" y1="150" x2="538" y2="150"/>
+    <line x1="522" y1="590" x2="538" y2="590"/>
+  </svg>
+  <div class="wrap hero-inner">
+    <div>
+      <div class="eyebrow mono hero-load">Conseil en organisation, prévention et conformité</div>
+      <h1 class="hero-load">Votre activité sous contrôle — organisation, prévention, <span class="accent">conformité</span>.</h1>
+      <p class="lede hero-load">J'accompagne les entreprises sur le pilotage de leurs opérations : organisation, prévention des risques, maîtrise des coûts et suivi des obligations réglementaires. Un seul interlocuteur, une méthode éprouvée sur le terrain.</p>
+      <div class="hero-cta hero-load">
+        <a class="btn" href="#contact">Discuter de votre besoin</a>
+        <a class="btn btn-outline" href="#services">Voir les prestations</a>
+      </div>
+    </div>
+    <div class="plan-card hero-load">
+      <div class="corner-ticks"><span></span><span></span><span></span><span></span></div>
+      <dl>
+        <dt>Secteurs</dt><dd>Tous secteurs d'activité</dd>
+        <dt>Zone</dt><dd>Interventions sur site, basé à Istres</dd>
+        <dt>Format</dt><dd>Mission ponctuelle ou suivi mensuel</dd>
+        <dt>Délai</dt><dd>Premier échange sous 48h</dd>
+      </dl>
+    </div>
+  </div>
+</section>
+
+<div class="stats">
+  <ul class="wrap stats-grid">
+    <li class="stat"><div class="num mono" data-count="15" data-suffix="+">0</div><div class="label">ans sur le terrain</div></li>
+    <li class="stat"><div class="num mono" data-count="80" data-suffix="+">0</div><div class="label">missions accompagnées</div></li>
+    <li class="stat"><div class="num mono" data-count="150" data-suffix="+">0</div><div class="label">audits réalisés</div></li>
+    <li class="stat"><div class="num mono" data-count="48" data-suffix="h">0</div><div class="label">délai de premier contact</div></li>
+  </ul>
+</div>
+
+<section class="section" id="services">
+  <div class="wrap">
+    <div class="section-head">
+      <h2>Prestations</h2>
+      <p class="sub">Un accompagnement concret, pensé pour des entreprises qui n'ont pas le temps de gérer une couche administrative en plus de leur activité.</p>
+    </div>
+    <div class="services-grid">
+      <article class="service">
+        <div class="idx mono">01</div>
+        <h3>Pilotage d'opérations</h3>
+        <p>Coordination des intervenants, tenue du planning, arbitrage des aléas de terrain avant qu'ils ne deviennent des retards.</p>
+      </article>
+      <article class="service">
+        <div class="idx mono">02</div>
+        <h3>Système de management de la prévention</h3>
+        <p>Mise en place de systèmes de management de la prévention sécurité sur mesure, éprouvés sur plus de 150 audits, pour réduire durablement les incidents.</p>
+      </article>
+      <article class="service">
+        <div class="idx mono">03</div>
+        <h3>Maîtrise des coûts</h3>
+        <p>Suivi budgétaire opération par opération, détection des dérives, négociation avec les fournisseurs et sous-traitants.</p>
+      </article>
+      <article class="service">
+        <div class="idx mono">04</div>
+        <h3>Relation clients et donneurs d'ordre</h3>
+        <p>Préparation des points d'avancement, gestion des litiges, réunions de suivi menées pour protéger vos intérêts.</p>
+      </article>
+      <article class="service">
+        <div class="idx mono">05</div>
+        <h3>Structuration d'entreprise</h3>
+        <p>Mise en place de process simples pour que l'activité tienne debout même quand vous n'êtes pas sur place.</p>
+      </article>
+      <article class="service">
+        <div class="idx mono">06</div>
+        <h3>Formation des équipes</h3>
+        <p>Montée en compétence des encadrants sur le pilotage, la sécurité et le reporting.</p>
+      </article>
+      <article class="service">
+        <div class="idx mono">07</div>
+        <h3>Veille réglementaire</h3>
+        <p>Identifier et suivre les textes applicables à votre activité à partir de votre code NAF : sources officielles par domaine, plan de veille avec responsables et fréquences, registre de suivi opposable en cas de contrôle. <a href="veille-reglementaire.html">Découvrir la prestation</a> ou <a href="outil-veille.html">ouvrir l'outil gratuit</a>.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="methode" style="padding-top:0;">
+  <div class="wrap">
+    <div class="section-head">
+      <h2>Méthode</h2>
+      <p class="sub">Quatre étapes, du diagnostic initial jusqu'au suivi dans la durée.</p>
+    </div>
+    <ol class="process">
+      <li class="step">
+        <div class="num mono">01</div>
+        <h3>Diagnostic</h3>
+        <p>Visite sur site et lecture des documents en cours pour identifier les points de tension réels.</p>
+      </li>
+      <li class="step">
+        <div class="num mono">02</div>
+        <h3>Plan d'action</h3>
+        <p>Priorités claires, chiffrées, avec un calendrier d'exécution réaliste pour vos équipes.</p>
+      </li>
+      <li class="step">
+        <div class="num mono">03</div>
+        <h3>Mise en œuvre</h3>
+        <p>Présence sur site aux moments critiques, ajustements au fil de l'avancement.</p>
+      </li>
+      <li class="step">
+        <div class="num mono">04</div>
+        <h3>Suivi</h3>
+        <p>Points réguliers pour consolider les acquis et anticiper l'étape suivante.</p>
+      </li>
+    </ol>
+  </div>
+</section>
+
+<section class="section" id="profil">
+  <div class="wrap about">
+    <div class="about-photo" role="img" aria-label="Photo de Clément Pierrel — emplacement réservé, à remplacer par une photo réelle">Photo du consultant<br>à intégrer ici</div>
+    <div class="about-text">
+      <span class="quote-mark" aria-hidden="true">"</span>
+      <p style="font-family:'IBM Plex Mono', monospace; font-size:13px; color:var(--steel); margin-bottom:2px;">Clément Pierrel — <a href="https://www.linkedin.com/in/clément-pierrel-7279bb115/" target="_blank" rel="noopener" style="text-decoration:underline;">LinkedIn</a></p>
+      <p>Après plus de quinze ans passés sur le terrain, dans des structures de tailles très différentes, j'ai vu les mêmes problèmes revenir : plannings trop optimistes, sécurité traitée en dernier, obligations réglementaires découvertes trop tard, et des entreprises qui perdent de l'argent sans s'en apercevoir avant la fin de l'opération.</p>
+      <p>Diplômé d'un bac+5, j'ai dirigé ma propre entreprise avant de me consacrer entièrement au conseil : je connais les contraintes d'un dirigeant parce que je les ai vécues.</p>
+      <p>Mon rôle est simple : être l'interlocuteur qui a le temps et le recul que vous n'avez pas, pendant que vous gérez le reste de votre activité.</p>
+    </div>
+  </div>
+</section>
+
+<div class="growth">
+  <div class="wrap growth-inner">
+    <h2>Une structure qui <span class="accent">grandit</span></h2>
+    <p>Le cabinet s'entoure progressivement de nouveaux consultants pour répondre à davantage de missions, sans jamais sacrifier le suivi de proximité.</p>
+  </div>
+</div>
+
+<section class="section" id="contact">
+  <div class="wrap contact-grid">
+    <div>
+      <div class="section-head" style="border:none; margin-bottom:28px; padding:0;">
+        <h2>Parlons de votre besoin</h2>
+      </div>
+      <form id="contact-form" novalidate>
+        <div class="field">
+          <label for="nom">Nom</label>
+          <input id="nom" name="nom" type="text" autocomplete="name" required>
+          <p class="error-msg mono" id="nom-error">Merci d'indiquer votre nom.</p>
+        </div>
+        <div class="field">
+          <label for="entreprise">Entreprise</label>
+          <input id="entreprise" name="entreprise" type="text" autocomplete="organization">
+        </div>
+        <div class="field">
+          <label for="email">E-mail</label>
+          <input id="email" name="email" type="email" autocomplete="email" required>
+          <p class="error-msg mono" id="email-error">Merci d'indiquer une adresse e-mail valide.</p>
+        </div>
+        <div class="field">
+          <label for="message">Votre besoin</label>
+          <textarea id="message" name="message" rows="4" required></textarea>
+          <p class="error-msg mono" id="message-error">Merci de décrire brièvement votre besoin.</p>
+        </div>
+        <button class="btn" type="submit">Envoyer la demande</button>
+        <div class="form-status" role="status" aria-live="polite" id="form-status"></div>
+      </form>
+    </div>
+    <div class="contact-info">
+      <div class="plan-card" style="position:relative; margin-left:0;">
+        <div class="corner-ticks"><span></span><span></span><span></span><span></span></div>
+        <dl>
+          <dt>Téléphone</dt><dd>06 00 00 00 00</dd>
+          <dt>E-mail</dt><dd>contact@pierrel-co.fr</dd>
+          <dt>Zone</dt><dd>Déplacements sur site, basé à Istres</dd>
+          <dt>Disponibilité</dt><dd>Réponse sous 48h ouvrées</dd>
+        </dl>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="footer-row">
+      <span>© 2026 Pierrel &amp; Co — Conseil en organisation et conformité</span>
+      <ul class="footer-links mono">
+        <li><a href="veille-reglementaire.html">Veille réglementaire</a></li>
+        <li><a href="#mentions-legales">Mentions légales</a></li>
+        <li><a href="#confidentialite">Confidentialité</a></li>
+      </ul>
+      <span class="mono">Fait pour le terrain.</span>
+    </div>
+    <details id="mentions-legales">
+      <summary>Mentions légales</summary>
+      <p>Éditeur du site : Pierrel &amp; Co, Clément Pierrel, conseil en organisation et conformité, basé à Istres (13800). SIRET : à compléter. Directeur de la publication : Clément Pierrel. Hébergement : à compléter. Pour toute question relative au site, utilisez le formulaire de contact ci-dessus.</p>
+    </details>
+    <details id="confidentialite">
+      <summary>Politique de confidentialité</summary>
+      <p>Les informations transmises via le formulaire de contact (nom, entreprise, e-mail, message) sont utilisées uniquement pour répondre à votre demande et ne sont ni revendues ni transmises à des tiers. Ce site utilise Google Fonts pour l'affichage des polices ; la connexion aux serveurs Google peut entraîner un traitement d'adresse IP par Google. Conformément au RGPD, vous pouvez demander l'accès, la rectification ou la suppression de vos données en écrivant à l'adresse de contact indiquée ci-dessus.</p>
+    </details>
+  </div>
+</footer>
+
+<script>
+  // Hero blueprint drawing — traces each line as if inked live, once on load
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const heroArt = document.querySelector('.hero-art');
+  if (heroArt) {
+    const strokes = heroArt.querySelectorAll('path, line, polyline, circle, rect:not(.fill-dim)');
+    if (reduceMotion) {
+      strokes.forEach(s => { s.style.strokeDasharray = 'none'; });
+    } else {
+      strokes.forEach((s, i) => {
+        const length = s.getTotalLength ? s.getTotalLength() : 200;
+        s.style.strokeDasharray = length;
+        s.style.strokeDashoffset = length;
+        s.style.transition = `stroke-dashoffset 1.1s cubic-bezier(.3,.65,.25,1) ${0.4 + i * 0.05}s`;
+      });
+      requestAnimationFrame(() => requestAnimationFrame(() => {
+        strokes.forEach(s => { s.style.strokeDashoffset = 0; });
+      }));
+    }
+  }
+
+  const els = document.querySelectorAll('.section, .service, .step');
+  els.forEach(el => el.classList.add('reveal'));
+  const io = new IntersectionObserver((entries)=>{
+    entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target);} });
+  }, {threshold:0.12});
+  els.forEach(el=>io.observe(el));
+
+  // Count-up animation for stats
+  const counters = document.querySelectorAll('[data-count]');
+  const animateCount = (el) => {
+    const target = parseInt(el.getAttribute('data-count'), 10);
+    const suffix = el.getAttribute('data-suffix') || '';
+    const duration = 1100;
+    const start = performance.now();
+    const step = (now) => {
+      const progress = Math.min((now - start) / duration, 1);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      el.textContent = Math.round(eased * target) + suffix;
+      if (progress < 1) requestAnimationFrame(step);
+    };
+    requestAnimationFrame(step);
+  };
+  const statsIo = new IntersectionObserver((entries)=>{
+    entries.forEach(e=>{
+      if(e.isIntersecting){ animateCount(e.target); statsIo.unobserve(e.target); }
+    });
+  }, {threshold:0.4});
+  counters.forEach(c=>statsIo.observe(c));
+
+  // Contact form: inline validation + inline status, no window.alert()
+  const form = document.getElementById('contact-form');
+  const status = document.getElementById('form-status');
+  const fields = [
+    { el: document.getElementById('nom'), error: document.getElementById('nom-error'),
+      valid: (v) => v.trim().length > 0 },
+    { el: document.getElementById('email'), error: document.getElementById('email-error'),
+      valid: (v) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.trim()) },
+    { el: document.getElementById('message'), error: document.getElementById('message-error'),
+      valid: (v) => v.trim().length > 0 },
+  ];
+
+  fields.forEach(f => {
+    f.el.addEventListener('blur', () => validateField(f));
+    f.el.addEventListener('input', () => {
+      if (f.el.getAttribute('aria-invalid') === 'true') validateField(f);
+    });
+  });
+
+  function validateField(f){
+    const ok = f.valid(f.el.value);
+    f.el.setAttribute('aria-invalid', ok ? 'false' : 'true');
+    f.error.classList.toggle('show', !ok);
+    return ok;
+  }
+
+  form.addEventListener('submit', (event) => {
+    event.preventDefault();
+    const allValid = fields.map(validateField).every(Boolean);
+    status.classList.remove('success', 'error', 'show');
+    if (!allValid) {
+      status.textContent = 'Merci de corriger les champs signalés ci-dessus avant d’envoyer votre demande.';
+      status.classList.add('error', 'show');
+      fields.find(f => f.el.getAttribute('aria-invalid') === 'true')?.el.focus();
+      return;
+    }
+    // Demonstration only: replace with a real submission endpoint before going live.
+    status.textContent = 'Merci, votre message a été noté. Nous revenons vers vous sous 48h ouvrées.';
+    status.classList.add('success', 'show');
+    form.reset();
+    fields.forEach(f => f.el.removeAttribute('aria-invalid'));
+  });
+</script>
+
+</body>
+</html>
