@@ -26,6 +26,7 @@ Mise en ligne et activation de la collecte : voir [DEPLOIEMENT.md](DEPLOIEMENT.m
 | `scripts/fixtures/jorf-exemple.json` | Jeu d'essai permettant de rejouer toute la chaîne sans réseau ni identifiants (`--source=mock`). |
 | `data/veille-feed.json` | Le fil publié, lu par l'outil. Produit par la tâche planifiée, commité seulement quand son contenu change. |
 | `.github/workflows/veille.yml` | Collecte horaire du Journal officiel. |
+| `.claude/skills/` | Deux skills de projet pour Claude Code : `veille-reglementaire` (collecte du Journal officiel, référentiel) et `site-pierrel` (pages, design system, publication). Chargés automatiquement dans une session ouverte sur ce dépôt. |
 | `build.mjs` | Assemble dans `_site/` les seuls fichiers servis aux visiteurs. |
 | `netlify.toml` | Configuration de publication : commande, dossier, en-têtes de cache. |
 
