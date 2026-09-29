@@ -1,145 +1,104 @@
 ---
 name: veille-reglementaire
-description: "Collecte des textes du Journal officiel et référentiel de veille de ce dépôt. À utiliser pour toute demande touchant scripts/collecte-jo.mjs, data/veille-feed.json, le workflow .github/workflows/veille.yml, les identifiants PISTE / API Légifrance, le fil de la « veille en direct », ou le référentiel assets/veille-data.js (ajouter ou modifier un domaine de veille, un rattachement NAF, un mot-clé de collecte, un déclencheur). Déclencheurs typiques : « relancer la collecte », « le fil est vide / périmé », « la collecte est en échec », « ajouter un domaine », « élargir les mots-clés », « pourquoi ce texte n'est pas remonté », « rattacher la division 43 »."
+description: "Le référentiel de veille de ce dépôt, dans assets/referentiel.js : les 26 domaines de veille, les 15 familles de métiers, les 11 questions de contexte, les fréquences de revue, la méthode et les sources officielles. À utiliser pour toute demande de contenu réglementaire — ajouter ou modifier un domaine, rattacher un métier, ajouter une question, changer un rythme de revue, corriger des obligations ou des textes de référence — et pour comprendre pourquoi un domaine apparaît ou non dans un plan. Déclencheurs typiques : « ajoute un domaine », « il manque les ICPE pour ce métier », « pourquoi ce domaine ne sort pas », « change la fréquence », « ajoute le métier X », « corrige les obligations de la partie amiante »."
 ---
 
-# Veille réglementaire : collecte et référentiel
+# Le référentiel de veille
 
-## La chaîne, en une phrase
+## Où ça vit
 
-`.github/workflows/veille.yml` (toutes les heures, minute 17) lance
-`scripts/collecte-jo.mjs`, qui interroge l'API Légifrance, rattache les textes
-parus aux 44 domaines de `assets/veille-data.js` par mots-clés, écrit
-`data/veille-feed.json`, et ne commite que si le contenu utile a changé.
-`outil-veille.html` lit ce fichier par `fetch` à l'étape 4 « Veille en direct ».
+Un seul fichier : `assets/referentiel.js`. Autonome, sans dépendance, chargé tel
+quel par `index.html` (la méthode et le tableau des sources) et par
+`plan-de-veille.html` (tout l'outil). Il n'y a pas de base de données, pas d'API,
+pas de collecte automatique : le contenu réglementaire est écrit à la main dans
+ce fichier, et c'est la seule source de vérité.
 
-Tout est en Node pur, sans dépendance : il n'y a jamais de `npm install` à faire.
+Il expose `window.REFERENTIEL` avec : `frequences`, `domaines`, `socle`,
+`metiers`, `questions`, `etapes`, `sourcesGenerales`, et les fonctions
+`metier()`, `question()`, `plan()`.
 
-## Relancer ou tester la collecte
+## Comment un plan se construit
 
-```sh
-# Jeu d'essai local : ni réseau ni identifiants. À faire en premier, toujours.
-node scripts/collecte-jo.mjs --source=mock --dry-run
+`plan(metierId, reponses)` empile trois apports, dans cet ordre :
 
-# Vrai appel Légifrance, sans rien écrire (exige les identifiants PISTE)
-node scripts/collecte-jo.mjs --jours=7 --dry-run
+1. **le socle** (`socle`) — s'applique à toute entreprise, sans condition ;
+2. **le métier** choisi — ses `domaines` sectoriels ;
+3. **chaque réponse** cochée — les `domaines` de la question.
 
-# Vrai appel, écrit data/veille-feed.json
-node scripts/collecte-jo.mjs --jours=3
-```
+Un domaine amené par plusieurs voies n'apparaît qu'une fois, mais **conserve
+toutes ses raisons** : c'est ce que montrent les pastilles sous chaque domaine
+déplié, et c'est ce qui rend le plan discutable avec le client. Ne pas casser ce
+mécanisme en dédoublonnant les raisons.
 
-Options : `--source=legifrance|mock`, `--jours=N` (fenêtre, défaut 3, minimum 1),
-`--sortie=chemin`, `--dry-run`, `--help`.
+Le résultat est regroupé par fréquence, dans l'ordre de `frequences`.
 
-Pour écrire ailleurs que dans le dépôt pendant un essai :
-`--sortie=/tmp/essai-feed.json`.
-
-## Identifiants
-
-| Nom | Où | Rôle |
-|---|---|---|
-| `PISTE_CLIENT_ID` | secret du dépôt | OAuth client credentials PISTE |
-| `PISTE_CLIENT_SECRET` | secret du dépôt | idem |
-| `PISTE_ENV` | variable du dépôt | `sandbox` ou vide (= production) |
-| `ALERTE_WEBHOOK_URL` | secret du dépôt | résumé posté vers Slack/Teams, optionnel |
-
-Sans `PISTE_CLIENT_ID` / `PISTE_CLIENT_SECRET`, le script sort **en 0** avec un
-fil de statut `echec` : c'est voulu, la publication du site ne doit jamais casser
-à cause de la collecte. La procédure de création des identifiants est dans
-`DEPLOIEMENT.md`, section 2. Ne jamais écrire une valeur d'identifiant dans un
-fichier du dépôt ni dans un message de commit.
-
-## Format de data/veille-feed.json
-
-```json
-{
-  "genere": "ISO 8601", "source": "legifrance|mock", "fenetreJours": 3,
-  "statut": "ok|echec", "erreur": "message ou null",
-  "derniereReussite": "ISO ou null",
-  "nombreTextes": 0, "nombreInedits": 0,
-  "textes": []
-}
-```
-
-Chaque texte porte titre, date de publication, nature déduite du titre
-(`deduitNature`), domaines rattachés et date de première détection. La fusion
-(`fusionne`) conserve cette date de première détection, garde **120 jours** et
-**400 textes** au maximum.
-
-Lire le statut avant de conclure quoi que ce soit sur le fil :
-
-```sh
-node -e 'const f=require("./data/veille-feed.json");console.log(f.statut,f.erreur||"",f.nombreTextes,f.genere)'
-```
-
-## Le fil est vide ou périmé : dans quel ordre chercher
-
-1. `statut: "echec"` → lire `erreur`. Identifiants absents ou expirés, ou API
-   Légifrance indisponible. Rien à corriger dans le code.
-2. `statut: "ok"` mais peu de textes → c'est le rattachement par mots-clés qui
-   écarte. Un texte sans aucun mot-clé correspondant est volontairement rejeté
-   (`rattache`). Élargir `motsCles`, voir plus bas.
-3. Fil correct mais l'outil n'affiche rien → le `fetch` échoue. En `file://`
-   c'est normal et un message explicite s'affiche ; il faut servir en HTTP
-   (`npx http-server _site -p 8080`).
-4. Le workflow ne tourne plus → GitHub met en sommeil les tâches planifiées
-   après 60 jours sans activité du dépôt ; réactiver depuis l'onglet Actions.
-   Les tâches planifiées ne s'exécutent que depuis la branche par défaut.
-
-Le workflow expose `modifie`, `inedits` et `statut` en sorties d'étape, et ne
-commite `data/veille-feed.json` que si `modifie == 'true'` — sinon la tâche
-produirait un commit par heure.
-
-## Référentiel assets/veille-data.js
-
-Un seul fichier, autonome, lu par les deux pages et par le collecteur. Clés
-exportées : `sections`, `divisions` (88), `familles` (8), `domaines` (44),
-`motsCles`, `transversaux`, `parDivision`, `declencheurs` (22), `etapes`,
-`frequences`, plus les fonctions `rechercher`, `perimetre`, `division`.
-
-**Ajouter un domaine** — une entrée dans `domaines`, puis le rattacher :
+## Ajouter un domaine
 
 ```js
 mon_domaine: {
-  nom: "…", famille: "sst", frequence: "hebdomadaire",
-  resume: "…",
-  textes: ["…"], obligations: ["…"], impacts: ["juridique", "operationnel"],
+  nom: "…",
+  frequence: "trimestrielle",        // doit exister dans frequences
+  resume: "Une phrase, lisible par un dirigeant.",
+  textes: ["…"],                      // les textes de référence
+  obligations: ["…"],                 // ce qu'il faut tenir, concrètement
   sources: [{ nom: "…", url: "https://…" }]
 }
 ```
 
-- `famille` doit exister dans `familles` (`social`, `sst`, `env`, `tech`,
-  `sect`, `fisc`, `num`, `juri`).
-- `frequence` doit exister dans `frequences`.
-- Puis référencer l'identifiant dans `parDivision["43"]` (rattachement
-  sectoriel, au niveau **division** = deux premiers chiffres du code NAF)
-  et/ou dans un `declencheurs[].domaines` (caractéristique d'activité).
-- Un domaine absent de `parDivision` et de `declencheurs` n'apparaîtra dans
-  aucun périmètre.
+**Puis le rattacher, sinon il n'existe pour personne.** Trois possibilités :
+`socle` (toute entreprise), `metiers[].domaines` (sectoriel), ou
+`questions[].domaines` (déclenché par le contexte). Un domaine que rien n'amène
+fait apparaître un avertissement à la construction, pas une erreur : il faut le
+lire.
 
-**Élargir la collecte d'un domaine** — une entrée dans `motsCles`. Les mots-clés
-sont comparés au **titre** du texte, accents et casse retirés (`normalise`).
-Préférer des expressions précises (« appareils de levage ») aux mots isolés
-(« levage »), qui ramènent du bruit dans le fil de tout le monde.
+## Ajouter un métier ou une question
 
-**Nomenclature NAF** — `sections` et `divisions` suivent la NAF au niveau
-division ; les libellés officiels sont publiés par l'INSEE.
+- **Métier** : `{ id, nom, naf, exemples, domaines: [...] }`. Le champ `naf` est
+  un repère affiché en petit (« divisions 41 à 43 »), pas une clé de calcul :
+  l'outil ne fait aucune recherche par code NAF, c'est délibéré — personne ne
+  connaît son code de tête, et une nomenclature recopiée de mémoire serait
+  fausse.
+- **Question** : `{ id, q, d, domaines: [...] }`. Une bonne question se répond
+  par oui ou non sans aller chercher un document, et amène au moins un domaine
+  que le métier seul ne donne pas. Sinon elle alourdit le parcours pour rien.
 
-## Vérifier avant de committer
+## Comment écrire le contenu
+
+Le lecteur est un chef d'entreprise, pas un juriste.
+
+- `resume` : une phrase, ce que le domaine recouvre et pourquoi il mord.
+- `obligations` : des choses **vérifiables**, formulées comme un contrôleur les
+  demanderait (« Document unique rédigé, daté et mis à jour », pas « respecter
+  l'obligation de sécurité »).
+- `textes` : le nom du texte en clair plutôt que sa référence brute. « Code du
+  travail, quatrième partie » plutôt qu'un numéro d'article qui bougera.
+- `sources` : deux ou trois liens officiels, jamais d'agrégateur payant.
+- **Pas de dates ni de seuils qui bougent** quand on peut l'éviter : préférer
+  « vérifier l'échéance applicable à votre taille d'entreprise » à une date qui
+  sera fausse dans six mois et que personne ne viendra corriger.
+
+## Vérifier
 
 ```sh
-node scripts/collecte-jo.mjs --source=mock --dry-run   # la chaîne tourne
-node build.mjs                                          # garde-fou référentiel
+node build.mjs
 ```
 
-`build.mjs` charge `assets/veille-data.js` et **interrompt la construction** si
-le référentiel compte moins de 40 domaines ou un nombre de divisions différent
-de 88. Une erreur ici signifie une virgule ou une accolade manquante dans le
-référentiel : la publication Netlify échouerait de la même manière.
+La construction échoue si un domaine cité n'existe pas, si une fréquence est
+inconnue, s'il reste moins de 20 domaines, moins de 10 métiers ou moins de 6
+questions, ou si le plan d'essai ne produit presque rien. Elle avertit — sans
+échouer — sur les domaines inatteignables.
+
+Pour inspecter un plan sans navigateur :
+
+```sh
+node -e 'globalThis.window={};new Function(require("fs").readFileSync("assets/referentiel.js","utf8"))();
+const p=window.REFERENTIEL.plan("btp",["salaries","public"]);
+console.log(p.nombre);p.groupes.forEach(g=>console.log(g.frequence.l,"—",g.entrees.map(e=>e.domaine.nom).join(" · ")));'
+```
 
 ## Réserves à ne pas retirer
 
-L'outil fournit un cadre méthodologique, pas un conseil juridique. Les réserves
-affichées dans l'interface et dans la synthèse imprimée (vérification de chaque
-texte sur Légifrance, validation par une personne compétente, non-exhaustivité)
-font partie de la prestation : ne pas les supprimer ni les adoucir.
+Les mentions rappelant que l'outil fournit un cadre méthodologique et non un
+conseil juridique, qu'il ne garantit pas l'exhaustivité, et que chaque texte doit
+être vérifié sur Légifrance — sur les deux pages et sur la feuille imprimée —
+font partie de la prestation. Ne pas les supprimer ni les adoucir.

@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mon plan de veille — Pierrel &amp; Co</title>
+<meta name="description" content="Produisez votre plan de veille réglementaire : les domaines qui s'appliquent à votre activité, leur fréquence de revue, les obligations concrètes et les sources officielles. Gratuit, sans compte.">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="preload" href="assets/polices/inter.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/polices/newsreader.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="assets/polices.css">
+<link rel="stylesheet" href="assets/site.css">
+</head>
+<body>
+
+<a class="lien-evitement" href="#contenu">Aller au contenu</a>
+
+<header class="bandeau sans-impression">
+  <div class="bandeau-interieur">
+    <a class="marque" href="index.html">Pierrel <span>&amp; Co</span></a>
+    <nav class="menu" aria-label="Navigation principale">
+      <a href="index.html">Accueil</a>
+      <a href="index.html#methode">Méthode</a>
+      <a href="index.html#contact">Contact</a>
+      <a href="plan-de-veille.html" aria-current="page">Mon plan de veille</a>
+    </nav>
+  </div>
+</header>
+
+<main id="contenu">
+
+  <div class="outil-entete sans-impression">
+    <div class="enveloppe">
+      <span class="surtitre">Outil gratuit</span>
+      <h1>Votre plan de veille</h1>
+      <p class="texte" style="margin-top:18px;">
+        Deux questions, et vous repartez avec la liste des domaines à surveiller,
+        leur rythme de revue, les obligations concrètes derrière chacun et les
+        sources officielles à suivre. Rien n'est envoyé : tout se calcule dans
+        votre navigateur.
+      </p>
+    </div>
+  </div>
+
+  <!-- En-tête qui n'apparaît qu'à l'impression, pour que la feuille sortie
+       soit identifiable dans un dossier. -->
+  <div class="entete-impression enveloppe">
+    <h1 style="font-size:20pt;">Plan de veille réglementaire</h1>
+    <p id="impression-details" style="margin-top:6px;"></p>
+  </div>
+
+  <div class="enveloppe">
+
+    <!-- ======================= 1. ACTIVITÉ ======================= -->
+    <section class="etape-outil sans-impression" aria-labelledby="titre-metier">
+      <div class="etape-titre">
+        <span class="etape-rang">Étape 1</span>
+      </div>
+      <h2 id="titre-metier">Votre activité</h2>
+      <p class="texte">
+        Choisissez la famille la plus proche. Les divisions de la nomenclature
+        NAF sont indiquées à titre de repère : c'est le métier réel qui compte,
+        pas le code déclaré.
+      </p>
+      <div class="metiers" id="choix-metiers" role="group" aria-label="Famille d'activité"></div>
+    </section>
+
+    <!-- ======================= 2. CONTEXTE ======================= -->
+    <section class="etape-outil sans-impression" aria-labelledby="titre-contexte">
+      <div class="etape-titre">
+        <span class="etape-rang">Étape 2</span>
+      </div>
+      <h2 id="titre-contexte">Votre contexte</h2>
+      <p class="texte">
+        Cochez ce qui est vrai chez vous. Chaque réponse ajoute des obligations
+        qui ne dépendent pas du métier mais de la façon de l'exercer.
+      </p>
+      <ul class="questions" id="liste-questions"></ul>
+    </section>
+
+    <!-- ======================= 3. LE PLAN ======================= -->
+    <section class="etape-outil" aria-labelledby="titre-plan">
+      <div class="etape-titre sans-impression">
+        <span class="etape-rang">Étape 3</span>
+      </div>
+      <h2 id="titre-plan" class="sans-impression">Votre plan</h2>
+      <div id="sortie-plan" aria-live="polite"></div>
+      <div class="barre-actions" id="actions" hidden>
+        <button type="button" class="bouton" id="bouton-imprimer">Imprimer ou enregistrer en PDF</button>
+        <a class="bouton bouton-clair" href="index.html#contact">Faire valider ce plan</a>
+        <button type="button" class="bouton bouton-clair bouton-petit" id="bouton-reset">Tout effacer</button>
+      </div>
+    </section>
+
+    <section class="etape-outil sans-impression">
+      <p class="reserve">
+        <strong>Ce plan est un point de départ, pas une conclusion.</strong>
+        Il fournit un cadre méthodologique et non un conseil juridique, et ne
+        garantit pas l'exhaustivité des textes applicables à votre entreprise.
+        Chaque texte doit être vérifié sur
+        <a href="https://www.legifrance.gouv.fr" target="_blank" rel="noopener">Légifrance</a>
+        et l'analyse d'applicabilité validée par une personne compétente.
+      </p>
+    </section>
+
+  </div>
+</main>
+
+<footer class="pied sans-impression">
+  <div class="enveloppe">
+    <p>
+      <a href="index.html">Pierrel &amp; Co</a> — conseil en organisation et conformité, Istres.
+      Vos réponses restent dans votre navigateur ; aucune donnée n'est transmise.
+    </p>
+    <p class="pied-bas">
+      Éditeur : Pierrel &amp; Co, Clément Pierrel, Istres (13800).
+      SIRET : à compléter. Hébergement : à compléter.
+    </p>
+  </div>
+</footer>
+
+<script src="assets/referentiel.js"></script>
+<script src="assets/plan.js"></script>
+</body>
+</html>

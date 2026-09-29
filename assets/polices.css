@@ -1,0 +1,29 @@
+/* ==========================================================================
+   Polices servies par le site lui-même
+   --------------------------------------------------------------------------
+   Newsreader et Inter, sous-jeu latin, récupérées une fois depuis Google Fonts
+   puis versionnées ici. Volontaire : appeler fonts.googleapis.com à chaque
+   visite transmettrait l'adresse IP du visiteur à un tiers, ce que le pied de
+   page promet de ne pas faire. Le site ne fait aucune requête externe.
+
+   Ce sont des polices variables : un seul fichier couvre toutes les graisses
+   de la plage déclarée. Ne pas les dupliquer par graisse.
+   ========================================================================== */
+
+@font-face{
+  font-family:'Inter';
+  font-style:normal;
+  font-weight:100 900;
+  font-display:swap;
+  src:url('polices/inter.woff2') format('woff2');
+  unicode-range:U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face{
+  font-family:'Newsreader';
+  font-style:normal;
+  font-weight:200 800;
+  font-display:swap;
+  src:url('polices/newsreader.woff2') format('woff2');
+  unicode-range:U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
