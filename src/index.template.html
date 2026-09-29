@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Vigie</title>
+<meta name="description" content="Vigie organise votre veille réglementaire à partir de votre code NAF : radar des domaines à surveiller, plan et calendrier de revues, registre des textes et note de synthèse. Tout reste sur votre appareil.">
+<meta name="theme-color" content="#0A1F2E">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230A1F2E'/%3E%3Ccircle cx='32' cy='32' r='21' fill='none' stroke='%233FB6C6' stroke-width='3'/%3E%3Ccircle cx='32' cy='32' r='10' fill='none' stroke='%233FB6C6' stroke-width='3' opacity='.6'/%3E%3Cpath d='M32 32 47 17' stroke='%233FB6C6' stroke-width='3.5' stroke-linecap='round'/%3E%3Ccircle cx='44' cy='40' r='4.5' fill='%23FF7A45'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=DM+Mono:wght@400;500&family=Instrument+Sans:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap" rel="stylesheet">
+<style>
+/*@STYLES@*/
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Aller au contenu</a>
+
+<div class="shell">
+  <aside class="rail">
+    <a class="brand" href="#vue" aria-label="Vigie, vue d’ensemble">
+      <svg viewBox="0 0 32 32" aria-hidden="true" focusable="false"><circle cx="16" cy="16" r="12.5" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="16" cy="16" r="6" fill="none" stroke="currentColor" stroke-width="1.8" opacity=".6"/><path d="M16 16 24.4 7.6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="22.5" cy="20.5" r="2.8" fill="var(--signal)"/></svg>
+      <span>Vigie</span>
+    </a>
+    <nav id="nav" aria-label="Sections de l’outil"></nav>
+    <div class="rail-pied">
+      <button type="button" id="btn-theme" class="rail-btn" data-act="theme" aria-label="Changer de thème"></button>
+    </div>
+  </aside>
+
+  <div class="stage">
+    <div id="banniere"></div>
+    <main id="main" tabindex="-1">
+      <noscript><p class="note">Vigie a besoin de JavaScript pour fonctionner.</p></noscript>
+    </main>
+    <footer class="pied no-print">
+      <p class="pied-mentions">Vigie fournit un cadre méthodologique construit à partir de la nomenclature NAF et de sources publiques. Ce n’est pas un conseil juridique et l’exhaustivité du périmètre n’est pas garantie. Vérifiez chaque texte sur <a href="https://www.legifrance.gouv.fr" target="_blank" rel="noopener">Légifrance</a> et faites valider l’applicabilité par une personne compétente.</p>
+      <div class="pied-ligne">
+        <span id="etat-sauvegarde" class="etat" role="status"></span>
+        <span class="pied-liens">
+          <button type="button" class="lien" data-act="demoRestore">Recharger l’exemple</button>
+          <button type="button" class="lien danger-l" data-act="wipe">Tout effacer</button>
+        </span>
+      </div>
+    </footer>
+  </div>
+</div>
+
+<dialog id="drawer" class="drawer" aria-label="Fiche du domaine de veille"></dialog>
+<dialog id="editor" class="modal" aria-label="Entrée du registre"></dialog>
+<div id="tip" role="tooltip" hidden></div>
+<div id="toast" role="status" aria-live="polite"></div>
+
+<script>
+/*@REFERENTIEL@*/
+</script>
+<script>
+(function () {
+"use strict";
+/*@APP@*/
+})();
+</script>
+</body>
+</html>

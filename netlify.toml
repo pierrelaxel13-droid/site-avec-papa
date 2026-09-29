@@ -1,30 +1,18 @@
-# Netlify : reconstruit et republie le site à chaque envoi sur la branche reliée.
-# Le dépôt peut rester privé, le site est public.
-
+# Vigie est un site statique : un seul fichier, index.html, assemblé par build.mjs.
 [build]
-  command = "node build.mjs"
+  command = "node build.mjs --site"
   publish = "_site"
 
-[build.environment]
-  NODE_VERSION = "22"
-
-# Le fil du Journal officiel est réécrit toutes les heures : il ne doit jamais
-# être servi depuis un cache, sinon la « veille en direct » affiche du périmé.
 [[headers]]
-  for = "/data/veille-feed.json"
+  for = "/*"
   [headers.values]
-    Cache-Control = "public, max-age=0, must-revalidate"
-
-# Les pages doivent être revalidées pour que les modifications se voient.
-[[headers]]
-  for = "/*.html"
-  [headers.values]
-    Cache-Control = "public, max-age=0, must-revalidate"
     X-Content-Type-Options = "nosniff"
     Referrer-Policy = "strict-origin-when-cross-origin"
+    Permissions-Policy = "geolocation=(), microphone=(), camera=(), payment=()"
+    # Aucune requête réseau hors polices Google : les données restent dans le navigateur.
+    Content-Security-Policy = "default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src data:; connect-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'"
 
-# Feuilles de style et scripts : une heure, le temps qu'une correction se propage.
 [[headers]]
-  for = "/assets/*"
+  for = "/index.html"
   [headers.values]
-    Cache-Control = "public, max-age=3600"
+    Cache-Control = "public, max-age=0, must-revalidate"

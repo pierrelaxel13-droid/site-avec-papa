@@ -1,72 +1,42 @@
-#!/usr/bin/env node
-/* ==========================================================================
-   Assemble le site publiable dans _site/
-   --------------------------------------------------------------------------
-   Seuls les fichiers servis aux visiteurs sont copiés : le collecteur, les
-   workflows, la documentation et le jeu d'essai restent dans le dépôt et ne
-   partent pas en ligne.
+// Assemble le site en un seul fichier autonome : index.html.
+//   node build.mjs           # écrit index.html
+//   node build.mjs --site    # écrit aussi _site/index.html (publication)
+// Sources : src/index.template.html, src/styles.css, src/referentiel.js, src/js/*.js
+// Le fichier produit est commité tel quel : il s'ouvre par double-clic et se publie sans étape de construction.
 
-   Usage : node build.mjs
-   ========================================================================== */
-
-import { cp, rm, mkdir, readdir, stat } from "node:fs/promises";
-import { existsSync } from "node:fs";
-import { dirname, join, resolve } from "node:path";
+import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
+import vm from "node:vm";
 
-const RACINE = dirname(fileURLToPath(import.meta.url));
-const SORTIE = resolve(RACINE, "_site");
+const racine = dirname(fileURLToPath(import.meta.url));
+const lire = (p) => readFileSync(join(racine, p), "utf8");
 
-// Ce qui est servi aux visiteurs, et rien d'autre.
-const A_PUBLIER = [
-  "index.html",
-  "veille-reglementaire.html",
-  "outil-veille.html",
-  "assets",
-  "data"
-];
+const modeles = lire("src/index.template.html");
+const styles = lire("src/styles.css");
+const referentiel = lire("src/referentiel.js");
+const app = ["core", "radar", "views", "actions"].map((n) => lire(`src/js/${n}.js`)).join("\n");
 
-async function poids(chemin) {
-  const s = await stat(chemin);
-  if (!s.isDirectory()) return s.size;
-  let total = 0;
-  for (const e of await readdir(chemin, { withFileTypes: true })) {
-    total += await poids(join(chemin, e.name));
-  }
-  return total;
+// Une erreur de syntaxe dans le JavaScript inséré casserait toute la page : on la voit ici.
+new vm.Script(referentiel, { filename: "src/referentiel.js" });
+new vm.Script(`(function(){"use strict";\n${app}\n})();`, { filename: "src/js/*.js" });
+
+for (const [nom, contenu] of [["styles", styles], ["referentiel", referentiel], ["app", app]]) {
+  if (/<\/(script|style)/i.test(contenu)) throw new Error(`${nom} contient une balise de fermeture qui casserait la page.`);
 }
 
-async function main() {
-  await rm(SORTIE, { recursive: true, force: true });
-  await mkdir(SORTIE, { recursive: true });
+const html = modeles
+  .replace("/*@STYLES@*/", () => styles)
+  .replace("/*@REFERENTIEL@*/", () => referentiel)
+  .replace("/*@APP@*/", () => app);
 
-  let total = 0;
-  for (const nom of A_PUBLIER) {
-    const src = resolve(RACINE, nom);
-    if (!existsSync(src)) {
-      console.error(`Manquant : ${nom}`);
-      process.exit(1);
-    }
-    await cp(src, join(SORTIE, nom), { recursive: true });
-    const p = await poids(src);
-    total += p;
-    console.log(`  ${nom.padEnd(26)} ${(p / 1024).toFixed(1)} Ko`);
-  }
+writeFileSync(join(racine, "index.html"), html);
 
-  // Garde-fou : le référentiel doit se charger, sinon l'outil est vide en ligne.
-  const { readFileSync } = await import("node:fs");
-  globalThis.window = {};
-  new Function(readFileSync(join(SORTIE, "assets/veille-data.js"), "utf8"))();
-  const V = globalThis.window.VEILLE;
-  if (!V || Object.keys(V.domaines).length < 40 || V.divisions.length !== 88) {
-    throw new Error("Référentiel incomplet : la construction est interrompue.");
-  }
-
-  console.log(`\n_site/ prêt — ${(total / 1024).toFixed(1)} Ko, ` +
-    `${Object.keys(V.domaines).length} domaines, ${V.divisions.length} divisions NAF.`);
+// --site : dépose aussi le fichier dans _site/, le seul dossier que l'hébergeur publie.
+if (process.argv.includes("--site")) {
+  mkdirSync(join(racine, "_site"), { recursive: true });
+  writeFileSync(join(racine, "_site", "index.html"), html);
 }
 
-main().catch((e) => {
-  console.error(e.message);
-  process.exit(1);
-});
+const domaines = (referentiel.match(/^    [a-z_]+: \{\n      nom:/gm) || []).length;
+console.log(`index.html écrit : ${(html.length / 1024).toFixed(0)} Ko, ${domaines} domaines de veille.`);

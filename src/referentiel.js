@@ -231,6 +231,19 @@ window.VEILLE = (function () {
         { nom: "Cybermalveillance.gouv.fr", url: "https://www.cybermalveillance.gouv.fr" }
       ]
     },
+    jurisprudence: {
+      nom: "Jurisprudence et contentieux",
+      famille: "juri", frequence: "mensuelle",
+      resume: "Décisions de justice qui changent l'interprétation des textes déjà applicables : revirements, sanctions, condamnations dans votre secteur.",
+      textes: ["Décisions de la Cour de cassation (chambres sociale, commerciale, criminelle)", "Décisions du Conseil d'État", "Arrêts de la Cour de justice de l'Union européenne"],
+      obligations: ["Sources jurisprudentielles identifiées par famille de veille", "Décisions marquantes qualifiées et transmises aux services concernés", "Contrats, procédures et documents ajustés après un revirement"],
+      impacts: ["juridique", "financier", "reputation"],
+      sources: [
+        { nom: "Cour de cassation", url: "https://www.courdecassation.fr" },
+        { nom: "Conseil d'État", url: "https://www.conseil-etat.fr" },
+        { nom: "Légifrance", url: "https://www.legifrance.gouv.fr" }
+      ]
+    },
     env_general: {
       nom: "Environnement — socle commun",
       famille: "env", frequence: "trimestrielle",
@@ -712,64 +725,8 @@ window.VEILLE = (function () {
     }
   };
 
-  /* ----------------------------------------------- MOTS-CLÉS DE COLLECTE
-     Servent à rattacher automatiquement un texte du Journal officiel à un
-     domaine de veille (scripts/collecte-jo.mjs). La comparaison se fait sur
-     un titre normalisé : minuscules, accents retirés, espaces resserrés.
-     Ajouter un mot-clé ici suffit à élargir la collecte de ce domaine. */
-  var motsCles = {
-    sst: ["santé et sécurité au travail", "risques professionnels", "document unique", "accident du travail", "maladie professionnelle", "médecine du travail", "services de prévention et de santé au travail", "équipement de protection individuelle", "prévention des risques", "pénibilité", "inaptitude"],
-    social: ["code du travail", "contrat de travail", "durée du travail", "convention collective", "comité social et économique", "licenciement", "égalité professionnelle", "télétravail", "rupture conventionnelle", "représentants du personnel", "temps partiel"],
-    paie: ["cotisations sociales", "sécurité sociale", "salaire minimum de croissance", "smic", "exonération de cotisations", "déclaration sociale nominative", "plafond de la sécurité sociale", "allègement de charges", "prime de partage", "frais professionnels"],
-    fiscal: ["taxe sur la valeur ajoutée", "impôt sur les sociétés", "facturation électronique", "code général des impôts", "crédit d'impôt", "loi de finances", "obligations déclaratives", "cotisation foncière des entreprises", "amortissement"],
-    rgpd: ["données à caractère personnel", "protection des données", "traitement de données", "informatique et libertés", "vidéoprotection", "transfert de données", "cookies"],
-    cyber: ["sécurité des systèmes d'information", "cybersécurité", "sécurité numérique", "incident de sécurité", "résilience opérationnelle", "chiffrement", "certification de sécurité"],
-    env_general: ["économie circulaire", "tri des déchets", "transition écologique", "sobriété énergétique", "bilan des émissions de gaz à effet de serre", "empreinte environnementale", "mobilité des salariés"],
-    icpe: ["installations classées", "autorisation environnementale", "prescriptions générales applicables", "nomenclature des installations classées", "enregistrement au titre de la protection de l'environnement", "exploitant d'une installation classée", "garanties financières"],
-    dechets: ["déchets", "responsabilité élargie des producteurs", "éco-organisme", "bordereau de suivi", "traçabilité des déchets", "sortie du statut de déchet", "biodéchets", "éco-contribution", "filière rep"],
-    eau: ["eaux usées", "rejets dans le milieu", "loi sur l'eau", "assainissement", "prélèvement d'eau", "milieux aquatiques", "eau destinée à la consommation humaine", "eaux pluviales", "redevance de l'agence de l'eau"],
-    air: ["émissions atmosphériques", "qualité de l'air", "composés organiques volatils", "pollution atmosphérique", "rejets de poussières", "nuisances sonores", "bruit de voisinage"],
-    energie_tertiaire: ["performance énergétique", "éco-énergie tertiaire", "bâtiments à usage tertiaire", "audit énergétique", "système d'automatisation et de contrôle", "diagnostic de performance énergétique", "consommations d'énergie finale"],
-    chimie: ["substances chimiques", "enregistrement, évaluation et autorisation des substances", "classification, étiquetage et emballage", "agents chimiques dangereux", "agent cancérogène", "valeurs limites d'exposition professionnelle", "fiche de données de sécurité", "produits biocides", "substances per- et polyfluoroalkylées"],
-    atex: ["atmosphères explosives", "seveso", "liquides inflammables", "risques technologiques", "étude de dangers", "plan de prévention des risques technologiques", "risque d'explosion"],
-    extractive: ["code minier", "carrières", "titre minier", "exploitation de carrière", "industries extractives", "remise en état du site"],
-    energie_reseau: ["code de l'énergie", "fourniture d'électricité", "gaz naturel", "raccordement au réseau", "tarifs réglementés de vente", "production d'électricité", "obligation d'achat", "installations photovoltaïques"],
-    construction: ["code de la construction et de l'habitation", "réglementation environnementale des bâtiments", "permis de construire", "code de l'urbanisme", "règles de construction", "garantie décennale", "attestation de prise en compte", "documents techniques unifiés", "réception des travaux"],
-    chantier_sps: ["coordination en matière de sécurité", "chantiers de bâtiment et de génie civil", "plan de prévention", "travaux en hauteur", "échafaudages", "déclaration préalable de chantier", "opérations de construction", "co-activité"],
-    amiante: ["amiante", "plomb dans les peintures", "repérage avant travaux", "retrait ou encapsulage", "fibres d'amiante", "certification des entreprises de désamiantage"],
-    levage: ["équipements de travail", "appareils de levage", "vérifications générales périodiques", "machines", "autorisation de conduite", "engins de chantier", "accessoires de levage", "équipements sous pression"],
-    erp: ["établissements recevant du public", "sécurité contre les risques d'incendie", "accessibilité aux personnes handicapées", "registre de sécurité", "évacuation du public", "commission de sécurité"],
-    produits_ce: ["marquage ce", "mise sur le marché", "déclaration ue de conformité", "normes harmonisées", "sécurité générale des produits", "surveillance du marché", "rappel de produits", "exigences essentielles"],
-    consommation: ["code de la consommation", "pratiques commerciales", "information précontractuelle", "garantie légale de conformité", "vente à distance", "démarchage téléphonique", "clauses abusives", "médiateur de la consommation", "annonces de réduction de prix"],
-    alimentaire: ["sécurité sanitaire des aliments", "hygiène des denrées alimentaires", "denrées alimentaires", "agrément sanitaire", "étiquetage des denrées", "information du consommateur sur les denrées", "traçabilité alimentaire", "contrôles sanitaires", "additifs alimentaires"],
-    agri: ["politique agricole commune", "produits phytopharmaceutiques", "santé animale", "bien-être animal", "exploitation agricole", "pêche maritime", "aquaculture", "identification des animaux", "zones de non-traitement"],
-    douane: ["code des douanes", "importation", "exportation", "droits de douane", "origine des marchandises", "mesures restrictives", "contrôle des exportations", "régime douanier", "mécanisme d'ajustement carbone"],
-    transport: ["code des transports", "transport routier de marchandises", "temps de conduite et de repos", "chronotachygraphe", "marchandises dangereuses", "licence de transport", "véhicules lourds", "capacité professionnelle de transport", "arrimage des charges"],
-    sanitaire: ["code de la santé publique", "établissements de santé", "action sociale et des familles", "autorisation d'activité de soins", "agence régionale de santé", "droits des usagers", "évaluation des établissements sociaux", "événement indésirable grave"],
-    pharma: ["médicaments", "dispositifs médicaux", "autorisation de mise sur le marché", "pharmacovigilance", "bonnes pratiques de fabrication", "produits de santé", "matériovigilance", "publicité des médicaments"],
-    deontologie: ["profession réglementée", "déontologie", "ordre professionnel", "conditions d'exercice de la profession", "formation continue obligatoire", "secret professionnel"],
-    finance: ["code monétaire et financier", "lutte contre le blanchiment", "financement du terrorisme", "établissements de crédit", "intermédiaires en assurance", "gel des avoirs", "code des assurances", "prestataires de services d'investissement", "crédit à la consommation"],
-    immobilier: ["transactions sur immeubles", "carte professionnelle d'agent immobilier", "baux d'habitation", "copropriété", "diagnostic de performance énergétique", "encadrement des loyers", "logement décent", "garantie financière"],
-    marches_publics: ["code de la commande publique", "marchés publics", "contrats de concession", "cahier des clauses administratives générales", "sous-traitance", "délais de paiement", "seuils de procédure formalisée", "facturation électronique des marchés"],
-    travail_temporaire: ["travail temporaire", "entreprise de travail temporaire", "contrat de mission", "mise à disposition de personnel", "garantie financière du travail temporaire", "placement privé"],
-    securite_privee: ["activités privées de sécurité", "carte professionnelle d'agent", "conseil national des activités privées de sécurité", "surveillance humaine", "agents de sécurité"],
-    enseignement: ["formation professionnelle", "organisme de formation", "contrat d'apprentissage", "certification qualité des organismes", "répertoire national des certifications", "code de l'éducation", "bilan pédagogique et financier"],
-    culture_spectacle: ["spectacles vivants", "entrepreneur de spectacles", "intermittents du spectacle", "artistes du spectacle", "licence d'entrepreneur", "sociétés de perception et de répartition"],
-    propriete_intel: ["propriété intellectuelle", "droit d'auteur", "droits voisins", "marques de fabrique", "brevets d'invention", "contrefaçon", "dessins et modèles"],
-    telecom: ["communications électroniques", "opérateurs de communications", "attribution de fréquences", "services de médias audiovisuels", "postes et communications électroniques", "neutralité de l'internet"],
-    accessibilite_num: ["accessibilité numérique", "services de communication au public en ligne", "accessibilité des produits et services", "référentiel général d'amélioration", "schéma pluriannuel d'accessibilité"],
-    jeux: ["jeux d'argent et de hasard", "paris sportifs", "autorité nationale des jeux", "casinos", "jeu responsable", "loteries"],
-    sport: ["code du sport", "activités physiques et sportives", "éducateurs sportifs", "équipements sportifs", "manifestations sportives", "établissements d'activités physiques"],
-    hotellerie: ["hébergement touristique", "code du tourisme", "taxe de séjour", "meublés de tourisme", "classement des hébergements", "résidences de tourisme"],
-    association: ["associations", "subventions publiques", "contrat d'engagement républicain", "organismes sans but lucratif", "fonds de dotation", "reconnaissance d'utilité publique"]
-  };
-
-  // Rattachement des mots-clés à leur domaine, pour n'avoir qu'une seule source.
-  Object.keys(motsCles).forEach(function (id) {
-    if (domaines[id]) domaines[id].motsCles = motsCles[id];
-  });
   /* -------------------------------------------- DOMAINES TRANSVERSAUX (tous) */
-  var transversaux = ["sst", "social", "paie", "fiscal", "rgpd", "cyber", "env_general"];
+  var transversaux = ["sst", "social", "paie", "fiscal", "rgpd", "cyber", "jurisprudence", "env_general"];
 
   /* ------------------------------------ MATRICE DIVISION NAF -> DOMAINES ---- */
   var parDivision = {
@@ -931,6 +888,81 @@ window.VEILLE = (function () {
     reputation: "Réputation"
   };
 
+  /* ------------------------------------------------- MÉTIERS PAR DIVISION
+     La nomenclature ne cite pas les métiers courants (la boulangerie tient
+     dans « Industries alimentaires »). Ces mots servent uniquement à la
+     recherche : on tape le métier, on retrouve la division. */
+  var alias = {
+    "01": "agriculture agriculteur élevage culture vigne viticulture maraîchage céréales exploitation agricole",
+    "02": "forêt forestier bois exploitation forestière",
+    "03": "pêche pêcheur aquaculture pisciculture conchyliculture",
+    "08": "carrière sablière gravière sable gravier granulats",
+    "10": "boulangerie boulanger pâtisserie pâtissier charcuterie boucherie viande lait fromage laiterie conserverie traiteur industriel",
+    "11": "boisson brasserie bière vin cave cidre eau minérale spiritueux",
+    "13": "textile filature tissage",
+    "14": "vêtement confection habillement couture",
+    "16": "menuiserie fabrication bois scierie charpente palette",
+    "18": "imprimerie impression imprimeur",
+    "20": "chimie savon parfum peinture fabrication détergent engrais",
+    "22": "plastique plasturgie caoutchouc pneumatique",
+    "23": "béton ciment verre céramique tuile brique plâtre pierre",
+    "24": "métallurgie fonderie acier aluminium",
+    "25": "chaudronnerie serrurerie métallerie usinage mécanique de précision ferronnerie",
+    "28": "machine machines-outils équipement industriel",
+    "29": "automobile constructeur équipementier",
+    "31": "meuble meubles ameublement cuisine fabricant",
+    "33": "maintenance industrielle réparation machines installation industrielle",
+    "35": "électricité gaz énergie photovoltaïque production énergie renouvelable",
+    "36": "eau distribution captage",
+    "38": "déchets recyclage collecte tri ferraille",
+    "41": "construction promoteur promotion bâtiment constructeur maison individuelle",
+    "42": "travaux publics route génie civil terrassement voirie réseaux",
+    "43": "maçonnerie maçon plomberie plombier électricien électricité peinture peintre couverture couvreur charpente charpentier plâtrerie plâtrier carrelage carreleur chauffage chauffagiste climatisation menuiserie menuisier installation isolation démolition serrurier vitrier étanchéité gros œuvre artisan du bâtiment",
+    "45": "garage réparation automobile carrosserie concessionnaire vente de voitures pièces auto contrôle",
+    "46": "grossiste négoce commerce de gros import export",
+    "47": "commerce de détail magasin boutique supermarché épicerie librairie pharmacie fleuriste vente en ligne e-commerce marché",
+    "49": "transport routier camion taxi vtc déménagement autocar bus voyageurs marchandises chauffeur",
+    "50": "transport maritime fluvial bateau",
+    "51": "transport aérien aviation",
+    "52": "entrepôt logistique manutention stockage parking",
+    "53": "courrier coursier livraison colis poste",
+    "55": "hôtel hôtellerie camping gîte hébergement touristique chambre d'hôtes location saisonnière",
+    "56": "restaurant restauration café bar traiteur brasserie snack restauration rapide food truck cuisine",
+    "58": "édition éditeur livre presse journal logiciel édition",
+    "59": "cinéma vidéo production audiovisuelle musique studio film",
+    "60": "radio télévision diffusion",
+    "61": "télécommunications opérateur téléphonie internet fournisseur d'accès",
+    "62": "informatique développement logiciel application web ssii esn programmation conseil informatique freelance",
+    "63": "hébergement données traitement de données portail internet cloud",
+    "64": "banque crédit financement holding société de gestion",
+    "65": "assurance mutuelle retraite",
+    "66": "courtage courtier assurance agent conseil en gestion de patrimoine",
+    "68": "immobilier agence immobilière agent immobilier syndic gestion locative marchand de biens",
+    "69": "avocat juridique comptable expert-comptable comptabilité notaire huissier commissaire aux comptes cabinet",
+    "70": "conseil de gestion consultant consulting siège social management",
+    "71": "architecte architecture ingénierie bureau d'études géomètre contrôle technique diagnostic immobilier",
+    "72": "recherche laboratoire recherche et développement",
+    "73": "publicité communication marketing agence de communication étude de marché",
+    "74": "design graphisme photographe photographie traduction traducteur décorateur",
+    "75": "vétérinaire clinique vétérinaire animaux",
+    "77": "location de véhicules location de matériel loueur",
+    "78": "intérim travail temporaire recrutement agence d'emploi",
+    "79": "agence de voyage voyagiste réservation tourisme",
+    "80": "sécurité gardiennage surveillance détective alarme",
+    "81": "nettoyage entretien espaces verts paysagiste jardinier propreté ménage",
+    "82": "secrétariat centre d'appels organisation salons congrès recouvrement",
+    "85": "formation école enseignement auto-école centre de formation apprentissage cours",
+    "86": "médecin dentiste infirmier infirmière kinésithérapeute hôpital clinique laboratoire ambulance santé cabinet médical ostéopathe",
+    "87": "ehpad maison de retraite foyer hébergement médico-social",
+    "88": "aide à domicile crèche petite enfance action sociale assistante maternelle",
+    "90": "artiste spectacle théâtre musicien création artistique",
+    "91": "musée bibliothèque archives patrimoine",
+    "93": "sport salle de sport fitness club loisirs parc d'attractions",
+    "94": "association syndicat organisation professionnelle",
+    "95": "réparation informatique réparation téléphone cordonnier réparation électroménager",
+    "96": "coiffure coiffeur esthétique institut de beauté blanchisserie pressing pompes funèbres tatouage salon"
+  };
+
   /* ------------------------------------------------------------- HELPERS --- */
 
   /** Normalise une saisie utilisateur en division NAF à 2 chiffres. */
@@ -992,12 +1024,11 @@ window.VEILLE = (function () {
   }
 
   return {
-    version: "1.0",
+    version: "2.0",
     sections: sections,
     divisions: divisions,
     familles: familles,
     domaines: domaines,
-    motsCles: motsCles,
     transversaux: transversaux,
     parDivision: parDivision,
     declencheurs: declencheurs,
@@ -1009,6 +1040,7 @@ window.VEILLE = (function () {
     division: division,
     section: section,
     rechercher: rechercher,
-    perimetre: perimetre
+    perimetre: perimetre,
+    alias: alias
   };
 })();
