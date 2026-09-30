@@ -386,3 +386,183 @@ strong{font-weight:600;}
   .etape{grid-template-columns:52px 1fr; gap:16px;}
   .section{padding:52px 0;}
 }
+
+/* ==========================================================================
+   Mouvement
+   --------------------------------------------------------------------------
+   Registre « éditorial » : des entrées douces et courtes, jamais de rebond,
+   jamais de rotation. Tout passe par transform et opacity, les deux seules
+   propriétés que le navigateur anime sans recalculer la page.
+
+   Toute cette section est neutralisée d'un bloc pour qui demande moins
+   d'animations (voir la fin du fichier) : le site doit rester utilisable et
+   identique en contenu sans une seule animation.
+   ========================================================================== */
+
+:root{
+  --sortie:cubic-bezier(0.16, 1, 0.3, 1);   /* décélération franche */
+  --doux:cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* --- Révélation à l'approche --------------------------------------------- */
+/* L'élément est posé décalé, puis remis en place quand il entre dans l'écran.
+   Sans JavaScript, .revele n'est jamais appliqué : on part donc de l'état
+   visible et c'est le script qui arme le décalage, pour ne rien cacher si le
+   script ne se charge pas. */
+.arme{opacity:0; transform:translateY(18px);}
+.revele{opacity:1; transform:none; transition:opacity 0.7s var(--sortie), transform 0.7s var(--sortie);}
+
+/* --- Entrée de la page d'accueil ------------------------------------------ */
+@keyframes monte{from{opacity:0; transform:translateY(22px);} to{opacity:1; transform:none;}}
+@keyframes monte-court{from{opacity:0; transform:translateY(10px);} to{opacity:1; transform:none;}}
+
+.entree > *{animation:monte 0.85s var(--sortie) backwards;}
+.entree > *:nth-child(1){animation-delay:0.05s;}
+.entree > *:nth-child(2){animation-delay:0.14s;}
+.entree > *:nth-child(3){animation-delay:0.23s;}
+.entree > *:nth-child(4){animation-delay:0.32s;}
+.heros .fiche{animation:monte 0.9s var(--sortie) 0.34s backwards;}
+
+/* --- Barre de navigation -------------------------------------------------- */
+.bandeau{transition:box-shadow 0.3s var(--doux), background-color 0.3s var(--doux);}
+.bandeau.defile{
+  box-shadow:0 1px 0 var(--trait), 0 8px 28px -22px rgba(29,35,33,0.5);
+  background:rgba(250,247,242,0.97);
+}
+.marque{transition:color 0.2s var(--doux);}
+.marque span{transition:color 0.3s var(--doux);}
+.marque:hover span{color:var(--vert-sombre);}
+.menu a{transition:color 0.2s var(--doux), border-color 0.25s var(--doux);}
+
+/* --- Boutons et cartes ---------------------------------------------------- */
+.bouton{transition:background 0.22s var(--doux), border-color 0.22s var(--doux),
+  color 0.22s var(--doux), transform 0.22s var(--sortie);}
+.bouton:hover{transform:translateY(-1px);}
+.bouton:active{transform:translateY(0);}
+
+.carte{transition:transform 0.4s var(--sortie), box-shadow 0.4s var(--sortie), border-color 0.3s var(--doux);}
+.carte:hover{
+  transform:translateY(-3px);
+  border-color:var(--vert-clair);
+  box-shadow:0 18px 40px -32px rgba(29,35,33,0.7);
+}
+.carte-sobre{transition:border-color 0.3s var(--doux);}
+.carte-sobre:hover{border-top-color:var(--vert-clair);}
+
+/* Le trait de l'étape se peint de gauche à droite quand la ligne apparaît. */
+.etape{position:relative;}
+.etape::before{
+  content:""; position:absolute; top:-1px; left:0; height:1px; width:0;
+  background:var(--vert); transition:width 0.9s var(--sortie);
+}
+.etape.revele::before{width:100%;}
+.etape-numero{transition:transform 0.5s var(--sortie), color 0.3s var(--doux);}
+.etape:hover .etape-numero{transform:translateY(-2px); color:var(--vert-sombre);}
+
+.tableau tbody tr{transition:background 0.2s var(--doux);}
+.tableau tbody tr:hover{background:var(--vert-voile);}
+
+/* --- Outil ---------------------------------------------------------------- */
+.metier{transition:border-color 0.25s var(--doux), background 0.25s var(--doux),
+  transform 0.3s var(--sortie), box-shadow 0.3s var(--sortie);}
+.metier:hover{transform:translateY(-2px); box-shadow:0 14px 30px -26px rgba(29,35,33,0.8);}
+.metier[aria-pressed="true"]{transform:none;}
+.question{transition:border-color 0.25s var(--doux), background 0.25s var(--doux);}
+.question input{transition:background 0.2s var(--doux), border-color 0.2s var(--doux);}
+.question input::after{transition:opacity 0.15s var(--doux);}
+
+/* Le plan apparaît groupe par groupe, puis ligne par ligne : le lecteur voit
+   le classement se faire au lieu de recevoir un mur. */
+.groupe{animation:monte 0.6s var(--sortie) backwards;}
+.domaine{animation:monte-court 0.45s var(--sortie) backwards;}
+.resume-plan{animation:monte 0.5s var(--sortie) backwards;}
+.resume-plan .chiffre{
+  display:inline-block;
+  font-variant-numeric:tabular-nums;
+  transition:transform 0.35s var(--sortie);
+}
+.resume-plan.bat .chiffre{transform:scale(1.14);}
+
+.domaine > summary{transition:color 0.2s var(--doux);}
+.domaine > summary::after{transition:transform 0.3s var(--sortie), color 0.2s var(--doux);}
+.domaine[open] > summary::after{transform:rotate(180deg);}
+/* Le dépliage est animé en JavaScript (hauteur réelle) : voir assets/motion.js. */
+.domaine-corps,.domaine .raisons{will-change:height;}
+.raison{animation:monte-court 0.4s var(--sortie) backwards;}
+
+/* --- Animation d'ouverture : le tri ---------------------------------------- */
+/* Des textes arrivent en flux, la plupart sont écartés, quelques-uns se rangent
+   dans le plan. C'est exactement ce que vend la prestation ; autant le montrer
+   plutôt que l'écrire. */
+.tri{width:100%; height:auto; display:block; overflow:visible;}
+.tri .flux rect{animation:traverse 9s linear infinite;}
+.tri .ecarte{animation:ecarter 9s linear infinite;}
+.tri .tamis{animation:respire 4.5s var(--doux) infinite;}
+.tri .rangee rect{animation:poser 9s var(--sortie) infinite;}
+
+@keyframes traverse{
+  0%{transform:translateX(0); opacity:0;}
+  8%{opacity:1;}
+  46%{transform:translateX(74px); opacity:1;}
+  54%{transform:translateX(86px); opacity:0;}
+  100%{transform:translateX(86px); opacity:0;}
+}
+@keyframes ecarter{
+  0%,42%{opacity:0; transform:translate(74px,0);}
+  52%{opacity:0.55; transform:translate(96px,10px);}
+  70%{opacity:0; transform:translate(116px,26px);}
+  100%{opacity:0; transform:translate(116px,26px);}
+}
+@keyframes poser{
+  0%,50%{opacity:0; transform:translateX(-14px) scaleX(0.4);}
+  62%{opacity:1; transform:translateX(0) scaleX(1);}
+  92%{opacity:1; transform:translateX(0) scaleX(1);}
+  100%{opacity:0; transform:translateX(0) scaleX(1);}
+}
+@keyframes respire{
+  0%,100%{opacity:0.5;}
+  50%{opacity:1;}
+}
+
+/* --- Passage d'une page à l'autre ----------------------------------------- */
+/* Là où le navigateur le sait faire, les deux pages s'enchaînent en fondu et
+   la marque reste en place. Ailleurs, la navigation est simplement instantanée. */
+@view-transition{navigation:auto;}
+.marque{view-transition-name:marque;}
+::view-transition-old(root){animation:fondu-sortant 0.22s var(--doux) both;}
+::view-transition-new(root){animation:fondu-entrant 0.32s var(--sortie) both;}
+@keyframes fondu-sortant{to{opacity:0;}}
+@keyframes fondu-entrant{from{opacity:0; transform:translateY(8px);} to{opacity:1; transform:none;}}
+
+/* --- Qui demande moins d'animations ---------------------------------------- */
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{
+    animation-duration:0.001ms !important;
+    animation-iteration-count:1 !important;
+    transition-duration:0.001ms !important;
+    scroll-behavior:auto !important;
+  }
+  .arme{opacity:1; transform:none;}
+  .tri .flux rect,.tri .ecarte,.tri .rangee rect{opacity:1;}
+  @view-transition{navigation:none;}
+}
+
+/* Le bloc déplié d'un domaine : sa hauteur est animée par assets/motion.js,
+   d'où le rognage. */
+.repli{overflow:hidden;}
+
+/* --- Cadre de l'animation d'ouverture ------------------------------------- */
+.colonne-heros{display:grid; gap:20px;}
+.tri-cadre{
+  margin:0; padding:22px 20px 16px;
+  background:var(--papier-pur); border:1px solid var(--sable-trait);
+  border-radius:var(--r-carte);
+}
+.tri-cadre figcaption{
+  margin-top:14px; padding-top:12px; border-top:1px solid var(--trait);
+  font-size:14px; color:var(--gris); text-wrap:pretty;
+}
+/* scaleX depuis le bord gauche : sans fill-box, l'origine serait celle du
+   viewBox et les barres pousseraient depuis le mauvais côté. */
+.tri .rangee rect{transform-box:fill-box; transform-origin:left center;}
+.tri .flux rect,.tri .ecarte{transform-box:fill-box;}
