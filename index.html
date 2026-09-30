@@ -36,7 +36,7 @@
   <!-- ======================= OUVERTURE ======================= -->
   <section class="heros">
     <div class="enveloppe heros-grille">
-      <div>
+      <div class="entree">
         <span class="surtitre">Conseil en organisation et conformité</span>
         <h1>Savoir ce qui s'applique à vous. Et pouvoir le prouver.</h1>
         <p class="chapeau">
@@ -49,7 +49,48 @@
           <a class="bouton bouton-clair" href="#methode">Voir la méthode</a>
         </div>
       </div>
-      <aside class="fiche">
+      <aside class="colonne-heros">
+        <figure class="tri-cadre">
+          <!-- Le tri, en mouvement : des textes paraissent, ils passent au
+               tamis du périmètre, la plupart sont écartés, les autres se
+               rangent par rythme de revue. C'est la prestation en une image. -->
+          <svg class="tri" viewBox="0 0 240 172" role="img"
+               aria-label="Des textes paraissent, passent au tamis du périmètre, et ceux qui restent se rangent par rythme de revue.">
+            <g class="flux" fill="var(--concrete, #9aa3a0)">
+              <rect x="8" y="16" width="40" height="5" rx="2.5" style="animation-delay:0s"></rect>
+              <rect x="8" y="34" width="40" height="5" rx="2.5" style="animation-delay:-0.9s"></rect>
+              <rect x="8" y="52" width="40" height="5" rx="2.5" style="animation-delay:-1.8s"></rect>
+              <rect x="8" y="70" width="40" height="5" rx="2.5" style="animation-delay:-2.7s"></rect>
+              <rect x="8" y="88" width="40" height="5" rx="2.5" style="animation-delay:-3.6s"></rect>
+              <rect x="8" y="106" width="40" height="5" rx="2.5" style="animation-delay:-4.5s"></rect>
+              <rect x="8" y="124" width="40" height="5" rx="2.5" style="animation-delay:-5.4s"></rect>
+              <rect x="8" y="142" width="40" height="5" rx="2.5" style="animation-delay:-6.3s"></rect>
+            </g>
+
+            <line class="tamis" x1="92" y1="8" x2="92" y2="164"
+                  stroke="#2f6b5f" stroke-width="1.5" stroke-dasharray="4 5"></line>
+
+            <g fill="#a9603c">
+              <rect class="ecarte" x="8" y="34" width="34" height="5" rx="2.5" style="animation-delay:-0.9s"></rect>
+              <rect class="ecarte" x="8" y="88" width="34" height="5" rx="2.5" style="animation-delay:-3.6s"></rect>
+              <rect class="ecarte" x="8" y="142" width="34" height="5" rx="2.5" style="animation-delay:-6.3s"></rect>
+            </g>
+
+            <g class="rangee" fill="#2f6b5f">
+              <rect x="122" y="22" width="104" height="6" rx="3" style="animation-delay:0s"></rect>
+              <rect x="122" y="34" width="78" height="6" rx="3" style="animation-delay:-0.2s"></rect>
+              <rect x="122" y="66" width="96" height="6" rx="3" style="animation-delay:-0.45s"></rect>
+              <rect x="122" y="78" width="66" height="6" rx="3" style="animation-delay:-0.65s"></rect>
+              <rect x="122" y="110" width="88" height="6" rx="3" style="animation-delay:-0.9s"></rect>
+              <rect x="122" y="142" width="72" height="6" rx="3" style="animation-delay:-1.15s"></rect>
+            </g>
+          </svg>
+          <figcaption>
+            Des textes paraissent chaque jour. Le travail n'est pas d'y accéder,
+            il est de trier.
+          </figcaption>
+        </figure>
+        <div class="fiche">
         <h3>La prestation en bref</h3>
         <dl>
           <dt>Zone</dt><dd>Istres et pourtour de l'étang de Berre</dd>
@@ -58,6 +99,7 @@
           <dt>Livrables</dt><dd>Plan, relevés, analyses, preuves</dd>
           <dt>Premier échange</dt><dd>Une heure, sans engagement</dd>
         </dl>
+        </div>
       </aside>
     </div>
   </section>
@@ -312,6 +354,7 @@
 </footer>
 
 <script src="assets/referentiel.js"></script>
+<script src="assets/motion.js" defer></script>
 <script>
   /* La méthode et le tableau des sources viennent du même référentiel que
      l'outil : une seule source de vérité à maintenir. */

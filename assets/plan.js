@@ -114,6 +114,7 @@
         "votre plan se construit au fur et à mesure.</p>";
       if (actions) actions.hidden = true;
       majEnteteImpression(null);
+      document.dispatchEvent(new CustomEvent("plan:rendu"));
       return;
     }
 
@@ -121,7 +122,10 @@
     var p = R.plan(etat.metier, etat.reponses);
 
     var html = '<div class="resume-plan">' +
-      '<span class="chiffre">' + p.nombre + "</span>" +
+      // Le chiffre est une redite visuelle de la phrase qui suit. Il est retiré
+      // de l'arbre d'accessibilité : la zone est en aria-live, et le compteur
+      // animé y ferait annoncer chaque valeur intermédiaire.
+      '<span class="chiffre" aria-hidden="true">' + p.nombre + "</span>" +
       '<span class="detail"><strong>' + esc(pluriel(p.nombre, "domaine à surveiller", "domaines à surveiller")) +
       "</strong><br>" + esc(m.nom) +
       (etat.reponses.length ? " — " + esc(pluriel(etat.reponses.length, "précision de contexte", "précisions de contexte")) : "") +
@@ -138,6 +142,9 @@
     sortie.innerHTML = html;
     if (actions) actions.hidden = false;
     majEnteteImpression(m);
+    // assets/motion.js écoute cet événement pour rebrancher le dépliage animé,
+    // la cascade et le compteur. L'outil fonctionne si personne n'écoute.
+    document.dispatchEvent(new CustomEvent("plan:rendu"));
   }
 
   function rendDomaine(entree) {
@@ -145,6 +152,7 @@
     return '<details class="domaine">' +
       "<summary><span><span class=" + '"domaine-nom"' + ">" + esc(d.nom) + "</span>" +
       '<span class="domaine-resume">' + esc(d.resume) + "</span></span></summary>" +
+      '<div class="repli">' +
       '<div class="domaine-corps">' +
         "<div><h4>Ce qu'il faut tenir</h4><ul>" +
           d.obligations.map(function (o) { return "<li>" + esc(o) + "</li>"; }).join("") +
@@ -162,6 +170,7 @@
       "</div>" +
       '<div class="raisons" style="padding-bottom:18px;">' +
         entree.raisons.map(function (r) { return '<span class="raison">' + esc(r) + "</span>"; }).join("") +
+      "</div>" +
       "</div>" +
       "</details>";
   }
