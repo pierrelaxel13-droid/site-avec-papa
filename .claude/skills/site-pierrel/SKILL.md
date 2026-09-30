@@ -1,115 +1,141 @@
 ---
 name: site-pierrel
-description: "Modifier et publier le site statique Pierrel & Co de ce dépôt (index.html, plan-de-veille.html, assets/site.css, assets/plan.js, assets/polices.css, build.mjs, netlify.toml). À utiliser pour toute demande de changement de contenu, de mise en page, de style, de navigation, de texte, d'accessibilité ou d'impression, et pour prévisualiser ou publier le site. Déclencheurs typiques : « change le texte de l'accueil », « ajoute une section », « corrige le menu », « le rendu est cassé sur téléphone », « comment je vois le site », « ajoute une page », « le site ne se met pas à jour »."
+description: "Modifier et publier le site statique Pierrel & Co de ce dépôt (index.html, plan-de-veille.html, assets/site.css, assets/motion.js, assets/toile.js, assets/plan.js, build.mjs, netlify.toml). À utiliser pour toute demande de changement de contenu, de mise en page, de style, d'animation, de navigation, de texte, d'accessibilité ou d'impression, et pour prévisualiser ou publier le site. Déclencheurs typiques : « change le texte de l'accueil », « ajoute une section », « l'animation rame », « corrige le menu », « le rendu est cassé sur téléphone », « comment je vois le site », « ajoute une page », « le site ne se met pas à jour »."
 ---
 
 # Le site Pierrel & Co
 
-## Ce qu'il faut savoir avant de toucher un fichier
+## Avant de toucher un fichier
 
-Deux pages HTML écrites à la main, une feuille de style, deux scripts, aucune
+Deux pages écrites à la main, une feuille de style, trois scripts, aucune
 dépendance. `build.mjs` ne compile rien : il copie les fichiers publiables dans
 `_site/` et vérifie le référentiel. **Ne pas introduire de framework, de
-bundler, de Tailwind ni de npm install** — le site n'a pas de `package.json` et
-n'en veut pas.
+bundler, de bibliothèque d'animation ni de `npm install`** — il n'y a pas de
+`package.json` et il n'en faut pas.
 
 | Fichier | Rôle |
 |---|---|
-| `index.html` | Accueil. La méthode et le tableau des sources sont **générés** depuis le référentiel par le script en fin de page. |
+| `index.html` | Accueil. Méthode et tableau des sources **générés** depuis le référentiel par le script en fin de page ; chiffres du récit calculés de même. |
 | `plan-de-veille.html` | L'outil. Structure seulement : tout le contenu est rendu par `assets/plan.js`. |
-| `assets/site.css` | Toute la mise en forme des deux pages, impression comprise. |
-| `assets/plan.js` | Logique de l'outil. |
+| `assets/site.css` | Toute la mise en forme, mouvement et impression compris. |
+| `assets/toile.js` | L'animation d'ouverture sur `<canvas>`. |
+| `assets/motion.js` | Le mouvement piloté par script, sur les deux pages. |
+| `assets/plan.js` | Logique de l'outil : diagramme, calendrier, détail. |
 | `assets/referentiel.js` | Le contenu métier → voir le skill `veille-reglementaire`. |
-| `assets/polices.css`, `assets/polices/` | Les deux polices, servies par le site. |
 
-## Prévisualiser
+## Prévisualiser, et vérifier pour de vrai
 
 ```sh
 node build.mjs
 python3 -m http.server -d _site 8080
 ```
 
-`_site/` est un dossier de sortie, ignoré par git : ne jamais y modifier un
-fichier, il est effacé à chaque construction.
+`_site/` est effacé à chaque construction : ne jamais y modifier un fichier.
 
-Pour vérifier un rendu pour de vrai (parcours de l'outil, largeurs d'écran,
-impression), Chromium est installé : `/opt/pw-browsers/chromium-1194/chrome-linux/chrome`,
-à piloter avec Playwright. C'est la seule façon de voir un défaut de mise en
-page ; lire le CSS ne suffit pas.
+**Lire le CSS ne suffit pas sur ce site.** Le héros, le récit au défilement et
+le diagramme ne se jugent qu'en mouvement. Chromium est installé —
+`/opt/pw-browsers/chromium-1194/chrome-linux/chrome` — à piloter avec
+Playwright. Ce qu'il faut contrôler après toute modification visuelle :
+
+- le débordement horizontal à 320, 390, 768, 1024 et 1440 px
+  (`scrollWidth - clientWidth <= 0`) ;
+- que la toile peigne réellement (compter les pixels non transparents de
+  `getImageData`, pas se fier à la présence de la balise) ;
+- le parcours complet refait avec `reducedMotion: "reduce"`, pour vérifier
+  qu'aucun contenu ne reste caché ;
+- le rendu imprimé (`emulateMedia({ media: "print" })`).
 
 ## Direction artistique
 
-Document plutôt qu'interface : papier chaud, serif éditoriale pour les titres,
-un seul accent vert, beaucoup d'air, angles à peine adoucis.
+Sombre, typographie massive, mouvement assumé. Deux registres seulement :
+`.nuit` (défaut) et `.jour`, posé sur une section pour casser le rythme.
 
-- **Couleurs** : uniquement par les tokens de `:root` — `--papier`, `--sable`,
-  `--encre`, `--encre-douce`, `--gris`, `--vert`, `--vert-clair`,
-  `--vert-sombre`, `--vert-voile`, `--terre`, `--alerte`, `--attention`,
-  `--trait`, `--trait-fort`. Ne jamais écrire une couleur en dur dans une page.
-- **Typographie** : `Newsreader` (serif) pour `h1`, `h2`, `h3` et les gros
-  chiffres ; `Inter` pour tout le reste. Les deux sont **variables** : un seul
-  fichier couvre toutes les graisses, ne pas les dupliquer par graisse.
-- **Composants existants**, à réutiliser avant d'en inventer : `.enveloppe`,
-  `.section` (`.section-sable`, `.section-encre`, `.section-serree`),
-  `.tete-section`, `.surtitre`, `.carte`, `.carte-sobre`, `.grille-2`,
-  `.grille-3`, `.bouton` (`.bouton-clair`, `.bouton-petit`), `.etape`,
-  `.livrable`, `.tableau`, `.etiquette`, `.reserve`, `.fiche`.
-- Une seule feuille de style : le site est trop petit pour être découpé.
+- **Couleurs** : uniquement par les tokens de `:root` — `--nuit`, `--nuit-2`,
+  `--nuit-3`, `--craie`, `--craie-douce`, `--craie-faible`, `--papier`,
+  `--vert`, `--vert-vif`, `--vert-sombre`, `--vert-voile`, `--terre`,
+  `--alerte`, `--trait`, `--trait-fort`, `--trait-jour`. Jamais de couleur en
+  dur dans une page.
+- **Typographie** : `Newsreader` (serif, graisse 300) pour les titres,
+  `Inter` pour le reste. Les deux sont **variables** : un fichier par famille
+  couvre toutes les graisses, ne pas les dupliquer.
+- **Courbes** : `--sortie` pour une entrée, `--doux` pour un changement d'état.
+  Jamais de rebond.
+- **Composants** : `.enveloppe`, `.section`, `.jour`, `.tete-section`,
+  `.surtitre`, `.carte`, `.grille-2/3`, `.bouton` (`.bouton-fantome`,
+  `.bouton-petit`), `.etape`, `.livrable`, `.tableau`, `.etiquette`,
+  `.reserve`, `.geant`.
 
 ## Pièges de ce dépôt
 
 - **Aucune requête externe, et ça doit le rester.** Les polices sont dans le
-  dépôt parce que le pied de page promet qu'aucune donnée ne part chez un tiers ;
-  un `<link>` vers `fonts.googleapis.com` transmettrait l'IP de chaque visiteur
-  à Google et rendrait cette phrase fausse. Même raison pour les scripts
-  d'analyse et les polices d'icônes.
-- **L'en-tête et le pied de page sont dupliqués dans les deux pages** (il n'y a
-  aucun gabarit). Toucher au menu, à la marque ou au pied de page suppose
-  d'éditer `index.html` **et** `plan-de-veille.html`.
-- **La méthode et le tableau des sources de l'accueil sont générés** depuis
-  `window.REFERENTIEL` : les modifier dans le HTML ne sert à rien.
-- **Les réponses de l'outil vivent dans `localStorage`** sous `pco-plan-v1`.
-  Renommer cette clé fait perdre leurs réponses aux visiteurs en cours de route.
-  Toute lecture ou écriture doit rester dans un `try/catch` : en navigation
-  privée, l'accès lève.
-- **`[hidden]` est forcé en `display:none !important`** : les composants qui
-  posent un `display` l'emporteraient sinon et resteraient visibles à tort.
-  C'est ce qui masque la barre d'actions tant qu'aucun métier n'est choisi.
-- **`.sans-impression`** masque à l'impression ; `.entete-impression` n'apparaît
-  qu'à l'impression. Après toute modification de l'outil, vérifier la feuille
-  imprimée, c'est un livrable qui finit dans un dossier d'audit.
+  dépôt parce que le pied de page promet qu'aucune donnée ne part chez un
+  tiers ; un `<link>` vers `fonts.googleapis.com` transmettrait l'IP de chaque
+  visiteur à Google et rendrait cette phrase fausse. Même raison pour les
+  scripts d'analyse et les bibliothèques servies par CDN.
+- **La barre de navigation est `position:fixed`.** D'où `scroll-padding-top`
+  sur `html` et `scroll-margin-top` sur les sections de l'outil : sans eux,
+  toute ancre place son titre sous la barre.
+- **Un élément de grille ne descend pas sous la largeur de son contenu.**
+  `min-width:0` sur `.colonne-rythme` et `overflow-wrap:anywhere` sur `.jeton`
+  sont là pour ça — c'est ce qui faisait déborder l'outil à 320 px.
+- **Le héros est une grille, pas un flex.** Un enfant flex se rétracte sur son
+  contenu et `.enveloppe` y perdrait sa largeur pleine, décalant tout le texte
+  au milieu de l'écran.
+- **Le diagramme n'est jamais réécrit d'un bloc.** Ses jetons survivent d'un
+  rendu à l'autre, ce qui permet de les animer d'une colonne à l'autre (FLIP :
+  relever la position, réorganiser, relever la nouvelle, rejouer le trajet à
+  l'envers). Remplacer ce rendu par un `innerHTML` casserait l'animation la
+  plus visible du site.
+- **L'en-tête et le pied de page sont dupliqués dans les deux pages** : aucun
+  gabarit. Toucher au menu suppose d'éditer les deux fichiers.
+- **Les réponses de l'outil vivent dans `localStorage`** sous `pco-plan-v1`,
+  toujours sous `try/catch` : en navigation privée, l'accès lève.
+- **`[hidden]` est forcé en `display:none !important`** : c'est ce qui masque
+  la barre d'actions, le diagramme et le calendrier tant qu'aucun métier n'est
+  choisi.
+- **`.sans-impression`** masque à l'impression, `.entete-impression` n'apparaît
+  qu'à l'impression. La feuille imprimée est un livrable qui finit dans un
+  dossier d'audit : la revérifier après toute modification de l'outil.
 - **Ajouter une page** suppose trois gestes : le fichier, son entrée dans
-  `A_PUBLIER` de `build.mjs`, et le lien dans le menu **des deux** autres pages.
-- **Accessibilité** : lien d'évitement, `aria-label` sur la navigation,
-  `aria-pressed` sur les boutons de métier, `aria-live` sur la sortie du plan.
-  Conserver ces attributs sur tout nouveau bloc.
+  `A_PUBLIER` de `build.mjs`, le lien dans le menu **des deux** autres pages.
+
+## Les trois règles du mouvement
+
+Elles ne se négocient pas, et toute animation ajoutée doit les tenir :
+
+1. **Sans les scripts, le site est complet.** Les décalages de départ (`.arme`,
+   `.arme-mot`) sont posés par `motion.js`, jamais dans le HTML.
+2. **`prefers-reduced-motion` coupe tout** sans retirer un mot : le récit
+   affiche ses trois étapes à la suite, la toile peint une image fixe.
+3. **Seuls `transform`, `opacity` et la hauteur d'un bloc déplié sont animés.**
+
+La toile s'arrête quand l'onglet passe en arrière-plan ou quand le héros sort
+de l'écran ; ne pas retirer ces garde-fous, c'est ce qui évite de faire tourner
+un ventilateur pour un décor qu'on ne voit pas.
+
+`<details>` ne s'anime pas seul : le contenu sort du rendu dès que `open`
+tombe. D'où le bloc `.repli`, dont on anime la hauteur réelle avant de fermer.
 
 ## Publier
 
-Netlify est relié à `main` et reconstruit à chaque envoi, en une minute environ.
+Netlify est relié à `main` et reconstruit à chaque envoi.
 
 ```sh
 node build.mjs     # doit passer avant d'envoyer
 git add -A && git commit -m "…" && git push
 ```
 
-Si `build.mjs` échoue, Netlify échouera de la même façon. Réglages dans
-`netlify.toml` : pages HTML revalidées à chaque visite, `assets/*` en cache une
-heure. Procédure complète dans `DEPLOIEMENT.md`.
-
 ## Ce qui est volontairement absent
 
-À signaler, pas à « corriger » en passant :
-
-- **pas de formulaire de contact** : courriel et téléphone, plutôt qu'un
-  formulaire qui n'enverrait rien ;
-- **pas de collecte automatique** : aucun workflow, aucun secret, aucune tâche
-  planifiée à surveiller ;
-- le **courriel**, le **téléphone**, le **SIRET** et l'**hébergeur** sont des
-  valeurs d'exemple, listées dans `DEPLOIEMENT.md`.
+À signaler, pas à « corriger » en passant : pas de formulaire de contact
+(courriel et téléphone), pas de collecte automatique, pas de curseur natif
+masqué (le halo accompagne le curseur, il ne le remplace pas). Le courriel, le
+téléphone, le SIRET et l'hébergeur sont des valeurs d'exemple, listées dans
+`DEPLOIEMENT.md`.
 
 ## Réserves à ne pas retirer
 
 Les mentions rappelant que le site et son outil fournissent un cadre
-méthodologique et non un conseil juridique, sur les deux pages et sur la feuille
-imprimée, font partie de la prestation. Ne pas les supprimer ni les adoucir.
+méthodologique et non un conseil juridique, sur les deux pages et sur la
+feuille imprimée, font partie de la prestation. Ne pas les supprimer ni les
+adoucir.

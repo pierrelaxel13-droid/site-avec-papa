@@ -18,11 +18,13 @@ Mise en ligne : voir [DEPLOIEMENT.md](DEPLOIEMENT.md).
 
 | Fichier | Rôle |
 |---|---|
-| `assets/site.css` | Toute la mise en forme des deux pages : tokens, composants, impression, écrans étroits. |
+| `assets/site.css` | Toute la mise en forme des deux pages : tokens, composants, mouvement, impression, écrans étroits. |
+| `assets/toile.js` | L'animation d'ouverture sur `<canvas>` : le flux de textes, le tamis, le tri. |
+| `assets/motion.js` | Le mouvement piloté par script : découpe du titre, révélations, récit au défilement, halo de curseur, dépliages. |
 | `assets/polices.css` | Déclarations `@font-face` des deux polices servies par le site. |
 | `assets/polices/` | Inter et Newsreader, variables, sous-jeu latin. Un fichier par famille. |
 | `assets/referentiel.js` | Le contenu métier : 26 domaines de veille, 15 familles d'activité, 11 questions de contexte, la méthode et les sources. |
-| `assets/plan.js` | La logique de l'outil : rendu des choix, calcul du plan, mémoire locale, impression. |
+| `assets/plan.js` | La logique de l'outil : rendu des choix, diagramme animé, calendrier, détail, mémoire locale, impression. |
 | `assets/favicon.svg` | Icône d'onglet. |
 | `build.mjs` | Assemble `_site/` et refuse de construire si le référentiel est incohérent. |
 | `netlify.toml` | Configuration de publication : commande, dossier, en-têtes de cache. |
@@ -35,13 +37,21 @@ Mise en ligne : voir [DEPLOIEMENT.md](DEPLOIEMENT.md).
 2. **Contexte** — onze questions fermées (salariés, accueil du public, produits
    chimiques, véhicules, denrées, marchés publics…). Chaque réponse ajoute ses
    domaines.
-3. **Plan** — les domaines retenus, groupés par fréquence de revue, chacun
-   dépliable sur ses obligations concrètes, ses textes de référence et ses
-   sources officielles. Chaque domaine affiche **pourquoi** il est là : le socle
-   commun, le métier, ou la réponse qui l'a déclenché.
+3. **Plan** — sous trois formes complémentaires :
+   - un **diagramme** en quatre colonnes, une par rythme de revue. Les domaines
+     s'y déplacent d'une colonne à l'autre à chaque réponse, sans que le bloc
+     soit réécrit : leurs éléments survivent d'un rendu au suivant, ce qui
+     permet de les animer (technique dite FLIP) ;
+   - un **calendrier de l'année**, qui traduit les rythmes en nombre de revues
+     par mois — c'est là qu'un dirigeant voit ce que son plan lui coûtera en
+     temps ;
+   - le **détail**, groupé par fréquence, chaque domaine dépliable sur ses
+     obligations, ses textes et ses sources. Chaque domaine affiche **pourquoi**
+     il est là : le socle commun, le métier, ou la réponse qui l'a déclenché.
 
 Le plan s'imprime (ou s'enregistre en PDF) avec un en-tête daté, pour être
-classé dans un dossier ou discuté en réunion.
+classé dans un dossier ou discuté en réunion. Le diagramme est retiré de la
+feuille imprimée, le calendrier y reste.
 
 ## Données
 
@@ -84,6 +94,26 @@ python3 -m http.server -d _site 8080
 Servir en HTTP n'est pas indispensable — l'outil fonctionne aussi en ouvrant le
 fichier depuis le disque, puisqu'il ne charge rien par le réseau — mais c'est
 plus proche de la réalité.
+
+## Mouvement
+
+Le site est animé : entrée du titre mot à mot, animation d'ouverture sur
+`<canvas>`, section qui se raconte au défilement, diagramme qui se réorganise,
+compteur qui monte, halo de curseur.
+
+Trois règles y sont tenues, et doivent le rester :
+
+1. **Sans JavaScript, le site est complet.** Les décalages de départ sont posés
+   par les scripts, jamais dans le HTML : une panne de chargement ne cache
+   aucun contenu.
+2. **`prefers-reduced-motion` coupe tout** sans retirer une ligne de contenu.
+   L'animation d'ouverture affiche alors une image fixe, et le récit affiche ses
+   trois étapes à la suite.
+3. **Seuls `transform`, `opacity` et la hauteur d'un bloc déplié sont animés.**
+   Le reste fait ramer les téléphones.
+
+L'animation d'ouverture s'arrête d'elle-même quand l'onglet passe en
+arrière-plan ou quand le héros sort de l'écran.
 
 ## Limites
 

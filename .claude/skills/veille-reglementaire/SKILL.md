@@ -77,6 +77,14 @@ Le lecteur est un chef d'entreprise, pas un juriste.
   « vérifier l'échéance applicable à votre taille d'entreprise » à une date qui
   sera fausse dans six mois et que personne ne viendra corriger.
 
+## Le rythme se lit aussi en mois
+
+Le calendrier de l'outil traduit chaque fréquence en mois de revue, dans
+`assets/plan.js` (`moisDe`) : mensuelle sur les douze mois, trimestrielle en
+janvier, avril, juillet et octobre, semestrielle en janvier et juillet,
+annuelle en janvier. Ajouter une fréquence au référentiel suppose donc de
+compléter cette fonction, sans quoi elle ne pèsera rien dans le calendrier.
+
 ## Vérifier
 
 ```sh
