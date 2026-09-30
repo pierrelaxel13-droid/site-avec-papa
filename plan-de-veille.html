@@ -4,10 +4,11 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Mon plan de veille — Pierrel &amp; Co</title>
-<meta name="description" content="Produisez votre plan de veille réglementaire : les domaines qui s'appliquent à votre activité, leur fréquence de revue, les obligations concrètes et les sources officielles. Gratuit, sans compte.">
+<meta name="description" content="Produisez votre plan de veille réglementaire : les domaines qui s'appliquent à votre activité, leur rythme de revue, les obligations concrètes et les sources officielles. Gratuit, sans compte.">
+<meta name="theme-color" content="#0b0f0e">
 <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
-<link rel="preload" href="assets/polices/inter.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/polices/newsreader.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/polices/inter.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="assets/polices.css">
 <link rel="stylesheet" href="assets/site.css">
 </head>
@@ -31,64 +32,69 @@
 
   <div class="outil-entete sans-impression">
     <div class="enveloppe">
-      <span class="surtitre">Outil gratuit</span>
-      <h1>Votre plan de veille</h1>
-      <p class="texte" style="margin-top:18px;">
-        Deux questions, et vous repartez avec la liste des domaines à surveiller,
-        leur rythme de revue, les obligations concrètes derrière chacun et les
-        sources officielles à suivre. Rien n'est envoyé : tout se calcule dans
-        votre navigateur.
+      <span class="surtitre" data-monte>Outil gratuit</span>
+      <h1 class="geant" data-mots>Votre plan de veille</h1>
+      <p class="texte" style="margin-top:28px; color:var(--craie-douce);" data-monte>
+        Deux questions. Vous repartez avec les domaines à surveiller, leur rythme
+        de revue, les obligations derrière chacun et les sources à suivre.
+        Rien n'est envoyé : tout se calcule dans votre navigateur.
       </p>
     </div>
   </div>
 
-  <!-- En-tête qui n'apparaît qu'à l'impression, pour que la feuille sortie
-       soit identifiable dans un dossier. -->
+  <!-- En-tête qui n'apparaît qu'à l'impression, pour que la feuille sortie soit
+       identifiable dans un dossier. -->
   <div class="entete-impression enveloppe">
-    <h1 style="font-size:20pt;">Plan de veille réglementaire</h1>
+    <h1>Plan de veille réglementaire</h1>
     <p id="impression-details" style="margin-top:6px;"></p>
   </div>
 
   <div class="enveloppe">
 
-    <!-- ======================= 1. ACTIVITÉ ======================= -->
     <section class="etape-outil sans-impression" aria-labelledby="titre-metier">
-      <div class="etape-titre">
-        <span class="etape-rang">Étape 1</span>
-      </div>
+      <span class="etape-rang">Étape 1</span>
       <h2 id="titre-metier">Votre activité</h2>
-      <p class="texte">
-        Choisissez la famille la plus proche. Les divisions de la nomenclature
-        NAF sont indiquées à titre de repère : c'est le métier réel qui compte,
-        pas le code déclaré.
+      <p class="texte" style="margin-top:16px; color:var(--craie-douce);">
+        Choisissez la famille la plus proche. Les divisions NAF sont un repère :
+        c'est le métier réel qui compte, pas le code déclaré.
       </p>
       <div class="metiers" id="choix-metiers" role="group" aria-label="Famille d'activité"></div>
     </section>
 
-    <!-- ======================= 2. CONTEXTE ======================= -->
     <section class="etape-outil sans-impression" aria-labelledby="titre-contexte">
-      <div class="etape-titre">
-        <span class="etape-rang">Étape 2</span>
-      </div>
+      <span class="etape-rang">Étape 2</span>
       <h2 id="titre-contexte">Votre contexte</h2>
-      <p class="texte">
-        Cochez ce qui est vrai chez vous. Chaque réponse ajoute des obligations
-        qui ne dépendent pas du métier mais de la façon de l'exercer.
+      <p class="texte" style="margin-top:16px; color:var(--craie-douce);">
+        Cochez ce qui est vrai chez vous. Regardez le diagramme se réorganiser à
+        chaque réponse : c'est votre périmètre qui bouge.
       </p>
       <ul class="questions" id="liste-questions"></ul>
     </section>
 
-    <!-- ======================= 3. LE PLAN ======================= -->
     <section class="etape-outil" aria-labelledby="titre-plan">
-      <div class="etape-titre sans-impression">
-        <span class="etape-rang">Étape 3</span>
-      </div>
+      <span class="etape-rang sans-impression">Étape 3</span>
       <h2 id="titre-plan" class="sans-impression">Votre plan</h2>
-      <div id="sortie-plan" aria-live="polite"></div>
-      <div class="barre-actions" id="actions" hidden>
+
+      <div id="sortie-resume" aria-live="polite" style="margin-top:28px;"></div>
+
+      <!-- Diagramme et calendrier persistent entre deux rendus : c'est ce qui
+           permet d'animer le déplacement des domaines au lieu de tout réécrire. -->
+      <div class="diagramme sans-impression" id="diagramme" hidden aria-hidden="true"></div>
+
+      <div class="calendrier" id="calendrier" hidden>
+        <div class="calendrier-tete">
+          <h3>Votre année de veille</h3>
+          <span class="aide">Nombre de revues tombant sur chaque mois</span>
+        </div>
+        <div class="mois" id="mois"></div>
+      </div>
+
+      <div id="sortie-plan"></div>
+
+      <div class="barre-actions sans-impression" id="actions" hidden>
         <button type="button" class="bouton" id="bouton-imprimer">Imprimer ou enregistrer en PDF</button>
-        <a class="bouton bouton-clair" href="index.html#contact">Faire valider ce plan</a>
-        <button type="button" class="bouton bouton-clair bouton-petit" id="bouton-reset">Tout effacer</button>
+        <a class="bouton bouton-fantome" href="index.html#contact">Faire valider ce plan</a>
+        <button type="button" class="bouton bouton-fantome bouton-petit" id="bouton-reset">Tout effacer</button>
       </div>
     </section>
 

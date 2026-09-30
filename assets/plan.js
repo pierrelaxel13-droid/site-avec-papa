@@ -2,8 +2,16 @@
    Pierrel & Co — outil « plan de veille »
    --------------------------------------------------------------------------
    Un seul parcours : activité, contexte, plan. Aucun registre, aucun import,
-   aucun compte. Les réponses sont conservées dans le navigateur pour qu'un
-   rechargement ne fasse pas tout recommencer, et rien de plus.
+   aucun compte.
+
+   Le plan sort sous trois formes complémentaires :
+     le diagramme   — où l'on voit son périmètre se réorganiser à chaque réponse
+     le calendrier  — où l'on voit ce que ça coûte en temps sur l'année
+     le détail      — ce qui s'imprime et part dans un dossier
+
+   Le diagramme et le calendrier ne sont jamais réécrits d'un bloc : leurs
+   éléments survivent d'un rendu à l'autre, ce qui permet de les animer d'une
+   colonne à l'autre plutôt que de les faire clignoter.
    ========================================================================== */
 
 (function () {
@@ -13,10 +21,15 @@
   if (!R) return;
 
   var CLE = "pco-plan-v1";
+  var SOBRE = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var SORTIE = "cubic-bezier(0.16, 1, 0.3, 1)";
+
+  var MOIS = ["janv", "févr", "mars", "avr", "mai", "juin",
+              "juil", "août", "sept", "oct", "nov", "déc"];
 
   var etat = { metier: null, reponses: [] };
 
-  /* --- Persistance : toujours tolérante à l'échec ------------------------- */
+  /* --- Persistance, toujours tolérante à l'échec --------------------------- */
   function lit() {
     try {
       var brut = window.localStorage.getItem(CLE);
@@ -26,42 +39,31 @@
       if (o && Array.isArray(o.reponses)) {
         etat.reponses = o.reponses.filter(function (id) { return !!R.question(id); });
       }
-    } catch (e) {
-      /* navigation privée, stockage bloqué : l'outil fonctionne sans mémoire. */
-    }
+    } catch (e) { /* navigation privée : l'outil marche sans mémoire */ }
   }
 
   function ecrit() {
-    try {
-      window.localStorage.setItem(CLE, JSON.stringify(etat));
-    } catch (e) { /* sans effet sur l'utilisation */ }
+    try { window.localStorage.setItem(CLE, JSON.stringify(etat)); } catch (e) { /* sans effet */ }
   }
 
-  /* --- Utilitaires -------------------------------------------------------- */
+  /* --- Utilitaires ---------------------------------------------------------- */
   function esc(v) {
     return String(v == null ? "" : v).replace(/&/g, "&amp;").replace(/</g, "&lt;")
       .replace(/>/g, "&gt;").replace(/"/g, "&quot;");
   }
-
-  function pluriel(n, singulier, pluriel_) {
-    return n + " " + (n > 1 ? pluriel_ : singulier);
-  }
-
+  function pluriel(n, s, p) { return n + " " + (n > 1 ? p : s); }
   function element(id) { return document.getElementById(id); }
 
-  /* --- Étape 1 : les métiers --------------------------------------------- */
+  /* --- Étape 1 : les métiers ------------------------------------------------ */
   function rendMetiers() {
     var hote = element("choix-metiers");
     if (!hote) return;
-
     hote.innerHTML = R.metiers.map(function (m) {
-      var actif = etat.metier === m.id;
       return '<button type="button" class="metier" data-metier="' + esc(m.id) + '"' +
-        ' aria-pressed="' + (actif ? "true" : "false") + '">' +
+        ' aria-pressed="' + (etat.metier === m.id ? "true" : "false") + '">' +
         '<span class="nom">' + esc(m.nom) + "</span>" +
         (m.naf ? '<span class="naf">NAF : ' + esc(m.naf) + "</span>" : "") +
-        '<span class="exemples">' + esc(m.exemples) + "</span>" +
-        "</button>";
+        '<span class="exemples">' + esc(m.exemples) + "</span></button>";
     }).join("");
 
     hote.querySelectorAll("[data-metier]").forEach(function (b) {
@@ -75,20 +77,16 @@
     });
   }
 
-  /* --- Étape 2 : le contexte --------------------------------------------- */
+  /* --- Étape 2 : le contexte ------------------------------------------------- */
   function rendQuestions() {
     var hote = element("liste-questions");
     if (!hote) return;
-
     hote.innerHTML = R.questions.map(function (q) {
-      var coche = etat.reponses.indexOf(q.id) !== -1;
-      return "<li>" +
-        '<label class="question">' +
-        '<input type="checkbox" data-question="' + esc(q.id) + '"' + (coche ? " checked" : "") + ">" +
-        "<span>" +
-        '<span class="intitule">' + esc(q.q) + "</span>" +
-        '<span class="aide">' + esc(q.d) + "</span>" +
-        "</span></label></li>";
+      return "<li><label class=\"question\">" +
+        '<input type="checkbox" data-question="' + esc(q.id) + '"' +
+        (etat.reponses.indexOf(q.id) !== -1 ? " checked" : "") + ">" +
+        '<span><span class="intitule">' + esc(q.q) + "</span>" +
+        '<span class="aide">' + esc(q.d) + "</span></span></label></li>";
     }).join("");
 
     hote.querySelectorAll("[data-question]").forEach(function (c) {
@@ -103,48 +101,156 @@
     });
   }
 
-  /* --- Étape 3 : le plan -------------------------------------------------- */
-  function rendPlan() {
-    var sortie = element("sortie-plan");
-    var actions = element("actions");
-    if (!sortie) return;
+  /* --- Étape 3a : le bandeau de tête ----------------------------------------- */
+  function rendResume(m, p) {
+    var hote = element("sortie-resume");
+    if (!hote) return;
+    hote.innerHTML = '<div class="resume-plan">' +
+      // Redite visuelle de la phrase qui suit : retiré de l'arbre
+      // d'accessibilité, sans quoi la zone aria-live annoncerait chaque valeur
+      // intermédiaire du compteur animé.
+      '<span class="chiffre" aria-hidden="true">' + p.nombre + "</span>" +
+      '<span class="detail"><strong>' +
+      esc(pluriel(p.nombre, "domaine à surveiller", "domaines à surveiller")) + "</strong>" +
+      esc(m.nom) +
+      (etat.reponses.length
+        ? " — " + esc(pluriel(etat.reponses.length, "précision de contexte", "précisions de contexte"))
+        : "") +
+      "</span></div>";
+  }
 
-    if (!etat.metier) {
-      sortie.innerHTML = '<p class="etat-vide">Choisissez une activité à l\'étape 1 : ' +
-        "votre plan se construit au fur et à mesure.</p>";
-      if (actions) actions.hidden = true;
-      majEnteteImpression(null);
-      document.dispatchEvent(new CustomEvent("plan:rendu"));
-      return;
+  /* --- Étape 3b : le diagramme, animé d'un rendu à l'autre -------------------- */
+  /* Technique dite FLIP : on relève la position de chaque jeton avant de
+     toucher au DOM, on réorganise, on relève la nouvelle position, puis on
+     rejoue le trajet à l'envers. Le navigateur n'anime que des transform. */
+  function rendDiagramme(p) {
+    var hote = element("diagramme");
+    if (!hote) return;
+    hote.hidden = false;
+
+    if (!hote.children.length) {
+      hote.innerHTML = R.frequences.map(function (f) {
+        return '<div class="colonne-rythme" data-freq="' + esc(f.id) + '">' +
+          '<div class="tete"><h4>' + esc(f.l) + '</h4><span class="n">0</span></div>' +
+          '<div class="liste"></div></div>';
+      }).join("");
     }
 
-    var m = R.metier(etat.metier);
-    var p = R.plan(etat.metier, etat.reponses);
+    var avant = {};
+    hote.querySelectorAll(".jeton[data-id]").forEach(function (j) {
+      avant[j.dataset.id] = j.getBoundingClientRect();
+    });
 
-    var html = '<div class="resume-plan">' +
-      // Le chiffre est une redite visuelle de la phrase qui suit. Il est retiré
-      // de l'arbre d'accessibilité : la zone est en aria-live, et le compteur
-      // animé y ferait annoncer chaque valeur intermédiaire.
-      '<span class="chiffre" aria-hidden="true">' + p.nombre + "</span>" +
-      '<span class="detail"><strong>' + esc(pluriel(p.nombre, "domaine à surveiller", "domaines à surveiller")) +
-      "</strong><br>" + esc(m.nom) +
-      (etat.reponses.length ? " — " + esc(pluriel(etat.reponses.length, "précision de contexte", "précisions de contexte")) : "") +
-      "</span></div>";
+    var restants = {};
+    hote.querySelectorAll(".jeton[data-id]").forEach(function (j) { restants[j.dataset.id] = j; });
 
-    html += p.groupes.map(function (g) {
+    var neufs = [];
+    R.frequences.forEach(function (f) {
+      var colonne = hote.querySelector('[data-freq="' + f.id + '"]');
+      var liste = colonne.querySelector(".liste");
+      var groupe = p.groupes.filter(function (g) { return g.frequence.id === f.id; })[0];
+      var entrees = groupe ? groupe.entrees : [];
+
+      entrees.forEach(function (e) {
+        var jeton = restants[e.id];
+        if (jeton) {
+          delete restants[e.id];
+          jeton.classList.remove("neuf");
+        } else {
+          jeton = document.createElement("span");
+          jeton.className = "jeton neuf";
+          jeton.dataset.id = e.id;
+          jeton.textContent = e.domaine.nom;
+          neufs.push(jeton);
+        }
+        liste.appendChild(jeton);
+      });
+
+      colonne.querySelector(".n").textContent = entrees.length;
+      colonne.classList.toggle("vide", entrees.length === 0);
+      if (!entrees.length && !liste.children.length) {
+        liste.innerHTML = '<span class="jeton-vide">rien à ce rythme</span>';
+      } else {
+        var vide = liste.querySelector(".jeton-vide");
+        if (vide) vide.remove();
+      }
+    });
+
+    // Ce qui a quitté le plan s'en va, au lieu de disparaître d'un coup.
+    Object.keys(restants).forEach(function (id) {
+      var j = restants[id];
+      if (SOBRE || !j.animate) { j.remove(); return; }
+      j.animate([{ opacity: 1, transform: "none" }, { opacity: 0, transform: "translateX(-10px)" }],
+        { duration: 220, easing: "cubic-bezier(0.4,0,0.2,1)" }).onfinish = function () { j.remove(); };
+    });
+
+    if (SOBRE) return;
+
+    hote.querySelectorAll(".jeton[data-id]").forEach(function (j) {
+      var a = avant[j.dataset.id];
+      if (!j.animate) return;
+      if (!a) {
+        j.animate([{ opacity: 0, transform: "translateY(-8px)" }, { opacity: 1, transform: "none" }],
+          { duration: 380, easing: SORTIE });
+        return;
+      }
+      var b = j.getBoundingClientRect();
+      var dx = a.left - b.left, dy = a.top - b.top;
+      if (Math.abs(dx) < 1 && Math.abs(dy) < 1) return;
+      j.animate([{ transform: "translate(" + dx + "px," + dy + "px)" }, { transform: "none" }],
+        { duration: 520, easing: SORTIE });
+    });
+  }
+
+  /* --- Étape 3c : l'année ----------------------------------------------------- */
+  /* Un rythme se traduit en mois de revue : c'est là qu'un dirigeant voit ce que
+     son plan lui coûtera vraiment en temps. */
+  function moisDe(frequence) {
+    if (frequence === "mensuelle") return [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
+    if (frequence === "trimestrielle") return [0, 3, 6, 9];
+    if (frequence === "semestrielle") return [0, 6];
+    return [0];
+  }
+
+  function rendCalendrier(p) {
+    var bloc = element("calendrier");
+    var hote = element("mois");
+    if (!bloc || !hote) return;
+    bloc.hidden = false;
+
+    var compte = new Array(12).fill(0);
+    p.entrees.forEach(function (e) {
+      moisDe(e.domaine.frequence).forEach(function (m) { compte[m]++; });
+    });
+    var max = Math.max.apply(null, compte) || 1;
+
+    if (!hote.children.length) {
+      hote.innerHTML = MOIS.map(function (nom, i) {
+        return "<div>" +
+          '<div class="barre"><span class="remplissage" data-mois="' + i + '"></span>' +
+          '<span class="n" data-compte="' + i + '">0</span></div>' +
+          '<div class="nom">' + esc(nom) + "</div></div>";
+      }).join("");
+    }
+
+    compte.forEach(function (n, i) {
+      var remplissage = hote.querySelector('[data-mois="' + i + '"]');
+      var valeur = hote.querySelector('[data-compte="' + i + '"]');
+      if (remplissage) remplissage.style.height = Math.round((n / max) * 100) + "%";
+      if (valeur) valeur.textContent = n;
+    });
+  }
+
+  /* --- Étape 3d : le détail ---------------------------------------------------- */
+  function rendGroupes(p) {
+    var sortie = element("sortie-plan");
+    if (!sortie) return;
+    sortie.innerHTML = p.groupes.map(function (g) {
       return '<section class="groupe">' +
         '<div class="groupe-tete"><h3>' + esc(g.frequence.l) + "</h3>" +
         '<span class="aide">' + esc(g.frequence.d) + "</span></div>" +
-        g.entrees.map(rendDomaine).join("") +
-        "</section>";
+        g.entrees.map(rendDomaine).join("") + "</section>";
     }).join("");
-
-    sortie.innerHTML = html;
-    if (actions) actions.hidden = false;
-    majEnteteImpression(m);
-    // assets/motion.js écoute cet événement pour rebrancher le dépliage animé,
-    // la cascade et le compteur. L'outil fonctionne si personne n'écoute.
-    document.dispatchEvent(new CustomEvent("plan:rendu"));
   }
 
   function rendDomaine(entree) {
@@ -160,7 +266,7 @@
         "<div><h4>Textes de référence</h4><ul>" +
           d.textes.map(function (t) { return "<li>" + esc(t) + "</li>"; }).join("") +
         "</ul>" +
-        "<h4 style=" + '"margin-top:18px;"' + ">Sources officielles</h4>" +
+        "<h4 style=" + '"margin-top:22px;"' + ">Sources officielles</h4>" +
         '<ul class="sources-domaine">' +
           d.sources.map(function (s) {
             return "<li><a href=" + '"' + esc(s.url) + '"' + ' target="_blank" rel="noopener">' +
@@ -168,21 +274,54 @@
           }).join("") +
         "</ul></div>" +
       "</div>" +
-      '<div class="raisons" style="padding-bottom:18px;">' +
+      '<div class="raisons">' +
         entree.raisons.map(function (r) { return '<span class="raison">' + esc(r) + "</span>"; }).join("") +
-      "</div>" +
-      "</div>" +
-      "</details>";
+      "</div></div></details>";
   }
 
-  /* --- En-tête de la feuille imprimée ------------------------------------ */
+  /* --- Assemblage -------------------------------------------------------------- */
+  function rendPlan() {
+    var actions = element("actions");
+    var resume = element("sortie-resume");
+    var sortie = element("sortie-plan");
+
+    if (!etat.metier) {
+      if (resume) {
+        resume.innerHTML = '<p class="etat-vide">Choisissez une activité à l\'étape 1 : ' +
+          "votre plan se construit au fur et à mesure.</p>";
+      }
+      if (sortie) sortie.innerHTML = "";
+      var diag = element("diagramme"), cal = element("calendrier");
+      if (diag) { diag.hidden = true; diag.innerHTML = ""; }
+      if (cal) cal.hidden = true;
+      if (actions) actions.hidden = true;
+      majEnteteImpression(null);
+      document.dispatchEvent(new CustomEvent("plan:rendu"));
+      return;
+    }
+
+    var m = R.metier(etat.metier);
+    var p = R.plan(etat.metier, etat.reponses);
+
+    rendResume(m, p);
+    rendDiagramme(p);
+    rendCalendrier(p);
+    rendGroupes(p);
+    if (actions) actions.hidden = false;
+    majEnteteImpression(m);
+
+    // assets/motion.js écoute cet événement pour rebrancher le dépliage animé,
+    // la cascade et le compteur. L'outil fonctionne si personne n'écoute.
+    document.dispatchEvent(new CustomEvent("plan:rendu"));
+  }
+
+  /* --- En-tête de la feuille imprimée --------------------------------------- */
   function majEnteteImpression(m) {
     var cible = element("impression-details");
     if (!cible) return;
     if (!m) { cible.textContent = ""; return; }
 
-    var d = new Date();
-    var date = d.toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" });
+    var date = new Date().toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" });
     var contexte = etat.reponses.map(function (id) {
       var q = R.question(id);
       return q ? q.q.toLowerCase() : null;
@@ -193,7 +332,7 @@
       " Pierrel & Co — cadre méthodologique, ne constitue pas un conseil juridique.";
   }
 
-  /* --- Actions ------------------------------------------------------------ */
+  /* --- Actions ------------------------------------------------------------------ */
   function branche() {
     var imprimer = element("bouton-imprimer");
     if (imprimer) imprimer.addEventListener("click", function () { window.print(); });
@@ -205,7 +344,7 @@
       rendMetiers();
       rendQuestions();
       rendPlan();
-      window.scrollTo({ top: 0, behavior: "smooth" });
+      window.scrollTo({ top: 0, behavior: SOBRE ? "auto" : "smooth" });
     });
   }
 

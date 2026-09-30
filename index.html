@@ -6,12 +6,13 @@
 <title>Pierrel &amp; Co — veille réglementaire et conformité</title>
 <meta name="description" content="Conseil en organisation et conformité à Istres. Savoir quels textes s'appliquent à votre activité, organiser leur suivi, et pouvoir le prouver en cas de contrôle.">
 <meta name="author" content="Pierrel &amp; Co">
+<meta name="theme-color" content="#0b0f0e">
 <meta property="og:title" content="Pierrel &amp; Co — veille réglementaire et conformité">
 <meta property="og:description" content="Savoir ce qui s'applique à vous, et pouvoir le prouver.">
 <meta property="og:type" content="website">
 <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
-<link rel="preload" href="assets/polices/inter.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/polices/newsreader.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/polices/inter.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="assets/polices.css">
 <link rel="stylesheet" href="assets/site.css">
 </head>
@@ -26,114 +27,112 @@
       <a href="index.html" aria-current="page">Accueil</a>
       <a href="#methode">Méthode</a>
       <a href="#contact">Contact</a>
-      <a class="bouton bouton-petit" href="plan-de-veille.html">Mon plan de veille</a>
+      <a href="plan-de-veille.html">Mon plan de veille</a>
     </nav>
   </div>
 </header>
 
 <main id="contenu">
 
-  <!-- ======================= OUVERTURE ======================= -->
+  <!-- ======================= HÉROS ======================= -->
   <section class="heros">
-    <div class="enveloppe heros-grille">
-      <div class="entree">
-        <span class="surtitre">Conseil en organisation et conformité</span>
-        <h1>Savoir ce qui s'applique à vous. Et pouvoir le prouver.</h1>
-        <p class="chapeau">
-          Un dirigeant n'a aucun moyen simple de savoir où commence et où s'arrête
-          son obligation réglementaire. Je délimite ce périmètre, j'organise son
-          suivi, et je vous laisse un dossier qui tient devant un contrôle.
+    <canvas id="toile" aria-hidden="true"></canvas>
+    <div class="enveloppe">
+      <div class="heros-contenu">
+        <span class="surtitre" data-monte>Conseil en organisation et conformité</span>
+        <h1 class="geant" data-mots>Savoir ce qui s'applique à vous.</h1>
+        <p class="chapeau" data-monte>
+          Des textes paraissent chaque semaine. Une poignée vous concerne. Mon
+          travail est de tracer cette frontière, de la tenir dans le temps, et
+          de vous laisser de quoi la prouver.
         </p>
-        <div class="rangee-boutons">
-          <a class="bouton" href="plan-de-veille.html">Faire mon plan de veille</a>
-          <a class="bouton bouton-clair" href="#methode">Voir la méthode</a>
+        <div class="rangee-boutons" data-monte>
+          <a class="bouton" href="plan-de-veille.html">Faire mon plan de veille <span class="fleche" aria-hidden="true">→</span></a>
+          <a class="bouton bouton-fantome" href="#methode">La méthode</a>
         </div>
       </div>
-      <aside class="colonne-heros">
-        <figure class="tri-cadre">
-          <!-- Le tri, en mouvement : des textes paraissent, ils passent au
-               tamis du périmètre, la plupart sont écartés, les autres se
-               rangent par rythme de revue. C'est la prestation en une image. -->
-          <svg class="tri" viewBox="0 0 240 172" role="img"
-               aria-label="Des textes paraissent, passent au tamis du périmètre, et ceux qui restent se rangent par rythme de revue.">
-            <g class="flux" fill="var(--concrete, #9aa3a0)">
-              <rect x="8" y="16" width="40" height="5" rx="2.5" style="animation-delay:0s"></rect>
-              <rect x="8" y="34" width="40" height="5" rx="2.5" style="animation-delay:-0.9s"></rect>
-              <rect x="8" y="52" width="40" height="5" rx="2.5" style="animation-delay:-1.8s"></rect>
-              <rect x="8" y="70" width="40" height="5" rx="2.5" style="animation-delay:-2.7s"></rect>
-              <rect x="8" y="88" width="40" height="5" rx="2.5" style="animation-delay:-3.6s"></rect>
-              <rect x="8" y="106" width="40" height="5" rx="2.5" style="animation-delay:-4.5s"></rect>
-              <rect x="8" y="124" width="40" height="5" rx="2.5" style="animation-delay:-5.4s"></rect>
-              <rect x="8" y="142" width="40" height="5" rx="2.5" style="animation-delay:-6.3s"></rect>
-            </g>
+    </div>
+    <div class="enveloppe heros-bas">
+      <span class="defiler"><span class="barre" aria-hidden="true"></span> Faites défiler</span>
+      <span>Istres &amp; étang de Berre</span>
+    </div>
+  </section>
 
-            <line class="tamis" x1="92" y1="8" x2="92" y2="164"
-                  stroke="#2f6b5f" stroke-width="1.5" stroke-dasharray="4 5"></line>
-
-            <g fill="#a9603c">
-              <rect class="ecarte" x="8" y="34" width="34" height="5" rx="2.5" style="animation-delay:-0.9s"></rect>
-              <rect class="ecarte" x="8" y="88" width="34" height="5" rx="2.5" style="animation-delay:-3.6s"></rect>
-              <rect class="ecarte" x="8" y="142" width="34" height="5" rx="2.5" style="animation-delay:-6.3s"></rect>
-            </g>
-
-            <g class="rangee" fill="#2f6b5f">
-              <rect x="122" y="22" width="104" height="6" rx="3" style="animation-delay:0s"></rect>
-              <rect x="122" y="34" width="78" height="6" rx="3" style="animation-delay:-0.2s"></rect>
-              <rect x="122" y="66" width="96" height="6" rx="3" style="animation-delay:-0.45s"></rect>
-              <rect x="122" y="78" width="66" height="6" rx="3" style="animation-delay:-0.65s"></rect>
-              <rect x="122" y="110" width="88" height="6" rx="3" style="animation-delay:-0.9s"></rect>
-              <rect x="122" y="142" width="72" height="6" rx="3" style="animation-delay:-1.15s"></rect>
-            </g>
-          </svg>
-          <figcaption>
-            Des textes paraissent chaque jour. Le travail n'est pas d'y accéder,
-            il est de trier.
-          </figcaption>
-        </figure>
-        <div class="fiche">
-        <h3>La prestation en bref</h3>
-        <dl>
-          <dt>Zone</dt><dd>Istres et pourtour de l'étang de Berre</dd>
-          <dt>Cadrage</dt><dd>Une demi-journée sur site</dd>
-          <dt>Rythme</dt><dd>Du mensuel à l'annuel, selon le domaine</dd>
-          <dt>Livrables</dt><dd>Plan, relevés, analyses, preuves</dd>
-          <dt>Premier échange</dt><dd>Une heure, sans engagement</dd>
-        </dl>
+  <!-- ======================= RÉCIT AU DÉFILEMENT ======================= -->
+  <section class="recit" aria-label="Ce que recouvre un périmètre de veille">
+    <div class="recit-piste">
+      <div class="recit-fixe">
+        <div class="recit-etape" data-etape="0">
+          <div>
+            <span class="enorme" data-nombre="total">26</span>
+            <h2>domaines de veille existent</h2>
+            <p>
+              Droit du travail, sécurité, environnement, fiscalité, données
+              personnelles, règles propres à votre métier. Personne ne peut
+              tous les suivre, et personne n'a à le faire.
+            </p>
+          </div>
         </div>
-      </aside>
+        <div class="recit-etape" data-etape="1">
+          <div>
+            <span class="enorme" data-nombre="ecartes">12</span>
+            <h2>ne vous concernent pas</h2>
+            <p>
+              Un maçon n'a rien à faire de l'hygiène alimentaire. Encore
+              faut-il l'avoir établi, et pouvoir le montrer à un auditeur qui
+              pose la question.
+            </p>
+          </div>
+        </div>
+        <div class="recit-etape" data-etape="2">
+          <div>
+            <span class="enorme" data-nombre="retenus">14</span>
+            <h2>c'est un périmètre réel</h2>
+            <p>
+              Celui d'une entreprise de maçonnerie avec salariés, qui reçoit du
+              public et intervient sur du bâti ancien. Le vôtre se calcule en
+              deux minutes sur ce site.
+            </p>
+          </div>
+        </div>
+        <div class="recit-jauge" aria-hidden="true"><span></span></div>
+      </div>
     </div>
   </section>
 
   <!-- ======================= LE CONSTAT ======================= -->
-  <section class="section section-sable">
+  <section class="section">
     <div class="enveloppe">
       <div class="tete-section">
         <span class="surtitre">Le constat</span>
         <h2>Trois raisons pour lesquelles la conformité déraille</h2>
       </div>
       <div class="grille grille-3">
-        <article class="carte">
+        <article class="carte" data-lueur>
+          <span class="rang">01</span>
           <h3>Le périmètre est flou</h3>
           <p>
-            Code du travail, environnement, réglementation du métier, obligations
-            envers les clients : personne ne vous remet la liste de ce qui vous
-            concerne. Chacun découvre la sienne au premier contrôle.
+            Personne ne vous remet la liste de ce qui vous concerne. Chacun
+            découvre la sienne au premier contrôle, et toujours par le mauvais
+            bout.
           </p>
         </article>
-        <article class="carte">
+        <article class="carte" data-lueur>
+          <span class="rang">02</span>
           <h3>Les textes bougent sans prévenir</h3>
           <p>
             Un barème change en janvier, un seuil en juillet, une filière de
-            reprise l'année suivante. Sans rythme de veille, on apprend la
-            nouveauté par un client, un assureur ou une mise en demeure.
+            reprise l'année suivante. Sans rythme de veille, la nouvelle arrive
+            par un client ou par une mise en demeure.
           </p>
         </article>
-        <article class="carte">
+        <article class="carte" data-lueur>
+          <span class="rang">03</span>
           <h3>C'est la preuve qui est demandée</h3>
           <p>
-            Être en règle ne suffit pas : il faut pouvoir montrer quand vous avez
-            regardé, ce que vous avez décidé, et ce que vous avez fait. Sans
-            traces datées, la bonne foi ne pèse rien.
+            Être en règle ne suffit pas : il faut montrer quand vous avez
+            regardé, ce que vous avez décidé, ce que vous avez fait. Sans traces
+            datées, la bonne foi ne pèse rien.
           </p>
         </article>
       </div>
@@ -146,35 +145,31 @@
       <div class="tete-section">
         <span class="surtitre">La prestation</span>
         <h2>Trois livrables, et rien de décoratif</h2>
-        <p>
-          Chacun se tient seul. Vous pouvez vous arrêter au premier, ou faire
-          tourner l'ensemble à l'année.
-        </p>
+        <p>Chacun se tient seul. Vous pouvez vous arrêter au premier, ou faire tourner l'ensemble à l'année.</p>
       </div>
       <div class="grille grille-3">
-        <article class="carte-sobre">
+        <article class="carte" data-lueur>
           <h3>Le plan de veille</h3>
           <p>
-            La liste des domaines qui s'appliquent réellement à votre activité,
-            avec pour chacun la fréquence de revue, les sources officielles à
-            suivre et la personne qui s'en occupe chez vous.
+            Les domaines qui s'appliquent réellement à votre activité, avec pour
+            chacun la fréquence de revue, les sources à suivre et le responsable
+            chez vous.
           </p>
-          <p><a href="plan-de-veille.html">Vous pouvez en produire une première version vous-même &rarr;</a></p>
+          <p><a href="plan-de-veille.html">En produire une première version →</a></p>
         </article>
-        <article class="carte-sobre">
+        <article class="carte" data-lueur>
           <h3>La veille tenue</h3>
           <p>
-            Je suis les sources au rythme fixé et je ne vous remonte que ce qui
-            touche votre périmètre, avec ce que ça change concrètement. Pas de
-            revue de presse réglementaire : un relevé court et daté.
+            Je suis les sources au rythme fixé et ne remonte que ce qui touche
+            votre périmètre, avec ce que ça change concrètement. Un relevé court
+            et daté, pas une revue de presse.
           </p>
         </article>
-        <article class="carte-sobre">
+        <article class="carte" data-lueur>
           <h3>Le dossier de preuves</h3>
           <p>
-            Les revues, les analyses, les décisions et les actions archivées au
-            même endroit, prêtes à sortir pour un audit, un client donneur
-            d'ordre ou une inspection.
+            Revues, analyses, décisions et actions archivées au même endroit,
+            prêtes à sortir pour un audit, un donneur d'ordre ou une inspection.
           </p>
         </article>
       </div>
@@ -182,34 +177,17 @@
   </section>
 
   <!-- ======================= MÉTHODE ======================= -->
-  <section class="section" id="methode">
+  <section class="section jour" id="methode">
     <div class="enveloppe">
       <div class="tete-section">
         <span class="surtitre">Méthode</span>
         <h2>Quatre étapes, toujours les mêmes</h2>
         <p>
           C'est volontairement court. Une méthode de veille qui demande douze
-          étapes n'est jamais appliquée au bout de six mois.
+          étapes n'est plus appliquée au bout de six mois.
         </p>
       </div>
       <ol class="etapes" id="liste-methode"></ol>
-    </div>
-  </section>
-
-  <!-- ======================= APPEL ======================= -->
-  <section class="section-serree section-encre">
-    <div class="enveloppe">
-      <div style="display:flex; gap:32px; align-items:center; justify-content:space-between; flex-wrap:wrap;">
-        <div style="max-width:56ch;">
-          <h2>Commencez par votre périmètre</h2>
-          <p>
-            L'outil de ce site produit une première version de votre plan de
-            veille en deux minutes, à partir de votre métier et de votre
-            contexte. Gratuit, sans compte, rien n'est envoyé.
-          </p>
-        </div>
-        <a class="bouton" href="plan-de-veille.html">Faire mon plan de veille</a>
-      </div>
     </div>
   </section>
 
@@ -237,16 +215,16 @@
   </section>
 
   <!-- ======================= PROFIL ======================= -->
-  <section class="section section-sable">
+  <section class="section jour">
     <div class="enveloppe">
       <div class="grille grille-2">
         <div>
           <span class="surtitre">Qui vous parle</span>
           <h2>Clément Pierrel</h2>
-          <p>
-            Conseil en organisation et conformité, installé à Istres. Je travaille
-            avec des entreprises de dix à cent cinquante personnes : bâtiment,
-            industrie, transport, commerce, services.
+          <p style="margin-top:24px;">
+            Conseil en organisation et conformité, installé à Istres. Je
+            travaille avec des entreprises de dix à cent cinquante personnes :
+            bâtiment, industrie, transport, commerce, services.
           </p>
           <p>
             Mon travail n'est pas de vous apprendre le droit, c'est de rendre vos
@@ -257,12 +235,9 @@
         <div class="carte">
           <h3>Ce que je ne fais pas</h3>
           <ul>
-            <li>Je ne rends pas de consultation juridique : sur un point de droit
-              litigieux, je vous oriente vers un avocat.</li>
-            <li>Je ne certifie rien : je prépare les dossiers, les organismes
-              certificateurs restent indépendants.</li>
-            <li>Je ne vends pas de logiciel : vos données restent chez vous, dans
-              des formats que vous pouvez reprendre.</li>
+            <li>Pas de consultation juridique : sur un point de droit litigieux, je vous oriente vers un avocat.</li>
+            <li>Pas de certification : je prépare les dossiers, les organismes certificateurs restent indépendants.</li>
+            <li>Pas de logiciel à vendre : vos données restent chez vous, dans des formats que vous pouvez reprendre.</li>
           </ul>
         </div>
       </div>
@@ -275,10 +250,7 @@
       <div class="tete-section">
         <span class="surtitre">Contact</span>
         <h2>Un premier échange d'une heure, sans engagement</h2>
-        <p>
-          Décrivez votre activité en trois lignes et ce qui vous inquiète. Je
-          réponds sous deux jours ouvrés.
-        </p>
+        <p>Décrivez votre activité en trois lignes et ce qui vous inquiète. Je réponds sous deux jours ouvrés.</p>
       </div>
       <div class="contact-grille">
         <ul class="coordonnees">
@@ -291,24 +263,18 @@
             <a href="tel:+33400000000">04 00 00 00 00</a>
           </li>
           <li>
-            <span class="label">Adresse</span>
-            Istres (13800), déplacements sur le pourtour de l'étang de Berre
-          </li>
-          <li>
-            <span class="label">Délai de réponse</span>
-            Deux jours ouvrés
+            <span class="label">Zone d'intervention</span>
+            Istres (13800) et pourtour de l'étang de Berre
           </li>
         </ul>
-        <div>
-          <p class="reserve">
-            <strong>Une réserve, dite une fois pour toutes.</strong>
-            Ce site et son outil fournissent un cadre méthodologique, pas un
-            conseil juridique, et ne garantissent pas l'exhaustivité des textes
-            applicables à une entreprise donnée. Chaque texte doit être vérifié
-            sur Légifrance et l'analyse d'applicabilité validée par une personne
-            compétente.
-          </p>
-        </div>
+        <p class="reserve">
+          <strong>Une réserve, dite une fois pour toutes.</strong>
+          Ce site et son outil fournissent un cadre méthodologique, pas un
+          conseil juridique, et ne garantissent pas l'exhaustivité des textes
+          applicables à une entreprise donnée. Chaque texte doit être vérifié sur
+          Légifrance et l'analyse d'applicabilité validée par une personne
+          compétente.
+        </p>
       </div>
     </div>
   </section>
@@ -320,10 +286,7 @@
     <div class="pied-grille">
       <div>
         <h4>Pierrel &amp; Co</h4>
-        <p>
-          Conseil en organisation et conformité.<br>
-          Veille réglementaire, préparation aux contrôles et aux audits.
-        </p>
+        <p>Conseil en organisation et conformité.<br>Veille réglementaire, préparation aux contrôles et aux audits.</p>
       </div>
       <div>
         <h4>Le site</h4>
@@ -348,12 +311,13 @@
       Éditeur : Pierrel &amp; Co, Clément Pierrel, Istres (13800).
       SIRET : à compléter. Directeur de la publication : Clément Pierrel.
       Hébergement : à compléter.
-      Aucun cookie, aucune mesure d'audience, aucune donnée transmise à un tiers.
+      Aucun cookie, aucune mesure d'audience, aucune requête vers un service tiers.
     </p>
   </div>
 </footer>
 
 <script src="assets/referentiel.js"></script>
+<script src="assets/toile.js" defer></script>
 <script src="assets/motion.js" defer></script>
 <script>
   /* La méthode et le tableau des sources viennent du même référentiel que
@@ -372,21 +336,32 @@
     if (ol) {
       ol.innerHTML = R.etapes.map(function (e) {
         return '<li class="etape">' +
-          '<div class="etape-numero">' + esc(e.n) + "</div>" +
-          "<div><h3>" + esc(e.t) + "</h3><p>" + esc(e.d) + "</p>" +
-          '<span class="livrable">' + esc(e.livrable) + "</span></div></li>";
+          '<span class="etape-numero">' + esc(e.n) + "</span>" +
+          "<div><h3>" + esc(e.t) + "</h3><p>" + esc(e.d) + "</p></div>" +
+          '<span class="livrable">' + esc(e.livrable.replace(/^Livrable : /, "")) + "</span>" +
+          "</li>";
       }).join("");
     }
 
     var tb = document.getElementById("corps-sources");
     if (tb) {
       tb.innerHTML = R.sourcesGenerales.map(function (s) {
-        return "<tr><td><a href=" + '"' + esc(s.url) + '"' + ' target="_blank" rel="noopener"><strong>' +
-          esc(s.nom) + "</strong></a></td>" +
+        return "<tr><td><a href=" + '"' + esc(s.url) + '"' + ' target="_blank" rel="noopener">' +
+          esc(s.nom) + "</a></td>" +
           '<td><span class="etiquette">' + esc(s.type) + "</span></td>" +
           "<td>" + esc(s.d) + "</td></tr>";
       }).join("");
     }
+
+    /* Les chiffres du récit sont calculés, jamais écrits à la main : un
+       domaine ajouté au référentiel les met à jour tout seul. */
+    var total = Object.keys(R.domaines).length;
+    var exemple = R.plan("btp", ["salaries", "public", "bati_ancien"]);
+    var chiffres = { total: total, retenus: exemple.nombre, ecartes: total - exemple.nombre };
+    document.querySelectorAll("[data-nombre]").forEach(function (e) {
+      var v = chiffres[e.getAttribute("data-nombre")];
+      if (typeof v === "number") e.textContent = v;
+    });
   })();
 </script>
 </body>
