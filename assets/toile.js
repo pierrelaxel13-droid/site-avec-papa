@@ -29,7 +29,10 @@
   var CRAIE = "174,184,180";
 
   var L = 0, H = 0, dpr = 1;
-  var tamis = 0;
+  var tamis = 0;          // position affichée, qui rattrape la visée
+  var vise = 0;           // position voulue : le repos, ou le pointeur
+  var repos = 0;
+  var pointeur = null;    // {x, y} tant que le pointeur survole le héros
   var bandes = [];
   var flux = [];
   var MAX = 150;
@@ -46,7 +49,9 @@
     toile.height = Math.round(H * dpr);
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
-    tamis = L * 0.46;
+    repos = L * 0.46;
+    if (!tamis) tamis = repos;
+    vise = repos;
     bandes = [0.22, 0.4, 0.58, 0.76].map(function (p) {
       return { y: H * p, rangs: [] };
     });
@@ -87,12 +92,28 @@
   function avance(dt) {
     if (flux.length < MAX && Math.random() < dt * 34) flux.push(texte(false));
 
+    // Le tamis rattrape sa visée sans à-coup : déplacé d'un bond, il couperait
+    // le flux en plein vol et on verrait des barres changer d'état sans raison.
+    vise = pointeur ? Math.max(L * 0.22, Math.min(L * 0.78, pointeur.x)) : repos;
+    tamis += (vise - tamis) * Math.min(1, dt * 5);
+
     for (var i = flux.length - 1; i >= 0; i--) {
       var t = flux[i];
 
       if (t.etat === "vole") {
         t.x += t.v * dt;
         t.a = Math.min(1, t.a + dt * 2.2);
+
+        // Léger évitement autour du pointeur : le flux se creuse là où on passe.
+        if (pointeur) {
+          var dx = t.x + t.l / 2 - pointeur.x;
+          var dy = t.y - pointeur.y;
+          var d2 = dx * dx + dy * dy;
+          if (d2 < 15000 && d2 > 1) {
+            var f = (1 - d2 / 15000) * 90 * dt;
+            t.y += (dy / Math.sqrt(d2)) * f;
+          }
+        }
         if (t.x + t.l >= tamis) {
           if (sort()) place(t);
           else { t.etat = "ecarte"; t.cy = 40 + Math.random() * 90; t.cx = 10 + Math.random() * 30; }
@@ -213,6 +234,15 @@
       amorce.l = 74;
     }
     flux.push(amorce);
+  }
+
+  var heros = toile.closest(".heros") || toile.parentElement;
+  if (window.matchMedia && window.matchMedia("(pointer: fine)").matches && heros) {
+    heros.addEventListener("pointermove", function (e) {
+      var r = toile.getBoundingClientRect();
+      pointeur = { x: e.clientX - r.left, y: e.clientY - r.top };
+    }, { passive: true });
+    heros.addEventListener("pointerleave", function () { pointeur = null; });
   }
 
   document.addEventListener("visibilitychange", function () {

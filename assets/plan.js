@@ -89,6 +89,17 @@
         '<span class="aide">' + esc(q.d) + "</span></span></label></li>";
     }).join("");
 
+    hote.querySelectorAll(".question").forEach(function (l) {
+      var q = R.question(l.querySelector("[data-question]").getAttribute("data-question"));
+      if (!q || !window.CONSTELLATION) return;
+      // Survoler une question allume, dans la constellation, les domaines
+      // qu'elle apporte. C'est la causalité rendue tangible.
+      l.addEventListener("pointerenter", function () { window.CONSTELLATION.souligne(q.q); });
+      l.addEventListener("pointerleave", function () { window.CONSTELLATION.souligne(null); });
+      l.addEventListener("focusin", function () { window.CONSTELLATION.souligne(q.q); });
+      l.addEventListener("focusout", function () { window.CONSTELLATION.souligne(null); });
+    });
+
     hote.querySelectorAll("[data-question]").forEach(function (c) {
       c.addEventListener("change", function () {
         var id = c.getAttribute("data-question");
@@ -119,87 +130,11 @@
       "</span></div>";
   }
 
-  /* --- Étape 3b : le diagramme, animé d'un rendu à l'autre -------------------- */
-  /* Technique dite FLIP : on relève la position de chaque jeton avant de
-     toucher au DOM, on réorganise, on relève la nouvelle position, puis on
-     rejoue le trajet à l'envers. Le navigateur n'anime que des transform. */
-  function rendDiagramme(p) {
-    var hote = element("diagramme");
-    if (!hote) return;
-    hote.hidden = false;
-
-    if (!hote.children.length) {
-      hote.innerHTML = R.frequences.map(function (f) {
-        return '<div class="colonne-rythme" data-freq="' + esc(f.id) + '">' +
-          '<div class="tete"><h4>' + esc(f.l) + '</h4><span class="n">0</span></div>' +
-          '<div class="liste"></div></div>';
-      }).join("");
-    }
-
-    var avant = {};
-    hote.querySelectorAll(".jeton[data-id]").forEach(function (j) {
-      avant[j.dataset.id] = j.getBoundingClientRect();
-    });
-
-    var restants = {};
-    hote.querySelectorAll(".jeton[data-id]").forEach(function (j) { restants[j.dataset.id] = j; });
-
-    var neufs = [];
-    R.frequences.forEach(function (f) {
-      var colonne = hote.querySelector('[data-freq="' + f.id + '"]');
-      var liste = colonne.querySelector(".liste");
-      var groupe = p.groupes.filter(function (g) { return g.frequence.id === f.id; })[0];
-      var entrees = groupe ? groupe.entrees : [];
-
-      entrees.forEach(function (e) {
-        var jeton = restants[e.id];
-        if (jeton) {
-          delete restants[e.id];
-          jeton.classList.remove("neuf");
-        } else {
-          jeton = document.createElement("span");
-          jeton.className = "jeton neuf";
-          jeton.dataset.id = e.id;
-          jeton.textContent = e.domaine.nom;
-          neufs.push(jeton);
-        }
-        liste.appendChild(jeton);
-      });
-
-      colonne.querySelector(".n").textContent = entrees.length;
-      colonne.classList.toggle("vide", entrees.length === 0);
-      if (!entrees.length && !liste.children.length) {
-        liste.innerHTML = '<span class="jeton-vide">rien à ce rythme</span>';
-      } else {
-        var vide = liste.querySelector(".jeton-vide");
-        if (vide) vide.remove();
-      }
-    });
-
-    // Ce qui a quitté le plan s'en va, au lieu de disparaître d'un coup.
-    Object.keys(restants).forEach(function (id) {
-      var j = restants[id];
-      if (SOBRE || !j.animate) { j.remove(); return; }
-      j.animate([{ opacity: 1, transform: "none" }, { opacity: 0, transform: "translateX(-10px)" }],
-        { duration: 220, easing: "cubic-bezier(0.4,0,0.2,1)" }).onfinish = function () { j.remove(); };
-    });
-
-    if (SOBRE) return;
-
-    hote.querySelectorAll(".jeton[data-id]").forEach(function (j) {
-      var a = avant[j.dataset.id];
-      if (!j.animate) return;
-      if (!a) {
-        j.animate([{ opacity: 0, transform: "translateY(-8px)" }, { opacity: 1, transform: "none" }],
-          { duration: 380, easing: SORTIE });
-        return;
-      }
-      var b = j.getBoundingClientRect();
-      var dx = a.left - b.left, dy = a.top - b.top;
-      if (Math.abs(dx) < 1 && Math.abs(dy) < 1) return;
-      j.animate([{ transform: "translate(" + dx + "px," + dy + "px)" }, { transform: "none" }],
-        { duration: 520, easing: SORTIE });
-    });
+  /* --- Étape 3b : la constellation ---------------------------------------- */
+  function rendConstellation(m, p) {
+    var bloc = element("bloc-constellation");
+    if (bloc) bloc.hidden = false;
+    if (window.CONSTELLATION) window.CONSTELLATION.rend(p, m);
   }
 
   /* --- Étape 3c : l'année ----------------------------------------------------- */
@@ -291,8 +226,9 @@
           "votre plan se construit au fur et à mesure.</p>";
       }
       if (sortie) sortie.innerHTML = "";
-      var diag = element("diagramme"), cal = element("calendrier");
-      if (diag) { diag.hidden = true; diag.innerHTML = ""; }
+      var bloc = element("bloc-constellation"), cal = element("calendrier");
+      if (bloc) bloc.hidden = true;
+      if (window.CONSTELLATION) window.CONSTELLATION.cache();
       if (cal) cal.hidden = true;
       if (actions) actions.hidden = true;
       majEnteteImpression(null);
@@ -304,7 +240,7 @@
     var p = R.plan(etat.metier, etat.reponses);
 
     rendResume(m, p);
-    rendDiagramme(p);
+    rendConstellation(m, p);
     rendCalendrier(p);
     rendGroupes(p);
     if (actions) actions.hidden = false;

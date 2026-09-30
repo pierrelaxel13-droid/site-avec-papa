@@ -597,3 +597,103 @@ strong{font-weight:600;}
   .halo{display:none;}
   .defiler .barre::after{display:none;}
 }
+
+/* ==========================================================================
+   Séquence d'ouverture
+   --------------------------------------------------------------------------
+   Posée par le script, une seule fois par session, et sautable au clic ou à la
+   touche. Sans JavaScript elle n'existe pas : rien n'est jamais masqué par
+   elle pour qui ne la reçoit pas.
+   ========================================================================== */
+.intro{
+  position:fixed; inset:0; z-index:100; background:var(--nuit);
+  display:grid; place-items:center; align-content:center; gap:22px;
+  text-align:center; cursor:pointer;
+  transition:transform 1s var(--sortie), opacity 0.6s var(--doux);
+}
+.intro.sort{transform:translateY(-101%); opacity:0.4;}
+.intro-marque{
+  font-family:'Newsreader', Georgia, serif; font-size:20px; color:var(--craie);
+  letter-spacing:0.01em;
+}
+.intro-marque span{color:var(--vert);}
+.intro-compteur{
+  font-family:'Newsreader', Georgia, serif; font-weight:300;
+  font-size:clamp(90px, 16vw, 210px); line-height:0.85; color:var(--vert);
+  font-variant-numeric:tabular-nums;
+}
+.intro-legende{
+  font-size:12px; letter-spacing:0.22em; text-transform:uppercase; color:var(--craie-faible);
+}
+.intro-trait{width:min(360px, 56vw); height:1px; background:var(--trait); overflow:hidden;}
+.intro-trait span{
+  display:block; height:100%; background:var(--vert);
+  transform:scaleX(0); transform-origin:left;
+  animation:remplit 1.5s var(--doux) forwards;
+}
+@keyframes remplit{to{transform:scaleX(1);}}
+.intro-passer{
+  position:absolute; bottom:34px; left:50%; transform:translateX(-50%);
+  font-size:12px; letter-spacing:0.16em; text-transform:uppercase; color:var(--craie-faible);
+}
+
+/* ==========================================================================
+   La constellation du plan
+   ========================================================================== */
+.constellation{width:100%; height:auto; display:block; overflow:visible;}
+.bloc-constellation{margin:8px 0 44px;}
+.bloc-constellation .legende{
+  display:flex; flex-wrap:wrap; gap:20px; justify-content:center;
+  margin-top:8px; font-size:13px; color:var(--craie-faible);
+}
+.bloc-constellation .legende span{display:inline-flex; align-items:center; gap:8px;}
+.bloc-constellation .legende i{
+  width:16px; height:2px; border-radius:2px; background:var(--craie-faible); font-style:normal;
+}
+.bloc-constellation .legende .de-metier i{background:var(--vert);}
+.bloc-constellation .legende .de-contexte i{background:var(--vert-vif);}
+
+.anneau{fill:none; stroke:var(--trait); stroke-width:1;}
+.anneau-titre{
+  fill:var(--craie-faible); font-family:'Inter', sans-serif; font-size:12px;
+  letter-spacing:0.2em; text-transform:uppercase;
+}
+.centre-disque{fill:var(--nuit-2); stroke:var(--vert); stroke-width:1.5;}
+.centre-nombre{
+  fill:var(--vert); font-family:'Newsreader', Georgia, serif; font-weight:300;
+  font-size:46px; font-variant-numeric:tabular-nums;
+}
+.noeud{transition:transform 0.75s var(--sortie), opacity 0.45s var(--doux);}
+.point{fill:var(--craie-faible); transition:fill 0.3s var(--doux), r 0.3s var(--sortie);}
+.libelle{
+  fill:var(--craie-douce); font-family:'Inter', sans-serif; font-size:13px;
+  transition:fill 0.3s var(--doux);
+}
+.lien{stroke:var(--trait); stroke-width:1; transition:opacity 0.4s var(--doux), stroke 0.3s var(--doux);}
+.noeud[data-origine="metier"] .point,
+.noeud[data-origine="contexte"] .point{fill:var(--vert);}
+.noeud[data-origine="contexte"] .point{fill:var(--vert-vif);}
+.lien[data-origine="metier"]{stroke:rgba(95,179,161,0.45);}
+.lien[data-origine="contexte"]{stroke:rgba(132,220,196,0.55);}
+
+/* Survol d'une question : tout s'éteint sauf ce qu'elle apporte. */
+.constellation.souligne .noeud:not(.vif){opacity:0.2;}
+.constellation.souligne .lien:not(.vif){opacity:0.12;}
+.constellation.souligne .noeud.vif .point{r:7.5; fill:var(--vert-vif);}
+.constellation.souligne .noeud.vif .libelle{fill:var(--craie);}
+.constellation.souligne .lien.vif{stroke:var(--vert-vif); stroke-width:1.6;}
+
+@media (max-width:820px){
+  /* Les libellés ne tiennent plus : la liste détaillée, juste en dessous, les
+     porte déjà. */
+  .libelle{display:none;}
+  .anneau-titre{font-size:14px;}
+}
+
+@media print{
+  .bloc-constellation{display:none !important;}
+}
+@media (prefers-reduced-motion: reduce){
+  .intro{display:none !important;}
+  .noeud,.lien,.point{transition:none !important;}
+}

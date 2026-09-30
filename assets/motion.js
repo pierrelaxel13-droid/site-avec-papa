@@ -20,6 +20,60 @@
   var SORTIE = "cubic-bezier(0.16, 1, 0.3, 1)";
   var el = function (id) { return document.getElementById(id); };
 
+  /* --- 0. Séquence d'ouverture --------------------------------------------- */
+  /* Une fois par session, sur la page d'accueil seulement, et sautable. Elle
+     est créée par le script : sans JavaScript elle n'existe pas, et rien n'est
+     donc jamais masqué derrière elle. */
+  function ouverture(apres) {
+    var heros = document.querySelector(".heros");
+    var R = window.REFERENTIEL;
+    var dejaVue = false;
+    try { dejaVue = window.sessionStorage.getItem("pco-intro") === "1"; } catch (e) { /* peu importe */ }
+
+    if (SOBRE || !heros || !R || dejaVue) { apres(); return; }
+    try { window.sessionStorage.setItem("pco-intro", "1"); } catch (e) { /* peu importe */ }
+
+    var total = Object.keys(R.domaines).length;
+    var voile = document.createElement("div");
+    voile.className = "intro";
+    voile.setAttribute("aria-hidden", "true");
+    voile.innerHTML =
+      '<span class="intro-marque">Pierrel <span>&amp; Co</span></span>' +
+      '<span class="intro-compteur">0</span>' +
+      '<span class="intro-trait"><span></span></span>' +
+      '<span class="intro-legende">domaines de veille</span>' +
+      '<span class="intro-passer">cliquez pour passer</span>';
+    document.body.appendChild(voile);
+    document.body.style.overflow = "hidden";
+
+    var compteur = voile.querySelector(".intro-compteur");
+    var t0 = performance.now();
+    var fini = false;
+
+    function termine() {
+      if (fini) return;
+      fini = true;
+      compteur.textContent = total;
+      voile.classList.add("sort");
+      document.body.style.overflow = "";
+      setTimeout(function () { voile.remove(); }, 1000);
+      apres();
+    }
+
+    (function pas(t) {
+      if (fini) return;
+      var p = Math.min(1, (t - t0) / 1500);
+      compteur.textContent = Math.round(total * (1 - Math.pow(1 - p, 3)));
+      if (p < 1) requestAnimationFrame(pas);
+      else setTimeout(termine, 420);
+    })(t0);
+
+    voile.addEventListener("click", termine);
+    window.addEventListener("keydown", termine, { once: true });
+    // Filet de sécurité : rien ne doit pouvoir laisser le voile en place.
+    setTimeout(termine, 4000);
+  }
+
   /* --- 1. Le titre, mot à mot --------------------------------------------- */
   function mots() {
     document.querySelectorAll("[data-mots]").forEach(function (titre) {
@@ -154,6 +208,22 @@
     });
   }
 
+  /* --- 6 bis. Relief des cartes ---------------------------------------------- */
+  function relief() {
+    if (SOBRE || !FIN) return;
+    document.querySelectorAll(".carte").forEach(function (c) {
+      c.addEventListener("pointermove", function (e) {
+        var r = c.getBoundingClientRect();
+        var rx = ((e.clientY - r.top) / r.height - 0.5) * -5;
+        var ry = ((e.clientX - r.left) / r.width - 0.5) * 6;
+        c.style.transform = "perspective(900px) rotateX(" + rx.toFixed(2) + "deg) rotateY(" +
+          ry.toFixed(2) + "deg) translateY(-6px)";
+      });
+      // On rend la main au CSS plutôt que de figer une valeur neutre.
+      c.addEventListener("pointerleave", function () { c.style.transform = ""; });
+    });
+  }
+
   /* --- 7. Halo de curseur ------------------------------------------------------ */
   /* Il accompagne le curseur natif sans le masquer : cacher le vrai curseur
      coûte trop cher à qui vise mal, pour un gain purement décoratif. */
@@ -272,14 +342,16 @@
   }
 
   /* --- Mise en route -------------------------------------------------------------- */
-  mots();
-  entree();
   barre();
   reveler();
   recit();
   lueur();
+  relief();
   halo();
   aimant();
+  // Le titre et le héros n'entrent qu'une fois le voile parti : sinon leur
+  // animation se joue derrière lui et le visiteur ne la voit jamais.
+  ouverture(function () { mots(); entree(); });
   document.addEventListener("plan:rendu", surRendu);
   surRendu();
 })();
