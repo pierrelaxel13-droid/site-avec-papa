@@ -77,9 +77,18 @@
 
       <div id="sortie-resume" aria-live="polite" style="margin-top:28px;"></div>
 
-      <!-- Diagramme et calendrier persistent entre deux rendus : c'est ce qui
-           permet d'animer le déplacement des domaines au lieu de tout réécrire. -->
-      <div class="diagramme sans-impression" id="diagramme" hidden aria-hidden="true"></div>
+      <!-- La constellation et le calendrier persistent entre deux rendus :
+           c'est ce qui permet d'animer le déplacement des domaines au lieu de
+           tout réécrire. -->
+      <div class="bloc-constellation sans-impression" id="bloc-constellation" hidden>
+        <div id="constellation" hidden></div>
+        <p class="legende">
+          <span><i></i> socle commun</span>
+          <span class="de-metier"><i></i> votre métier</span>
+          <span class="de-contexte"><i></i> votre contexte</span>
+          <span>anneau intérieur = à revoir le plus souvent</span>
+        </p>
+      </div>
 
       <div class="calendrier" id="calendrier" hidden>
         <div class="calendrier-tete">
@@ -126,6 +135,7 @@
 </footer>
 
 <script src="assets/referentiel.js"></script>
+<script src="assets/constellation.js"></script>
 <script src="assets/plan.js"></script>
 <script src="assets/motion.js"></script>
 </body>

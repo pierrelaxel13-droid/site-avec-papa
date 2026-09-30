@@ -1,6 +1,6 @@
 ---
 name: site-pierrel
-description: "Modifier et publier le site statique Pierrel & Co de ce dépôt (index.html, plan-de-veille.html, assets/site.css, assets/motion.js, assets/toile.js, assets/plan.js, build.mjs, netlify.toml). À utiliser pour toute demande de changement de contenu, de mise en page, de style, d'animation, de navigation, de texte, d'accessibilité ou d'impression, et pour prévisualiser ou publier le site. Déclencheurs typiques : « change le texte de l'accueil », « ajoute une section », « l'animation rame », « corrige le menu », « le rendu est cassé sur téléphone », « comment je vois le site », « ajoute une page », « le site ne se met pas à jour »."
+description: "Modifier et publier le site statique Pierrel & Co de ce dépôt (index.html, plan-de-veille.html, assets/site.css, assets/motion.js, assets/toile.js, assets/constellation.js, assets/plan.js, build.mjs, netlify.toml). À utiliser pour toute demande de changement de contenu, de mise en page, de style, d'animation, de navigation, de texte, d'accessibilité ou d'impression, et pour prévisualiser ou publier le site. Déclencheurs typiques : « change le texte de l'accueil », « ajoute une section », « l'animation rame », « corrige le menu », « le rendu est cassé sur téléphone », « comment je vois le site », « ajoute une page », « le site ne se met pas à jour »."
 ---
 
 # Le site Pierrel & Co
@@ -20,7 +20,8 @@ bundler, de bibliothèque d'animation ni de `npm install`** — il n'y a pas de
 | `assets/site.css` | Toute la mise en forme, mouvement et impression compris. |
 | `assets/toile.js` | L'animation d'ouverture sur `<canvas>`. |
 | `assets/motion.js` | Le mouvement piloté par script, sur les deux pages. |
-| `assets/plan.js` | Logique de l'outil : diagramme, calendrier, détail. |
+| `assets/constellation.js` | La constellation du plan : anneaux, liens, soulignement. |
+| `assets/plan.js` | Logique de l'outil : constellation, calendrier, détail. |
 | `assets/referentiel.js` | Le contenu métier → voir le skill `veille-reglementaire`. |
 
 ## Prévisualiser, et vérifier pour de vrai
@@ -81,11 +82,21 @@ Sombre, typographie massive, mouvement assumé. Deux registres seulement :
 - **Le héros est une grille, pas un flex.** Un enfant flex se rétracte sur son
   contenu et `.enveloppe` y perdrait sa largeur pleine, décalant tout le texte
   au milieu de l'écran.
-- **Le diagramme n'est jamais réécrit d'un bloc.** Ses jetons survivent d'un
-  rendu à l'autre, ce qui permet de les animer d'une colonne à l'autre (FLIP :
-  relever la position, réorganiser, relever la nouvelle, rejouer le trajet à
-  l'envers). Remplacer ce rendu par un `innerHTML` casserait l'animation la
-  plus visible du site.
+- **La constellation n'est jamais réécrite d'un bloc.** Ses nœuds survivent
+  d'un rendu à l'autre : c'est ce qui permet de les faire glisser vers leur
+  nouvelle place. Un `innerHTML` à chaque rendu casserait l'animation la plus
+  parlante du site.
+- **Chaque anneau est tourné d'un cran** (`phase`) par rapport au précédent, et
+  les libellés sont coupés à trente signes : sans ces deux réglages, deux
+  domaines de rythmes différents tombent au même angle et leurs libellés se
+  chevauchent. Le nom complet reste dans la liste détaillée.
+- **Attention aux noms de classes déjà pris.** La légende de la constellation
+  a d'abord utilisé `.metier`, déjà employé par les boutons de métier : ses
+  entrées héritaient du style d'une carte. D'où `.de-metier` et `.de-contexte`.
+- **La séquence d'ouverture ne doit jamais pouvoir rester en place.** Elle se
+  saute au clic et à la touche, et un délai de sécurité la retire au bout de
+  quatre secondes quoi qu'il arrive. Elle ne joue qu'une fois par session et
+  jamais en `prefers-reduced-motion`.
 - **L'en-tête et le pied de page sont dupliqués dans les deux pages** : aucun
   gabarit. Toucher au menu suppose d'éditer les deux fichiers.
 - **Les réponses de l'outil vivent dans `localStorage`** sous `pco-plan-v1`,

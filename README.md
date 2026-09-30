@@ -20,7 +20,8 @@ Mise en ligne : voir [DEPLOIEMENT.md](DEPLOIEMENT.md).
 |---|---|
 | `assets/site.css` | Toute la mise en forme des deux pages : tokens, composants, mouvement, impression, écrans étroits. |
 | `assets/toile.js` | L'animation d'ouverture sur `<canvas>` : le flux de textes, le tamis, le tri. |
-| `assets/motion.js` | Le mouvement piloté par script : découpe du titre, révélations, récit au défilement, halo de curseur, dépliages. |
+| `assets/motion.js` | Le mouvement piloté par script : séquence d'ouverture, découpe du titre, révélations, récit au défilement, halo de curseur, relief des cartes, dépliages. |
+| `assets/constellation.js` | La constellation du plan : anneaux de rythme, liens d'origine, soulignement au survol d'une question. |
 | `assets/polices.css` | Déclarations `@font-face` des deux polices servies par le site. |
 | `assets/polices/` | Inter et Newsreader, variables, sous-jeu latin. Un fichier par famille. |
 | `assets/referentiel.js` | Le contenu métier : 26 domaines de veille, 15 familles d'activité, 11 questions de contexte, la méthode et les sources. |
@@ -38,10 +39,11 @@ Mise en ligne : voir [DEPLOIEMENT.md](DEPLOIEMENT.md).
    chimiques, véhicules, denrées, marchés publics…). Chaque réponse ajoute ses
    domaines.
 3. **Plan** — sous trois formes complémentaires :
-   - un **diagramme** en quatre colonnes, une par rythme de revue. Les domaines
-     s'y déplacent d'une colonne à l'autre à chaque réponse, sans que le bloc
-     soit réécrit : leurs éléments survivent d'un rendu au suivant, ce qui
-     permet de les animer (technique dite FLIP) ;
+   - une **constellation** : au centre l'entreprise, chaque anneau un rythme de
+     revue — plus un domaine est proche, plus il faut le regarder souvent. La
+     couleur du trait dit d'où vient le domaine (socle commun, métier,
+     contexte), et **survoler une question allume ce qu'elle apporte**, en
+     éteignant le reste. C'est la seule vue qui montre la causalité ;
    - un **calendrier de l'année**, qui traduit les rythmes en nombre de revues
      par mois — c'est là qu'un dirigeant voit ce que son plan lui coûtera en
      temps ;
@@ -97,9 +99,14 @@ plus proche de la réalité.
 
 ## Mouvement
 
-Le site est animé : entrée du titre mot à mot, animation d'ouverture sur
-`<canvas>`, section qui se raconte au défilement, diagramme qui se réorganise,
-compteur qui monte, halo de curseur.
+Le site est animé : séquence d'ouverture, entrée du titre mot à mot, animation
+de fond sur `<canvas>` dont **le tamis suit le pointeur** — le visiteur trie
+lui-même le flux —, section qui se raconte au défilement, constellation qui se
+réorganise, compteur qui monte, halo de curseur, relief des cartes.
+
+La séquence d'ouverture ne joue **qu'une fois par session** (clé
+`pco-intro` dans `sessionStorage`), se saute au clic ou à la touche, et se
+retire d'elle-même au bout de quatre secondes quoi qu'il arrive.
 
 Trois règles y sont tenues, et doivent le rester :
 
