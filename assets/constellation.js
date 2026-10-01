@@ -150,6 +150,8 @@ window.CONSTELLATION = (function () {
       });
     });
 
+    ecarteLibelles();
+
     Object.keys(noeuds).forEach(function (id) {
       if (vus[id]) return;
       var n = noeuds[id];
@@ -159,6 +161,43 @@ window.CONSTELLATION = (function () {
       n.g.style.transform = n.g.style.transform.replace("scale(1)", "scale(0.4)");
       n.lien.style.opacity = "0";
       setTimeout(function () { n.g.remove(); n.lien.remove(); }, 420);
+    });
+  }
+
+  /* Le décalage des anneaux ne suffit pas toujours : deux libellés peuvent
+     encore se frôler. On les écarte verticalement, d'au plus vingt-deux pixels,
+     pour que le texte reste rattaché à son point.
+
+     Un nœud proche de l'axe vertical porte un libellé qui déborde de l'autre
+     côté : il est donc compté dans les deux colonnes, et c'est le plus grand
+     des deux écarts qui s'applique. */
+  function ecarteLibelles() {
+    var GARDE = 18, MAX = 22, MARGE = 60;
+    var ecarts = {};
+
+    [1, -1].forEach(function (cote) {
+      var liste = Object.keys(noeuds).map(function (id) {
+        var n = noeuds[id];
+        var m = /translate\(\s*(-?[\d.]+)px,\s*(-?[\d.]+)px/.exec(n.g.style.transform || "");
+        if (!m) return null;
+        var x = parseFloat(m[1]);
+        if (x * cote < -MARGE) return null;
+        return { id: id, y: parseFloat(m[2]) };
+      }).filter(Boolean).sort(function (a, b) { return a.y - b.y; });
+
+      var precedent = null;
+      liste.forEach(function (e) {
+        var dy = 0;
+        if (precedent !== null && e.y - precedent < GARDE) {
+          dy = Math.min(MAX, GARDE - (e.y - precedent));
+        }
+        ecarts[e.id] = Math.max(ecarts[e.id] || 0, dy);
+        precedent = e.y + dy;
+      });
+    });
+
+    Object.keys(noeuds).forEach(function (id) {
+      noeuds[id].texte.setAttribute("y", 4 + (ecarts[id] || 0));
     });
   }
 

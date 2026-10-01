@@ -697,3 +697,44 @@ strong{font-weight:600;}
   .intro{display:none !important;}
   .noeud,.lien,.point{transition:none !important;}
 }
+
+/* --- Aperçu, relief et lien partageable ------------------------------------ */
+.bloc-constellation{position:relative;}
+.etiquette-apercu{
+  position:absolute; top:0; left:50%; transform:translateX(-50%);
+  font-size:12px; letter-spacing:0.16em; text-transform:uppercase;
+  color:var(--vert-vif); opacity:0; transition:opacity 0.3s var(--doux);
+  pointer-events:none; z-index:2;
+}
+.bloc-constellation.apercu .etiquette-apercu{opacity:1;}
+.bloc-constellation.apercu .constellation{opacity:0.72;}
+.constellation{transition:opacity 0.35s var(--doux);}
+
+/* La scène donne la profondeur ; la constellation s'y incline avec le pointeur
+   (assets/motion.js). */
+.scene{perspective:1200px;}
+.scene > div{transform-style:preserve-3d; transition:transform 0.5s var(--sortie);}
+
+/* ==========================================================================
+   Grain et vignette
+   --------------------------------------------------------------------------
+   Deux couches fixes, inertes au pointeur, qui donnent au fond sa matière.
+   Le grain est un bruit SVG généré à la volée : pas de fichier, pas de requête.
+   ========================================================================== */
+.grain,.vignette{
+  position:fixed; inset:0; pointer-events:none; z-index:60;
+}
+.grain{
+  opacity:0.05; mix-blend-mode:overlay;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='b'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23b)'/%3E%3C/svg%3E");
+}
+.vignette{
+  background:radial-gradient(ellipse at center, transparent 54%, rgba(0,0,0,0.42) 100%);
+}
+
+@media print{
+  .grain,.vignette,.etiquette-apercu{display:none !important;}
+}
+@media (prefers-reduced-motion: reduce){
+  .scene > div{transform:none !important; transition:none !important;}
+}

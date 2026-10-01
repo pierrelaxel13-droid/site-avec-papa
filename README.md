@@ -21,7 +21,7 @@ Mise en ligne : voir [DEPLOIEMENT.md](DEPLOIEMENT.md).
 | `assets/site.css` | Toute la mise en forme des deux pages : tokens, composants, mouvement, impression, écrans étroits. |
 | `assets/toile.js` | L'animation d'ouverture sur `<canvas>` : le flux de textes, le tamis, le tri. |
 | `assets/motion.js` | Le mouvement piloté par script : séquence d'ouverture, découpe du titre, révélations, récit au défilement, halo de curseur, relief des cartes, dépliages. |
-| `assets/constellation.js` | La constellation du plan : anneaux de rythme, liens d'origine, soulignement au survol d'une question. |
+| `assets/constellation.js` | La constellation du plan : anneaux de rythme, liens d'origine, soulignement au survol d'une question, écartement automatique des libellés. |
 | `assets/polices.css` | Déclarations `@font-face` des deux polices servies par le site. |
 | `assets/polices/` | Inter et Newsreader, variables, sous-jeu latin. Un fichier par famille. |
 | `assets/referentiel.js` | Le contenu métier : 26 domaines de veille, 15 familles d'activité, 11 questions de contexte, la méthode et les sources. |
@@ -50,6 +50,15 @@ Mise en ligne : voir [DEPLOIEMENT.md](DEPLOIEMENT.md).
    - le **détail**, groupé par fréquence, chaque domaine dépliable sur ses
      obligations, ses textes et ses sources. Chaque domaine affiche **pourquoi**
      il est là : le socle commun, le métier, ou la réponse qui l'a déclenché.
+
+**Le plan tient dans l'adresse de la page** : `#btp-salaries.public` décrit un
+maçon employeur qui reçoit du public. On peut donc envoyer son plan par
+courriel ou le garder en favori, ce qu'aucun stockage local ne permet. L'adresse
+reçue l'emporte sur la mémoire du navigateur, et l'outil suit un changement
+d'ancre sans rechargement.
+
+Survoler un métier en montre le plan **sans l'adopter** : on compare avant de
+choisir.
 
 Le plan s'imprime (ou s'enregistre en PDF) avec un en-tête daté, pour être
 classé dans un dossier ou discuté en réunion. Le diagramme est retiré de la

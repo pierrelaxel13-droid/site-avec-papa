@@ -86,10 +86,18 @@ Sombre, typographie massive, mouvement assumé. Deux registres seulement :
   d'un rendu à l'autre : c'est ce qui permet de les faire glisser vers leur
   nouvelle place. Un `innerHTML` à chaque rendu casserait l'animation la plus
   parlante du site.
-- **Chaque anneau est tourné d'un cran** (`phase`) par rapport au précédent, et
-  les libellés sont coupés à trente signes : sans ces deux réglages, deux
-  domaines de rythmes différents tombent au même angle et leurs libellés se
-  chevauchent. Le nom complet reste dans la liste détaillée.
+- **Trois réglages empêchent les libellés de se chevaucher**, et il faut les
+  trois : chaque anneau tourné d'un cran (`phase`), les noms coupés à trente
+  signes, et l'écartement vertical d'`ecarteLibelles`. Un nœud proche de l'axe
+  vertical porte un libellé qui déborde de l'autre côté : il compte donc dans
+  les deux colonnes de l'écartement. Le nom complet reste dans la liste
+  détaillée. Un contrôle permanent mesure les chevauchements sur neuf plans,
+  jusqu'à vingt domaines : il doit rester à zéro.
+- **Le plan vit dans l'adresse** (`#metier-question.question`). L'adresse reçue
+  l'emporte sur `localStorage`, un plan restauré depuis le navigateur y est
+  réécrit, et `hashchange` est écouté — sans quoi un lien ouvert alors que
+  l'outil tourne déjà ne changerait rien à l'écran. `replaceState` et non
+  `pushState` : un clic de plus ne doit pas ajouter une entrée d'historique.
 - **Attention aux noms de classes déjà pris.** La légende de la constellation
   a d'abord utilisé `.metier`, déjà employé par les boutons de métier : ses
   entrées héritaient du style d'une carte. D'où `.de-metier` et `.de-contexte`.
