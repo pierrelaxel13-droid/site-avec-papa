@@ -29,6 +29,32 @@
 
   var etat = { metier: null, reponses: [] };
 
+  /* --- L'adresse porte le plan ---------------------------------------------
+     Un plan tient en une adresse : « #btp-salaries.public ». On peut donc
+     l'envoyer à son expert-comptable ou le garder en favori, ce qu'aucun
+     stockage local ne permet. L'adresse l'emporte sur la mémoire du
+     navigateur : un lien reçu doit montrer le plan de celui qui l'envoie. */
+  function litAdresse() {
+    var h = (window.location.hash || "").replace(/^#/, "");
+    if (!h) return false;
+    var bouts = decodeURIComponent(h).split("-");
+    var m = bouts[0];
+    if (!R.metier(m)) return false;
+    etat.metier = m;
+    etat.reponses = (bouts[1] || "").split(".")
+      .filter(function (id) { return !!R.question(id); });
+    return true;
+  }
+
+  function ecritAdresse() {
+    var h = etat.metier
+      ? "#" + etat.metier + (etat.reponses.length ? "-" + etat.reponses.join(".") : "")
+      : " ";
+    // replaceState : un clic de plus ne doit pas ajouter une entrée d'historique
+    // que le bouton « précédent » devrait ensuite dépiler une par une.
+    try { window.history.replaceState(null, "", h); } catch (e) { /* sans effet */ }
+  }
+
   /* --- Persistance, toujours tolérante à l'échec --------------------------- */
   function lit() {
     try {
@@ -44,6 +70,7 @@
 
   function ecrit() {
     try { window.localStorage.setItem(CLE, JSON.stringify(etat)); } catch (e) { /* sans effet */ }
+    ecritAdresse();
   }
 
   /* --- Utilitaires ---------------------------------------------------------- */
@@ -65,6 +92,21 @@
         (m.naf ? '<span class="naf">NAF : ' + esc(m.naf) + "</span>" : "") +
         '<span class="exemples">' + esc(m.exemples) + "</span></button>";
     }).join("");
+
+    // Survoler un métier en montre le plan sans l'adopter : on compare avant de
+    // choisir, et la constellation apparaît dès le premier survol.
+    hote.querySelectorAll("[data-metier]").forEach(function (b) {
+      var id = b.getAttribute("data-metier");
+      b.addEventListener("pointerenter", function () {
+        if (etat.metier === id) return;
+        apercu(id);
+      });
+      b.addEventListener("pointerleave", function () { finApercu(); });
+      b.addEventListener("focus", function () {
+        if (etat.metier !== id) apercu(id);
+      });
+      b.addEventListener("blur", function () { finApercu(); });
+    });
 
     hote.querySelectorAll("[data-metier]").forEach(function (b) {
       b.addEventListener("click", function () {
@@ -128,6 +170,31 @@
         ? " — " + esc(pluriel(etat.reponses.length, "précision de contexte", "précisions de contexte"))
         : "") +
       "</span></div>";
+  }
+
+  /* --- Aperçu -------------------------------------------------------------- */
+  var enApercu = false;
+
+  function apercu(metierId) {
+    var m = R.metier(metierId);
+    if (!m || !window.CONSTELLATION) return;
+    enApercu = true;
+    var bloc = element("bloc-constellation");
+    if (bloc) {
+      bloc.hidden = false;
+      bloc.classList.add("apercu");
+      var etiq = bloc.querySelector(".etiquette-apercu");
+      if (etiq) etiq.textContent = "Aperçu — " + m.nom;
+    }
+    window.CONSTELLATION.rend(R.plan(metierId, etat.reponses), m);
+  }
+
+  function finApercu() {
+    if (!enApercu) return;
+    enApercu = false;
+    var bloc = element("bloc-constellation");
+    if (bloc) bloc.classList.remove("apercu");
+    rendPlan();
   }
 
   /* --- Étape 3b : la constellation ---------------------------------------- */
@@ -273,10 +340,29 @@
     var imprimer = element("bouton-imprimer");
     if (imprimer) imprimer.addEventListener("click", function () { window.print(); });
 
+    var copier = element("bouton-copier");
+    if (copier) copier.addEventListener("click", function () {
+      var dit = function (texte) {
+        copier.textContent = texte;
+        setTimeout(function () { copier.textContent = "Copier le lien de ce plan"; }, 2200);
+      };
+      var url = window.location.href;
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(url).then(function () { dit("Lien copié"); },
+          function () { dit("Copie refusée — l'adresse est dans la barre"); });
+      } else {
+        // Pas de presse-papiers (contexte non sécurisé, vieux navigateur) :
+        // l'adresse de la page porte déjà le plan, on le dit plutôt que de
+        // faire semblant.
+        dit("L'adresse de la page est le lien");
+      }
+    });
+
     var reset = element("bouton-reset");
     if (reset) reset.addEventListener("click", function () {
       etat = { metier: null, reponses: [] };
       try { window.localStorage.removeItem(CLE); } catch (e) { /* rien à faire */ }
+      ecritAdresse();
       rendMetiers();
       rendQuestions();
       rendPlan();
@@ -284,7 +370,22 @@
     });
   }
 
+  /* Changer d'ancre ne recharge pas la page : sans cette écoute, ouvrir un lien
+     reçu alors qu'on a déjà l'outil ouvert ne changerait rien à l'écran. */
+  window.addEventListener("hashchange", function () {
+    if (!litAdresse()) return;
+    ecrit();
+    rendMetiers();
+    rendQuestions();
+    rendPlan();
+  });
+
   lit();
+  litAdresse();          // l'adresse reçue l'emporte sur la mémoire locale
+  // Un plan restauré depuis le navigateur doit lui aussi se retrouver dans
+  // l'adresse : sinon, copier le lien en revenant sur le site donnerait un
+  // lien vide.
+  if (etat.metier) ecritAdresse();
   rendMetiers();
   rendQuestions();
   rendPlan();

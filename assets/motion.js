@@ -224,6 +224,37 @@
     });
   }
 
+  /* --- 6 ter. Matière du fond ------------------------------------------------ */
+  /* Grain et vignette sont purement décoratifs : posés par le script, ils
+     n'alourdissent pas le HTML et disparaissent proprement s'il ne tourne pas. */
+  function matiere() {
+    ["grain", "vignette"].forEach(function (nom) {
+      var d = document.createElement("div");
+      d.className = nom;
+      d.setAttribute("aria-hidden", "true");
+      document.body.appendChild(d);
+    });
+  }
+
+  /* --- 6 quater. Relief de la constellation ----------------------------------- */
+  /* La constellation s'incline avec le pointeur. L'inclinaison reste faible :
+     au-delà, les libellés deviennent illisibles de biais. */
+  function inclinaison() {
+    if (SOBRE || !FIN) return;
+    var scene = document.querySelector(".scene");
+    if (!scene) return;
+    var cible = scene.firstElementChild;
+    if (!cible) return;
+
+    scene.addEventListener("pointermove", function (e) {
+      var r = scene.getBoundingClientRect();
+      var rx = ((e.clientY - r.top) / r.height - 0.5) * -8;
+      var ry = ((e.clientX - r.left) / r.width - 0.5) * 11;
+      cible.style.transform = "rotateX(" + rx.toFixed(2) + "deg) rotateY(" + ry.toFixed(2) + "deg)";
+    });
+    scene.addEventListener("pointerleave", function () { cible.style.transform = ""; });
+  }
+
   /* --- 7. Halo de curseur ------------------------------------------------------ */
   /* Il accompagne le curseur natif sans le masquer : cacher le vrai curseur
      coûte trop cher à qui vise mal, pour un gain purement décoratif. */
@@ -347,6 +378,8 @@
   recit();
   lueur();
   relief();
+  matiere();
+  inclinaison();
   halo();
   aimant();
   // Le titre et le héros n'entrent qu'une fois le voile parti : sinon leur

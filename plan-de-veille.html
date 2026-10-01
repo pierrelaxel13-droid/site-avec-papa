@@ -37,7 +37,8 @@
       <p class="texte" style="margin-top:28px; color:var(--craie-douce);" data-monte>
         Deux questions. Vous repartez avec les domaines à surveiller, leur rythme
         de revue, les obligations derrière chacun et les sources à suivre.
-        Rien n'est envoyé : tout se calcule dans votre navigateur.
+        Rien n'est envoyé : tout se calcule dans votre navigateur, et votre plan
+        tient dans l'adresse de la page — vous pouvez l'envoyer tel quel.
       </p>
     </div>
   </div>
@@ -81,7 +82,8 @@
            c'est ce qui permet d'animer le déplacement des domaines au lieu de
            tout réécrire. -->
       <div class="bloc-constellation sans-impression" id="bloc-constellation" hidden>
-        <div id="constellation" hidden></div>
+        <span class="etiquette-apercu" aria-hidden="true"></span>
+        <div class="scene"><div id="constellation" hidden></div></div>
         <p class="legende">
           <span><i></i> socle commun</span>
           <span class="de-metier"><i></i> votre métier</span>
@@ -102,6 +104,7 @@
 
       <div class="barre-actions sans-impression" id="actions" hidden>
         <button type="button" class="bouton" id="bouton-imprimer">Imprimer ou enregistrer en PDF</button>
+        <button type="button" class="bouton bouton-fantome" id="bouton-copier">Copier le lien de ce plan</button>
         <a class="bouton bouton-fantome" href="index.html#contact">Faire valider ce plan</a>
         <button type="button" class="bouton bouton-fantome bouton-petit" id="bouton-reset">Tout effacer</button>
       </div>
