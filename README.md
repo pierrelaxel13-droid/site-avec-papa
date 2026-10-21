@@ -4,53 +4,53 @@ Site statique engendré, sans dépendance ni framework. La porte d'entrée est l
 **secteur** : une page par division de la nomenclature NAF, avec ce qui s'y
 applique, à quel rythme le revoir, et les pièges du métier.
 
-## Ce que produit la construction
+## Deux zones
 
 ```sh
-node build.mjs                      # engendre _site/ : 90 pages
+node build.mjs                      # engendre _site/ : 96 pages
 python3 -m http.server -d _site 8080
 ```
 
-| Page | Rôle |
-|---|---|
-| `index.html` | Accueil : constat, méthode, sources, contact. |
-| `secteurs.html` | Les 88 divisions NAF, cherchables par code, libellé **ou nom de métier**. |
-| `secteur/<code>-<libellé>.html` | Une par division. Adresse propre, pour que les moteurs y envoient les bonnes recherches. |
+**Le site public** — trois pages : `index.html` montre le produit avec de
+vraies captures de l'application, `tarifs.html` affiche les trois formules,
+`connexion.html` ouvre l'accès.
 
-Rien n'est écrit deux fois : un domaine corrigé dans le référentiel se propage
-aux 88 pages à la construction suivante.
+**L'application** — sous `app/` : tableau de bord, mon plan, relevé, registre,
+et les 88 fiches de secteur (`app/secteur/<code>-<libellé>.html`).
 
-## Les sources de contenu
+## Ce qui n'existe pas encore, et qui doit être dit
 
-| Fichier | Rôle |
-|---|---|
-| `assets/referentiel.js` | 21 sections NAF, 88 divisions, 44 domaines de veille, 22 questions de contexte, le rattachement division → domaines, les fréquences, la méthode et les sources officielles. |
-| `contenu/metiers.js` | Les mots du métier par division — « boulangerie » pour la division 10, « maçon » pour la 43. **C'est ce qui rend l'index trouvable** : les libellés NAF ne disent pas les métiers. 77 divisions couvertes, 397 mots. |
-| `contenu/pieges.js` | Les pièges du métier, une entrée par division. Seul contenu qui ne se déduit pas du référentiel. Chaque entrée porte `valide: false` tant qu'elle n'a pas été relue, et la page l'affiche alors avec une mention explicite. |
+**Il n'y a pas de serveur.** La « connexion » pose un jeton dans le navigateur
+et retire un voile posé au-dessus du contenu : **ce n'est pas une sécurité**.
+Les pages de l'application sont servies à tout le monde et leur contenu reste
+lisible dans la source. Les données affichées sont un jeu d'essai — entreprise
+et textes fictifs.
 
-## Le reste
+Les deux faits sont écrits sur les écrans concernés, dans `assets/session.js`
+et en tête de `build.mjs`. **Ils doivent y rester** tant que ces deux services
+ne sont pas en place :
 
-| Fichier | Rôle |
-|---|---|
-| `assets/site.css` | Le système visuel : tokens des deux thèmes, composants, impression, écrans étroits. |
-| `assets/theme.js` | Le choix du thème — auto, clair, sombre — appliqué avant le premier rendu. |
-| `assets/app.js` | Barre de navigation, révélations, recherche de l'index, affinage du périmètre. |
-| `assets/polices.css`, `assets/polices/` | EB Garamond, seule police chargée, servie par le site. Les étiquettes, codes NAF et chiffres sont en monospace du système. |
-| `build.mjs` | Le générateur, et les garde-fous. |
-| `design-system/pierrel-co/MASTER.md` | La direction visuelle, produite par le plugin `ui-ux-pro-max`. |
-| `recherche/marche-veille-reglementaire.md` | La revue du marché menée avant de concevoir. |
+- **l'authentification** — Netlify Identity ou équivalent, pour que les comptes
+  existent et que les pages ne soient plus servies sans jeton valide ;
+- **le paiement** — Stripe ou équivalent, pour l'abonnement et sa résiliation.
 
-## Le parti pris graphique
+La grille de tarifs est une **proposition à valider**, construite depuis la
+revue de marché, pas une grille arrêtée par Clément Pierrel. La page le dit.
 
-Le registre est **le document**, pas l'application : un registre réglementaire,
-une fiche technique. Ce que ce parti pris interdit, et qui était là dans une
-première version jugée « trop IA » : aucune ombre portée, aucun angle arrondi,
-aucun dégradé, aucune carte flottante, aucun bouton en pastille.
+## Les captures de l'accueil
 
-Ce qui structure la page à la place : des filets d'un pixel, une grille
-asymétrique à deux colonnes — une étroite pour les étiquettes, une large pour le
-texte — et un contraste typographique franc entre le Garamond du texte et le
-monospace des codes et des chiffres.
+Les écrans montrés sur la page d'accueil sont de **vraies captures** de
+l'application, prises par `outils/captures.mjs`. Elles ne peuvent donc pas
+mentir sur ce que contient le produit, et elles se périment avec lui — à
+relancer après toute modification visible :
+
+```sh
+node build.mjs && python3 -m http.server 8080 -d _site &
+node outils/captures.mjs
+node build.mjs
+```
+
+Si les captures manquent, l'accueil l'écrit au lieu d'afficher une image cassée.
 
 ## Les deux thèmes
 

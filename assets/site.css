@@ -446,3 +446,97 @@ a:hover{color:var(--tampon);}
   a{color:#000; text-decoration:none;}
   .arme{opacity:1 !important; transform:none !important;}
 }
+
+/* ==========================================================================
+   L'application
+   ========================================================================== */
+
+.bandeau-app{border-bottom-width:2px;}
+.bandeau-demo{
+  margin:0; padding:var(--t2) var(--t4);
+  background:var(--tampon-voile); border-bottom:1px solid var(--filet);
+  font-size:0.9375rem; color:var(--encre-douce); text-align:center;
+}
+.bandeau-demo strong{color:var(--tampon);}
+
+/* Le voile d'accès. Il cache visuellement, il ne protège rien — c'est écrit
+   sur la page, et c'est assumé tant qu'il n'y a pas de serveur. */
+.verrou{
+  padding:var(--t7) 0; border-bottom:1px solid var(--encre);
+  background:var(--papier);
+}
+body.verrouille main > *:not(.verrou){display:none;}
+
+.ouverture-app{padding:var(--t5) 0 var(--t4);}
+.ouverture-produit{padding:var(--t6) 0 var(--t5);}
+
+/* --- Compteurs ------------------------------------------------------------- */
+.compteurs{
+  display:grid; grid-template-columns:repeat(auto-fit,minmax(10rem,1fr));
+  gap:var(--t4); margin:0;
+}
+.compteurs dd{margin:0.2rem 0 0;}
+.mono.grand{font-size:2.4rem; line-height:1;}
+.compteurs .alerte .mono.grand{color:var(--tampon);}
+.compteurs .precision{display:block; font-size:0.875rem; color:var(--encre-douce); margin-top:0.2rem;}
+
+/* --- Échéances -------------------------------------------------------------- */
+.liste-echeances{list-style:none; padding:0; margin:0;}
+.liste-echeances li{
+  display:flex; flex-wrap:wrap; align-items:baseline; gap:var(--t3);
+  padding:0.7rem 0; border-top:1px solid var(--filet);
+}
+.liste-echeances li:first-child{border-top:1px solid var(--encre);}
+.liste-echeances .etiq{min-width:9rem;}
+.liste-echeances .retard .mono,.liste-echeances li.retard .etiq{color:var(--tampon);}
+
+/* --- Relevé et registre ------------------------------------------------------ */
+.liste-releve,.liste-registre{list-style:none; padding:0; margin:0;}
+.ligne-releve,.ligne-registre{
+  display:grid; grid-template-columns:8.5rem minmax(0,1fr) auto;
+  gap:var(--t3) var(--t4); align-items:baseline;
+  padding:var(--t3) 0; border-top:1px solid var(--filet);
+}
+.ligne-registre{grid-template-columns:8.5rem minmax(0,1fr);}
+.liste-releve li:first-child,.liste-registre li:first-child{border-top:1px solid var(--encre);}
+.ligne-releve .date,.ligne-registre .date{font-size:0.8125rem; color:var(--encre-douce);}
+.ligne-releve .titre,.ligne-registre .titre{display:block; font-size:1.0625rem;}
+.ligne-releve .quoi,.ligne-registre .quoi{display:block; color:var(--encre-douce); margin-top:0.2rem;}
+.ligne-releve .meta,.ligne-registre .meta{display:block; margin-top:0.35rem;}
+.ligne-releve .statut{white-space:nowrap; border:1px solid var(--filet-fort); padding:0.15rem 0.45rem;}
+.statut-attente .statut{border-color:var(--tampon); color:var(--tampon);}
+.statut-ouvert .statut{border-color:var(--encre); color:var(--encre);}
+.statut-clos .statut{opacity:0.6;}
+.ligne-registre.clos .titre{opacity:0.7;}
+
+/* --- Les écrans sur l'accueil -------------------------------------------------- */
+.ecran{margin:var(--t5) 0 0;}
+.ecran img{
+  display:block; width:100%; height:auto;
+  border:1px solid var(--filet-fort); background:var(--papier-aplat);
+}
+.ecran figcaption{margin-top:var(--t2); color:var(--encre-douce); font-size:0.9375rem;}
+.ecran figcaption .etiq{margin-right:0.4rem;}
+.ecran-absent{padding:var(--t4); border:1px dashed var(--filet-fort); margin-top:var(--t5);}
+
+/* --- Tarifs ---------------------------------------------------------------------- */
+.formules{display:grid; grid-template-columns:repeat(auto-fit,minmax(16rem,1fr)); gap:var(--t5);}
+.formule{border-top:1px solid var(--filet); padding-top:var(--t3);}
+.formule.mise-en-avant{border-top:2px solid var(--tampon);}
+.formule .prix{margin:var(--t2) 0 var(--t3); display:flex; align-items:baseline; gap:var(--t2);}
+.formule p{color:var(--encre-douce); font-size:1rem;}
+
+/* --- Connexion --------------------------------------------------------------------- */
+.connexion{max-width:38rem; margin-top:var(--t5);}
+
+/* --- Écrans étroits ------------------------------------------------------------------ */
+@media (max-width:820px){
+  .ligne-releve,.ligne-registre{grid-template-columns:1fr; gap:var(--t2);}
+  .ligne-releve .statut{justify-self:start;}
+  .bandeau-app .menu{gap:var(--t3);}
+}
+
+@media print{
+  .bandeau-demo,.verrou{display:none !important;}
+  .ligne-releve,.ligne-registre{break-inside:avoid;}
+}
