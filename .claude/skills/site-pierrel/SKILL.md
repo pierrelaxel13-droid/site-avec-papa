@@ -18,7 +18,7 @@ un fichier de `_site/` ne sert à rien, il est effacé à chaque construction.
 | `assets/site.css` | Toute la mise en forme, les deux thèmes, le mouvement et l'impression. |
 | `assets/app.js` | Bandeau, menu repliable, bascules, simulateur, recherche, affinage du périmètre, apparitions. |
 | `assets/theme.js` | Le choix de thème (auto / clair / sombre), appliqué avant le premier rendu. |
-| `assets/session.js` | Le jeton de démonstration. **Ce n'est pas une sécurité** — voir plus bas. |
+| `assets/session.js` | Le jeton de démonstration et la formule ouverte. **Ce n'est pas une sécurité** — voir plus bas. |
 | `assets/referentiel.js` | Le contenu métier → voir le skill `veille-reglementaire`. |
 | `contenu/metiers.js` | Les mots du métier qui rendent un secteur trouvable (« boulangerie » → division 10). |
 | `contenu/pieges.js` | Les pièges par secteur. `valide: false` tant que Clément Pierrel ne les a pas relus. |
@@ -126,6 +126,17 @@ qu'il n'y a pas de client.
 - **Dans une `<dl>`, un `<div>` n'admet que des `<dt>` et des `<dd>`.** Un lien
   qui couvre une carte de compteur se pose donc dans le `<dd>`, en
   `position: absolute; inset: 0`, pas autour du couple.
+- **Les trois formules sont un rang, pas une liste.** Une page déclare le rang
+  qu'elle demande (`formule:` dans l'appel à `page()`, qui pose `data-formule`
+  sur `<body>`), la session en porte un, `session.js` compare. Ajouter un écran
+  suppose donc de lui donner sa formule, et d'ajouter son fichier à la table
+  `exige` de `session.js` pour qu'il soit marqué dans le menu.
+- **Le champ du mot de passe ne doit jamais devenir fonctionnel à moitié.**
+  Tant qu'il n'y a pas de service d'authentification, il n'est lu nulle part,
+  n'est transmis nulle part, est vidé à l'envoi, et la page l'écrit au-dessus
+  du champ. Ne pas retirer cet avertissement, ne pas « brancher » une
+  vérification dans le navigateur : un mot de passe comparé côté client donne
+  l'illusion d'une sécurité et fait taper aux gens un vrai mot de passe.
 - **Ajouter une page publique** suppose trois gestes : la fonction dans
   `build.mjs`, son écriture dans `main()`, et le lien dans le menu **et** dans
   le pied de `page()`.
