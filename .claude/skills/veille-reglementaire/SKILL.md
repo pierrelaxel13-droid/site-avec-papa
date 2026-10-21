@@ -5,6 +5,16 @@ description: "Le référentiel de veille de ce dépôt, dans assets/referentiel.
 
 # Le référentiel de veille
 
+> **À lire en premier : le référentiel décrit ici n'existe plus dans la branche.**
+> `assets/referentiel.js` a été retiré pour refaire un autre site. Il est
+> récupérable au commit `790a7d0` (`git show 790a7d0:assets/referentiel.js`),
+> et le référentiel d'origine, plus fourni — 44 domaines et la collecte au
+> Journal officiel — est sur `origin/main`
+> (`git show origin/main:assets/veille-data.js`).
+> Ce qui suit vaut comme **mémoire du contenu métier** : la façon d'écrire un
+> domaine, de le rattacher, et les règles de rédaction restent valables quel
+> que soit le site qui le portera.
+
 ## Où ça vit
 
 Un seul fichier : `assets/referentiel.js`. Autonome, sans dépendance, chargé tel
