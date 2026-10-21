@@ -82,6 +82,28 @@ identifiant n'est vérifié. Le champ du mot de passe n'est lu nulle part, n'est
 transmis nulle part, et est vidé dès l'envoi — et la page le dit au-dessus du
 champ, avant qu'on y tape quoi que ce soit.
 
+## Mon entreprise, mes alertes
+
+`app/reglages.html` porte deux volets. **Mon entreprise** — raison sociale,
+code NAF, commune, effectif, contexte — recalcule le périmètre avec la même
+règle et les mêmes données que le simulateur de l'accueil : un métier décrit
+ici et décrit là-bas donne exactement le même plan. **Mes alertes** règle le
+rythme d'envoi et ce qui déclenche un envoi, avec un aperçu du courriel rendu
+dans la page.
+
+**Rien de tout cela ne quitte le navigateur.** Il n'y a pas de serveur : les
+saisies sont gardées sur l'appareil, ne sont transmises à personne, et
+disparaissent si le visiteur vide les données du site. Aucun courriel ne part.
+Les deux pages le disent au-dessus des formulaires, avant qu'on y tape quoi
+que ce soit.
+
+## Enregistrer une fiche en PDF
+
+Pas de serveur pour fabriquer un PDF, et aucune bibliothèque chargée : c'est
+l'impression du navigateur qui s'en charge, « Enregistrer au format PDF » dans
+sa boîte d'impression. Le bouton pose `body.impression-fiche` et marque la
+ligne ; la feuille d'impression ne garde que celle-là, avec un en-tête.
+
 ## L'application installable
 
 Le site est une application web installable : `manifest.webmanifest` et `sw.js`

@@ -400,7 +400,38 @@
     });
   }
 
+  /* --- Enregistrer une fiche en PDF ------------------------------------------ */
+  /* Il n'y a pas de serveur pour fabriquer un PDF, et aucune bibliothèque n'est
+     chargée : c'est l'impression du navigateur qui s'en charge, « Enregistrer au
+     format PDF » dans sa boîte d'impression. La feuille d'impression ne garde
+     alors que la fiche demandée. */
+  function imprimerFiche() {
+    var boutons = $$(".imprimer-fiche");
+    if (!boutons.length) return;
+
+    var nettoie = function () {
+      document.body.classList.remove("impression-fiche");
+      $$(".a-imprimer").forEach(function (e) { e.classList.remove("a-imprimer"); });
+    };
+
+    boutons.forEach(function (b) {
+      b.addEventListener("click", function () {
+        var ligne = b.closest(".ligne-releve, .ligne-registre");
+        if (!ligne) return;
+        nettoie();
+        ligne.classList.add("a-imprimer");
+        document.body.classList.add("impression-fiche");
+        var details = ligne.querySelector("details");
+        if (details) details.open = true;   // une fiche repliée s'imprimerait vide
+        window.print();
+      });
+    });
+
+    window.addEventListener("afterprint", nettoie);
+  }
+
   window.PCO_THEME && window.PCO_THEME.brancher();
+  imprimerFiche();
   serviceWorker();
   installation();
   bandeau();

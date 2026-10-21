@@ -19,6 +19,7 @@ un fichier de `_site/` ne sert à rien, il est effacé à chaque construction.
 | `assets/app.js` | Bandeau, menu repliable, bascules, simulateur, recherche, affinage du périmètre, apparitions. |
 | `assets/theme.js` | Le choix de thème (auto / clair / sombre), appliqué avant le premier rendu. |
 | `assets/session.js` | Le jeton de démonstration et la formule ouverte. **Ce n'est pas une sécurité** — voir plus bas. |
+| `assets/entreprise.js` | Les deux volets de `app/reglages.html` : mon entreprise, mes alertes. Tout est gardé dans le navigateur. |
 | `assets/referentiel.js` | Le contenu métier → voir le skill `veille-reglementaire`. |
 | `contenu/metiers.js` | Les mots du métier qui rendent un secteur trouvable (« boulangerie » → division 10). |
 | `contenu/pieges.js` | Les pièges par secteur. `valide: false` tant que Clément Pierrel ne les a pas relus. |
@@ -137,6 +138,16 @@ qu'il n'y a pas de client.
   du champ. Ne pas retirer cet avertissement, ne pas « brancher » une
   vérification dans le navigateur : un mot de passe comparé côté client donne
   l'illusion d'une sécurité et fait taper aux gens un vrai mot de passe.
+- **Se connecter et s'abonner sont deux parcours**, donc deux pages :
+  `connexion.html` ne porte que le formulaire, `abonnement.html` porte la
+  grille, l'essai et le choix de formule. Ne pas les refondre en une.
+- **Le périmètre se calcule à deux endroits** — le simulateur de l'accueil et
+  l'écran « Mon entreprise » — sur les mêmes données (`assets/plan-data.js`) et
+  avec la même règle. Toucher à l'un suppose de vérifier l'autre : un métier
+  décrit ici et décrit là-bas doit donner le même plan.
+- **Le PDF, c'est l'impression du navigateur.** Pas de bibliothèque, pas de
+  serveur : le bouton pose `body.impression-fiche`, marque la ligne, et la
+  feuille d'impression ne garde que celle-là.
 - **Ajouter une page publique** suppose trois gestes : la fonction dans
   `build.mjs`, son écriture dans `main()`, et le lien dans le menu **et** dans
   le pied de `page()`.
