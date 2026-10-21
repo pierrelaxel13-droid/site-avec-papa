@@ -839,6 +839,24 @@ img { height: auto; display: block; }
 }
 .bande-finale .rangee { margin-top: var(--t5); }
 
+/* --- 16 bis. Installer l'application ------------------------------------ */
+.installation { background: var(--papier-tein); border-top: 1px solid var(--filet); }
+.installation h2 { font-size: clamp(1.6rem, 1.15rem + 1.8vw, 2.4rem); }
+.installation .intro { margin-top: var(--t4); max-width: 46ch; }
+
+.appareils { display: grid; gap: var(--t3); margin: 0; padding: 0; list-style: none; }
+.appareil {
+  display: grid; grid-template-columns: 2.6rem minmax(0, 1fr); gap: var(--t3);
+  align-items: start; margin: 0;
+  padding: var(--t3) var(--t4);
+  background: var(--carte);
+  border: 1px solid var(--filet);
+  border-radius: var(--r2);
+}
+.appareil svg { width: 2.6rem; height: 2.6rem; color: var(--accent); }
+.appareil h3 { font-size: 1.02rem; margin-bottom: .15rem; }
+.appareil p { margin: 0; font-size: .94rem; }
+
 /* --- 17. Réserve ------------------------------------------------------- */
 .reserve {
   padding: var(--t4);
@@ -919,6 +937,11 @@ body.verrouille main > *:not(#verrou) { display: none; }
   letter-spacing: .02em;
   color: var(--encre-douce); text-decoration: none;
 }
+.jalons a {
+  color: var(--accent); border-color: var(--accent-filet);
+  transition: border-color .16s ease, background-color .16s ease;
+}
+.jalons a:hover { background: var(--accent-clair); border-color: var(--accent); }
 .jalons .fort { background: var(--accent); border-color: var(--accent); color: #fff; }
 :root[data-theme="dark"] .jalons .fort { color: #14142A; }
 @media (prefers-color-scheme: dark) {
@@ -940,6 +963,15 @@ body.verrouille main > *:not(#verrou) { display: none; }
   border-radius: var(--r3);
   box-shadow: var(--ombre-1);
 }
+.compteurs-liens > div { position: relative; }
+.lien-carte {
+  position: absolute; inset: 0;
+  border-radius: inherit;
+  transition: background-color .18s ease;
+}
+.lien-carte:hover { background: color-mix(in srgb, var(--encre) 6%, transparent); }
+.compteurs-liens .grand { color: var(--encre); }
+
 .compteurs dt, .faits dt { margin-bottom: var(--t2); }
 .compteurs dd, .faits dd { margin: 0; color: var(--encre); overflow-wrap: anywhere; }
 .compteurs .grand, .faits .grand {
@@ -959,18 +991,73 @@ body.verrouille main > *:not(#verrou) { display: none; }
   border-radius: var(--r2);
   padding: var(--t3) var(--t4);
 }
-.liste-echeances li { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem var(--t3); }
+.liste-echeances li { padding: 0; }
+.liste-echeances a {
+  display: flex; flex-wrap: wrap; align-items: center; gap: .5rem var(--t3);
+  padding: var(--t3) var(--t4);
+  border-radius: var(--r2);
+  color: var(--encre-douce); text-decoration: none;
+  transition: background-color .18s ease;
+}
+.liste-echeances a:hover { background: var(--carte-pale); color: var(--encre); }
 .liste-echeances .etiq { margin-right: auto; }
+.liste-echeances svg { width: 1rem; height: 1rem; color: var(--filet-controle); }
 .liste-echeances .retard, .liste-echeances li.retard { border-color: var(--ambre); background: var(--ambre-fond); }
 
-.ligne-releve, .ligne-registre {
+.ligne-releve, .ligne-registre { padding: 0; }
+.ligne-releve summary, .ligne-registre summary {
   display: grid; gap: .3rem var(--t4);
-  grid-template-columns: minmax(0, 1fr);
+  grid-template-columns: minmax(0, 1fr) 1.5rem;
+  padding: var(--t3) var(--t4);
+  cursor: pointer;
+  border-radius: var(--r2);
+  list-style: none;
 }
+.ligne-releve summary::-webkit-details-marker,
+.ligne-registre summary::-webkit-details-marker { display: none; }
+.ligne-releve summary:hover, .ligne-registre summary:hover { background: var(--carte-pale); }
+.ligne-releve summary:focus-visible, .ligne-registre summary:focus-visible { outline-offset: -2px; }
+
 @media (min-width: 46rem) {
-  .ligne-releve { grid-template-columns: 7.5rem minmax(0, 1fr) 8rem; align-items: start; }
-  .ligne-registre { grid-template-columns: 7.5rem minmax(0, 1fr); align-items: start; }
+  .ligne-releve summary { grid-template-columns: 7.5rem minmax(0, 1fr) 8rem 1.5rem; align-items: start; }
+  .ligne-registre summary { grid-template-columns: 7.5rem minmax(0, 1fr) 1.5rem; align-items: start; }
 }
+
+.chevron {
+  width: 1.1rem; height: 1.1rem; justify-self: end; align-self: start;
+  margin-top: .2rem; color: var(--filet-controle);
+  transition: transform .22s ease;
+}
+details[open] > summary .chevron { transform: rotate(180deg); }
+
+/* Le contenu d'un <details> sort du rendu dès que `open` tombe : on ne peut pas
+   animer sa hauteur sans script, et on s'en passe. */
+.ligne-releve .detail, .ligne-registre .detail {
+  padding: 0 var(--t4) var(--t4);
+  border-top: 1px solid var(--filet);
+  margin-top: var(--t2);
+  padding-top: var(--t4);
+}
+.detail-grille { display: grid; gap: var(--t4); margin-top: var(--t4); }
+@media (min-width: 52rem) { .detail-grille { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.detail-grille > div { min-width: 0; }
+.detail-grille ul { margin: var(--t2) 0 0; padding-left: 1.1rem; font-size: .96rem; }
+.detail-grille li { overflow-wrap: anywhere; }
+.detail-grille svg { width: .8rem; height: .8rem; color: var(--filet-controle); }
+
+.detail-champs {
+  display: grid; gap: var(--t3); margin: 0;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 9rem), 1fr));
+}
+.detail-champs > div { min-width: 0; }
+.detail-champs dd { margin: .15rem 0 0; color: var(--encre); font-weight: 600; }
+/* Un élément de grille garde min-width: auto, donc sa largeur de contenu : la
+   colonne a beau valoir minmax(0, 1fr), l'élément, lui, refuse de rétrécir.
+   C'est ce qui faisait déborder le relevé de 57 px à 320 px. */
+.ligne-releve summary > *, .ligne-registre summary > * { min-width: 0; }
+.ligne-releve .titre, .ligne-releve .quoi, .ligne-releve .meta,
+.ligne-registre .titre, .ligne-registre .quoi, .ligne-registre .meta { overflow-wrap: anywhere; }
+
 .ligne-releve .date, .ligne-registre .date { color: var(--encre-tenue); font-size: .88rem; padding-top: .15rem; }
 .ligne-releve .titre, .ligne-registre .titre { display: block; color: var(--encre); font-weight: 600; }
 .ligne-releve .quoi, .ligne-registre .quoi { display: block; margin-top: .15rem; }
