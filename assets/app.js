@@ -228,9 +228,12 @@
       sortie.ajouts.textContent = ajoutes;
 
       sortie.rythmes.innerHTML = paquets.map(function (g) {
+        var noms = g.ids.map(function (id) { return P.d[id].n; });
+        var reste = noms.length - 3;
         return "<li><span class=\"nom\">" + echappe(g.l) + "</span>" +
           "<span class=\"compte\">" + g.ids.length + "</span>" +
-          "<span class=\"mots\">" + echappe(g.ids.map(function (id) { return P.d[id].n; }).join(" · ")) +
+          "<span class=\"mots\">" + echappe(noms.slice(0, 3).join(" · ")) +
+          (reste > 0 ? " <span class=\"reste\">et " + reste + " autre" + (reste > 1 ? "s" : "") + "</span>" : "") +
           "</span></li>";
       }).join("");
 

@@ -67,69 +67,85 @@
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
     color-scheme: dark;
-    --accent:        #9C86FF;
-    --accent-fonce:  #B9A8FF;
-    --accent-clair:  #241F42;
-    --accent-filet:  #3B3464;
-    --encre:         #F3F1FC;
-    --encre-douce:   #B2AFC9;
-    --encre-tenue:   #8C89A4;
-    --papier:        #0E0E1A;
-    --papier-tein:   #15152A;
-    --papier-pale:   #121222;
-    --carte:         #181829;
-    --carte-pale:    #1D1D31;
-    --creme:         #1A1727;
-    --filet:         #2A2A42;
-    --filet-fort:    #3C3C5A;
-    --filet-controle:#8B88A3;
-    --vert:          #5FD39A;
-    --vert-fond:     #113626;
-    --ambre:         #F0A86A;
-    --ambre-fond:    #3A2411;
-    --bouton-fond:   #EDEBFB;
-    --bouton-texte:  #14142A;
-    --degrade-heros: linear-gradient(168deg,
-                       #1A1626 0%, #141A22 22%, #0F1C1A 46%, #15122E 74%, #16132F 100%);
-    --degrade-puce:  linear-gradient(135deg, #2A2238, #16281F 55%, #231E48);
-    --fil-rail:      linear-gradient(180deg, #4A3F2A, #27483A 45%, #3A3270);
-    --ombre-1: 0 1px 2px rgba(0, 0, 0, .4), 0 10px 24px -16px rgba(0, 0, 0, .7);
-    --ombre-2: 0 2px 4px rgba(0, 0, 0, .4), 0 28px 60px -32px rgba(0, 0, 0, .8);
-    --ombre-3: 0 40px 90px -48px rgba(0, 0, 0, .9);
+    /* Le sombre est une traduction, pas un inversement. Trois choses le
+       tiennent : des surfaces franchement distinctes les unes des autres
+       (fond, section teintée, carte), des filets visibles, et une teinte
+       d'accent plus claire et plus saturée que celle du clair — sur du
+       quasi-noir, l'indigo du jour devient gris. */
+    --accent:        #8E7CFF;
+    --accent-fonce:  #A99BFF;
+    --accent-clair:  #221C45;
+    --accent-filet:  #3A3175;
+    --encre:         #EEF1F8;
+    --encre-douce:   #A8B0C4;
+    --encre-tenue:   #828AA0;
+    --papier:        #0B0D14;
+    --papier-tein:   #10131D;
+    --papier-pale:   #0E111A;
+    --carte:         #161A26;
+    --carte-pale:    #1C2130;
+    --creme:         #141222;
+    --filet:         #262C3C;
+    --filet-fort:    #39415A;
+    --filet-controle:#8C94AB;
+    --vert:          #4ADE94;
+    --vert-fond:     #0D3326;
+    --ambre:         #FFB36B;
+    --ambre-fond:    #3A2614;
+    --bouton-fond:   #EDEFF8;
+    --bouton-texte:  #0F121C;
+    /* Deux halos et un fond plat, plutôt qu'un dégradé à cinq arrêts : le
+       dégradé du thème clair, traduit arrêt par arrêt, virait au brun verdâtre. */
+    --degrade-heros: radial-gradient(118% 86% at 16% -8%, rgba(142, 124, 255, .26), transparent 58%),
+                     radial-gradient(96% 76% at 88% 6%, rgba(72, 196, 180, .13), transparent 54%),
+                     linear-gradient(180deg, #121622 0%, #0B0D14 100%);
+    --degrade-puce:  linear-gradient(135deg, #2C2560, #1E2C4E 55%, #2A2168);
+    --fil-rail:      linear-gradient(180deg, #4A3F93, #2C5467 45%, #4A3F93);
+    --ombre-1: 0 1px 2px rgba(0, 0, 0, .5), 0 10px 24px -16px rgba(0, 0, 0, .8);
+    --ombre-2: 0 2px 4px rgba(0, 0, 0, .5), 0 28px 60px -32px rgba(0, 0, 0, .9);
+    --ombre-3: 0 40px 90px -48px rgba(0, 0, 0, 1);
   }
 }
 
 :root[data-theme="dark"] {
   color-scheme: dark;
-  --accent:        #9C86FF;
-  --accent-fonce:  #B9A8FF;
-  --accent-clair:  #241F42;
-  --accent-filet:  #3B3464;
-  --encre:         #F3F1FC;
-  --encre-douce:   #B2AFC9;
-  --encre-tenue:   #8C89A4;
-  --papier:        #0E0E1A;
-  --papier-tein:   #15152A;
-  --papier-pale:   #121222;
-  --carte:         #181829;
-  --carte-pale:    #1D1D31;
-  --creme:         #1A1727;
-  --filet:         #2A2A42;
-  --filet-fort:    #3C3C5A;
-  --filet-controle:#8B88A3;
-  --vert:          #5FD39A;
-  --vert-fond:     #113626;
-  --ambre:         #F0A86A;
-  --ambre-fond:    #3A2411;
-  --bouton-fond:   #EDEBFB;
-  --bouton-texte:  #14142A;
-  --degrade-heros: linear-gradient(168deg,
-                     #1A1626 0%, #141A22 22%, #0F1C1A 46%, #15122E 74%, #16132F 100%);
-  --degrade-puce:  linear-gradient(135deg, #2A2238, #16281F 55%, #231E48);
-  --fil-rail:      linear-gradient(180deg, #4A3F2A, #27483A 45%, #3A3270);
-  --ombre-1: 0 1px 2px rgba(0, 0, 0, .4), 0 10px 24px -16px rgba(0, 0, 0, .7);
-  --ombre-2: 0 2px 4px rgba(0, 0, 0, .4), 0 28px 60px -32px rgba(0, 0, 0, .8);
-  --ombre-3: 0 40px 90px -48px rgba(0, 0, 0, .9);
+  /* Le sombre est une traduction, pas un inversement. Trois choses le
+     tiennent : des surfaces franchement distinctes les unes des autres
+     (fond, section teintée, carte), des filets visibles, et une teinte
+     d'accent plus claire et plus saturée que celle du clair — sur du
+     quasi-noir, l'indigo du jour devient gris. */
+  --accent:        #8E7CFF;
+  --accent-fonce:  #A99BFF;
+  --accent-clair:  #221C45;
+  --accent-filet:  #3A3175;
+  --encre:         #EEF1F8;
+  --encre-douce:   #A8B0C4;
+  --encre-tenue:   #828AA0;
+  --papier:        #0B0D14;
+  --papier-tein:   #10131D;
+  --papier-pale:   #0E111A;
+  --carte:         #161A26;
+  --carte-pale:    #1C2130;
+  --creme:         #141222;
+  --filet:         #262C3C;
+  --filet-fort:    #39415A;
+  --filet-controle:#8C94AB;
+  --vert:          #4ADE94;
+  --vert-fond:     #0D3326;
+  --ambre:         #FFB36B;
+  --ambre-fond:    #3A2614;
+  --bouton-fond:   #EDEFF8;
+  --bouton-texte:  #0F121C;
+  /* Deux halos et un fond plat, plutôt qu'un dégradé à cinq arrêts : le
+     dégradé du thème clair, traduit arrêt par arrêt, virait au brun verdâtre. */
+  --degrade-heros: radial-gradient(118% 86% at 16% -8%, rgba(142, 124, 255, .26), transparent 58%),
+                   radial-gradient(96% 76% at 88% 6%, rgba(72, 196, 180, .13), transparent 54%),
+                   linear-gradient(180deg, #121622 0%, #0B0D14 100%);
+  --degrade-puce:  linear-gradient(135deg, #2C2560, #1E2C4E 55%, #2A2168);
+  --fil-rail:      linear-gradient(180deg, #4A3F93, #2C5467 45%, #4A3F93);
+  --ombre-1: 0 1px 2px rgba(0, 0, 0, .5), 0 10px 24px -16px rgba(0, 0, 0, .8);
+  --ombre-2: 0 2px 4px rgba(0, 0, 0, .5), 0 28px 60px -32px rgba(0, 0, 0, .9);
+  --ombre-3: 0 40px 90px -48px rgba(0, 0, 0, 1);
 }
 
 /* --- 2. Socle ---------------------------------------------------------- */
@@ -417,7 +433,9 @@ img { height: auto; display: block; }
 .gage svg, .gage .sigle { width: 1.15rem; height: 1.15rem; color: var(--accent); flex: none; }
 .gage .doux { color: var(--encre-douce); font-weight: 400; }
 
-/* Le visuel : deux écrans réels de l'application, pas une illustration. */
+/* Le visuel : deux écrans réels de l'application, pas une illustration.
+   L'ordinateur porte le tableau de bord, le téléphone le relevé — c'est le
+   même produit vu des deux côtés, pas deux fois la même image. */
 .heros-visuel {
   position: relative;
   margin-top: clamp(2.5rem, 1rem + 5vw, 4.5rem);
@@ -425,33 +443,18 @@ img { height: auto; display: block; }
   grid-template-columns: minmax(0, 1fr);
   justify-items: center;
 }
-.heros-visuel .portable { width: min(100%, 60rem); }
-.carte-flottante {
-  position: absolute; left: 0; bottom: 0; z-index: 2;
-  width: min(17rem, 40vw);
-  padding: var(--t4);
-  background: var(--carte);
-  border: 1px solid var(--filet);
-  border-radius: var(--r3);
-  box-shadow: var(--ombre-2);
-  text-align: left;
+.heros-visuel .portable { width: min(100%, 56rem); }
+.heros-visuel .mobile {
+  position: absolute; right: 0; bottom: 0; z-index: 2;
+  width: min(13rem, 23%);
 }
-.carte-flottante .grand {
-  margin: var(--t2) 0 0;
-  color: var(--encre); font-weight: 700;
-  font-size: clamp(1.1rem, .95rem + .7vw, 1.45rem); letter-spacing: -.02em;
-}
-.carte-flottante .doux { margin: .1rem 0 var(--t3); font-size: .92rem; color: var(--encre-tenue); }
-
+/* Sur téléphone, l'ordinateur réduit à 60 % d'un écran de 390 px ne montre
+   plus rien : on garde la seule maquette qui reste lisible à cette taille.
+   L'image écartée est en lazy : le navigateur ne la télécharge pas. */
 @media (max-width: 52rem) {
-  .carte-flottante {
-    position: static; width: 100%;
-    margin-top: var(--t4);
-    display: flex; flex-wrap: wrap; align-items: baseline; gap: .4rem var(--t3);
-  }
-  .carte-flottante .grand, .carte-flottante .doux { margin: 0; }
+  .heros-visuel .portable { display: none; }
+  .heros-visuel .mobile { position: static; width: min(15rem, 64%); }
 }
-
 /* --- 7. Maquettes d'appareil ------------------------------------------- */
 .portable {
   position: relative;
@@ -596,16 +599,19 @@ img { height: auto; display: block; }
 .trait p { margin-bottom: var(--t3); }
 
 /* --- 11. Vitrines ------------------------------------------------------ */
+/* Un écran pleine largeur par section écrasait la page. Ici l'écran occupe un
+   peu plus de la moitié, le texte l'autre, et les deux alternent de côté. */
 .vitrine {
-  background: var(--carte);
-  border: 1px solid var(--filet);
-  border-radius: var(--r4);
-  padding: clamp(1.25rem, .6rem + 2.6vw, 3rem);
-  box-shadow: var(--ombre-1);
+  display: grid; gap: clamp(1.5rem, 1rem + 2.5vw, 3.5rem);
+  align-items: center;
 }
-.vitrine + .vitrine { margin-top: var(--t5); }
-.vitrine-texte { max-width: 60ch; margin-top: clamp(1.5rem, 1rem + 2vw, 2.5rem); }
-.vitrine-texte h2 { font-size: clamp(1.6rem, 1.1rem + 2vw, 2.5rem); }
+.vitrine + .vitrine { margin-top: clamp(3rem, 2rem + 4vw, 5.5rem); }
+.vitrine > * { min-width: 0; }
+@media (min-width: 58rem) {
+  .vitrine { grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); }
+  .vitrine:nth-of-type(even) .portable { order: 2; }
+}
+.vitrine-texte h2 { font-size: clamp(1.5rem, 1.1rem + 1.6vw, 2.2rem); }
 .vitrine-texte p { margin-top: var(--t4); }
 .vitrine-texte .lien-fleche { margin-top: var(--t4); }
 
@@ -713,6 +719,7 @@ img { height: auto; display: block; }
   font-size: .88rem; color: var(--encre-tenue);
   overflow-wrap: anywhere;
 }
+.rythmes .reste { color: var(--filet-controle); font-style: italic; }
 .rythmes .compte {
   font-family: var(--mono); font-variant-numeric: tabular-nums;
   color: var(--accent); font-weight: 700;
@@ -767,7 +774,15 @@ img { height: auto; display: block; }
   color: var(--encre);
   font-family: var(--mono); font-size: .82rem; font-weight: 700;
 }
-.puces .nom { overflow-wrap: anywhere; }
+/* Les libellés NAF vont de deux mots à douze : sans cette coupe, une rangée
+   sur deux fait le triple de hauteur de l'autre. Le libellé entier est sur la
+   fiche, à un clic, et dans l'attribut title. */
+.puces .nom {
+  overflow-wrap: anywhere;
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.puces { grid-auto-rows: 1fr; }
 
 /* --- 14. Raisons numérotées -------------------------------------------- */
 .raisons { display: grid; gap: var(--t4); margin-top: var(--t5); list-style: none; padding: 0; }

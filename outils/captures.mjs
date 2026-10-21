@@ -32,6 +32,14 @@ const ECRANS = [
   { nom: "secteurs.png", url: "/app/secteurs.html" }
 ];
 
+// Le héros montre un téléphone à côté de l'ordinateur : il lui faut une vraie
+// capture au format d'un téléphone, pas un recadrage de l'écran large.
+const TELEPHONES = [
+  { nom: "bord-tel.png", url: "/app/index.html" },
+  { nom: "releve-tel.png", url: "/app/releve.html" }
+];
+const FORMAT_TEL = { width: 390, height: 844 };
+
 const navigateur = await chromium.launch({ executablePath: CHROME });
 const contexte = await navigateur.newContext({
   viewport: { width: 1280, height: 860 }, locale: "fr-FR", deviceScaleFactor: 1
@@ -47,8 +55,10 @@ await p.evaluate(() => { localStorage.setItem("pco-session", "demo"); });
 // Sans cela, un grand rectangle blanc trône au milieu de la page sombre.
 for (const theme of ["light", "dark"]) {
   await p.evaluate((t) => { localStorage.setItem("pco-theme", t); }, theme);
+
   for (const e of ECRANS) {
     const nom = theme === "dark" ? e.nom.replace(".png", "-sombre.png") : e.nom;
+    await p.setViewportSize({ width: 1280, height: 860 });
     await p.goto(BASE + e.url, { waitUntil: "networkidle" });
     await p.waitForTimeout(700);
     if (await p.locator("#verrou").count()) {
@@ -56,6 +66,18 @@ for (const theme of ["light", "dark"]) {
     }
     await p.screenshot({ path: resolve(RACINE, "assets/ecrans", nom) });
     console.log("  " + nom.padEnd(22) + e.url);
+  }
+
+  for (const e of TELEPHONES) {
+    const nom = theme === "dark" ? e.nom.replace(".png", "-sombre.png") : e.nom;
+    await p.setViewportSize(FORMAT_TEL);
+    await p.goto(BASE + e.url, { waitUntil: "networkidle" });
+    await p.waitForTimeout(700);
+    if (await p.locator("#verrou").count()) {
+      throw new Error(`${e.url} : le voile d'accès est encore là, la session n'a pas pris.`);
+    }
+    await p.screenshot({ path: resolve(RACINE, "assets/ecrans", nom) });
+    console.log("  " + nom.padEnd(22) + e.url + "  (téléphone)");
   }
 }
 

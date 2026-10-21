@@ -639,6 +639,17 @@ function portable(ECRANS, nom, alt) {
        </figure>`;
 }
 
+function mobile(ECRANS, nom, alt) {
+  if (!ECRANS.includes(nom)) return "";
+  const sombre = nom.replace(".png", "-sombre.png");
+  const img = (f, classe) => `<img class="${classe}" src="assets/ecrans/${esc(f)}" alt="${esc(alt)}"
+         loading="lazy" decoding="async" width="390" height="844">`;
+  return `<figure class="mobile" style="margin:0">
+         ${img(nom, "ecran-clair")}
+         ${ECRANS.includes(sombre) ? img(sombre, "ecran-sombre") : ""}
+       </figure>`;
+}
+
 function vitrine(ECRANS, { image, alt, titre, texte, lien, libelle }) {
   return `<article class="vitrine" data-paraitre>
   ${portable(ECRANS, image, alt)}
@@ -657,12 +668,15 @@ function questionsSimulateur(declencheurs) {
 </label>`).join("\n");
 }
 
+/* Les douze secteurs montrés sur l'accueil : ceux qu'un cabinet d'Istres
+   rencontre le plus. L'index des 88 est dans l'application. */
+const VITRINE_SECTEURS = ["43", "41", "10", "56", "47", "49", "52", "20", "25", "81", "86", "85"];
+
 function pageAccueil(V, D, METIERS, ECRANS) {
   const nbDomaines = Object.keys(V.domaines).length;
   const defaut = "43";                      // Travaux de construction spécialisés
   const divDefaut = V.divisions.filter((d) => d.c === defaut)[0] || V.divisions[0];
   const vuDefaut = perimetre(V, divDefaut.c);
-  const echeanceRetard = D.echeances.filter((e) => e.retard)[0];
 
   const parSection = V.sections.map((s) => ({
     s, divisions: V.divisions.filter((d) => d.s === s.c)
@@ -691,12 +705,7 @@ function pageAccueil(V, D, METIERS, ECRANS) {
 
     <div class="heros-visuel">
       ${portable(ECRANS, "bord.png", "Le tableau de bord de l'application : revues en retard, textes à analyser, actions ouvertes.")}
-      <aside class="carte-flottante" aria-hidden="true">
-        <span class="etiq">Prochaine revue</span>
-        <p class="grand">${esc(echeanceRetard ? V.frequences[echeanceRetard.frequence].l : "Hebdomadaire")}</p>
-        <p class="doux">${esc(echeanceRetard ? dateFr(echeanceRetard.prochaine) : "")}</p>
-        <p><span class="marque-ajout">en retard</span></p>
-      </aside>
+      ${mobile(ECRANS, "releve-tel.png", "Le relevé des textes sur téléphone.")}
     </div>
   </div>
 </section>
@@ -794,8 +803,9 @@ function pageAccueil(V, D, METIERS, ECRANS) {
 <section class="section">
   <div class="enveloppe">
     <h2 class="titre-section">Les écrans, avant de vous engager</h2>
-    <p class="intro titre-section">Ce sont de vraies captures de l'application, prises automatiquement
-    à chaque publication. Pas une maquette.</p>
+    <p class="intro titre-section">De vraies captures de l'application, prises automatiquement à
+    chaque publication. Le plan de veille et les fiches de secteur s'ouvrent depuis la
+    démonstration.</p>
 
     ${vitrine(ECRANS, {
       image: "releve.png",
@@ -808,16 +818,6 @@ function pageAccueil(V, D, METIERS, ECRANS) {
     })}
 
     ${vitrine(ECRANS, {
-      image: "plan.png",
-      alt: "Le plan de veille : les domaines retenus, groupés par rythme de revue.",
-      titre: "Un plan de veille écrit, domaine par domaine",
-      texte: `${nbDomaines} domaines de veille, ${V.divisions.length} divisions d'activité,
-        ${V.declencheurs.length} questions de contexte. Votre plan n'en retient que ce qui vous
-        concerne, avec pour chacun un rythme de revue et un responsable désigné.`,
-      lien: "connexion.html", libelle: "Voir le plan"
-    })}
-
-    ${vitrine(ECRANS, {
       image: "registre.png",
       alt: "Le registre de preuves : revues, décisions et actions, chronologiques et datées.",
       titre: "Ce qu'un auditeur demande vraiment",
@@ -825,16 +825,6 @@ function pageAccueil(V, D, METIERS, ECRANS) {
         veille faite et jamais tracée. Le registre enregistre chaque revue, chaque décision,
         chaque action, avec sa date. Il s'imprime tel quel.`,
       lien: "connexion.html", libelle: "Voir le registre"
-    })}
-
-    ${vitrine(ECRANS, {
-      image: "secteurs.png",
-      alt: "Les fiches de secteur, cherchables par code, par libellé ou par métier.",
-      titre: `${V.divisions.length} fiches de secteur`,
-      texte: `Chaque division de la nomenclature NAF a sa fiche : les domaines qui s'y appliquent,
-        les obligations derrière chacun, les sources officielles, et les pièges propres au métier.
-        Cherchable par code, par libellé ou par le nom du métier.`,
-      lien: "connexion.html", libelle: "Voir les fiches"
     })}
   </div>
 </section>
@@ -889,11 +879,14 @@ function pageAccueil(V, D, METIERS, ECRANS) {
         </div>
 
         <ul class="rythmes" id="sim-rythmes">
-          ${vuDefaut.groupes.map((g) => `<li>
+          ${vuDefaut.groupes.map((g) => {
+            const noms = g.base.map((id) => V.domaines[id].nom);
+            const reste = noms.length - 3;
+            return `<li>
             <span class="nom">${esc(g.f.l)}</span>
-            <span class="mots">${esc(g.base.map((id) => V.domaines[id].nom).join(" · "))}</span>
+            <span class="mots">${esc(noms.slice(0, 3).join(" · "))}${reste > 0 ? ` <span class="reste">et ${reste} autre${reste > 1 ? "s" : ""}</span>` : ""}</span>
             <span class="compte">${g.base.length}</span>
-          </li>`).join("")}
+          </li>`; }).join("")}
         </ul>
 
         <p class="note-source" id="sim-phrase">
@@ -916,17 +909,23 @@ function pageAccueil(V, D, METIERS, ECRANS) {
 
 <section class="section">
   <div class="enveloppe">
-    <h2 class="titre-section">Tous les secteurs, pas une sélection</h2>
+    <h2 class="titre-section">Votre métier y est</h2>
     <p class="intro titre-section">Les ${V.divisions.length} divisions de la nomenclature d'activités
-    française. Chacune a sa fiche.</p>
+    française ont chacune leur fiche. En voici quelques-unes ; l'index complet est dans
+    l'application.</p>
     <div class="panneau-puces">
       <ul class="puces">
-        ${V.divisions.map((d) => `<li><a href="app/secteur/${esc(d.c)}-${slug(d.l)}.html">
-          <span class="code">${esc(d.c)}</span><span class="nom">${esc(d.l)}</span></a></li>`).join("\n")}
+        ${VITRINE_SECTEURS.map((c) => {
+          const d = V.divisions.filter((x) => x.c === c)[0];
+          if (!d) throw new Error(`Vitrine de secteurs : division ${c} inconnue.`);
+          return `<li><a href="app/secteur/${esc(d.c)}-${slug(d.l)}.html" title="${esc(d.l)}">
+          <span class="code">${esc(d.c)}</span><span class="nom">${esc(d.l)}</span></a></li>`;
+        }).join("\n")}
       </ul>
     </div>
     <p class="rangee rangee-centre" style="margin-top:var(--t5)">
-      <a class="bouton bouton-accent" href="connexion.html">Ouvrir l'application</a>
+      <a class="bouton bouton-accent" href="app/secteurs.html">Voir les ${V.divisions.length} secteurs</a>
+      <a class="bouton bouton-sobre" href="connexion.html">Ouvrir l'application</a>
     </p>
   </div>
 </section>
