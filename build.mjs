@@ -67,7 +67,6 @@ function page({ titre, description, racine = "", page: nom, corps, classeBody = 
 <meta property="og:type" content="website">
 <link rel="icon" href="${a("assets/favicon.svg")}" type="image/svg+xml">
 <link rel="preload" href="${a("assets/polices/eb-garamond.woff2")}" as="font" type="font/woff2" crossorigin>
-<link rel="preload" href="${a("assets/polices/lato-400.woff2")}" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="${a("assets/polices.css")}">
 <link rel="stylesheet" href="${a("assets/site.css")}">
 <script src="${a("assets/theme.js")}"></script>
@@ -110,12 +109,12 @@ ${corps}
 <footer class="pied">
   <div class="enveloppe">
     <div class="pied-grille">
+      <span class="etiq">Pierrel &amp; Co</span>
       <div>
-        <h4>${esc(SITE.nom)}</h4>
         <p>${esc(SITE.bareme)}.<br>Veille réglementaire, préparation aux contrôles et aux audits.<br>${esc(SITE.zone)}.</p>
       </div>
       <div>
-        <h4>Le site</h4>
+        <span class="etiq">Le site</span>
         <ul>
           <li><a href="${a("index.html")}">Accueil</a></li>
           <li><a href="${a("secteurs.html")}">Les 88 secteurs</a></li>
@@ -124,7 +123,7 @@ ${corps}
         </ul>
       </div>
       <div>
-        <h4>Sources officielles</h4>
+        <span class="etiq">Sources officielles</span>
         <ul>
           <li><a href="https://www.legifrance.gouv.fr" target="_blank" rel="noopener">Légifrance</a></li>
           <li><a href="https://entreprendre.service-public.fr" target="_blank" rel="noopener">Entreprendre</a></li>
@@ -152,18 +151,18 @@ function blocDomaine(id, d, origine) {
   return `<article class="bloc-domaine" data-domaine="${esc(id)}" data-origine="${origine}"${origine === "declencheur" ? " hidden" : ""}>
   <div class="bloc-domaine-tete">
     <h3>${esc(d.nom)}</h3>
-    ${origine === "declencheur" ? '<span class="etiquette etiquette-accent">ajouté par votre contexte</span>' : ""}
+    ${origine === "declencheur" ? '<span class="marque-ajout">ajouté par votre contexte</span>' : ""}
   </div>
   <p class="bloc-domaine-resume">${esc(d.resume)}</p>
   <div class="bloc-domaine-corps">
     <div>
-      <h4>Ce qu'il faut tenir</h4>
+      <span class="etiq">Ce qu'il faut tenir</span>
       <ul>${d.obligations.map((o) => `<li>${esc(o)}</li>`).join("")}</ul>
     </div>
     <div>
-      <h4>Textes de référence</h4>
+      <span class="etiq">Textes de référence</span>
       <ul>${d.textes.map((t) => `<li>${esc(t)}</li>`).join("")}</ul>
-      <h4 style="margin-top:var(--space-lg)">Sources officielles</h4>
+      <span class="etiq" style="margin-top:var(--t4)">Sources officielles</span>
       <ul class="sources">${d.sources.map((s) =>
         `<li><a href="${esc(s.url)}" target="_blank" rel="noopener">${esc(s.nom)}</a></li>`).join("")}</ul>
     </div>
@@ -203,127 +202,108 @@ function perimetre(V, code) {
   return { base, declencheurs, ajoutables, groupes };
 }
 
-/* --- Page d'un secteur ----------------------------------------------------------- */
+/* --- Une rubrique : étiquette à gauche, contenu à droite ----------------------- */
+function rubrique({ etiq, contenu, aplat = false, id = "" }) {
+  const interieur = `<div class="enveloppe"><div class="rubrique"${id ? ` id="${id}"` : ""}>
+    <span class="etiq">${esc(etiq)}</span>
+    <div>${contenu}</div>
+  </div></div>`;
+  return aplat ? `<section class="section-aplat">${interieur}</section>` : `<section>${interieur}</section>`;
+}
+
+/* --- Page d'un secteur ------------------------------------------------------- */
 function pageSecteur(V, PIEGES, METIERS, d) {
-  const mots = METIERS[d.c] || [];
   const section = V.sections.filter((s) => s.c === d.s)[0];
+  const mots = METIERS[d.c] || [];
   const { base, declencheurs, groupes } = perimetre(V, d.c);
   const p = PIEGES[d.c];
-
   const sujet = encodeURIComponent(`Veille réglementaire — ${d.l} (NAF ${d.c})`);
+  const rythme = groupes.length ? groupes[0].f.l : "—";
 
   const corps = `
-<section class="heros">
+<section class="ouverture">
   <div class="enveloppe">
-    <nav class="fil" aria-label="Fil d'Ariane">
-      <a href="../index.html">Accueil</a> <span aria-hidden="true">/</span>
-      <a href="../secteurs.html">Les 88 secteurs</a> <span aria-hidden="true">/</span>
-      <span>${esc(d.c)}</span>
-    </nav>
-    <span class="surtitre">${esc(section ? section.l : "")}</span>
+    <p class="reference etiq">
+      <span><a href="../index.html">Pierrel &amp; Co</a></span>
+      <span><a href="../secteurs.html">Index des secteurs</a></span>
+      <span class="etiq-tampon">Fiche ${esc(d.c)}</span>
+      <span>Section ${esc(d.s)} — ${esc(section ? section.l : "")}</span>
+    </p>
     <h1>${esc(d.l)}</h1>
-    ${mots.length ? `<p class="aussi"><span>On dit aussi</span> ${mots.map((m) => `<em>${esc(m)}</em>`).join(" · ")}</p>` : ""}
-    <p class="chapeau lecture">
-      Ce qui s'applique à une entreprise de la division <strong>${esc(d.c)}</strong> de la
-      nomenclature NAF : les domaines à surveiller, leur rythme de revue, les obligations
-      concrètes derrière chacun et les sources officielles à suivre.
+    ${mots.length ? `<p class="aussi"><span class="etiq">On dit aussi</span>${esc(mots.join(" · "))}</p>` : ""}
+    <p class="chapeau" style="margin-top:var(--t4)">
+      Ce qui s'applique à une entreprise de cette division : les domaines à surveiller,
+      le rythme auquel les revoir, les obligations concrètes derrière chacun, et les
+      sources officielles où vérifier.
     </p>
-    <p class="rangee" style="margin-top:var(--space-xl)">
-      <span class="etiquette">NAF ${esc(d.c)}</span>
-      <span class="etiquette"><span id="compte-domaines">${base.length}</span> domaines de base</span>
-      <a class="bouton bouton-accent" href="#contact-secteur">Faire valider ce périmètre</a>
+    <dl class="faits" style="margin-top:var(--t5)">
+      <div><dt class="etiq">Code NAF</dt><dd><span class="mono">${esc(d.c)}</span></dd></div>
+      <div><dt class="etiq">Domaines de base</dt><dd><span class="mono" id="compte-domaines">${base.length}</span></dd></div>
+      <div><dt class="etiq">Rythme le plus serré</dt><dd>${esc(rythme)}</dd></div>
+      <div><dt class="etiq">Questions de contexte</dt><dd><span class="mono">${declencheurs.length}</span></dd></div>
+    </dl>
+    <p class="rangee" style="margin-top:var(--t5)">
+      <a class="bouton" href="#contact-secteur">Faire valider ce périmètre</a>
     </p>
   </div>
 </section>
 
-<section class="section">
-  <div class="enveloppe">
-    <div class="tete-section">
-      <span class="surtitre">Votre périmètre</span>
-      <h2>Ce qui s'applique, groupé par rythme de revue</h2>
-      <p>Le socle commun à toute entreprise, plus ce qui tient à ce métier en particulier.</p>
-    </div>
-    ${groupes.map((g) => `
-    <div class="groupe-frequence" data-groupe-frequence="${esc(g.id)}">
-      <div class="groupe-tete">
-        <h3>${esc(g.f.l)}</h3>
-        <span class="groupe-aide">${esc(g.f.d)}</span>
-      </div>
-      ${g.base.map((id) => blocDomaine(id, V.domaines[id], "base")).join("\n")}
-      ${g.ajout.map((id) => blocDomaine(id, V.domaines[id], "declencheur")).join("\n")}
-    </div>`).join("\n")}
-  </div>
-</section>
+${rubrique({ etiq: "Périmètre", contenu: `
+  <p class="lecture">Le socle commun à toute entreprise, plus ce qui tient à ce métier
+  en particulier. Groupé par rythme de revue : c'est le rythme, et non la liste,
+  qui détermine ce que la veille coûtera en temps.</p>
+  ${groupes.map((g) => `
+  <div class="groupe-frequence" data-groupe-frequence="${esc(g.id)}">
+    <div class="tete"><h3>${esc(g.f.l)}</h3><span class="etiq">${esc(g.f.d)}</span></div>
+    ${g.base.map((id) => blocDomaine(id, V.domaines[id], "base")).join("\n")}
+    ${g.ajout.map((id) => blocDomaine(id, V.domaines[id], "declencheur")).join("\n")}
+  </div>`).join("\n")}` })}
 
-${declencheurs.length ? `
-<section class="section section-muette">
-  <div class="enveloppe">
-    <div class="tete-section">
-      <span class="surtitre">Affiner</span>
-      <h2>Votre contexte ajoute des obligations</h2>
-      <p>
-        Cochez ce qui est vrai chez vous : les domaines correspondants s'ajoutent
-        au périmètre ci-dessus. Rien n'est envoyé, tout se calcule dans votre navigateur.
+${declencheurs.length ? rubrique({ etiq: "Contexte", aplat: true, contenu: `
+  <p class="lecture">Cochez ce qui est vrai chez vous : les domaines correspondants
+  s'ajoutent au périmètre ci-dessus. Seules figurent ici les questions qui apportent
+  quelque chose à ce métier — une case qui ne changerait rien n'a pas sa place.
+  Rien n'est envoyé, tout se calcule dans votre navigateur.</p>
+  <ul class="questions" id="declencheurs" style="margin-top:var(--t4)">
+    ${declencheurs.map((q) => `<li><label class="question">
+      <input type="checkbox" data-domaines="${esc(q.domaines.join(" "))}">
+      <span><span class="intitule">${esc(q.q)}</span><span class="aide">${esc(q.d)}</span></span>
+    </label></li>`).join("\n")}
+  </ul>` }) : ""}
+
+${p ? rubrique({ etiq: "Le terrain", contenu: `
+  <p class="lecture">Ce qui fait tomber les entreprises de ce secteur en particulier.
+  Pas la théorie : ce qu'on voit.</p>
+  ${p.valide ? "" : `<p class="reserve" style="margin:var(--t4) 0">
+    <strong>Premier jet, en attente de relecture.</strong>
+    Ces points sont déduits des obligations du secteur et n'ont pas encore été validés
+    par Clément Pierrel. À vérifier avant d'en tirer une action.</p>`}
+  <div class="pieges" style="margin-top:var(--t5)">
+    ${p.pieges.map((x) => `<article class="piege"><h3>${esc(x.titre)}</h3><p>${esc(x.texte)}</p></article>`).join("\n")}
+  </div>` }) : ""}
+
+${rubrique({ etiq: "Contact", aplat: true, id: "contact-secteur", contenu: `
+  <div class="deux-colonnes">
+    <div>
+      <h2>Faire valider ce périmètre</h2>
+      <p style="margin-top:var(--t3)">Cette fiche est un point de départ, pas une conclusion.
+      Un échange d'une heure suffit à écarter ce qui ne vous concerne pas et à fixer un
+      rythme tenable.</p>
+      <p class="rangee" style="margin-top:var(--t4)">
+        <a class="bouton" href="mailto:${esc(SITE.courriel)}?subject=${sujet}">Écrire à propos de ce secteur</a>
+        <a class="bouton bouton-sobre" href="tel:${esc(SITE.telephoneLien)}">${esc(SITE.telephone)}</a>
       </p>
     </div>
-    <ul class="questions" id="declencheurs">
-      ${declencheurs.map((q) => `<li><label class="question">
-        <input type="checkbox" data-domaines="${esc(q.domaines.join(" "))}">
-        <span><span class="intitule">${esc(q.q)}</span><span class="aide">${esc(q.d)}</span></span>
-      </label></li>`).join("\n")}
-    </ul>
-  </div>
-</section>` : ""}
-
-${p ? `
-<section class="section">
-  <div class="enveloppe">
-    <div class="tete-section">
-      <span class="surtitre">Le terrain</span>
-      <h2>Les pièges de ce métier</h2>
-      <p>Ce qui fait tomber les entreprises de ce secteur en particulier — pas la théorie, ce qu'on voit.</p>
-      ${p.valide ? "" : `<p class="reserve" style="margin-top:var(--space-lg)">
-        <strong>Premier jet, en attente de relecture.</strong>
-        Ces pièges sont proposés à partir des obligations du secteur et n'ont pas encore
-        été validés par Clément Pierrel. Ils sont à vérifier avant d'en tirer une action.
-      </p>`}
-    </div>
-    <div class="grille grille-2">
-      ${p.pieges.map((x) => `<article class="carte piege">
-        <h3>${esc(x.titre)}</h3>
-        <p>${esc(x.texte)}</p>
-      </article>`).join("\n")}
-    </div>
-  </div>
-</section>` : ""}
-
-<section class="section section-muette" id="contact-secteur">
-  <div class="enveloppe">
-    <div class="grille grille-2">
-      <div>
-        <span class="surtitre">Contact</span>
-        <h2>Faire valider ce périmètre</h2>
-        <p class="chapeau" style="margin-top:var(--space-lg)">
-          Cette page est un point de départ, pas une conclusion. Un échange d'une heure
-          suffit à écarter ce qui ne vous concerne pas et à fixer un rythme tenable.
-        </p>
-        <p class="rangee" style="margin-top:var(--space-xl)">
-          <a class="bouton" href="mailto:${esc(SITE.courriel)}?subject=${sujet}">Écrire à propos de ce secteur</a>
-          <a class="bouton bouton-sobre" href="tel:${esc(SITE.telephoneLien)}">${esc(SITE.telephone)}</a>
-        </p>
-      </div>
-      <p class="reserve">
-        <strong>Une réserve, dite une fois pour toutes.</strong>
-        Cette page fournit un cadre méthodologique, pas un conseil juridique, et ne garantit
-        pas l'exhaustivité des textes applicables à une entreprise donnée. Le rattachement
-        d'un domaine à une division NAF est une orientation, pas une qualification juridique.
-        Chaque texte doit être vérifié sur
-        <a href="https://www.legifrance.gouv.fr" target="_blank" rel="noopener">Légifrance</a>
-        et l'analyse d'applicabilité validée par une personne compétente.
-      </p>
-    </div>
-  </div>
-</section>`;
+    <p class="reserve">
+      <strong>Une réserve, dite une fois pour toutes.</strong>
+      Cette fiche fournit un cadre méthodologique, pas un conseil juridique, et ne garantit
+      pas l'exhaustivité des textes applicables à une entreprise donnée. Le rattachement
+      d'un domaine à une division NAF est une orientation, pas une qualification juridique.
+      Chaque texte doit être vérifié sur
+      <a href="https://www.legifrance.gouv.fr" target="_blank" rel="noopener">Légifrance</a>
+      et l'analyse d'applicabilité validée par une personne compétente.
+    </p>
+  </div>` })}`;
 
   return page({
     titre: `Veille réglementaire — ${d.l} (NAF ${d.c}) | ${SITE.nom}`,
@@ -335,182 +315,175 @@ ${p ? `
   });
 }
 
-/* --- Index des 88 secteurs --------------------------------------------------------- */
+/* --- Index des 88 secteurs ------------------------------------------------------ */
 function pageSecteurs(V, METIERS) {
   const parSection = V.sections.map((s) => ({
-    s,
-    divisions: V.divisions.filter((d) => d.s === s.c)
+    s, divisions: V.divisions.filter((d) => d.s === s.c)
   })).filter((g) => g.divisions.length);
 
   const corps = `
-<section class="heros">
+<section class="ouverture">
   <div class="enveloppe">
-    <span class="surtitre">Tous les terrains</span>
-    <h1>Les 88 secteurs</h1>
-    <p class="chapeau lecture">
-      La nomenclature d'activités française, division par division. Chacune a sa page :
-      ce qui s'y applique, à quel rythme le revoir, et les pièges du métier.
-      Cherchez par code, par libellé, ou simplement par le nom de votre métier :
-      « boulangerie », « garage », « coiffeur » mènent au bon secteur.
+    <p class="reference etiq">
+      <span><a href="index.html">Pierrel &amp; Co</a></span>
+      <span class="etiq-tampon">Index</span>
+      <span>${V.divisions.length} divisions · ${V.sections.length} sections</span>
     </p>
-    <div class="recherche">
-      <label for="recherche-secteur">Chercher un secteur</label>
-      <input type="search" id="recherche-secteur" placeholder="boulangerie, 43, transport, coiffure…"
+    <h1>Index des secteurs</h1>
+    <p class="chapeau" style="margin-top:var(--t4)">
+      La nomenclature d'activités française, division par division. Chacune a sa fiche.
+      Cherchez par code, par libellé, ou par le nom de votre métier — « boulangerie »,
+      « garage », « coiffeur » mènent au bon secteur.
+    </p>
+    <div class="recherche" style="margin-top:var(--t5)">
+      <label class="etiq" for="recherche-secteur">Chercher</label>
+      <input type="search" id="recherche-secteur" placeholder="boulangerie, 43, transport…"
              autocomplete="off" spellcheck="false">
-      <p class="recherche-compte"><span id="compte-secteurs">${V.divisions.length} secteurs</span></p>
+      <p class="recherche-compte etiq"><span id="compte-secteurs">${V.divisions.length} secteurs</span></p>
     </div>
   </div>
 </section>
 
-<section class="section">
-  <div class="enveloppe">
-    <p id="aucun-secteur" class="etat-vide" hidden>
-      Aucun secteur ne correspond. Essayez un code à deux chiffres, ou un mot du libellé.
-    </p>
-    <div id="liste-secteurs">
-      ${parSection.map((g) => `
-      <section class="groupe-section" data-groupe>
-        <div class="groupe-tete">
-          <h2><span class="lettre">${esc(g.s.c)}</span> ${esc(g.s.l)}</h2>
-        </div>
-        <div class="grille grille-3">
-          ${g.divisions.map((d) => {
-            const mots = METIERS[d.c] || [];
-            return `<a class="carte secteur-carte"
-             href="secteur/${esc(d.c)}-${slug(d.l)}.html"
-             data-recherche="${esc([d.c, d.l, g.s.l, ...mots].join(" "))}">
-            <span class="rang">NAF ${esc(d.c)}</span>
-            <h3>${esc(d.l)}</h3>
-            ${mots.length ? `<p class="mots">${esc(mots.slice(0, 4).join(" · "))}</p>` : ""}
-          </a>`; }).join("\n")}
-        </div>
-      </section>`).join("\n")}
-    </div>
+<div class="enveloppe">
+  <p id="aucun-secteur" class="etat-vide" hidden>
+    Aucun secteur ne correspond. Essayez un code à deux chiffres, ou un mot du libellé.
+  </p>
+  <div id="liste-secteurs">
+    ${parSection.map((g) => `
+    <section class="groupe-section" data-groupe>
+      <span class="etiq"><span class="etiq-tampon">${esc(g.s.c)}</span> &nbsp;${esc(g.s.l)}</span>
+      <ul class="liste-divisions">
+        ${g.divisions.map((d) => {
+          const mots = METIERS[d.c] || [];
+          return `<li class="ligne-division" data-recherche="${esc([d.c, d.l, g.s.l, ...mots].join(" "))}">
+          <a href="secteur/${esc(d.c)}-${slug(d.l)}.html">
+            <span class="code">${esc(d.c)}</span>
+            <span class="nom">${esc(d.l)}</span>
+            <span class="mots">${esc(mots.slice(0, 5).join(" · "))}</span>
+          </a></li>`; }).join("\n")}
+      </ul>
+    </section>`).join("\n")}
   </div>
-</section>`;
+</div>`;
 
   return page({
-    titre: `Les 88 secteurs — veille réglementaire par métier | ${SITE.nom}`,
+    titre: `Index des secteurs — veille réglementaire par métier | ${SITE.nom}`,
     description: "Les 88 divisions de la nomenclature NAF, chacune avec ses obligations réglementaires, son rythme de revue et les pièges propres au métier.",
     page: "secteurs",
     corps
   });
 }
 
-/* --- Accueil --------------------------------------------------------------------- */
-function pageAccueil(V, PIEGES) {
-  const couverts = Object.keys(PIEGES).length;
-
+/* --- Accueil ---------------------------------------------------------------------- */
+function pageAccueil(V, PIEGES, METIERS) {
   const corps = `
-<section class="heros heros-accueil">
+<section class="ouverture">
   <div class="enveloppe">
-    <span class="surtitre">${esc(SITE.bareme)}</span>
+    <p class="reference etiq">
+      <span class="etiq-tampon">${esc(SITE.bareme)}</span>
+      <span>${esc(SITE.ville)}</span>
+    </p>
     <h1>Savoir ce qui s'applique à vous.<br>Et pouvoir le prouver.</h1>
-    <p class="chapeau lecture">
+    <p class="chapeau" style="margin-top:var(--t4)">
       Des textes paraissent chaque semaine. Une poignée vous concerne. Mon travail est de
-      tracer cette frontière métier par métier, de la tenir dans le temps, et de vous
-      laisser de quoi la prouver le jour d'un contrôle.
+      tracer cette frontière métier par métier, de la tenir dans le temps, et de vous laisser
+      de quoi la prouver le jour d'un contrôle.
     </p>
-    <p class="rangee" style="margin-top:var(--space-xl)">
-      <a class="bouton bouton-accent" href="secteurs.html">Trouver mon secteur</a>
-      <a class="bouton bouton-sobre" href="#methode">La méthode</a>
-    </p>
-    <dl class="chiffres">
-      <div><dt>Secteurs couverts</dt><dd><span class="chiffre">${V.divisions.length}</span></dd></div>
-      <div><dt>Domaines de veille</dt><dd><span class="chiffre">${Object.keys(V.domaines).length}</span></dd></div>
-      <div><dt>Questions de contexte</dt><dd><span class="chiffre">${V.declencheurs.length}</span></dd></div>
-      <div><dt>Métiers déjà documentés</dt><dd><span class="chiffre">${couverts}</span></dd></div>
-    </dl>
-  </div>
-</section>
-
-<section class="section section-muette">
-  <div class="enveloppe">
-    <div class="tete-section">
-      <span class="surtitre">Le constat</span>
-      <h2>Trois raisons pour lesquelles la conformité déraille</h2>
-    </div>
-    <div class="grille grille-3">
-      <article class="carte"><span class="rang">01</span><h3>Le périmètre est flou</h3>
-        <p>Personne ne vous remet la liste de ce qui vous concerne. Chacun découvre la sienne
-        au premier contrôle, et toujours par le mauvais bout.</p></article>
-      <article class="carte"><span class="rang">02</span><h3>Le trop-plein noie l'essentiel</h3>
-        <p>Suivre tous les textes revient à n'en suivre aucun : celui qui vous concernait
-        vraiment se perd dans la masse des alertes.</p></article>
-      <article class="carte"><span class="rang">03</span><h3>C'est la preuve qui est demandée</h3>
-        <p>Être en règle ne suffit pas. Il faut montrer quand vous avez regardé, ce que vous
-        avez décidé et ce que vous avez fait. Sans traces datées, la bonne foi ne pèse rien.</p></article>
-    </div>
-  </div>
-</section>
-
-<section class="section" id="methode">
-  <div class="enveloppe">
-    <div class="tete-section">
-      <span class="surtitre">Méthode</span>
-      <h2>${V.etapes.length} étapes, toujours les mêmes</h2>
-      <p>Une méthode de veille qui demande douze étapes n'est plus appliquée au bout de six mois.</p>
-    </div>
-    <ol class="etapes">
-      ${V.etapes.map((e) => `<li class="etape">
-        <span class="etape-numero">${esc(e.n)}</span>
-        <div><h3>${esc(e.t)}</h3><p>${esc(e.d)}</p></div>
-      </li>`).join("\n")}
-    </ol>
-  </div>
-</section>
-
-<section class="section section-muette">
-  <div class="enveloppe">
-    <div class="tete-section">
-      <span class="surtitre">Sources</span>
-      <h2>Ce que je suis, et que vous pouvez suivre aussi</h2>
-      <p>Aucune source payante, aucun agrégateur : tout est public et officiel.
-      Le travail n'est pas d'y accéder, il est de trier.</p>
-    </div>
-    <div class="enveloppe-tableau">
-      <table class="tableau">
-        <caption class="cache-visuellement">Sources officielles suivies</caption>
-        <thead><tr><th scope="col">Source</th><th scope="col">Domaine</th><th scope="col">Ce qu'on y trouve</th></tr></thead>
-        <tbody>
-          ${V.sourcesGenerales.map((s) => `<tr>
-            <td><a href="${esc(s.url)}" target="_blank" rel="noopener">${esc(s.nom)}</a></td>
-            <td><span class="etiquette">${esc(s.type)}</span></td>
-            <td>${esc(s.d)}</td></tr>`).join("\n")}
-        </tbody>
-      </table>
-    </div>
-  </div>
-</section>
-
-<section class="section" id="contact">
-  <div class="enveloppe">
-    <div class="grille grille-2">
-      <div>
-        <span class="surtitre">Contact</span>
-        <h2>Un premier échange d'une heure, sans engagement</h2>
-        <p class="chapeau" style="margin-top:var(--space-lg)">
-          Décrivez votre activité en trois lignes et ce qui vous inquiète.
-          Je réponds sous deux jours ouvrés.
-        </p>
-        <p class="rangee" style="margin-top:var(--space-xl)">
-          <a class="bouton" href="mailto:${esc(SITE.courriel)}">${esc(SITE.courriel)}</a>
-          <a class="bouton bouton-sobre" href="tel:${esc(SITE.telephoneLien)}">${esc(SITE.telephone)}</a>
-        </p>
-        <p style="margin-top:var(--space-lg); color:var(--color-muted-foreground)">
-          ${esc(SITE.zone)}.
-        </p>
-      </div>
-      <p class="reserve">
-        <strong>Une réserve, dite une fois pour toutes.</strong>
-        Ce site fournit un cadre méthodologique, pas un conseil juridique, et ne garantit pas
-        l'exhaustivité des textes applicables à une entreprise donnée. Chaque texte doit être
-        vérifié sur <a href="https://www.legifrance.gouv.fr" target="_blank" rel="noopener">Légifrance</a>
-        et l'analyse d'applicabilité validée par une personne compétente.
+    <div class="recherche" style="margin-top:var(--t6)">
+      <label class="etiq" for="recherche-accueil">Commencez par votre métier</label>
+      <input type="search" id="recherche-accueil" placeholder="boulangerie, garage, maçon…"
+             autocomplete="off" spellcheck="false"
+             aria-describedby="aide-recherche">
+      <p class="recherche-compte etiq" id="aide-recherche">
+        <a href="secteurs.html">ou parcourez l'index des ${V.divisions.length} secteurs</a>
       </p>
     </div>
   </div>
-</section>`;
+</section>
+
+${rubrique({ etiq: "Le périmètre", contenu: `
+  <h2>Personne ne vous remet la liste de ce qui vous concerne</h2>
+  <p class="lecture" style="margin-top:var(--t3)">
+    Entre le code du travail, l'environnement, la réglementation propre à votre métier et
+    ce que vos clients exigent, il n'existe aucun document qui dise, pour votre entreprise :
+    voilà ce qui s'applique, voilà ce qui ne s'applique pas. Chacun découvre sa liste au
+    premier contrôle, et toujours par le mauvais bout.
+  </p>
+  <p class="lecture">
+    Suivre tout n'est pas une solution : c'est le reproche numéro un fait aux plateformes de
+    veille. Le texte qui vous concernait vraiment finit noyé dans les alertes. Le travail
+    utile est l'inverse — écarter, et justifier ce qu'on écarte.
+  </p>` })}
+
+${rubrique({ etiq: "Ce que je livre", aplat: true, contenu: `
+  <dl class="faits" style="border-top:0; padding-top:0; grid-template-columns:1fr">
+    <div style="padding-bottom:var(--t4); border-bottom:1px solid var(--filet)">
+      <dt class="etiq">01 — Le plan de veille</dt>
+      <dd style="margin-top:var(--t2); max-width:var(--lecture)">Les domaines qui s'appliquent
+      réellement à votre activité, avec pour chacun la fréquence de revue, les sources à suivre
+      et le responsable chez vous. Les fiches de ce site en sont la version publique et
+      automatique ; la vôtre tient compte de ce qu'une page ne peut pas savoir.</dd>
+    </div>
+    <div style="padding:var(--t4) 0; border-bottom:1px solid var(--filet)">
+      <dt class="etiq">02 — La veille tenue</dt>
+      <dd style="margin-top:var(--t2); max-width:var(--lecture)">Je suis les sources au rythme
+      fixé et ne remonte que ce qui touche votre périmètre, avec ce que ça change concrètement.
+      Un relevé court et daté, pas une revue de presse.</dd>
+    </div>
+    <div style="padding-top:var(--t4)">
+      <dt class="etiq">03 — Le dossier de preuves</dt>
+      <dd style="margin-top:var(--t2); max-width:var(--lecture)">C'est ce qu'un auditeur
+      demande, et ce qui manque le plus souvent : non pas la veille, mais la trace de ce qu'on
+      en a fait. Revues, analyses, décisions et actions archivées au même endroit.</dd>
+    </div>
+  </dl>` })}
+
+${rubrique({ etiq: "Méthode", id: "methode", contenu: `
+  <h2>${V.etapes.length} étapes, toujours les mêmes</h2>
+  <p class="lecture" style="margin-top:var(--t3)">Une méthode de veille qui demande douze
+  étapes n'est plus appliquée au bout de six mois.</p>
+  <ol class="etapes" style="margin-top:var(--t4)">
+    ${V.etapes.map((e) => `<li class="etape">
+      <span class="num">${esc(e.n)}</span>
+      <div><h3>${esc(e.t)}</h3><p>${esc(e.d)}</p></div>
+    </li>`).join("\n")}
+  </ol>` })}
+
+${rubrique({ etiq: "Sources", aplat: true, contenu: `
+  <h2>Ce que je suis, et que vous pouvez suivre aussi</h2>
+  <p class="lecture" style="margin-top:var(--t3)">Aucune source payante, aucun agrégateur :
+  tout est public et officiel. Le travail n'est pas d'y accéder, il est de trier.</p>
+  <div class="enveloppe-tableau" style="margin-top:var(--t4)">
+    <table class="tableau">
+      <caption class="cache-visuellement">Sources officielles suivies</caption>
+      <thead><tr><th scope="col">Source</th><th scope="col">Domaine</th><th scope="col">Ce qu'on y trouve</th></tr></thead>
+      <tbody>${V.sourcesGenerales.map((s) => `<tr>
+        <td><a href="${esc(s.url)}" target="_blank" rel="noopener">${esc(s.nom)}</a></td>
+        <td>${esc(s.type)}</td>
+        <td>${esc(s.d)}</td></tr>`).join("\n")}</tbody>
+    </table>
+  </div>` })}
+
+${rubrique({ etiq: "Contact", id: "contact", contenu: `
+  <div class="deux-colonnes">
+    <div>
+      <h2>Un premier échange d'une heure, sans engagement</h2>
+      <p style="margin-top:var(--t3)">Décrivez votre activité en trois lignes et ce qui vous
+      inquiète. Je réponds sous deux jours ouvrés.</p>
+      <p class="rangee" style="margin-top:var(--t4)">
+        <a class="bouton" href="mailto:${esc(SITE.courriel)}">${esc(SITE.courriel)}</a>
+        <a class="bouton bouton-sobre" href="tel:${esc(SITE.telephoneLien)}">${esc(SITE.telephone)}</a>
+      </p>
+      <p class="etiq" style="margin-top:var(--t4)">${esc(SITE.zone)}</p>
+    </div>
+    <p class="reserve">
+      <strong>Une réserve, dite une fois pour toutes.</strong>
+      Ce site fournit un cadre méthodologique, pas un conseil juridique, et ne garantit pas
+      l'exhaustivité des textes applicables à une entreprise donnée. Chaque texte doit être
+      vérifié sur <a href="https://www.legifrance.gouv.fr" target="_blank" rel="noopener">Légifrance</a>
+      et l'analyse d'applicabilité validée par une personne compétente.
+    </p>
+  </div>` })}`;
 
   return page({
     titre: `${SITE.nom} — veille réglementaire par secteur`,
@@ -568,7 +541,7 @@ async function main() {
   await mkdir(join(SORTIE, "secteur"), { recursive: true });
   await cp(resolve(RACINE, "assets"), join(SORTIE, "assets"), { recursive: true });
 
-  await writeFile(join(SORTIE, "index.html"), pageAccueil(V, PIEGES));
+  await writeFile(join(SORTIE, "index.html"), pageAccueil(V, PIEGES, METIERS));
   await writeFile(join(SORTIE, "secteurs.html"), pageSecteurs(V, METIERS));
 
   for (const d of V.divisions) {

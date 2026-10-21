@@ -55,11 +55,35 @@
     cibles.forEach(function (e) { oeil.observe(e); });
   }
 
+  /* --- Le champ de l'accueil renvoie vers l'index --------------------------- */
+  /* Sans cela, taper son métier sur l'accueil ne ferait rien : une amorce qui
+     ne mène nulle part est pire que pas d'amorce du tout. */
+  function rechercheAccueil() {
+    var champ = document.getElementById("recherche-accueil");
+    if (!champ) return;
+    var partir = function () {
+      var q = champ.value.trim();
+      window.location.href = "secteurs.html" + (q ? "?q=" + encodeURIComponent(q) : "");
+    };
+    champ.addEventListener("keydown", function (e) {
+      if (e.key === "Enter") { e.preventDefault(); partir(); }
+    });
+    // Le champ est de type search : le navigateur y pose un bouton d'effacement
+    // qui déclenche aussi « search ». On ne part que s'il reste quelque chose.
+    champ.addEventListener("search", function () { if (champ.value.trim()) partir(); });
+  }
+
   /* --- Recherche dans l'index des secteurs ---------------------------------- */
   function rechercheSecteurs() {
     var champ = document.getElementById("recherche-secteur");
     var liste = document.getElementById("liste-secteurs");
     if (!champ || !liste) return;
+
+    // Une requête arrivée de l'accueil est reprise telle quelle.
+    try {
+      var q0 = new URLSearchParams(window.location.search).get("q");
+      if (q0) champ.value = q0;
+    } catch (e) { /* vieux navigateur : on part d'un champ vide */ }
 
     var entrees = [].slice.call(liste.querySelectorAll("[data-recherche]"));
     var compteur = document.getElementById("compte-secteurs");
@@ -130,6 +154,7 @@
 
   window.PCO_THEME && window.PCO_THEME.brancher();
   barre();
+  rechercheAccueil();
   reveler();
   rechercheSecteurs();
   affiner();
