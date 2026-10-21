@@ -35,10 +35,22 @@ aux 88 pages à la construction suivante.
 | `assets/site.css` | Le système visuel : tokens des deux thèmes, composants, impression, écrans étroits. |
 | `assets/theme.js` | Le choix du thème — auto, clair, sombre — appliqué avant le premier rendu. |
 | `assets/app.js` | Barre de navigation, révélations, recherche de l'index, affinage du périmètre. |
-| `assets/polices.css`, `assets/polices/` | EB Garamond et Lato, servies par le site. |
+| `assets/polices.css`, `assets/polices/` | EB Garamond, seule police chargée, servie par le site. Les étiquettes, codes NAF et chiffres sont en monospace du système. |
 | `build.mjs` | Le générateur, et les garde-fous. |
 | `design-system/pierrel-co/MASTER.md` | La direction visuelle, produite par le plugin `ui-ux-pro-max`. |
 | `recherche/marche-veille-reglementaire.md` | La revue du marché menée avant de concevoir. |
+
+## Le parti pris graphique
+
+Le registre est **le document**, pas l'application : un registre réglementaire,
+une fiche technique. Ce que ce parti pris interdit, et qui était là dans une
+première version jugée « trop IA » : aucune ombre portée, aucun angle arrondi,
+aucun dégradé, aucune carte flottante, aucun bouton en pastille.
+
+Ce qui structure la page à la place : des filets d'un pixel, une grille
+asymétrique à deux colonnes — une étroite pour les étiquettes, une large pour le
+texte — et un contraste typographique franc entre le Garamond du texte et le
+monospace des codes et des chiffres.
 
 ## Les deux thèmes
 
@@ -46,11 +58,12 @@ Clair et sombre, **au choix du visiteur** : auto (on suit le système), clair, o
 sombre. Le choix est gardé dans le navigateur et appliqué avant le premier
 rendu, sinon la page clignote en clair avant de passer au sombre.
 
-Les quinze paires de contraste des deux thèmes tiennent le 4,5:1 exigé par la
-direction. Deux valeurs s'écartent de sa sortie brute pour cette raison : l'ambre
-a été assombri (le surtitre tombait à 4,31:1 sur l'aplat) et un second token de
-bordure a été ajouté pour les contrôles, le critère non textuel de 3:1 ne visant
-pas les filets décoratifs.
+Les quinze paires de contraste des deux thèmes tiennent le 4,5:1. La palette
+retenue — encre sur papier chaud, un seul rouge de tampon — s'écarte du navy et
+de l'ambre recommandés par `MASTER.md` : ce couple est le défaut de tous les
+générateurs, et c'est précisément ce qui faisait « trop IA ». Deux tokens de
+filet coexistent, un décoratif et un pour les contrôles, le critère non textuel
+de 3:1 ne visant pas les séparations.
 
 ## Trois règles tenues
 
