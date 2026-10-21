@@ -142,9 +142,9 @@ l'application, sur la page de connexion et sur l'accueil. **Ne pas le retirer**
 tant que l'authentification (Netlify Identity ou équivalent) et le paiement
 (Stripe ou équivalent) ne sont pas branchés.
 
-Restent également à valider par Clément Pierrel : les 29 pièges
-(`valide: false`), la grille de tarifs, le courriel, le téléphone, le SIRET et
-l'hébergeur.
+Restent également à valider par Clément Pierrel : les 90 pièges de 34
+divisions (`valide: false`), la grille de tarifs, le courriel, le téléphone, le
+SIRET et l'hébergeur.
 
 ## Publier
 
