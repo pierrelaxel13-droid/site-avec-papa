@@ -49,7 +49,8 @@ const p = await contexte.newPage();
 // On ouvre la session de démonstration avant toute capture, sinon chaque page
 // n'affiche que le voile d'accès.
 await p.goto(BASE + "/connexion.html", { waitUntil: "domcontentloaded" });
-await p.evaluate(() => { localStorage.setItem("pco-session", "demo"); });
+// La formule la plus large : les captures doivent montrer tous les écrans.
+await p.evaluate(() => { localStorage.setItem("pco-session", JSON.stringify({ formule: "preuves" })); });
 
 // Deux jeux : l'accueil montre le jeu qui correspond au thème du visiteur.
 // Sans cela, un grand rectangle blanc trône au milieu de la page sombre.

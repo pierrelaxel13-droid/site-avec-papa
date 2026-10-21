@@ -65,6 +65,23 @@ principal** — pas d'illustration, pas de photographie d'agence.
 Pas de témoignage client : il n'y en a pas encore. La bande qui tiendrait cette
 place liste les sources officielles suivies, qui sont vérifiables.
 
+## Les trois formules
+
+La formule choisie décide des écrans ouverts : **Cadrage** donne le plan de
+veille et les fiches de secteur, **Veille tenue** y ajoute le tableau de bord
+et le relevé, **Veille et preuves** ouvre le registre. Une page déclare le rang
+qu'elle demande (`data-formule` sur `<body>`), la session en porte un, et
+`assets/session.js` compare.
+
+**Ce tri décrit le produit, il ne le protège pas.** Il se fait dans le
+navigateur : qui regarde la source voit tout, quelle que soit la formule. C'est
+écrit sur chaque écran concerné.
+
+L'écran de connexion est une **maquette** : il n'y a pas de serveur, donc aucun
+identifiant n'est vérifié. Le champ du mot de passe n'est lu nulle part, n'est
+transmis nulle part, et est vidé dès l'envoi — et la page le dit au-dessus du
+champ, avant qu'on y tape quoi que ce soit.
+
 ## L'application installable
 
 Le site est une application web installable : `manifest.webmanifest` et `sw.js`

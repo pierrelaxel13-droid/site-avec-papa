@@ -56,6 +56,19 @@ const slug = (s) => sansAccent(s).toLowerCase()
 const JOUR = { day: "numeric", month: "long", year: "numeric" };
 const dateFr = (iso) => new Date(iso + "T12:00:00Z").toLocaleDateString("fr-FR", JOUR);
 
+/* --- Les trois formules, et ce que chacune ouvre ---------------------------- */
+/* Le rang décide : une page demande un rang, la session en porte un. C'est la
+   seule règle, et elle est appliquée dans le navigateur — donc contournable.
+   Elle décrit le produit, elle ne le protège pas. */
+const FORMULES = {
+  cadrage: { l: "Cadrage", rang: 1, prix: "890 € une fois",
+             ouvre: "Le plan de veille et les 88 fiches de secteur." },
+  veille:  { l: "Veille tenue", rang: 2, prix: "180 € par mois",
+             ouvre: "Le cadrage, plus le tableau de bord et le relevé des textes." },
+  preuves: { l: "Veille et preuves", rang: 3, prix: "290 € par mois",
+             ouvre: "Tout, registre de preuves compris." }
+};
+
 /* --- Le manifeste : ce qui rend l'application installable ------------------- */
 /* Android veut du PNG en 192 et 512, et une icône « maskable » qu'il peut
    rogner jusqu'à 20 % du bord sans manger le dessin. assets/icones/ est
@@ -168,7 +181,7 @@ function bandeInstallation(a) {
 
 /* --- Gabarit commun ----------------------------------------------------------- */
 function page({ titre, description, racine = "", zone = "public", actif = "", corps,
-                attrsBody = "", verrou = false, donneesPlan = false }) {
+                attrsBody = "", verrou = false, donneesPlan = false, formule = "" }) {
   const a = (f) => racine + f;
   const lien = (href, libelle, cle) =>
     `<a href="${a(href)}"${actif === cle ? ' aria-current="page"' : ""}>${libelle}</a>`;
@@ -217,7 +230,7 @@ if (!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)")
   document.documentElement.classList.add("anime");
 }</script>
 </head>
-<body class="zone-${zone}" data-racine="${racine || "./"}"${attrsBody}>
+<body class="zone-${zone}" data-racine="${racine || "./"}"${formule ? ` data-formule="${esc(formule)}"` : ""}${attrsBody}>
 
 <a class="evitement" href="#contenu">Aller au contenu</a>
 
@@ -236,25 +249,28 @@ if (!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)")
 </header>
 
 ${zone === "app" ? `<p class="bandeau-demo">
-  <strong>Démonstration.</strong> Les données ci-dessous sont un jeu d'essai
-  (entreprise et textes fictifs). La connexion ne protège rien : elle pose un
-  jeton dans votre navigateur, et le contenu de ces pages reste lisible dans la
-  source. Un vrai compte suppose un service d'authentification, qui n'est pas
-  encore en place. <a href="${a("index.html")}">Revenir au site</a>
+  <strong>Démonstration.</strong>
+  <span id="formule-active"></span>
+  Les données ci-dessous sont un jeu d'essai (entreprise et textes fictifs).
+  La connexion ne protège rien : elle pose un jeton dans votre navigateur, et le
+  contenu de ces pages reste lisible dans la source. Un vrai compte suppose un
+  service d'authentification, qui n'est pas encore en place.
+  <a href="${a("connexion.html")}">Changer de formule</a> ·
+  <a href="${a("index.html")}">Revenir au site</a>
 </p>` : ""}
 
 <main id="contenu">
 ${verrou ? `<section class="verrou" id="verrou">
   <div class="enveloppe">
-    <p class="etiq">Accès réservé</p>
-    <h1>Votre veille est derrière la connexion</h1>
-    <p class="chapeau">
+    <p class="etiq" id="verrou-etiq">Accès réservé</p>
+    <h1 id="verrou-titre">Votre veille est derrière la connexion</h1>
+    <p class="chapeau" id="verrou-texte">
       Le plan de veille, le relevé des textes et le registre de preuves sont réservés
       aux abonnés. Vous pouvez ouvrir la démonstration pour voir exactement ce que
       contient l'application.
     </p>
     <p class="rangee rangee-centre" style="margin-top:var(--t5)">
-      <a class="bouton bouton-accent" href="${a("connexion.html")}">Ouvrir la démonstration</a>
+      <a class="bouton bouton-accent" href="${a("connexion.html")}" id="verrou-action">Ouvrir la démonstration</a>
       <a class="bouton bouton-sobre" href="${a("tarifs.html")}">Voir les tarifs</a>
     </p>
   </div>
@@ -481,7 +497,7 @@ ${rubrique({ etiq: "Dernières traces", aplat: true, contenu: `
   return page({
     titre: `Tableau de bord | ${SITE.nom}`,
     description: "Tableau de bord de la veille réglementaire.",
-    racine: "../", zone: "app", actif: "bord", corps, verrou: true
+    racine: "../", zone: "app", actif: "bord", corps, verrou: true, formule: "veille"
   });
 }
 
@@ -609,7 +625,7 @@ ${groupes.map((g) => {
   return page({
     titre: `Mon plan de veille | ${SITE.nom}`,
     description: "Le périmètre de veille retenu.",
-    racine: "../", zone: "app", actif: "plan", corps, verrou: true
+    racine: "../", zone: "app", actif: "plan", corps, verrou: true, formule: "cadrage"
   });
 }
 
@@ -638,7 +654,7 @@ ${rubrique({ etiq: "Le relevé", aplat: true, contenu: `
   return page({
     titre: `Relevé des textes | ${SITE.nom}`,
     description: "Les textes parus qui touchent le périmètre.",
-    racine: "../", zone: "app", actif: "releve", corps, verrou: true
+    racine: "../", zone: "app", actif: "releve", corps, verrou: true, formule: "veille"
   });
 }
 
@@ -666,7 +682,7 @@ ${rubrique({ etiq: "Tout le registre", aplat: true, contenu: `
   return page({
     titre: `Registre de preuves | ${SITE.nom}`,
     description: "Les traces datées de la veille.",
-    racine: "../", zone: "app", actif: "registre", corps, verrou: true
+    racine: "../", zone: "app", actif: "registre", corps, verrou: true, formule: "preuves"
   });
 }
 
@@ -725,7 +741,7 @@ function appSecteurs(V, METIERS) {
   return page({
     titre: `Fiches par secteur | ${SITE.nom}`,
     description: "Les 88 divisions de la nomenclature NAF et leurs obligations.",
-    racine: "../", zone: "app", actif: "secteurs", corps, verrou: true
+    racine: "../", zone: "app", actif: "secteurs", corps, verrou: true, formule: "cadrage"
   });
 }
 
@@ -785,7 +801,7 @@ ${p ? rubrique({ etiq: "Le terrain", contenu: `
   return page({
     titre: `${d.l} (NAF ${d.c}) | ${SITE.nom}`,
     description: `Obligations réglementaires de la division NAF ${d.c}, ${d.l}.`,
-    racine: "../../", zone: "app", actif: "secteurs", corps, verrou: true,
+    racine: "../../", zone: "app", actif: "secteurs", corps, verrou: true, formule: "cadrage",
     attrsBody: ` data-domaines-base="${base.length}"`
   });
 }
@@ -1281,51 +1297,115 @@ function pageTarifs(V) {
 }
 
 function pageConnexion() {
+  const choix = (id, f, coche) => `<label class="choix-formule">
+    <input type="radio" name="formule" value="${esc(id)}"${coche ? " checked" : ""}>
+    <span class="corps">
+      <span class="titre">${esc(f.l)}</span>
+      <span class="prix">${esc(f.prix)}</span>
+      <span class="ouvre">${esc(f.ouvre)}</span>
+    </span>
+  </label>`;
+
   const corps = `
 <section class="heros">
   <div class="enveloppe">
     <div class="heros-texte"><h1>Connexion</h1></div>
-    <div class="connexion" style="margin-inline:auto">
-      <p class="reserve">
-        <strong>Il n'y a pas encore de comptes.</strong>
-        L'authentification demande un service dédié, qui n'est pas en place : aucun identifiant
-        ne serait vérifié, et aucun mot de passe ne doit être saisi ici. C'est pourquoi cet
-        écran n'en demande pas. Le bouton ci-dessous ouvre l'application avec un jeu d'essai.
-      </p>
-      <p style="margin-top:var(--t4)">
-        <button type="button" class="bouton bouton-accent bouton-large" id="entrer-demo">Ouvrir la démonstration</button>
-      </p>
-      <p class="etiq" style="margin-top:var(--t3)" id="etat-session"></p>
-      <p class="rangee rangee-centre" style="margin-top:var(--t5)">
-        <a href="tarifs.html">Voir les tarifs</a>
-        <a href="mailto:${esc(SITE.courriel)}">Demander un accès</a>
-      </p>
+
+    <div class="connexion">
+      <form class="carte-connexion" id="form-connexion" novalidate>
+        <h2>Se connecter à votre espace</h2>
+
+        <p class="reserve">
+          <strong>N'entrez pas un vrai mot de passe ici.</strong>
+          Cet écran est la maquette de la future connexion : il n'y a pas encore de
+          serveur, donc rien n'est vérifié, rien n'est envoyé et rien n'est enregistré.
+          Le champ est là pour montrer à quoi ressemblera l'écran, pas pour servir.
+        </p>
+
+        <div class="champ">
+          <label for="courriel">Adresse électronique</label>
+          <input type="email" id="courriel" name="courriel" autocomplete="username"
+                 inputmode="email" placeholder="prenom@entreprise.fr" spellcheck="false">
+        </div>
+
+        <div class="champ">
+          <label for="motdepasse">Mot de passe</label>
+          <input type="password" id="motdepasse" name="motdepasse" autocomplete="off"
+                 placeholder="••••••••">
+        </div>
+
+        <p class="rangee" style="margin-top:var(--t4)">
+          <button type="submit" class="bouton bouton-accent bouton-large">Se connecter</button>
+        </p>
+        <p class="etiq" id="etat-connexion" role="status" style="margin-top:var(--t3)"></p>
+        <p style="margin-top:var(--t3)">
+          <a href="mailto:${esc(SITE.courriel)}?subject=Mot de passe oublié">Mot de passe oublié</a>
+          &nbsp;·&nbsp;
+          <a href="tarifs.html">Pas encore de compte ?</a>
+        </p>
+      </form>
+
+      <div class="ou"><span>ou</span></div>
+
+      <div class="carte-connexion">
+        <h2>Entrer en démonstration</h2>
+        <p>Sans compte et sans mot de passe, avec un jeu d'essai. Choisissez la formule
+        à essayer : elle décide de ce que l'application ouvre.</p>
+
+        <div class="choix-formules" id="choix-formules">
+          ${Object.keys(FORMULES).map((id, i) =>
+            choix(id, FORMULES[id], id === "preuves")).join("\n")}
+        </div>
+
+        <p style="margin-top:var(--t4)">
+          <button type="button" class="bouton bouton-large" id="entrer-demo">Entrer en démonstration</button>
+        </p>
+        <p class="etiq" id="etat-session" role="status" style="margin-top:var(--t3)"></p>
+      </div>
     </div>
   </div>
 </section>
 
 <section class="section">
   <div class="enveloppe">
+    <h2 class="titre-section">Ce que chaque formule ouvre</h2>
+    <p class="intro titre-section">La formule choisie décide des écrans accessibles.
+    C'est vrai dans la démonstration comme ce le sera avec un vrai compte.</p>
+    <ul class="raisons">
+      ${Object.keys(FORMULES).map((id, i) => `<li class="raison" data-paraitre>
+        <span class="numero" aria-hidden="true">0${i + 1}</span>
+        <h3>${esc(FORMULES[id].l)}</h3>
+        <p class="prix-formule">${esc(FORMULES[id].prix)}</p>
+        <p>${esc(FORMULES[id].ouvre)}</p>
+      </li>`).join("\n")}
+    </ul>
+  </div>
+</section>
+
+<section class="section section-tein">
+  <div class="enveloppe">
     <h2 class="titre-section">Ce qu'il reste à brancher</h2>
     <ul class="raisons">
       <li class="raison" data-paraitre>
         <span class="numero" aria-hidden="true">1</span>
         <h3>L'authentification</h3>
-        <p>Netlify Identity ou un équivalent, pour que les comptes existent et que les
-        pages de l'application ne soient plus servies à tout le monde.</p>
+        <p>Netlify Identity ou un équivalent, pour que les comptes existent, que les
+        mots de passe soient vérifiés ailleurs que dans le navigateur, et que les
+        pages ne soient plus servies à tout le monde.</p>
       </li>
       <li class="raison" data-paraitre>
         <span class="numero" aria-hidden="true">2</span>
         <h3>Le paiement</h3>
-        <p>Stripe ou un équivalent, pour l'abonnement mensuel, son renouvellement
-        et sa résiliation.</p>
+        <p>Stripe ou un équivalent, pour l'abonnement mensuel, son renouvellement et
+        sa résiliation — et pour que la formule portée par le compte soit la formule
+        réellement payée.</p>
       </li>
       <li class="raison" data-paraitre>
         <span class="numero" aria-hidden="true">3</span>
         <h3>En attendant</h3>
-        <p>La connexion de cette page ne protège rien : elle pose un jeton dans le
-        navigateur, et le contenu des pages de l'application reste lisible par qui
-        regarde la source.</p>
+        <p>Le tri par formule se fait dans le navigateur : il décrit le produit, il ne
+        le protège pas. Qui regarde la source voit tout, quelle que soit la formule
+        choisie. C'est écrit sur chaque écran de l'application.</p>
       </li>
     </ul>
   </div>
