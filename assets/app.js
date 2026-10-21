@@ -340,7 +340,69 @@
     pose();
   }
 
+  /* --- Installation : service worker, puis bouton ---------------------------- */
+  /* Le service worker se prend à la racine du site, pas à côté de la page :
+     un worker servi depuis app/ ne contrôlerait que app/. D'où data-racine,
+     posé par le gabarit. */
+  function racineSite() {
+    var r = document.body.getAttribute("data-racine") || "./";
+    return new URL(r, window.location.href);
+  }
+
+  function serviceWorker() {
+    if (!("serviceWorker" in navigator)) return;
+    if (window.location.protocol !== "https:" && window.location.hostname !== "localhost") return;
+    window.addEventListener("load", function () {
+      var base = racineSite();
+      navigator.serviceWorker.register(new URL("sw.js", base), { scope: base })
+        .catch(function () { /* bac à sable, page locale : on s'en passe */ });
+    });
+  }
+
+  /* Chrome garde l'invite d'installation pour nous et nous laisse la déclencher
+     au moment choisi ; Safari n'en a pas, d'où les consignes écrites à côté,
+     qui restent affichées dans tous les cas. */
+  function installation() {
+    var bouton = document.getElementById("installer-appli");
+    var etat = document.getElementById("etat-installation");
+    if (!bouton) return;
+
+    var invite = null;
+    var pose = function (m) { if (etat) etat.textContent = m || ""; };
+
+    var autonome = window.matchMedia && window.matchMedia("(display-mode: standalone)").matches;
+    if (autonome || window.navigator.standalone) {
+      pose("Déjà installée — vous y êtes.");
+      return;
+    }
+
+    window.addEventListener("beforeinstallprompt", function (e) {
+      e.preventDefault();
+      invite = e;
+      bouton.hidden = false;
+    });
+
+    bouton.addEventListener("click", function () {
+      if (!invite) { pose("Suivez la consigne de votre appareil, à droite."); return; }
+      bouton.disabled = true;
+      invite.prompt();
+      invite.userChoice.then(function (choix) {
+        invite = null;
+        bouton.disabled = false;
+        bouton.hidden = choix.outcome === "accepted";
+        pose(choix.outcome === "accepted" ? "Installée." : "Installation annulée.");
+      });
+    });
+
+    window.addEventListener("appinstalled", function () {
+      bouton.hidden = true;
+      pose("Installée.");
+    });
+  }
+
   window.PCO_THEME && window.PCO_THEME.brancher();
+  serviceWorker();
+  installation();
   bandeau();
   menu();
   bascules();

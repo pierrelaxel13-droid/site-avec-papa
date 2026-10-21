@@ -65,6 +65,27 @@ principal** — pas d'illustration, pas de photographie d'agence.
 Pas de témoignage client : il n'y en a pas encore. La bande qui tiendrait cette
 place liste les sources officielles suivies, qui sont vérifiables.
 
+## L'application installable
+
+Le site est une application web installable : `manifest.webmanifest` et `sw.js`
+sont engendrés à la racine de `_site/` par `build.mjs`, les icônes PNG par
+`outils/icones.mjs` depuis `assets/favicon.svg`.
+
+Le service worker sert à deux choses : rendre l'installation possible (Chrome
+ne la propose que si un worker avec un gestionnaire `fetch` est enregistré) et
+garder le site consultable hors ligne. Les pages passent par le **réseau
+d'abord** — une page de veille servie depuis un cache périmé afficherait des
+obligations dépassées — et l'habillage par le **cache d'abord**.
+
+**Pierrel & Co n'est ni sur l'App Store ni sur Google Play.** Il n'y a pas
+d'application native, donc pas de badge de boutique à afficher : ce serait un
+lien vers rien. La bande d'installation montre des pictogrammes d'appareils et
+la consigne propre à chacun, et le dit en toutes lettres.
+
+Le worker ne s'enregistre qu'en HTTPS ou sur `localhost`, et jamais dans un bac
+à sable qui l'interdit : l'aperçu publié n'a donc pas le bouton « Installer »,
+le site déployé l'a.
+
 ## Les deux thèmes
 
 Clair et sombre, **au choix du visiteur** : auto (on suit le système), clair, ou

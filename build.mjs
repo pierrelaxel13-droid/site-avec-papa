@@ -56,6 +56,35 @@ const slug = (s) => sansAccent(s).toLowerCase()
 const JOUR = { day: "numeric", month: "long", year: "numeric" };
 const dateFr = (iso) => new Date(iso + "T12:00:00Z").toLocaleDateString("fr-FR", JOUR);
 
+/* --- Le manifeste : ce qui rend l'application installable ------------------- */
+/* Android veut du PNG en 192 et 512, et une icône « maskable » qu'il peut
+   rogner jusqu'à 20 % du bord sans manger le dessin. assets/icones/ est
+   engendré depuis le sigle par outils/icones.mjs. */
+const MANIFESTE = JSON.stringify({
+  name: "Pierrel & Co — veille réglementaire",
+  short_name: "Pierrel & Co",
+  description: "Votre veille réglementaire tenue et prouvable : plan de veille, relevé des textes, registre de preuves.",
+  lang: "fr",
+  dir: "ltr",
+  start_url: "./index.html",
+  scope: "./",
+  display: "standalone",
+  orientation: "any",
+  background_color: "#FFFFFF",
+  theme_color: "#4A2BE8",
+  categories: ["business", "productivity"],
+  icons: [
+    { src: "assets/icones/icone-192.png", sizes: "192x192", type: "image/png" },
+    { src: "assets/icones/icone-512.png", sizes: "512x512", type: "image/png" },
+    { src: "assets/icones/icone-512-pleine.png", sizes: "512x512", type: "image/png", purpose: "maskable" }
+  ],
+  shortcuts: [
+    { name: "Tableau de bord", url: "./app/index.html" },
+    { name: "Relevé des textes", url: "./app/releve.html" },
+    { name: "Registre de preuves", url: "./app/registre.html" }
+  ]
+}, null, 2);
+
 /* --- Le sigle : trois feuillets décalés ------------------------------------ */
 const sigle = `<svg class="sigle" viewBox="0 0 24 24" aria-hidden="true" fill="currentColor">
   <rect x="2" y="4" width="14" height="3.1" rx="1.55"/>
@@ -65,6 +94,9 @@ const sigle = `<svg class="sigle" viewBox="0 0 24 24" aria-hidden="true" fill="c
 
 const fleche = `<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor"
   stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h13m-5-6 6 6-6 6"/></svg>`;
+
+const chevron = `<svg class="chevron" viewBox="0 0 24 24" aria-hidden="true" fill="none"
+  stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>`;
 
 const sortant = `<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor"
   stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M8 16 16 8m0 0H9m7 0v7"/></svg>`;
@@ -85,6 +117,55 @@ const selecteurTheme = `<span class="theme" role="group" aria-label="Thème de l
   </button>
 </span>`;
 
+/* --- La bande « Installer l'application » ----------------------------------- */
+/* Pierrel & Co n'est pas sur l'App Store ni sur Google Play : il n'y a pas
+   d'application native, donc pas de badge de boutique à afficher — ce serait
+   un lien vers rien. Ce qui existe vraiment, c'est une application web
+   installable : le navigateur la pose sur l'écran d'accueil, elle s'ouvre
+   sans barre d'adresse et fonctionne hors ligne. Les pictogrammes sont donc
+   des appareils, pas des marques. */
+function bandeInstallation(a) {
+  const appareil = (titre, aide, chemin) => `<li class="appareil">
+    <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor"
+         stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">${chemin}</svg>
+    <div><h3>${esc(titre)}</h3><p>${aide}</p></div>
+  </li>`;
+
+  return `<section class="section installation" id="installer">
+  <div class="enveloppe">
+    <div class="deux-colonnes">
+      <div>
+        <h2>Installer l'application</h2>
+        <p class="intro">Posée sur l'écran d'accueil, elle s'ouvre comme une application :
+        sans barre d'adresse, et le plan de veille reste consultable hors ligne — sur un
+        chantier, dans un entrepôt, là où le réseau tombe.</p>
+        <p class="rangee" style="margin-top:var(--t4)">
+          <button type="button" class="bouton bouton-accent" id="installer-appli" hidden>
+            Installer maintenant
+          </button>
+          <a class="bouton bouton-sobre" href="${a("connexion.html")}">Ouvrir dans le navigateur</a>
+        </p>
+        <p class="etiq" id="etat-installation" style="margin-top:var(--t3)"></p>
+      </div>
+      <ul class="appareils">
+        ${appareil("iPhone et iPad", "Dans Safari : <strong>Partager</strong>, puis <strong>Sur l'écran d'accueil</strong>.",
+          '<rect x="6.5" y="2.5" width="11" height="19" rx="2.4"/><path d="M10.5 5.2h3"/>')}
+        ${appareil("Android", "Dans Chrome : le bandeau <strong>Installer</strong>, ou le menu ⋮ puis <strong>Ajouter à l'écran d'accueil</strong>.",
+          '<rect x="5.5" y="2.5" width="13" height="19" rx="2.4"/><path d="M10 18.3h4"/>')}
+        ${appareil("Ordinateur", "Dans Chrome ou Edge : l'icône <strong>Installer</strong> dans la barre d'adresse.",
+          '<rect x="2.5" y="4.5" width="19" height="12.5" rx="1.6"/><path d="M8 20.5h8"/>')}
+      </ul>
+    </div>
+    <p class="note-source" style="margin-top:var(--t5)">
+      Pierrel &amp; Co n'est ni sur l'App Store ni sur Google Play : il n'y a pas
+      d'application à télécharger, mais une application web que le navigateur installe
+      lui-même. Rien n'est transmis à une boutique, et il n'y a pas de compte à créer
+      pour l'installer.
+    </p>
+  </div>
+</section>`;
+}
+
 /* --- Gabarit commun ----------------------------------------------------------- */
 function page({ titre, description, racine = "", zone = "public", actif = "", corps,
                 attrsBody = "", verrou = false, donneesPlan = false }) {
@@ -96,7 +177,7 @@ function page({ titre, description, racine = "", zone = "public", actif = "", co
       ${lien("index.html", "Le produit", "produit")}
       ${lien("tarifs.html", "Tarifs", "tarifs")}
       ${selecteurTheme}
-      <a class="bouton" href="${a("connexion.html")}">Ouvrir l'application</a>`;
+      <a class="bouton" href="${a("connexion.html")}">Connexion</a>`;
 
   const menuApp = `
       ${lien("app/index.html", "Tableau de bord", "bord")}
@@ -119,6 +200,10 @@ ${zone === "app" ? '<meta name="robots" content="noindex">' : ""}
 <meta property="og:title" content="${esc(titre)}">
 <meta property="og:description" content="${esc(description)}">
 <link rel="icon" href="${a("assets/favicon.svg")}" type="image/svg+xml">
+<link rel="apple-touch-icon" href="${a("assets/icones/icone-apple.png")}">
+<link rel="manifest" href="${a("manifest.webmanifest")}">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Pierrel &amp; Co">
 <link rel="preload" href="${a("assets/polices/plus-jakarta-sans.woff2")}" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="${a("assets/polices.css")}">
 <link rel="stylesheet" href="${a("assets/site.css")}">
@@ -132,7 +217,7 @@ if (!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)")
   document.documentElement.classList.add("anime");
 }</script>
 </head>
-<body class="zone-${zone}"${attrsBody}>
+<body class="zone-${zone}" data-racine="${racine || "./"}"${attrsBody}>
 
 <a class="evitement" href="#contenu">Aller au contenu</a>
 
@@ -175,6 +260,7 @@ ${verrou ? `<section class="verrou" id="verrou">
   </div>
 </section>` : ""}
 ${corps}
+${zone === "public" ? bandeInstallation(a) : ""}
 </main>
 
 <footer class="pied">
@@ -264,7 +350,7 @@ function perimetre(V, code) {
   return { base, declencheurs, ajoutables, groupes };
 }
 
-function blocDomaine(id, d, origine) {
+function blocDomaine(id, d, origine, lienSecteur = "") {
   return `<article class="bloc-domaine" data-domaine="${esc(id)}" data-origine="${origine}"${origine === "declencheur" ? " hidden" : ""}>
   <div class="bloc-domaine-tete">
     <h3>${esc(d.nom)}</h3>
@@ -281,9 +367,12 @@ function blocDomaine(id, d, origine) {
       <ul>${d.textes.map((t) => `<li>${esc(t)}</li>`).join("")}</ul>
       <span class="etiq" style="margin-top:var(--t4)">Sources officielles</span>
       <ul>${d.sources.map((s) =>
-        `<li><a href="${esc(s.url)}" target="_blank" rel="noopener">${esc(s.nom)}</a></li>`).join("")}</ul>
+        `<li><a href="${esc(s.url)}" target="_blank" rel="noopener">${esc(s.nom)} ${sortant}</a></li>`).join("")}</ul>
     </div>
   </div>
+  ${lienSecteur ? `<p style="margin-top:var(--t4)">
+    <a class="lien-fleche" href="${lienSecteur}">Voir un secteur où ce domaine s'applique ${fleche}</a>
+  </p>` : ""}
 </article>`;
 }
 
@@ -308,12 +397,19 @@ const STATUTS = {
   "clos":       { l: "Clos",       c: "clos" }
 };
 
-function enTeteApp(D, titre, chapeau) {
+/* La fiche du secteur de l'entreprise suivie : le code NAF du bandeau y mène. */
+function ficheDeLEntreprise(V, D) {
+  const d = V.divisions.filter((x) => x.c === D.entreprise.naf)[0];
+  return d ? `secteur/${d.c}-${slug(d.l)}.html` : "";
+}
+
+function enTeteApp(D, titre, chapeau, lienNaf = "") {
   return `<section class="tete-app">
   <div class="enveloppe">
     <ul class="jalons">
       <li><span class="fort">${esc(D.entreprise.nom)}</span></li>
-      <li><span>NAF ${esc(D.entreprise.nafComplet)}</span></li>
+      <li>${lienNaf ? `<a href="${lienNaf}">NAF ${esc(D.entreprise.nafComplet)}</a>`
+                    : `<span>NAF ${esc(D.entreprise.nafComplet)}</span>`}</li>
       <li><span>${esc(D.entreprise.ville)}</span></li>
       <li><span>${esc(D.entreprise.effectif)} salariés</span></li>
       <li><span>Suivi depuis ${esc(D.entreprise.depuis)}</span></li>
@@ -324,33 +420,47 @@ function enTeteApp(D, titre, chapeau) {
 </section>`;
 }
 
+/* Un lien qui couvre toute la carte. Posé dans le <dd> et non autour du couple
+   <dt>/<dd> : à l'intérieur d'une <dl>, un <div> n'admet que des <dt> et des
+   <dd>, et un <a> à cet endroit serait un balisage invalide. */
+const lienCarte = (href, intitule) =>
+  `<a class="lien-carte" href="${esc(href)}"><span class="cache-visuellement">${esc(intitule)}</span></a>`;
+
 /* --- Tableau de bord ------------------------------------------------------- */
 function appTableauBord(V, D) {
   const aAnalyser = D.releve.filter((t) => t.statut === "a-analyser");
   const ouvertes = D.registre.filter((r) => r.echeance && !r.clos);
   const enRetard = D.echeances.filter((e) => e.retard);
 
+  const fiche = ficheDeLEntreprise(V, D);
   const corps = enTeteApp(D, "Tableau de bord",
-    "Ce qui attend une décision, ce qui arrive, et ce qui est en retard.") + `
+    "Ce qui attend une décision, ce qui arrive, et ce qui est en retard.", fiche) + `
 
 ${rubrique({ etiq: "À traiter", contenu: `
-  <dl class="compteurs">
+  <dl class="compteurs compteurs-liens">
     <div${enRetard.length ? ' class="alerte"' : ""}>
       <dt class="etiq">Revues en retard</dt>
       <dd><span class="grand">${enRetard.length}</span>
-      ${enRetard.length ? `<span class="precision">${esc(enRetard.map((e) => e.frequence).join(", "))}</span>` : ""}</dd>
+        ${enRetard.length ? `<span class="precision">${esc(enRetard.map((e) => e.frequence).join(", "))}</span>` : ""}
+        ${lienCarte("plan.html", "Voir le plan de veille")}</dd>
     </div>
-    <div><dt class="etiq">Textes à analyser</dt><dd><span class="grand">${aAnalyser.length}</span></dd></div>
-    <div><dt class="etiq">Actions ouvertes</dt><dd><span class="grand">${ouvertes.length}</span></dd></div>
-    <div><dt class="etiq">Textes relevés, 90 jours</dt><dd><span class="grand">${D.releve.length}</span></dd></div>
+    <div><dt class="etiq">Textes à analyser</dt>
+      <dd><span class="grand">${aAnalyser.length}</span>${lienCarte("releve.html", "Voir le relevé des textes")}</dd></div>
+    <div><dt class="etiq">Actions ouvertes</dt>
+      <dd><span class="grand">${ouvertes.length}</span>${lienCarte("registre.html", "Voir le registre de preuves")}</dd></div>
+    <div><dt class="etiq">Textes relevés, 90 jours</dt>
+      <dd><span class="grand">${D.releve.length}</span>${lienCarte("releve.html", "Voir le relevé des textes")}</dd></div>
   </dl>` })}
 
 ${rubrique({ etiq: "Prochaines revues", aplat: true, contenu: `
   <ul class="liste-echeances">
     ${D.echeances.map((e) => `<li${e.retard ? ' class="retard"' : ""}>
-      <span class="etiq">${esc(V.frequences[e.frequence] ? V.frequences[e.frequence].l : e.frequence)}</span>
-      <span class="mono">${esc(dateFr(e.prochaine))}</span>
-      ${e.retard ? '<span class="marque-ajout">en retard</span>' : ""}
+      <a href="plan.html">
+        <span class="etiq">${esc(V.frequences[e.frequence] ? V.frequences[e.frequence].l : e.frequence)}</span>
+        <span class="mono">${esc(dateFr(e.prochaine))}</span>
+        ${e.retard ? '<span class="marque-ajout">en retard</span>' : ""}
+        ${fleche}
+      </a>
     </li>`).join("")}
   </ul>` })}
 
@@ -375,29 +485,84 @@ ${rubrique({ etiq: "Dernières traces", aplat: true, contenu: `
   });
 }
 
-function ligneReleve(V, t) {
+/* Une ligne de relevé s'ouvre sur ce qui la justifie : le domaine auquel elle
+   est rattachée, ce qu'il faut y tenir, et les sources officielles où vérifier.
+   Sans cela, l'écran se regarde mais ne se consulte pas. */
+function ligneReleve(V, t, racine = "") {
   const s = STATUTS[t.statut] || STATUTS.analyse;
   const d = V.domaines[t.domaine];
+  const division = divisionDuDomaine(V, t.domaine);
   return `<li class="ligne-releve statut-${s.c}">
-  <span class="mono date">${esc(dateFr(t.date))}</span>
-  <span class="corps">
-    <span class="titre">${esc(t.titre)}</span>
-    <span class="quoi">${esc(t.quoi)}</span>
-    <span class="meta etiq">${esc(t.nature)} · ${esc(d ? d.nom : t.domaine)}${t.priorite === "haute" ? " · prioritaire" : ""}</span>
-  </span>
-  <span class="statut etiq">${esc(s.l)}</span>
+  <details>
+    <summary>
+      <span class="mono date">${esc(dateFr(t.date))}</span>
+      <span class="corps">
+        <span class="titre">${esc(t.titre)}</span>
+        <span class="quoi">${esc(t.quoi)}</span>
+        <span class="meta etiq">${esc(t.nature)} · ${esc(d ? d.nom : t.domaine)}${t.priorite === "haute" ? " · prioritaire" : ""}</span>
+      </span>
+      <span class="statut etiq">${esc(s.l)}</span>
+      ${chevron}
+    </summary>
+    <div class="detail">
+      ${d ? `<p class="lecture">${esc(d.resume)}</p>
+      <div class="detail-grille">
+        <div>
+          <span class="etiq">Ce qu'il faut tenir</span>
+          <ul>${d.obligations.slice(0, 4).map((o) => `<li>${esc(o)}</li>`).join("")}</ul>
+        </div>
+        <div>
+          <span class="etiq">Vérifier à la source</span>
+          <ul>${d.sources.map((x) =>
+            `<li><a href="${esc(x.url)}" target="_blank" rel="noopener">${esc(x.nom)} ${sortant}</a></li>`).join("")}</ul>
+        </div>
+      </div>` : ""}
+      <p class="rangee" style="margin-top:var(--t4)">
+        <a class="lien-fleche" href="${racine}plan.html">Voir ce domaine dans le plan ${fleche}</a>
+        ${division ? `<a class="lien-fleche" href="${racine}secteur/${esc(division)}.html">Ouvrir la fiche de secteur ${fleche}</a>` : ""}
+      </p>
+    </div>
+  </details>
 </li>`;
+}
+
+/* Le premier secteur où ce domaine s'applique : de quoi offrir un lien utile
+   depuis une ligne de relevé. Les domaines transversaux n'en ont pas. */
+function divisionDuDomaine(V, id) {
+  if (V.transversaux.indexOf(id) !== -1) return "";
+  for (const d of V.divisions) {
+    if ((V.parDivision[d.c] || []).indexOf(id) !== -1) return `${d.c}-${slug(d.l)}`;
+  }
+  return "";
 }
 
 function ligneRegistre(r) {
   const types = { revue: "Revue", action: "Action", decision: "Décision" };
+  const champ = (etiq, valeur) => valeur
+    ? `<div><dt class="etiq">${esc(etiq)}</dt><dd>${esc(valeur)}</dd></div>` : "";
   return `<li class="ligne-registre${r.clos ? " clos" : ""}">
-  <span class="mono date">${esc(dateFr(r.date))}</span>
-  <span class="corps">
-    <span class="titre">${esc(r.objet)}</span>
-    <span class="quoi">${esc(r.detail)}</span>
-    <span class="meta etiq">${esc(types[r.type] || r.type)} · ${esc(r.par)}${r.echeance && !r.clos ? " · échéance " + esc(dateFr(r.echeance)) : ""}</span>
-  </span>
+  <details>
+    <summary>
+      <span class="mono date">${esc(dateFr(r.date))}</span>
+      <span class="corps">
+        <span class="titre">${esc(r.objet)}</span>
+        <span class="quoi">${esc(r.detail)}</span>
+        <span class="meta etiq">${esc(types[r.type] || r.type)} · ${esc(r.par)}${r.echeance && !r.clos ? " · échéance " + esc(dateFr(r.echeance)) : ""}</span>
+      </span>
+      ${chevron}
+    </summary>
+    <div class="detail">
+      <dl class="detail-champs">
+        ${champ("Nature", types[r.type] || r.type)}
+        ${champ("Date", dateFr(r.date))}
+        ${champ("Par", r.par)}
+        ${champ("Échéance", r.echeance ? dateFr(r.echeance) : "—")}
+        ${champ("État", r.clos ? "Close" : "Ouverte")}
+      </dl>
+      <p class="note-source">Une ligne du registre ne se modifie pas après coup : une
+      correction s'ajoute à la suite, avec sa propre date, et celle-ci reste.</p>
+    </div>
+  </details>
 </li>`;
 }
 
@@ -415,7 +580,8 @@ function appPlan(V, D) {
     .map((qid) => (V.declencheurs.filter((x) => x.id === qid)[0] || {}).q).filter(Boolean);
 
   const corps = enTeteApp(D, "Mon plan de veille",
-    `Le périmètre retenu pour ${esc(D.entreprise.nom)} : ${total} domaines, groupés par rythme de revue.`) + `
+    `Le périmètre retenu pour ${esc(D.entreprise.nom)} : ${total} domaines, groupés par rythme de revue.`,
+    ficheDeLEntreprise(V, D)) + `
 
 ${rubrique({ etiq: "Le périmètre", contenu: `
   <dl class="faits">
@@ -433,7 +599,11 @@ ${groupes.map((g) => {
     const ech = D.echeances.filter((e) => e.frequence === g.id)[0];
     return rubrique({ etiq: g.f.l, contenu: `
       <p class="lecture">${esc(g.f.d)}${ech ? ` Prochaine revue : <strong>${esc(dateFr(ech.prochaine))}</strong>${ech.retard ? " — en retard." : "."}` : ""}</p>
-      ${dansGroupe.map((id) => blocDomaine(id, V.domaines[id], ajoutes.has(id) ? "declencheur-retenu" : "base")).join("\n")}` });
+      ${dansGroupe.map((id) => {
+        const division = divisionDuDomaine(V, id);
+        return blocDomaine(id, V.domaines[id], ajoutes.has(id) ? "declencheur-retenu" : "base",
+          division ? `secteur/${division}.html` : "");
+      }).join("\n")}` });
   }).join("\n")}`;
 
   return page({
@@ -450,7 +620,8 @@ function appReleve(V, D) {
   }));
 
   const corps = enTeteApp(D, "Relevé des textes",
-    "Les textes parus qui touchent votre périmètre, et seulement ceux-là. Ce que chacun change, et où en est la décision.") + `
+    "Les textes parus qui touchent votre périmètre, et seulement ceux-là. Ce que chacun change, et où en est la décision.",
+    ficheDeLEntreprise(V, D)) + `
 
 ${rubrique({ etiq: "Où ça en est", contenu: `
   <dl class="compteurs">
@@ -475,7 +646,8 @@ ${rubrique({ etiq: "Le relevé", aplat: true, contenu: `
 function appRegistre(V, D) {
   const ouvertes = D.registre.filter((r) => r.echeance && !r.clos);
   const corps = enTeteApp(D, "Registre de preuves",
-    "Les revues faites, les décisions prises, les actions menées — avec leurs dates. C'est ce qu'un auditeur demande, et ce qui manque le plus souvent.") + `
+    "Les revues faites, les décisions prises, les actions menées — avec leurs dates. C'est ce qu'un auditeur demande, et ce qui manque le plus souvent.",
+    ficheDeLEntreprise(V, D)) + `
 
 ${rubrique({ etiq: "Actions ouvertes", contenu: ouvertes.length ? `
   <ul class="liste-registre">${ouvertes.map((r) => ligneRegistre(r)).join("")}</ul>` :
@@ -694,8 +866,8 @@ function pageAccueil(V, D, METIERS, ECRANS) {
       prêt pour l'audit.
     </p>
     <p class="rangee rangee-centre">
-      <a class="bouton bouton-accent" href="connexion.html">Ouvrir l'application</a>
-      <a class="bouton bouton-sobre" href="tarifs.html">Voir les tarifs</a>
+      <a class="bouton bouton-accent" href="#installer">Installer l'application</a>
+      <a class="bouton bouton-sobre" href="tarifs.html">Démarrer un abonnement</a>
     </p>
     <p class="gage">
       ${sigle}
@@ -925,7 +1097,7 @@ function pageAccueil(V, D, METIERS, ECRANS) {
     </div>
     <p class="rangee rangee-centre" style="margin-top:var(--t5)">
       <a class="bouton bouton-accent" href="app/secteurs.html">Voir les ${V.divisions.length} secteurs</a>
-      <a class="bouton bouton-sobre" href="connexion.html">Ouvrir l'application</a>
+      <a class="bouton bouton-sobre" href="connexion.html">Ouvrir la démonstration</a>
     </p>
   </div>
 </section>
@@ -1012,10 +1184,10 @@ function pageTarifs(V) {
   const corps = `
 <section class="heros">
   <div class="enveloppe">
-    <div class="heros-texte"><h1>Trois formules, prix affichés</h1></div>
+    <div class="heros-texte"><h1>Démarrer un abonnement</h1></div>
     <p class="heros-sous">
-      Affichés, parce que presque personne ne le fait dans ce métier : les offres
-      comparables sont toutes « sur devis ». Montants hors taxes.
+      Trois formules, prix affichés — parce que presque personne ne le fait dans ce
+      métier : les offres comparables sont toutes « sur devis ». Montants hors taxes.
     </p>
   </div>
 </section>
@@ -1023,9 +1195,11 @@ function pageTarifs(V) {
 <section class="section">
   <div class="enveloppe">
     <p class="reserve">
-      <strong>Proposition à valider.</strong> Ces montants sont une proposition construite
-      à partir de la revue du marché, pas une grille arrêtée par Clément Pierrel.
-      À confirmer avant toute mise en ligne publique.
+      <strong>Proposition à valider, et paiement pas encore branché.</strong>
+      Ces montants sont une proposition construite à partir de la revue du marché, pas une
+      grille arrêtée par Clément Pierrel. Et « Démarrer un abonnement » ouvre pour l'instant
+      un courriel : le prélèvement automatique suppose un service de paiement, qui n'est pas
+      encore en place.
     </p>
 
     <div class="formules">
@@ -1043,7 +1217,7 @@ function pageTarifs(V) {
         <p>Le cadrage, puis le relevé : les textes qui touchent votre périmètre, analysés et
         datés, avec ce que chacun change pour vous. Accès à l'application et aux fiches de
         secteur. Un site, un responsable.</p>
-        <a class="bouton bouton-sobre" href="mailto:${esc(SITE.courriel)}?subject=Veille tenue">En parler</a>
+        <a class="bouton bouton-sobre" href="mailto:${esc(SITE.courriel)}?subject=Démarrer un abonnement — Veille tenue">Démarrer un abonnement</a>
       </article>
       <article class="formule mise-en-avant" data-paraitre>
         <span class="etiq">03 — Veille et preuves</span>
@@ -1051,7 +1225,7 @@ function pageTarifs(V) {
         <p>La veille tenue, plus le registre de preuves alimenté à chaque revue et une revue
         annuelle de conformité sur site. C'est la formule pour qui passe un audit — ISO 14001,
         ISO 45001, MASE, Qualiopi.</p>
-        <a class="bouton bouton-accent" href="mailto:${esc(SITE.courriel)}?subject=Veille et preuves">En parler</a>
+        <a class="bouton bouton-accent" href="mailto:${esc(SITE.courriel)}?subject=Démarrer un abonnement — Veille et preuves">Démarrer un abonnement</a>
       </article>
     </div>
   </div>
@@ -1110,7 +1284,7 @@ function pageConnexion() {
   const corps = `
 <section class="heros">
   <div class="enveloppe">
-    <div class="heros-texte"><h1>Ouvrir l'application</h1></div>
+    <div class="heros-texte"><h1>Connexion</h1></div>
     <div class="connexion" style="margin-inline:auto">
       <p class="reserve">
         <strong>Il n'y a pas encore de comptes.</strong>
@@ -1255,6 +1429,11 @@ async function main() {
 
   const plan = donneesPlan(V, METIERS);
   await writeFile(join(SORTIE, "assets", "plan-data.js"), plan);
+
+  // Le manifeste et le service worker vivent à la racine : un worker servi
+  // depuis assets/ ne contrôlerait que assets/.
+  await writeFile(join(SORTIE, "manifest.webmanifest"), MANIFESTE);
+  await cp(resolve(RACINE, "sw.js"), join(SORTIE, "sw.js"));
 
   await writeFile(join(SORTIE, "index.html"), pageAccueil(V, D, METIERS, ECRANS));
   await writeFile(join(SORTIE, "tarifs.html"), pageTarifs(V));

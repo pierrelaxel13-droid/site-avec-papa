@@ -23,7 +23,9 @@ un fichier de `_site/` ne sert à rien, il est effacé à chaque construction.
 | `contenu/metiers.js` | Les mots du métier qui rendent un secteur trouvable (« boulangerie » → division 10). |
 | `contenu/pieges.js` | Les pièges par secteur. `valide: false` tant que Clément Pierrel ne les a pas relus. |
 | `contenu/demo.js` | Le jeu d'essai de l'application. |
-| `outils/captures.mjs` | Les vraies captures montrées sur l'accueil, claires **et** sombres. |
+| `outils/captures.mjs` | Les vraies captures montrées sur l'accueil : ordinateur et téléphone, claires **et** sombres. |
+| `outils/icones.mjs` | Les icônes PNG du manifeste, rendues depuis `assets/favicon.svg`. |
+| `sw.js` | Le service worker, copié à la racine de `_site/`. Réseau d'abord pour les pages, cache d'abord pour l'habillage. |
 
 ## Prévisualiser, et vérifier pour de vrai
 
@@ -115,6 +117,15 @@ qu'il n'y a pas de client.
 - **Le simulateur ne propose que les questions utiles** à la division choisie —
   celles qui ajouteraient vraiment un domaine. Les réponses déjà cochées
   survivent à un changement de secteur.
+- **Le service worker se prend à la racine du site**, pas à côté de la page :
+  un worker servi depuis `app/` ne contrôlerait que `app/`. D'où `data-racine`
+  sur `<body>`, que `assets/app.js` relit pour l'enregistrer au bon endroit.
+- **Pas de badge App Store ni Google Play.** Il n'y a pas d'application native :
+  ces logos mèneraient à rien. La bande d'installation montre des pictogrammes
+  d'appareils et la consigne de chacun, et le dit en toutes lettres.
+- **Dans une `<dl>`, un `<div>` n'admet que des `<dt>` et des `<dd>`.** Un lien
+  qui couvre une carte de compteur se pose donc dans le `<dd>`, en
+  `position: absolute; inset: 0`, pas autour du couple.
 - **Ajouter une page publique** suppose trois gestes : la fonction dans
   `build.mjs`, son écriture dans `main()`, et le lien dans le menu **et** dans
   le pied de `page()`.
