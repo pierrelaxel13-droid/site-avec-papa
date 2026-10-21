@@ -89,7 +89,8 @@ pas les séparations.
 
 - **Un métier trouvable** : une entrée dans `contenu/metiers.js`.
 - **Un piège** : une entrée dans `contenu/pieges.js`, puis passer `valide: true`
-  une fois relue.
+  une fois relue. 34 divisions sur 88 en portent, 90 pièges en tout, **tous en
+  attente de relecture** : les pages le disent en toutes lettres.
 - **Un domaine, un rattachement, une question** : `assets/referentiel.js`.
 
 `node build.mjs` refuse de construire si une division manque, si un domaine cité
