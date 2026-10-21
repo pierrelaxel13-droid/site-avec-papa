@@ -1,5 +1,8 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Pierrel & Co">
-  <rect width="64" height="64" rx="8" fill="#2f6b5f"/>
-  <text x="32" y="45" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif"
-        font-size="40" fill="#faf7f2">P</text>
+  <rect width="64" height="64" rx="14" fill="#4A2BE8"/>
+  <g fill="#FFFFFF">
+    <rect x="10" y="15" width="34" height="7.5" rx="3.75"/>
+    <rect x="17" y="28.25" width="34" height="7.5" rx="3.75" opacity=".72"/>
+    <rect x="24" y="41.5" width="30" height="7.5" rx="3.75" opacity=".45"/>
+  </g>
 </svg>

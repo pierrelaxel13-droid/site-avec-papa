@@ -1,38 +1,29 @@
 ---
 name: site-pierrel
-description: "Modifier et publier le site statique Pierrel & Co de ce dépôt (index.html, plan-de-veille.html, assets/site.css, assets/motion.js, assets/toile.js, assets/constellation.js, assets/plan.js, build.mjs, netlify.toml). À utiliser pour toute demande de changement de contenu, de mise en page, de style, d'animation, de navigation, de texte, d'accessibilité ou d'impression, et pour prévisualiser ou publier le site. Déclencheurs typiques : « change le texte de l'accueil », « ajoute une section », « l'animation rame », « corrige le menu », « le rendu est cassé sur téléphone », « comment je vois le site », « ajoute une page », « le site ne se met pas à jour »."
+description: "Modifier et publier le site Pierrel & Co de ce dépôt (build.mjs, assets/site.css, assets/app.js, assets/theme.js, assets/session.js, contenu/, outils/captures.mjs, netlify.toml). À utiliser pour toute demande de changement de contenu, de mise en page, de style, d'animation, de navigation, de texte, d'accessibilité ou d'impression, et pour prévisualiser ou publier le site. Déclencheurs typiques : « change le texte de l'accueil », « ajoute une section », « l'animation rame », « corrige le menu », « le rendu est cassé sur téléphone », « comment je vois le site », « ajoute une page », « le site ne se met pas à jour »."
 ---
 
 # Le site Pierrel & Co
 
-> **À lire en premier : le site décrit ici n'existe plus dans la branche.**
-> Il a été retiré pour en refaire un autre. Les fichiers (`index.html`,
-> `plan-de-veille.html`, `assets/`) sont récupérables au commit `790a7d0` :
-> `git show 790a7d0:index.html`, ou `git checkout 790a7d0 -- .` pour l'ensemble.
-> Ce qui suit vaut donc comme **mémoire du projet** — notamment les règles qui
-> survivront au prochain site (aucune requête externe, les trois règles du
-> mouvement, les réserves juridiques, la méthode de vérification dans Chromium)
-> — et non comme description de l'état actuel. À réécrire une fois le nouveau
-> site en place.
+Site statique **entièrement engendré** par `build.mjs`. Aucune dépendance,
+aucun framework, pas de `package.json`, et il n'en faut pas. **Ne jamais
+introduire de bundler, de bibliothèque d'animation ni de `npm install`.**
 
-## Avant de toucher un fichier
-
-Deux pages écrites à la main, une feuille de style, trois scripts, aucune
-dépendance. `build.mjs` ne compile rien : il copie les fichiers publiables dans
-`_site/` et vérifie le référentiel. **Ne pas introduire de framework, de
-bundler, de bibliothèque d'animation ni de `npm install`** — il n'y a pas de
-`package.json` et il n'en faut pas.
+Il n'y a aucun fichier HTML dans le dépôt : tout sort de `build.mjs`. Modifier
+un fichier de `_site/` ne sert à rien, il est effacé à chaque construction.
 
 | Fichier | Rôle |
 |---|---|
-| `index.html` | Accueil. Méthode et tableau des sources **générés** depuis le référentiel par le script en fin de page ; chiffres du récit calculés de même. |
-| `plan-de-veille.html` | L'outil. Structure seulement : tout le contenu est rendu par `assets/plan.js`. |
-| `assets/site.css` | Toute la mise en forme, mouvement et impression compris. |
-| `assets/toile.js` | L'animation d'ouverture sur `<canvas>`. |
-| `assets/motion.js` | Le mouvement piloté par script, sur les deux pages. |
-| `assets/constellation.js` | La constellation du plan : anneaux, liens, soulignement. |
-| `assets/plan.js` | Logique de l'outil : constellation, calendrier, détail. |
+| `build.mjs` | Le gabarit commun (`page()`), les trois pages publiques, les cinq écrans de l'application, les 88 fiches de secteur, et les garde-fous (`verifie`). |
+| `assets/site.css` | Toute la mise en forme, les deux thèmes, le mouvement et l'impression. |
+| `assets/app.js` | Bandeau, menu repliable, bascules, simulateur, recherche, affinage du périmètre, apparitions. |
+| `assets/theme.js` | Le choix de thème (auto / clair / sombre), appliqué avant le premier rendu. |
+| `assets/session.js` | Le jeton de démonstration. **Ce n'est pas une sécurité** — voir plus bas. |
 | `assets/referentiel.js` | Le contenu métier → voir le skill `veille-reglementaire`. |
+| `contenu/metiers.js` | Les mots du métier qui rendent un secteur trouvable (« boulangerie » → division 10). |
+| `contenu/pieges.js` | Les pièges par secteur. `valide: false` tant que Clément Pierrel ne les a pas relus. |
+| `contenu/demo.js` | Le jeu d'essai de l'application. |
+| `outils/captures.mjs` | Les vraies captures montrées sur l'accueil, claires **et** sombres. |
 
 ## Prévisualiser, et vérifier pour de vrai
 
@@ -41,109 +32,119 @@ node build.mjs
 python3 -m http.server -d _site 8080
 ```
 
-`_site/` est effacé à chaque construction : ne jamais y modifier un fichier.
+**Lire le CSS ne suffit pas.** Chromium est installé
+(`/opt/pw-browsers/chromium-1194/chrome-linux/chrome`), à piloter avec
+Playwright. Après toute modification visuelle, contrôler :
 
-**Lire le CSS ne suffit pas sur ce site.** Le héros, le récit au défilement et
-le diagramme ne se jugent qu'en mouvement. Chromium est installé —
-`/opt/pw-browsers/chromium-1194/chrome-linux/chrome` — à piloter avec
-Playwright. Ce qu'il faut contrôler après toute modification visuelle :
+- le débordement horizontal à 320, 375, 768, 1024 et 1440 px
+  (`scrollWidth - clientWidth <= 0`), sur l'accueil, les tarifs, la connexion,
+  le tableau de bord, l'index des secteurs et une fiche de secteur ;
+- les contrastes dans **les deux thèmes**, en composant les couches
+  translucides. `getComputedStyle` rend `color-mix()` tel quel, parfois en
+  `color(srgb …)` dont les composantes vont de 0 à 1 : une sonde qui lit
+  naïvement les trois premiers nombres mesure `rgb(1,1,1)`, c'est-à-dire du
+  noir, et invente des échecs. Ne pas passer par `canvas.fillStyle` non plus :
+  il garde silencieusement la couleur précédente quand il ne comprend pas ;
+- le même parcours sous `reducedMotion: "reduce"` et avec
+  `javaScriptEnabled: false` : rien ne doit rester invisible ;
+- l'absence de toute requête sortante.
 
-- le débordement horizontal à 320, 390, 768, 1024 et 1440 px
-  (`scrollWidth - clientWidth <= 0`) ;
-- que la toile peigne réellement (compter les pixels non transparents de
-  `getImageData`, pas se fier à la présence de la balise) ;
-- le parcours complet refait avec `reducedMotion: "reduce"`, pour vérifier
-  qu'aucun contenu ne reste caché ;
-- le rendu imprimé (`emulateMedia({ media: "print" })`).
+Quand on fait défiler la page par script pour déclencher les apparitions,
+**neutraliser `scroll-behavior: smooth`** (`html{scroll-behavior:auto}`), sinon
+les sections du bas ne sont jamais vraiment affichées et l'observateur ne les
+révèle pas : on croit à un bug du site alors que c'est la sonde.
 
 ## Direction artistique
 
-Sombre, typographie massive, mouvement assumé. Deux registres seulement :
-`.nuit` (défaut) et `.jour`, posé sur une section pour casser le rythme.
+Celle des plateformes financières françaises, reprise à la demande de Clément :
+une teinte saturée unique, une encre marine très sombre, des fonds teintés très
+pâles, des cartes blanches à grands rayons, des boutons pilule, de grands
+titres serrés. **Les écrans du produit sont le visuel principal** — pas
+d'illustration, pas de photographie d'agence, pas de témoignage client tant
+qu'il n'y a pas de client.
 
-- **Couleurs** : uniquement par les tokens de `:root` — `--nuit`, `--nuit-2`,
-  `--nuit-3`, `--craie`, `--craie-douce`, `--craie-faible`, `--papier`,
-  `--vert`, `--vert-vif`, `--vert-sombre`, `--vert-voile`, `--terre`,
-  `--alerte`, `--trait`, `--trait-fort`, `--trait-jour`. Jamais de couleur en
-  dur dans une page.
-- **Typographie** : `Newsreader` (serif, graisse 300) pour les titres,
-  `Inter` pour le reste. Les deux sont **variables** : un fichier par famille
-  couvre toutes les graisses, ne pas les dupliquer.
-- **Courbes** : `--sortie` pour une entrée, `--doux` pour un changement d'état.
-  Jamais de rebond.
-- **Composants** : `.enveloppe`, `.section`, `.jour`, `.tete-section`,
-  `.surtitre`, `.carte`, `.grille-2/3`, `.bouton` (`.bouton-fantome`,
-  `.bouton-petit`), `.etape`, `.livrable`, `.tableau`, `.etiquette`,
-  `.reserve`, `.geant`.
+- **Couleurs** : uniquement par les jetons de `:root`. Jamais de couleur en dur
+  dans une page. `--accent`, `--encre`, `--encre-douce`, `--encre-tenue`,
+  `--papier`, `--papier-tein`, `--carte`, `--filet`, `--bouton-fond`,
+  `--bouton-texte`, `--vert`, `--ambre`.
+- **Typographie** : `Plus Jakarta Sans`, variable 400→800, un seul fichier.
+  Les chiffres de tableau passent en `--mono` (police système).
+- **Rayons** : `--r1` à `--r4`, `--rp` pour les pilules. Pas de carré vif.
+- **Composants** : `.heros`, `.portable`, `.carte-flottante`, `.rail`,
+  `.bascule`, `.traits`, `.vitrine`, `.simulateur`, `.puces`, `.raisons`,
+  `.sources-bande`, `.bande-finale`, `.formules`, `.rubrique`, `.jalons`,
+  `.bloc-domaine`, `.compteurs`, `.ligne-releve`, `.ligne-registre`.
 
 ## Pièges de ce dépôt
 
-- **Aucune requête externe, et ça doit le rester.** Les polices sont dans le
-  dépôt parce que le pied de page promet qu'aucune donnée ne part chez un
-  tiers ; un `<link>` vers `fonts.googleapis.com` transmettrait l'IP de chaque
-  visiteur à Google et rendrait cette phrase fausse. Même raison pour les
-  scripts d'analyse et les bibliothèques servies par CDN.
-- **La barre de navigation est `position:fixed`.** D'où `scroll-padding-top`
-  sur `html` et `scroll-margin-top` sur les sections de l'outil : sans eux,
-  toute ancre place son titre sous la barre.
+- **Aucune requête externe, et ça doit le rester.** La police est dans le dépôt
+  parce que le pied de page promet qu'aucune donnée ne part chez un tiers ; un
+  `<link>` vers `fonts.googleapis.com` transmettrait l'IP de chaque visiteur à
+  Google et rendrait cette phrase fausse. Même raison pour les scripts
+  d'analyse et les bibliothèques servies par CDN.
+- **`ch` se mesure sur la police de l'élément lui-même.** Une largeur en `ch`
+  posée sur le conteneur d'un très grand titre vaut la largeur du texte
+  courant : le titre du héros tombait sur huit lignes. La limite appartient au
+  `h1`.
+- **`display: grid` ou `flex` bat `[hidden]`** : la règle du navigateur est
+  moins spécifique que la nôtre. D'où `[hidden] { display: none !important; }`,
+  sans quoi les deux panneaux de la bascule s'affichent en même temps.
 - **Un élément de grille ne descend pas sous la largeur de son contenu.**
-  `min-width:0` sur `.colonne-rythme` et `overflow-wrap:anywhere` sur `.jeton`
-  sont là pour ça — c'est ce qui faisait déborder l'outil à 320 px.
-- **Le héros est une grille, pas un flex.** Un enfant flex se rétracte sur son
-  contenu et `.enveloppe` y perdrait sa largeur pleine, décalant tout le texte
-  au milieu de l'écran.
-- **La constellation n'est jamais réécrite d'un bloc.** Ses nœuds survivent
-  d'un rendu à l'autre : c'est ce qui permet de les faire glisser vers leur
-  nouvelle place. Un `innerHTML` à chaque rendu casserait l'animation la plus
-  parlante du site.
-- **Trois réglages empêchent les libellés de se chevaucher**, et il faut les
-  trois : chaque anneau tourné d'un cran (`phase`), les noms coupés à trente
-  signes, et l'écartement vertical d'`ecarteLibelles`. Un nœud proche de l'axe
-  vertical porte un libellé qui déborde de l'autre côté : il compte donc dans
-  les deux colonnes de l'écartement. Le nom complet reste dans la liste
-  détaillée. Un contrôle permanent mesure les chevauchements sur neuf plans,
-  jusqu'à vingt domaines : il doit rester à zéro.
-- **Le plan vit dans l'adresse** (`#metier-question.question`). L'adresse reçue
-  l'emporte sur `localStorage`, un plan restauré depuis le navigateur y est
-  réécrit, et `hashchange` est écouté — sans quoi un lien ouvert alors que
-  l'outil tourne déjà ne changerait rien à l'écran. `replaceState` et non
-  `pushState` : un clic de plus ne doit pas ajouter une entrée d'historique.
-- **Attention aux noms de classes déjà pris.** La légende de la constellation
-  a d'abord utilisé `.metier`, déjà employé par les boutons de métier : ses
-  entrées héritaient du style d'une carte. D'où `.de-metier` et `.de-contexte`.
-- **La séquence d'ouverture ne doit jamais pouvoir rester en place.** Elle se
-  saute au clic et à la touche, et un délai de sécurité la retire au bout de
-  quatre secondes quoi qu'il arrive. Elle ne joue qu'une fois par session et
-  jamais en `prefers-reduced-motion`.
-- **L'en-tête et le pied de page sont dupliqués dans les deux pages** : aucun
-  gabarit. Toucher au menu suppose d'éditer les deux fichiers.
-- **Les réponses de l'outil vivent dans `localStorage`** sous `pco-plan-v1`,
-  toujours sous `try/catch` : en navigation privée, l'accès lève.
-- **`[hidden]` est forcé en `display:none !important`** : c'est ce qui masque
-  la barre d'actions, le diagramme et le calendrier tant qu'aucun métier n'est
-  choisi.
-- **`.sans-impression`** masque à l'impression, `.entete-impression` n'apparaît
-  qu'à l'impression. La feuille imprimée est un livrable qui finit dans un
-  dossier d'audit : la revérifier après toute modification de l'outil.
-- **Ajouter une page** suppose trois gestes : le fichier, son entrée dans
-  `A_PUBLIER` de `build.mjs`, le lien dans le menu **des deux** autres pages.
+  `1fr` vaut `minmax(auto, 1fr)` : utiliser `minmax(0, 1fr)` et `min-width: 0`,
+  sinon une table ou une longue liste fait déborder la page à 320 px.
+- **La spécificité des sélecteurs de menu.** `.menu a` (0,1,1) l'emporte sur
+  `.bouton` (0,1,0) : le bouton du bandeau sortait en gris encre sur fond
+  marine. D'où `.menu .bouton { color: var(--bouton-texte) }`.
+- **Les décalages de départ sont sous `.anime`**, classe posée par le script de
+  `<head>` seulement si JavaScript tourne et que le visiteur n'a pas demandé
+  moins d'animations. Les écrire directement sur `[data-paraitre]` rendrait la
+  moitié de l'accueil invisible sans JavaScript.
+- **Le thème se règle en trois temps**, dans cet ordre : `:root` (clair),
+  `@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) }`,
+  puis `:root[data-theme="dark"]`. Toute règle qui dépend du thème — y compris
+  le choix entre capture claire et capture sombre — suit la même séquence,
+  sinon un thème forcé à la main ne passe pas.
+- **Les captures se périment avec l'application.** Relancer `outils/captures.mjs`
+  après toute modification visible, puis `node build.mjs`. Dix fichiers :
+  cinq clairs, cinq sombres (`bord.png` / `bord-sombre.png`). Si elles
+  manquent, l'accueil l'écrit au lieu d'afficher une image cassée.
+- **`assets/plan-data.js` est engendré**, pas écrit à la main : le référentiel
+  complet pèse 75 Ko, trop pour l'accueil. Le simulateur n'en reçoit que le nom
+  et le rythme des domaines, le périmètre de base de chaque division et les
+  questions de contexte.
+- **Le simulateur ne propose que les questions utiles** à la division choisie —
+  celles qui ajouteraient vraiment un domaine. Les réponses déjà cochées
+  survivent à un changement de secteur.
+- **Ajouter une page publique** suppose trois gestes : la fonction dans
+  `build.mjs`, son écriture dans `main()`, et le lien dans le menu **et** dans
+  le pied de `page()`.
 
 ## Les trois règles du mouvement
 
-Elles ne se négocient pas, et toute animation ajoutée doit les tenir :
+Elles ne se négocient pas :
 
-1. **Sans les scripts, le site est complet.** Les décalages de départ (`.arme`,
-   `.arme-mot`) sont posés par `motion.js`, jamais dans le HTML.
-2. **`prefers-reduced-motion` coupe tout** sans retirer un mot : le récit
-   affiche ses trois étapes à la suite, la toile peint une image fixe.
-3. **Seuls `transform`, `opacity` et la hauteur d'un bloc déplié sont animés.**
+1. **Sans les scripts, le site est complet.** Les décalages de départ sont
+   posés par `.anime`, jamais dans le HTML.
+2. **`prefers-reduced-motion` coupe tout** sans retirer un mot ni fausser un
+   chiffre : le compteur du rail part de la valeur finale, déjà écrite dans le
+   HTML.
+3. **Seuls `transform` et `opacity` sont animés.**
 
-La toile s'arrête quand l'onglet passe en arrière-plan ou quand le héros sort
-de l'écran ; ne pas retirer ces garde-fous, c'est ce qui évite de faire tourner
-un ventilateur pour un décor qu'on ne voit pas.
+## Ce qui n'est pas en place, et doit rester écrit
 
-`<details>` ne s'anime pas seul : le contenu sort du rendu dès que `open`
-tombe. D'où le bloc `.repli`, dont on anime la hauteur réelle avant de fermer.
+**Il n'y a pas de serveur.** La « connexion » pose un jeton dans le navigateur
+et retire un voile : **ce n'est pas une sécurité**. Les pages de l'application
+sont servies à tout le monde et restent lisibles dans la source. Les données
+sont un jeu d'essai.
+
+C'est écrit en tête de `build.mjs`, dans `assets/session.js`, sur le bandeau de
+l'application, sur la page de connexion et sur l'accueil. **Ne pas le retirer**
+tant que l'authentification (Netlify Identity ou équivalent) et le paiement
+(Stripe ou équivalent) ne sont pas branchés.
+
+Restent également à valider par Clément Pierrel : les 29 pièges
+(`valide: false`), la grille de tarifs, le courriel, le téléphone, le SIRET et
+l'hébergeur.
 
 ## Publier
 
@@ -154,17 +155,8 @@ node build.mjs     # doit passer avant d'envoyer
 git add -A && git commit -m "…" && git push
 ```
 
-## Ce qui est volontairement absent
-
-À signaler, pas à « corriger » en passant : pas de formulaire de contact
-(courriel et téléphone), pas de collecte automatique, pas de curseur natif
-masqué (le halo accompagne le curseur, il ne le remplace pas). Le courriel, le
-téléphone, le SIRET et l'hébergeur sont des valeurs d'exemple, listées dans
-`DEPLOIEMENT.md`.
-
 ## Réserves à ne pas retirer
 
-Les mentions rappelant que le site et son outil fournissent un cadre
-méthodologique et non un conseil juridique, sur les deux pages et sur la
-feuille imprimée, font partie de la prestation. Ne pas les supprimer ni les
-adoucir.
+Les mentions rappelant que le service fournit un cadre méthodologique et non un
+conseil juridique, et qu'il ne garantit pas l'exhaustivité des textes
+applicables, font partie de la prestation. Ne pas les supprimer ni les adoucir.

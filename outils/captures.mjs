@@ -41,18 +41,22 @@ const p = await contexte.newPage();
 // On ouvre la session de démonstration avant toute capture, sinon chaque page
 // n'affiche que le voile d'accès.
 await p.goto(BASE + "/connexion.html", { waitUntil: "domcontentloaded" });
-await p.evaluate(() => {
-  localStorage.setItem("pco-session", "demo");
-  localStorage.setItem("pco-theme", "light");
-});
+await p.evaluate(() => { localStorage.setItem("pco-session", "demo"); });
 
-for (const e of ECRANS) {
-  await p.goto(BASE + e.url, { waitUntil: "networkidle" });
-  await p.waitForTimeout(700);
-  const verrou = await p.locator("#verrou").count();
-  if (verrou) throw new Error(`${e.url} : le voile d'accès est encore là, la session n'a pas pris.`);
-  await p.screenshot({ path: resolve(RACINE, "assets/ecrans", e.nom) });
-  console.log("  " + e.nom.padEnd(16) + e.url);
+// Deux jeux : l'accueil montre le jeu qui correspond au thème du visiteur.
+// Sans cela, un grand rectangle blanc trône au milieu de la page sombre.
+for (const theme of ["light", "dark"]) {
+  await p.evaluate((t) => { localStorage.setItem("pco-theme", t); }, theme);
+  for (const e of ECRANS) {
+    const nom = theme === "dark" ? e.nom.replace(".png", "-sombre.png") : e.nom;
+    await p.goto(BASE + e.url, { waitUntil: "networkidle" });
+    await p.waitForTimeout(700);
+    if (await p.locator("#verrou").count()) {
+      throw new Error(`${e.url} : le voile d'accès est encore là, la session n'a pas pris.`);
+    }
+    await p.screenshot({ path: resolve(RACINE, "assets/ecrans", nom) });
+    console.log("  " + nom.padEnd(22) + e.url);
+  }
 }
 
 await navigateur.close();

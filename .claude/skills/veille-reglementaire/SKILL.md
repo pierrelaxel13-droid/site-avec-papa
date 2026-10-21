@@ -1,31 +1,26 @@
 ---
 name: veille-reglementaire
-description: "Le référentiel de veille de ce dépôt, dans assets/referentiel.js : les 26 domaines de veille, les 15 familles de métiers, les 11 questions de contexte, les fréquences de revue, la méthode et les sources officielles. À utiliser pour toute demande de contenu réglementaire — ajouter ou modifier un domaine, rattacher un métier, ajouter une question, changer un rythme de revue, corriger des obligations ou des textes de référence — et pour comprendre pourquoi un domaine apparaît ou non dans un plan. Déclencheurs typiques : « ajoute un domaine », « il manque les ICPE pour ce métier », « pourquoi ce domaine ne sort pas », « change la fréquence », « ajoute le métier X », « corrige les obligations de la partie amiante »."
+description: "Le référentiel de veille de ce dépôt, dans assets/referentiel.js : les 44 domaines de veille, les 88 divisions NAF, les 22 questions de contexte, les fréquences de revue, la méthode et les sources officielles. À utiliser pour toute demande de contenu réglementaire — ajouter ou modifier un domaine, rattacher un métier, ajouter une question, changer un rythme de revue, corriger des obligations ou des textes de référence — et pour comprendre pourquoi un domaine apparaît ou non dans un plan. Déclencheurs typiques : « ajoute un domaine », « il manque les ICPE pour ce métier », « pourquoi ce domaine ne sort pas », « change la fréquence », « ajoute le métier X », « corrige les obligations de la partie amiante »."
 ---
 
 # Le référentiel de veille
 
-> **À lire en premier : le référentiel décrit ici n'existe plus dans la branche.**
-> `assets/referentiel.js` a été retiré pour refaire un autre site. Il est
-> récupérable au commit `790a7d0` (`git show 790a7d0:assets/referentiel.js`),
-> et le référentiel d'origine, plus fourni — 44 domaines et la collecte au
-> Journal officiel — est sur `origin/main`
-> (`git show origin/main:assets/veille-data.js`).
-> Ce qui suit vaut comme **mémoire du contenu métier** : la façon d'écrire un
-> domaine, de le rattacher, et les règles de rédaction restent valables quel
-> que soit le site qui le portera.
-
 ## Où ça vit
 
-Un seul fichier : `assets/referentiel.js`. Autonome, sans dépendance, chargé tel
-quel par `index.html` (la méthode et le tableau des sources) et par
-`plan-de-veille.html` (tout l'outil). Il n'y a pas de base de données, pas d'API,
-pas de collecte automatique : le contenu réglementaire est écrit à la main dans
-ce fichier, et c'est la seule source de vérité.
+Un seul fichier : `assets/referentiel.js`. Autonome, sans dépendance. Il n'est
+pas chargé par les pages : **`build.mjs` le lit à la construction** et en
+engendre les 88 fiches de secteur, le plan de l'application et le petit jeu de
+données du simulateur (`assets/plan-data.js`). Il n'y a pas de base de données,
+pas d'API, pas de collecte automatique : le contenu réglementaire est écrit à la
+main dans ce fichier, et c'est la seule source de vérité.
 
-Il expose `window.REFERENTIEL` avec : `frequences`, `domaines`, `socle`,
-`metiers`, `questions`, `etapes`, `sourcesGenerales`, et les fonctions
-`metier()`, `question()`, `plan()`.
+Il expose `window.VEILLE` avec : `sections` (21), `divisions` (88),
+`familles`, `domaines` (44), `motsCles`, `transversaux`, `parDivision`,
+`declencheurs` (22), `sourcesGenerales`, `etapes`, `frequences`.
+
+Deux fichiers l'accompagnent dans `contenu/` : `metiers.js` (les mots du métier
+qui rendent un secteur trouvable) et `pieges.js` (les pièges propres à chaque
+secteur, `valide: false` tant qu'ils ne sont pas relus).
 
 ## Comment un plan se construit
 
