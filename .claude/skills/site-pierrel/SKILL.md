@@ -5,6 +5,16 @@ description: "Modifier et publier le site statique Pierrel & Co de ce dépôt (i
 
 # Le site Pierrel & Co
 
+> **À lire en premier : le site décrit ici n'existe plus dans la branche.**
+> Il a été retiré pour en refaire un autre. Les fichiers (`index.html`,
+> `plan-de-veille.html`, `assets/`) sont récupérables au commit `790a7d0` :
+> `git show 790a7d0:index.html`, ou `git checkout 790a7d0 -- .` pour l'ensemble.
+> Ce qui suit vaut donc comme **mémoire du projet** — notamment les règles qui
+> survivront au prochain site (aucune requête externe, les trois règles du
+> mouvement, les réserves juridiques, la méthode de vérification dans Chromium)
+> — et non comme description de l'état actuel. À réécrire une fois le nouveau
+> site en place.
+
 ## Avant de toucher un fichier
 
 Deux pages écrites à la main, une feuille de style, trois scripts, aucune
