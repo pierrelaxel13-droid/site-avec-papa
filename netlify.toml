@@ -1,0 +1,27 @@
+# Netlify : reconstruit et republie à chaque envoi sur la branche reliée.
+
+[build]
+  command = "node build.mjs"
+  publish = "_site"
+
+[build.environment]
+  NODE_VERSION = "22"
+
+# Les pages sont engendrées : il faut qu'une correction se voie tout de suite.
+[[headers]]
+  for = "/*.html"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=3600"
+
+# Les polices ne changent jamais : un an, et versionnées dans le dépôt.
+[[headers]]
+  for = "/assets/polices/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
