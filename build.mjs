@@ -108,6 +108,11 @@ const sigle = `<svg class="sigle" viewBox="0 0 24 24" aria-hidden="true" fill="c
 const fleche = `<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor"
   stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h13m-5-6 6 6-6 6"/></svg>`;
 
+const imprimante = `<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor"
+  stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:1.1em;height:1.1em">
+  <path d="M7 9V3.5h10V9"/><rect x="3.5" y="9" width="17" height="7.5" rx="1.6"/>
+  <path d="M7 14h10v6.5H7z"/></svg>`;
+
 const chevron = `<svg class="chevron" viewBox="0 0 24 24" aria-hidden="true" fill="none"
   stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>`;
 
@@ -188,9 +193,10 @@ function page({ titre, description, racine = "", zone = "public", actif = "", co
 
   const menuPublic = `
       ${lien("index.html", "Le produit", "produit")}
-      ${lien("tarifs.html", "Tarifs", "tarifs")}
+      ${lien("abonnement.html", "S'abonner", "abonnement")}
+      ${lien("connexion.html", "Connexion", "connexion")}
       ${selecteurTheme}
-      <a class="bouton" href="${a("connexion.html")}">Connexion</a>`;
+      <a class="bouton" href="${a("abonnement.html")}">Démarrer un abonnement</a>`;
 
   const menuApp = `
       ${lien("app/index.html", "Tableau de bord", "bord")}
@@ -198,6 +204,7 @@ function page({ titre, description, racine = "", zone = "public", actif = "", co
       ${lien("app/releve.html", "Relevé", "releve")}
       ${lien("app/registre.html", "Registre", "registre")}
       ${lien("app/secteurs.html", "Secteurs", "secteurs")}
+      ${lien("app/reglages.html", "Réglages", "reglages")}
       ${selecteurTheme}`;
 
   return `<!doctype html>
@@ -271,7 +278,7 @@ ${verrou ? `<section class="verrou" id="verrou">
     </p>
     <p class="rangee rangee-centre" style="margin-top:var(--t5)">
       <a class="bouton bouton-accent" href="${a("connexion.html")}" id="verrou-action">Ouvrir la démonstration</a>
-      <a class="bouton bouton-sobre" href="${a("tarifs.html")}">Voir les tarifs</a>
+      <a class="bouton bouton-sobre" href="${a("abonnement.html")}">Voir les tarifs</a>
     </p>
   </div>
 </section>` : ""}
@@ -294,7 +301,7 @@ ${zone === "public" ? bandeInstallation(a) : ""}
         <h2>Le site</h2>
         <ul>
           <li><a href="${a("index.html")}">Le produit</a></li>
-          <li><a href="${a("tarifs.html")}">Tarifs</a></li>
+          <li><a href="${a("abonnement.html")}">S'abonner et voir les tarifs</a></li>
           <li><a href="${a("connexion.html")}">Connexion</a></li>
         </ul>
       </div>
@@ -306,6 +313,7 @@ ${zone === "public" ? bandeInstallation(a) : ""}
           <li><a href="${a("app/releve.html")}">Relevé des textes</a></li>
           <li><a href="${a("app/registre.html")}">Registre de preuves</a></li>
           <li><a href="${a("app/secteurs.html")}">Fiches par secteur</a></li>
+          <li><a href="${a("app/reglages.html")}">Mon entreprise et mes alertes</a></li>
         </ul>
       </div>
       <div>
@@ -322,7 +330,7 @@ ${zone === "public" ? bandeInstallation(a) : ""}
     <div class="pied-bas">
       <p class="pied-legal">
         <span>© ${new Date().getFullYear()} ${esc(SITE.nom)} — tous droits réservés</span>
-        <a href="${a("tarifs.html")}">Tarifs</a>
+        <a href="${a("abonnement.html")}">Tarifs</a>
         <a href="mailto:${esc(SITE.courriel)}">Contact</a>
       </p>
       <p>
@@ -337,7 +345,8 @@ ${zone === "public" ? bandeInstallation(a) : ""}
 
 ${donneesPlan ? `<script src="${a("assets/plan-data.js")}"></script>` : ""}
 <script src="${a("assets/app.js")}"></script>
-${zone === "app" || verrou || actif === "connexion" ? `<script src="${a("assets/session.js")}"></script>` : ""}
+${zone === "app" ? `<script src="${a("assets/entreprise.js")}"></script>` : ""}
+${zone === "app" || verrou || actif === "connexion" || actif === "abonnement" ? `<script src="${a("assets/session.js")}"></script>` : ""}
 </body>
 </html>
 `;
@@ -534,6 +543,7 @@ function ligneReleve(V, t, racine = "") {
         </div>
       </div>` : ""}
       <p class="rangee" style="margin-top:var(--t4)">
+        <button type="button" class="bouton bouton-sobre imprimer-fiche">${imprimante} Enregistrer en PDF</button>
         <a class="lien-fleche" href="${racine}plan.html">Voir ce domaine dans le plan ${fleche}</a>
         ${division ? `<a class="lien-fleche" href="${racine}secteur/${esc(division)}.html">Ouvrir la fiche de secteur ${fleche}</a>` : ""}
       </p>
@@ -577,6 +587,9 @@ function ligneRegistre(r) {
       </dl>
       <p class="note-source">Une ligne du registre ne se modifie pas après coup : une
       correction s'ajoute à la suite, avec sa propre date, et celle-ci reste.</p>
+      <p class="rangee" style="margin-top:var(--t4)">
+        <button type="button" class="bouton bouton-sobre imprimer-fiche">${imprimante} Enregistrer en PDF</button>
+      </p>
     </div>
   </details>
 </li>`;
@@ -806,6 +819,187 @@ ${p ? rubrique({ etiq: "Le terrain", contenu: `
   });
 }
 
+/* --- Réglages : mon entreprise et mes alertes ------------------------------- */
+/* Ce que le visiteur saisit ici ne part nulle part : c'est gardé dans son
+   navigateur, et c'est écrit sur la page. Le périmètre se recalcule dessus,
+   exactement comme le simulateur de l'accueil — même données, même règle. */
+function appReglages(V, D) {
+  const parSection = V.sections.map((s) => ({
+    s, divisions: V.divisions.filter((d) => d.s === s.c)
+  })).filter((g) => g.divisions.length);
+
+  const corps = `<section class="tete-app">
+  <div class="enveloppe">
+    <ul class="jalons">
+      <li><span class="fort">Réglages</span></li>
+      <li><span>Gardés dans ce navigateur</span></li>
+    </ul>
+    <h1>Mon entreprise et mes alertes</h1>
+    <p class="chapeau">
+      Décrivez votre entreprise une fois : le périmètre de veille se recalcule dessus,
+      et les textes visent juste. Réglez ensuite ce que vous voulez recevoir, et à quel
+      rythme.
+    </p>
+
+    <div class="bascule" role="tablist" aria-label="Réglages" data-bascule style="margin-inline:0">
+      <span class="bascule-curseur" aria-hidden="true"></span>
+      <button type="button" role="tab" id="onglet-entreprise" aria-selected="true" aria-controls="volet-entreprise">Mon entreprise</button>
+      <button type="button" role="tab" id="onglet-alertes" aria-selected="false" aria-controls="volet-alertes">Mes alertes</button>
+    </div>
+  </div>
+</section>
+
+<section class="rubrique" id="volet-entreprise" role="tabpanel" aria-labelledby="onglet-entreprise">
+  <div class="enveloppe">
+    <p class="reserve">
+      <strong>Rien de ceci ne quitte votre navigateur.</strong>
+      Il n'y a pas encore de serveur : ces informations sont gardées sur cet appareil
+      seulement, ne sont transmises à personne, et disparaissent si vous videz les
+      données du site. N'y mettez rien que vous ne voudriez pas y retrouver.
+    </p>
+
+    <div class="simulateur" style="margin-top:var(--t5)">
+      <form class="reglages" id="form-entreprise" novalidate>
+        <div class="reglage">
+          <label class="etiq" for="e-nom">Raison sociale</label>
+          <input type="text" id="e-nom" name="nom" placeholder="${esc(D.entreprise.nom)}" autocomplete="organization">
+        </div>
+        <div class="reglage">
+          <label class="etiq" for="e-naf">Activité principale (NAF)</label>
+          <select id="e-naf" name="naf">
+            ${parSection.map((g) => `<optgroup label="${esc(g.s.c)} — ${esc(g.s.l)}">
+              ${g.divisions.map((d) => `<option value="${esc(d.c)}"${d.c === D.entreprise.naf ? " selected" : ""}>${esc(d.c)} — ${esc(d.l)}</option>`).join("")}
+            </optgroup>`).join("")}
+          </select>
+        </div>
+        <div class="reglage">
+          <label class="etiq" for="e-ville">Commune de l'établissement</label>
+          <input type="text" id="e-ville" name="ville" placeholder="${esc(D.entreprise.ville)}" autocomplete="address-level2">
+        </div>
+        <div class="reglage">
+          <label class="etiq" for="e-effectif">Effectif</label>
+          <input type="number" id="e-effectif" name="effectif" min="0" max="100000"
+                 placeholder="${esc(D.entreprise.effectif)}" inputmode="numeric">
+        </div>
+        <div class="reglage">
+          <label class="etiq" for="e-responsable">Responsable de la veille</label>
+          <input type="text" id="e-responsable" name="responsable" placeholder="${esc(D.entreprise.responsable)}" autocomplete="name">
+        </div>
+        <div class="reglage">
+          <span class="etiq">Votre contexte</span>
+          <div class="cases" id="e-contexte"></div>
+        </div>
+        <p class="rangee">
+          <button type="submit" class="bouton bouton-accent">Enregistrer</button>
+          <button type="button" class="bouton bouton-sobre" id="e-reinit">Revenir au jeu d'essai</button>
+        </p>
+        <p class="etiq" id="e-etat" role="status"></p>
+      </form>
+
+      <div class="resultat">
+        <h3 id="e-titre">${esc(D.entreprise.nom)}</h3>
+        <p>Le périmètre que ces informations donnent, calculé comme dans le plan de veille.</p>
+        <hr class="filet">
+        <ul class="coup-d-oeil">
+          <li>
+            <span class="pastille"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h14v16l-7-3-7 3Z"/></svg></span>
+            <span><span class="etiq">Domaines retenus</span><span class="valeur" id="e-total">—</span></span>
+          </li>
+          <li>
+            <span class="pastille ambre"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span>
+            <span><span class="etiq">Rythme le plus serré</span><span class="valeur" id="e-rythme">—</span></span>
+          </li>
+          <li>
+            <span class="pastille verte"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></span>
+            <span><span class="etiq">Ajoutés par le contexte</span><span class="valeur" id="e-ajouts">—</span></span>
+          </li>
+        </ul>
+        <div class="jauge" id="e-jauge" aria-hidden="true"></div>
+        <ul class="rythmes" id="e-rythmes"></ul>
+        <p style="margin-top:var(--t4)">
+          <a class="lien-fleche" href="plan.html">Voir le plan complet ${fleche}</a>
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="rubrique section-tein" id="volet-alertes" role="tabpanel" aria-labelledby="onglet-alertes" hidden>
+  <div class="enveloppe">
+    <p class="reserve">
+      <strong>Aucun courriel ne part aujourd'hui.</strong>
+      L'envoi suppose un serveur, qui n'est pas en place. Ce que vous réglez ici est
+      gardé dans votre navigateur et servira de réglage le jour où l'envoi sera branché.
+      En attendant, l'aperçu ci-contre montre exactement ce que vous recevriez.
+    </p>
+
+    <div class="simulateur" style="margin-top:var(--t5)">
+      <form class="reglages" id="form-alertes" novalidate>
+        <div class="reglage">
+          <label class="etiq" for="a-courriel">Adresse de réception</label>
+          <input type="email" id="a-courriel" name="courriel" placeholder="prenom@entreprise.fr"
+                 inputmode="email" spellcheck="false" autocomplete="email">
+        </div>
+        <div class="reglage">
+          <label class="etiq" for="a-rythme">Rythme d'envoi</label>
+          <select id="a-rythme" name="rythme">
+            <option value="immediat">À chaque texte relevé</option>
+            <option value="quotidien">Un résumé par jour</option>
+            <option value="hebdomadaire" selected>Un résumé par semaine</option>
+            <option value="mensuel">Un résumé par mois</option>
+          </select>
+        </div>
+        <div class="reglage">
+          <label class="etiq" for="a-seuil">Ce qui déclenche un envoi</label>
+          <select id="a-seuil" name="seuil">
+            <option value="tout" selected>Tout texte qui touche mon périmètre</option>
+            <option value="prioritaire">Seulement les textes prioritaires</option>
+            <option value="action">Seulement ceux qui demandent une action</option>
+          </select>
+        </div>
+        <div class="reglage">
+          <span class="etiq">Aussi</span>
+          <div class="cases">
+            <label class="case">
+              <input type="checkbox" id="a-revues" checked>
+              <span><span class="intitule">Me rappeler les revues à faire</span>
+              <span class="aide">Un rappel avant chaque échéance de revue, et un autre si elle passe.</span></span>
+            </label>
+            <label class="case">
+              <input type="checkbox" id="a-pdf" checked>
+              <span><span class="intitule">Joindre la fiche de chaque texte</span>
+              <span class="aide">En PDF, prête à classer dans le dossier d'audit.</span></span>
+            </label>
+          </div>
+        </div>
+        <p class="rangee">
+          <button type="submit" class="bouton bouton-accent">Enregistrer</button>
+        </p>
+        <p class="etiq" id="a-etat" role="status"></p>
+      </form>
+
+      <div class="resultat">
+        <h3>Aperçu du courriel</h3>
+        <p>Ce que vous recevriez, avec vos réglages et le relevé de la démonstration.</p>
+        <hr class="filet">
+        <div class="apercu-courriel" id="a-apercu"></div>
+        <p class="note-source">
+          Maquette rendue dans la page. Rien n'est envoyé, et l'adresse saisie ne quitte
+          pas ce navigateur.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>`;
+
+  return page({
+    titre: `Réglages | ${SITE.nom}`,
+    description: "Mon entreprise et mes alertes.",
+    racine: "../", zone: "app", actif: "reglages", corps, verrou: true,
+    formule: "cadrage", donneesPlan: true
+  });
+}
+
 /* ==========================================================================
    Le site public
    ========================================================================== */
@@ -883,7 +1077,7 @@ function pageAccueil(V, D, METIERS, ECRANS) {
     </p>
     <p class="rangee rangee-centre">
       <a class="bouton bouton-accent" href="#installer">Installer l'application</a>
-      <a class="bouton bouton-sobre" href="tarifs.html">Démarrer un abonnement</a>
+      <a class="bouton bouton-sobre" href="abonnement.html">Démarrer un abonnement</a>
     </p>
     <p class="gage">
       ${sigle}
@@ -1196,7 +1390,7 @@ function pageAccueil(V, D, METIERS, ECRANS) {
   });
 }
 
-function pageTarifs(V) {
+function pageAbonnement(V) {
   const corps = `
 <section class="heros">
   <div class="enveloppe">
@@ -1232,7 +1426,7 @@ function pageTarifs(V) {
         <p class="prix"><span class="grand">180 €</span> <span class="etiq">par mois</span></p>
         <p>Le cadrage, puis le relevé : les textes qui touchent votre périmètre, analysés et
         datés, avec ce que chacun change pour vous. Accès à l'application et aux fiches de
-        secteur. Un site, un responsable.</p>
+        secteur. Un établissement, un interlocuteur.</p>
         <a class="bouton bouton-sobre" href="mailto:${esc(SITE.courriel)}?subject=Démarrer un abonnement — Veille tenue">Démarrer un abonnement</a>
       </article>
       <article class="formule mise-en-avant" data-paraitre>
@@ -1247,7 +1441,33 @@ function pageTarifs(V) {
   </div>
 </section>
 
-<section class="section section-tein">
+<section class="section section-tein" id="essayer">
+  <div class="enveloppe">
+    <h2 class="titre-section">Essayer avant de s'abonner</h2>
+    <p class="intro titre-section">Sans compte et sans mot de passe, avec un jeu d'essai.
+    La formule choisie décide des écrans ouverts — c'est exactement ce qui se passera
+    avec un vrai abonnement.</p>
+
+    <div class="essai" id="essai">
+      <div class="choix-formules" id="choix-formules">
+        ${Object.keys(FORMULES).map((id) => `<label class="choix-formule">
+          <input type="radio" name="formule" value="${esc(id)}"${id === "preuves" ? " checked" : ""}>
+          <span class="corps">
+            <span class="titre">${esc(FORMULES[id].l)}</span>
+            <span class="prix">${esc(FORMULES[id].prix)}</span>
+            <span class="ouvre">${esc(FORMULES[id].ouvre)}</span>
+          </span>
+        </label>`).join("\n")}
+      </div>
+      <p class="rangee rangee-centre" style="margin-top:var(--t4)">
+        <button type="button" class="bouton bouton-accent" id="entrer-demo">Entrer en démonstration</button>
+      </p>
+      <p class="etiq rangee rangee-centre" id="etat-session" role="status" style="margin-top:var(--t3)"></p>
+    </div>
+  </div>
+</section>
+
+<section class="section">
   <div class="enveloppe">
     <h2 class="titre-section">Ce qui n'est pas compris</h2>
     <ul class="raisons">
@@ -1266,8 +1486,9 @@ function pageTarifs(V) {
       <li class="raison" data-paraitre>
         <span class="numero" aria-hidden="true">—</span>
         <h3>Les démarches à votre place</h3>
-        <p>Les déclarations auprès de l'administration restent les vôtres. Multi-sites,
-        groupes, secteurs très réglementés : sur devis, le périmètre change tout.</p>
+        <p>Les déclarations auprès de l'administration restent les vôtres. Plusieurs
+        établissements, groupes, secteurs très réglementés : sur devis, le périmètre
+        change tout.</p>
       </li>
     </ul>
   </div>
@@ -1290,28 +1511,21 @@ function pageTarifs(V) {
 </section>`;
 
   return page({
-    titre: `Tarifs | ${SITE.nom}`,
+    titre: `S'abonner | ${SITE.nom}`,
     description: "Trois formules de veille réglementaire, avec leurs prix affichés.",
-    zone: "public", actif: "tarifs", corps
+    zone: "public", actif: "abonnement", corps
   });
 }
 
 function pageConnexion() {
-  const choix = (id, f, coche) => `<label class="choix-formule">
-    <input type="radio" name="formule" value="${esc(id)}"${coche ? " checked" : ""}>
-    <span class="corps">
-      <span class="titre">${esc(f.l)}</span>
-      <span class="prix">${esc(f.prix)}</span>
-      <span class="ouvre">${esc(f.ouvre)}</span>
-    </span>
-  </label>`;
-
   const corps = `
 <section class="heros">
   <div class="enveloppe">
     <div class="heros-texte"><h1>Connexion</h1></div>
+    <p class="heros-sous">Pour les abonnés. Vous n'avez pas encore de compte ?
+    <a href="abonnement.html">Voir les formules</a>.</p>
 
-    <div class="connexion">
+    <div class="connexion connexion-seule">
       <form class="carte-connexion" id="form-connexion" novalidate>
         <h2>Se connecter à votre espace</h2>
 
@@ -1340,49 +1554,17 @@ function pageConnexion() {
         <p class="etiq" id="etat-connexion" role="status" style="margin-top:var(--t3)"></p>
         <p style="margin-top:var(--t3)">
           <a href="mailto:${esc(SITE.courriel)}?subject=Mot de passe oublié">Mot de passe oublié</a>
-          &nbsp;·&nbsp;
-          <a href="tarifs.html">Pas encore de compte ?</a>
         </p>
       </form>
-
-      <div class="ou"><span>ou</span></div>
-
-      <div class="carte-connexion">
-        <h2>Entrer en démonstration</h2>
-        <p>Sans compte et sans mot de passe, avec un jeu d'essai. Choisissez la formule
-        à essayer : elle décide de ce que l'application ouvre.</p>
-
-        <div class="choix-formules" id="choix-formules">
-          ${Object.keys(FORMULES).map((id, i) =>
-            choix(id, FORMULES[id], id === "preuves")).join("\n")}
-        </div>
-
-        <p style="margin-top:var(--t4)">
-          <button type="button" class="bouton bouton-large" id="entrer-demo">Entrer en démonstration</button>
-        </p>
-        <p class="etiq" id="etat-session" role="status" style="margin-top:var(--t3)"></p>
-      </div>
     </div>
+
+    <p class="rangee rangee-centre" style="margin-top:var(--t5)">
+      <a class="bouton bouton-sobre" href="abonnement.html#essayer">Ou entrer en démonstration</a>
+    </p>
   </div>
 </section>
 
 <section class="section">
-  <div class="enveloppe">
-    <h2 class="titre-section">Ce que chaque formule ouvre</h2>
-    <p class="intro titre-section">La formule choisie décide des écrans accessibles.
-    C'est vrai dans la démonstration comme ce le sera avec un vrai compte.</p>
-    <ul class="raisons">
-      ${Object.keys(FORMULES).map((id, i) => `<li class="raison" data-paraitre>
-        <span class="numero" aria-hidden="true">0${i + 1}</span>
-        <h3>${esc(FORMULES[id].l)}</h3>
-        <p class="prix-formule">${esc(FORMULES[id].prix)}</p>
-        <p>${esc(FORMULES[id].ouvre)}</p>
-      </li>`).join("\n")}
-    </ul>
-  </div>
-</section>
-
-<section class="section section-tein">
   <div class="enveloppe">
     <h2 class="titre-section">Ce qu'il reste à brancher</h2>
     <ul class="raisons">
@@ -1413,7 +1595,7 @@ function pageConnexion() {
 
   return page({
     titre: `Connexion | ${SITE.nom}`,
-    description: "Accès à l'application de veille réglementaire.",
+    description: "Connexion à l'application de veille réglementaire Pierrel & Co.",
     zone: "public", actif: "connexion", corps
   });
 }
@@ -1516,7 +1698,7 @@ async function main() {
   await cp(resolve(RACINE, "sw.js"), join(SORTIE, "sw.js"));
 
   await writeFile(join(SORTIE, "index.html"), pageAccueil(V, D, METIERS, ECRANS));
-  await writeFile(join(SORTIE, "tarifs.html"), pageTarifs(V));
+  await writeFile(join(SORTIE, "abonnement.html"), pageAbonnement(V));
   await writeFile(join(SORTIE, "connexion.html"), pageConnexion());
 
   await writeFile(join(SORTIE, "app", "index.html"), appTableauBord(V, D));
@@ -1524,6 +1706,7 @@ async function main() {
   await writeFile(join(SORTIE, "app", "releve.html"), appReleve(V, D));
   await writeFile(join(SORTIE, "app", "registre.html"), appRegistre(V, D));
   await writeFile(join(SORTIE, "app", "secteurs.html"), appSecteurs(V, METIERS));
+  await writeFile(join(SORTIE, "app", "reglages.html"), appReglages(V, D));
 
   for (const d of V.divisions) {
     await writeFile(join(SORTIE, "app", "secteur", `${d.c}-${slug(d.l)}.html`),
@@ -1531,8 +1714,8 @@ async function main() {
   }
 
   const total = await poids(SORTIE);
-  console.log(`  public              3 pages (accueil, tarifs, connexion)`);
-  console.log(`  app/                5 écrans + ${V.divisions.length} fiches de secteur`);
+  console.log(`  public              3 pages (accueil, abonnement, connexion)`);
+  console.log(`  app/                6 écrans + ${V.divisions.length} fiches de secteur`);
   console.log(`  assets/             ${((await poids(join(SORTIE, "assets"))) / 1024).toFixed(1)} Ko`);
   console.log(`  plan-data.js        ${(plan.length / 1024).toFixed(1)} Ko pour le simulateur`);
   console.log(`  écrans de l'accueil ${ECRANS.length ? ECRANS.length + " captures" : "AUCUNE — lancer outils/captures.mjs"}`);

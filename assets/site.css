@@ -737,6 +737,41 @@ img { height: auto; display: block; }
 
 .note-source { margin-top: var(--t4); font-size: .92rem; color: var(--encre-tenue); }
 
+/* --- 12 bis. L'aperçu du courriel --------------------------------------- */
+.apercu-courriel {
+  border: 1px solid var(--filet);
+  border-radius: var(--r2);
+  overflow: hidden;
+  background: var(--papier);
+}
+.courriel-tete {
+  display: grid; grid-template-columns: 4rem minmax(0, 1fr); gap: .3rem var(--t3);
+  padding: var(--t3) var(--t4);
+  background: var(--carte-pale);
+  border-bottom: 1px solid var(--filet);
+  font-size: .92rem;
+}
+.courriel-tete .etiq { align-self: center; }
+.courriel-tete > span:nth-child(even) { overflow-wrap: anywhere; color: var(--encre); }
+.courriel-corps { padding: var(--t4); font-size: .95rem; }
+.courriel-corps p { margin-bottom: var(--t3); }
+.courriel-textes { list-style: none; padding: 0; margin: 0 0 var(--t3); display: grid; gap: var(--t3); }
+.courriel-textes li {
+  margin: 0; padding: var(--t3);
+  border-left: 3px solid var(--accent);
+  background: var(--carte-pale);
+  border-radius: 0 var(--r1) var(--r1) 0;
+}
+.courriel-textes strong { display: block; color: var(--encre); }
+.courriel-textes span { display: block; margin-top: .2rem; font-size: .9rem; }
+.courriel-pj { color: var(--encre-tenue); font-size: .9rem; }
+.courriel-pied {
+  margin: 0; padding: var(--t3) var(--t4);
+  border-top: 1px solid var(--filet);
+  background: var(--carte-pale);
+  font-size: .85rem; color: var(--encre-tenue);
+}
+
 /* --- 13. Puces de secteur ---------------------------------------------- */
 .panneau-puces {
   margin-top: var(--t5);
@@ -1241,7 +1276,13 @@ details[open] > summary .chevron { transform: rotate(180deg); }
   .ou::before, .ou::after { width: 1px; height: 100%; }
 }
 
+.connexion-seule { max-width: 32rem; }
+@media (min-width: 62rem) { .connexion-seule { grid-template-columns: minmax(0, 1fr); } }
+
+.essai { max-width: 44rem; margin: var(--t5) auto 0; }
+
 .choix-formules { display: grid; gap: .5rem; }
+@media (min-width: 52rem) { .essai .choix-formules { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
 .choix-formule {
   display: grid; grid-template-columns: 1.25rem minmax(0, 1fr); gap: .75rem;
   align-items: start;
@@ -1327,7 +1368,29 @@ details[open] > summary .chevron { transform: rotate(180deg); }
 }
 
 /* --- Impression ---------------------------------------------------------- */
+/* Deux impressions : la page entière, et la fiche d'un seul texte, demandée
+   par son bouton. La seconde pose `body.impression-fiche` et marque la ligne ;
+   tout le reste sort de la feuille. */
 @media print {
+  body.impression-fiche .rubrique,
+  body.impression-fiche .tete-app,
+  body.impression-fiche .pied,
+  body.impression-fiche .verrou { display: none !important; }
+  body.impression-fiche .rubrique:has(.a-imprimer) { display: block !important; }
+  body.impression-fiche .rubrique:has(.a-imprimer) > .enveloppe > *:not(ul) { display: none !important; }
+  body.impression-fiche .liste-releve > li:not(.a-imprimer),
+  body.impression-fiche .liste-registre > li:not(.a-imprimer) { display: none !important; }
+  body.impression-fiche .a-imprimer { border: 0; }
+  body.impression-fiche .a-imprimer .chevron { display: none !important; }
+  body.impression-fiche .a-imprimer summary { cursor: default; }
+  body.impression-fiche .a-imprimer .lien-fleche { display: none !important; }
+  body.impression-fiche::before {
+    content: "Pierrel & Co — fiche de veille réglementaire";
+    display: block; margin-bottom: 1rem; padding-bottom: .5rem;
+    border-bottom: 1px solid #999;
+    font-weight: 700; font-size: 10pt;
+  }
+
   .bandeau, .evitement, .theme, .menu-bascule, .heros-visuel, .bande-finale,
   .bouton, .jauge, .bandeau-demo { display: none !important; }
   body { background: #fff; color: #000; font-size: 11pt; }
