@@ -4,7 +4,7 @@
    --------------------------------------------------------------------------
    Deux zones :
 
-     public/   l'accueil qui montre le produit, la tarification, la connexion
+     public/   l'accueil qui montre les écrans, la tarification, la connexion
      app/      l'application : tableau de bord, plan, relevé, registre, et les
                88 fiches de secteur
 
@@ -56,6 +56,19 @@ const slug = (s) => sansAccent(s).toLowerCase()
 const JOUR = { day: "numeric", month: "long", year: "numeric" };
 const dateFr = (iso) => new Date(iso + "T12:00:00Z").toLocaleDateString("fr-FR", JOUR);
 
+/* --- Le sigle : trois feuillets décalés ------------------------------------ */
+const sigle = `<svg class="sigle" viewBox="0 0 24 24" aria-hidden="true" fill="currentColor">
+  <rect x="2" y="4" width="14" height="3.1" rx="1.55"/>
+  <rect x="5" y="10.45" width="14" height="3.1" rx="1.55" opacity=".7"/>
+  <rect x="8" y="16.9" width="14" height="3.1" rx="1.55" opacity=".42"/>
+</svg>`;
+
+const fleche = `<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor"
+  stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h13m-5-6 6 6-6 6"/></svg>`;
+
+const sortant = `<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor"
+  stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M8 16 16 8m0 0H9m7 0v7"/></svg>`;
+
 /* --- Le sélecteur de thème, identique partout ------------------------------- */
 const selecteurTheme = `<span class="theme" role="group" aria-label="Thème de la page">
   <button type="button" data-theme-choix="light" aria-pressed="false" title="Thème clair">
@@ -74,7 +87,7 @@ const selecteurTheme = `<span class="theme" role="group" aria-label="Thème de l
 
 /* --- Gabarit commun ----------------------------------------------------------- */
 function page({ titre, description, racine = "", zone = "public", actif = "", corps,
-                attrsBody = "", verrou = false }) {
+                attrsBody = "", verrou = false, donneesPlan = false }) {
   const a = (f) => racine + f;
   const lien = (href, libelle, cle) =>
     `<a href="${a(href)}"${actif === cle ? ' aria-current="page"' : ""}>${libelle}</a>`;
@@ -82,8 +95,8 @@ function page({ titre, description, racine = "", zone = "public", actif = "", co
   const menuPublic = `
       ${lien("index.html", "Le produit", "produit")}
       ${lien("tarifs.html", "Tarifs", "tarifs")}
-      ${lien("connexion.html", "Connexion", "connexion")}
-      ${selecteurTheme}`;
+      ${selecteurTheme}
+      <a class="bouton" href="${a("connexion.html")}">Ouvrir l'application</a>`;
 
   const menuApp = `
       ${lien("app/index.html", "Tableau de bord", "bord")}
@@ -101,24 +114,39 @@ function page({ titre, description, racine = "", zone = "public", actif = "", co
 <title>${esc(titre)}</title>
 <meta name="description" content="${esc(description)}">
 <meta name="author" content="${esc(SITE.nom)}">
+<meta name="theme-color" content="#4A2BE8">
 ${zone === "app" ? '<meta name="robots" content="noindex">' : ""}
 <meta property="og:title" content="${esc(titre)}">
 <meta property="og:description" content="${esc(description)}">
 <link rel="icon" href="${a("assets/favicon.svg")}" type="image/svg+xml">
-<link rel="preload" href="${a("assets/polices/eb-garamond.woff2")}" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="${a("assets/polices/plus-jakarta-sans.woff2")}" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="${a("assets/polices.css")}">
 <link rel="stylesheet" href="${a("assets/site.css")}">
 <script src="${a("assets/theme.js")}"></script>
-<script>/* Avant tout rendu, sinon la page clignote en clair. */window.PCO_THEME.appliquer();</script>
+<script>/* Avant tout rendu : sinon la page clignote en clair, et les éléments
+   qui doivent apparaître en défilant sauteraient de visible à caché.
+   Le document n'est marqué « anime » que si JavaScript tourne et que le
+   visiteur n'a pas demandé moins d'animations — sans quoi rien n'est caché. */
+window.PCO_THEME.appliquer();
+if (!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches)) {
+  document.documentElement.classList.add("anime");
+}</script>
 </head>
 <body class="zone-${zone}"${attrsBody}>
 
 <a class="evitement" href="#contenu">Aller au contenu</a>
 
-<header class="bandeau${zone === "app" ? " bandeau-app" : ""}">
-  <div class="bandeau-interieur">
-    <a class="marque" href="${a(zone === "app" ? "app/index.html" : "index.html")}">Pierrel <span>&amp; Co</span></a>
-    <nav class="menu" aria-label="Navigation principale">${zone === "app" ? menuApp : menuPublic}</nav>
+<header class="bandeau">
+  <div class="enveloppe bandeau-interieur">
+    <a class="marque" href="${a(zone === "app" ? "app/index.html" : "index.html")}">
+      ${sigle}<span>Pierrel <span class="co">&amp; Co</span></span>
+    </a>
+    <button type="button" class="menu-bascule" aria-expanded="false" aria-controls="menu-principal">
+      <span class="cache-visuellement">Ouvrir le menu</span>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true">
+        <path d="M4 7h16M4 12h16M4 17h16"/></svg>
+    </button>
+    <nav class="menu" id="menu-principal" aria-label="Navigation principale">${zone === "app" ? menuApp : menuPublic}</nav>
   </div>
 </header>
 
@@ -133,15 +161,15 @@ ${zone === "app" ? `<p class="bandeau-demo">
 <main id="contenu">
 ${verrou ? `<section class="verrou" id="verrou">
   <div class="enveloppe">
-    <p class="etiq etiq-tampon">Accès réservé</p>
+    <p class="etiq">Accès réservé</p>
     <h1>Votre veille est derrière la connexion</h1>
-    <p class="chapeau" style="margin-top:var(--t4)">
+    <p class="chapeau">
       Le plan de veille, le relevé des textes et le registre de preuves sont réservés
-      aux abonnés. Vous pouvez entrer en démonstration pour voir exactement ce que
+      aux abonnés. Vous pouvez ouvrir la démonstration pour voir exactement ce que
       contient l'application.
     </p>
-    <p class="rangee" style="margin-top:var(--t5)">
-      <a class="bouton" href="${a("connexion.html")}">Entrer en démonstration</a>
+    <p class="rangee rangee-centre" style="margin-top:var(--t5)">
+      <a class="bouton bouton-accent" href="${a("connexion.html")}">Ouvrir la démonstration</a>
       <a class="bouton bouton-sobre" href="${a("tarifs.html")}">Voir les tarifs</a>
     </p>
   </div>
@@ -152,12 +180,16 @@ ${corps}
 <footer class="pied">
   <div class="enveloppe">
     <div class="pied-grille">
-      <span class="etiq">Pierrel &amp; Co</span>
       <div>
+        <span class="marque">${sigle}<span>Pierrel <span class="co">&amp; Co</span></span></span>
         <p>${esc(SITE.bareme)}.<br>Conseil en organisation et conformité, ${esc(SITE.ville)}.</p>
+        <p style="margin-top:var(--t3)">
+          <a href="mailto:${esc(SITE.courriel)}">${esc(SITE.courriel)}</a><br>
+          <a href="tel:${esc(SITE.telephoneLien)}">${esc(SITE.telephone)}</a>
+        </p>
       </div>
       <div>
-        <span class="etiq">Le site</span>
+        <h2>Le site</h2>
         <ul>
           <li><a href="${a("index.html")}">Le produit</a></li>
           <li><a href="${a("tarifs.html")}">Tarifs</a></li>
@@ -165,23 +197,43 @@ ${corps}
         </ul>
       </div>
       <div>
-        <span class="etiq">Sources officielles</span>
+        <h2>L'application</h2>
+        <ul>
+          <li><a href="${a("app/index.html")}">Tableau de bord</a></li>
+          <li><a href="${a("app/plan.html")}">Mon plan de veille</a></li>
+          <li><a href="${a("app/releve.html")}">Relevé des textes</a></li>
+          <li><a href="${a("app/registre.html")}">Registre de preuves</a></li>
+          <li><a href="${a("app/secteurs.html")}">Fiches par secteur</a></li>
+        </ul>
+      </div>
+      <div>
+        <h2>Sources officielles</h2>
         <ul>
           <li><a href="https://www.legifrance.gouv.fr" target="_blank" rel="noopener">Légifrance</a></li>
+          <li><a href="https://www.legifrance.gouv.fr/jorf/jo" target="_blank" rel="noopener">Journal officiel</a></li>
+          <li><a href="https://eur-lex.europa.eu" target="_blank" rel="noopener">EUR-Lex</a></li>
           <li><a href="https://entreprendre.service-public.fr" target="_blank" rel="noopener">Entreprendre</a></li>
           <li><a href="https://www.inrs.fr" target="_blank" rel="noopener">INRS</a></li>
         </ul>
       </div>
     </div>
-    <p class="pied-bas">
-      Éditeur : ${esc(SITE.nom)}, Clément Pierrel, ${esc(SITE.ville)}.
-      SIRET : à compléter. Hébergement : à compléter.
-      Aucun cookie, aucune mesure d'audience, aucune requête vers un service tiers.
-      Cadre méthodologique, pas un conseil juridique.
-    </p>
+    <div class="pied-bas">
+      <p class="pied-legal">
+        <span>© ${new Date().getFullYear()} ${esc(SITE.nom)} — tous droits réservés</span>
+        <a href="${a("tarifs.html")}">Tarifs</a>
+        <a href="mailto:${esc(SITE.courriel)}">Contact</a>
+      </p>
+      <p>
+        Éditeur : ${esc(SITE.nom)}, Clément Pierrel, ${esc(SITE.ville)}.
+        SIRET : à compléter. Hébergement : à compléter.
+        Aucun cookie, aucune mesure d'audience, aucune requête vers un service tiers.
+        Le service fournit un cadre méthodologique, pas un conseil juridique.
+      </p>
+    </div>
   </div>
 </footer>
 
+${donneesPlan ? `<script src="${a("assets/plan-data.js")}"></script>` : ""}
 <script src="${a("assets/app.js")}"></script>
 ${zone === "app" || verrou || actif === "connexion" ? `<script src="${a("assets/session.js")}"></script>` : ""}
 </body>
@@ -228,19 +280,21 @@ function blocDomaine(id, d, origine) {
       <span class="etiq">Textes de référence</span>
       <ul>${d.textes.map((t) => `<li>${esc(t)}</li>`).join("")}</ul>
       <span class="etiq" style="margin-top:var(--t4)">Sources officielles</span>
-      <ul class="sources">${d.sources.map((s) =>
+      <ul>${d.sources.map((s) =>
         `<li><a href="${esc(s.url)}" target="_blank" rel="noopener">${esc(s.nom)}</a></li>`).join("")}</ul>
     </div>
   </div>
 </article>`;
 }
 
+/* Une rubrique de l'application : un titre à gauche, le contenu dessous. */
 function rubrique({ etiq, contenu, aplat = false, id = "" }) {
-  const interieur = `<div class="enveloppe"><div class="rubrique"${id ? ` id="${id}"` : ""}>
-    <span class="etiq">${esc(etiq)}</span>
-    <div>${contenu}</div>
-  </div></div>`;
-  return aplat ? `<section class="section-aplat">${interieur}</section>` : `<section>${interieur}</section>`;
+  return `<section class="rubrique${aplat ? " section-tein" : ""}"${id ? ` id="${id}"` : ""}>
+  <div class="enveloppe">
+    <h2>${esc(etiq)}</h2>
+    ${contenu}
+  </div>
+</section>`;
 }
 
 /* ==========================================================================
@@ -255,17 +309,17 @@ const STATUTS = {
 };
 
 function enTeteApp(D, titre, chapeau) {
-  return `<section class="ouverture ouverture-app">
+  return `<section class="tete-app">
   <div class="enveloppe">
-    <p class="reference etiq">
-      <span class="etiq-tampon">${esc(D.entreprise.nom)}</span>
-      <span>NAF ${esc(D.entreprise.nafComplet)}</span>
-      <span>${esc(D.entreprise.ville)}</span>
-      <span>${esc(D.entreprise.effectif)} salariés</span>
-      <span>Suivi depuis ${esc(D.entreprise.depuis)}</span>
-    </p>
+    <ul class="jalons">
+      <li><span class="fort">${esc(D.entreprise.nom)}</span></li>
+      <li><span>NAF ${esc(D.entreprise.nafComplet)}</span></li>
+      <li><span>${esc(D.entreprise.ville)}</span></li>
+      <li><span>${esc(D.entreprise.effectif)} salariés</span></li>
+      <li><span>Suivi depuis ${esc(D.entreprise.depuis)}</span></li>
+    </ul>
     <h1>${esc(titre)}</h1>
-    ${chapeau ? `<p class="chapeau" style="margin-top:var(--t4)">${chapeau}</p>` : ""}
+    ${chapeau ? `<p class="chapeau">${chapeau}</p>` : ""}
   </div>
 </section>`;
 }
@@ -283,12 +337,12 @@ ${rubrique({ etiq: "À traiter", contenu: `
   <dl class="compteurs">
     <div${enRetard.length ? ' class="alerte"' : ""}>
       <dt class="etiq">Revues en retard</dt>
-      <dd><span class="mono grand">${enRetard.length}</span>
+      <dd><span class="grand">${enRetard.length}</span>
       ${enRetard.length ? `<span class="precision">${esc(enRetard.map((e) => e.frequence).join(", "))}</span>` : ""}</dd>
     </div>
-    <div><dt class="etiq">Textes à analyser</dt><dd><span class="mono grand">${aAnalyser.length}</span></dd></div>
-    <div><dt class="etiq">Actions ouvertes</dt><dd><span class="mono grand">${ouvertes.length}</span></dd></div>
-    <div><dt class="etiq">Textes relevés, 90 jours</dt><dd><span class="mono grand">${D.releve.length}</span></dd></div>
+    <div><dt class="etiq">Textes à analyser</dt><dd><span class="grand">${aAnalyser.length}</span></dd></div>
+    <div><dt class="etiq">Actions ouvertes</dt><dd><span class="grand">${ouvertes.length}</span></dd></div>
+    <div><dt class="etiq">Textes relevés, 90 jours</dt><dd><span class="grand">${D.releve.length}</span></dd></div>
   </dl>` })}
 
 ${rubrique({ etiq: "Prochaines revues", aplat: true, contenu: `
@@ -305,14 +359,14 @@ ${rubrique({ etiq: "En attente de vous", contenu: `
   <ul class="liste-releve" style="margin-top:var(--t4)">
     ${aAnalyser.map((t) => ligneReleve(V, t)).join("")}
   </ul>
-  <p style="margin-top:var(--t4)"><a href="releve.html">Voir tout le relevé →</a></p>` })}
+  <p style="margin-top:var(--t4)"><a class="lien-fleche" href="releve.html">Voir tout le relevé ${fleche}</a></p>` })}
 
 ${rubrique({ etiq: "Dernières traces", aplat: true, contenu: `
   <p class="lecture">Ce qu'un auditeur regarderait en premier.</p>
   <ul class="liste-registre" style="margin-top:var(--t4)">
     ${D.registre.slice(0, 4).map((r) => ligneRegistre(r)).join("")}
   </ul>
-  <p style="margin-top:var(--t4)"><a href="registre.html">Voir tout le registre →</a></p>` })}`;
+  <p style="margin-top:var(--t4)"><a class="lien-fleche" href="registre.html">Voir tout le registre ${fleche}</a></p>` })}`;
 
   return page({
     titre: `Tableau de bord | ${SITE.nom}`,
@@ -364,12 +418,12 @@ function appPlan(V, D) {
     `Le périmètre retenu pour ${esc(D.entreprise.nom)} : ${total} domaines, groupés par rythme de revue.`) + `
 
 ${rubrique({ etiq: "Le périmètre", contenu: `
-  <dl class="faits" style="border-top:0; padding-top:0">
-    <div><dt class="etiq">Domaines suivis</dt><dd><span class="mono grand">${total}</span></dd></div>
-    <div><dt class="etiq">Division NAF</dt><dd><span class="mono grand">${esc(D.entreprise.naf)}</span></dd></div>
+  <dl class="faits">
+    <div><dt class="etiq">Domaines suivis</dt><dd><span class="grand">${total}</span></dd></div>
+    <div><dt class="etiq">Division NAF</dt><dd><span class="grand">${esc(D.entreprise.naf)}</span></dd></div>
     <div><dt class="etiq">Responsable</dt><dd>${esc(D.entreprise.responsable)}</dd></div>
   </dl>
-  <p class="aussi" style="margin-top:var(--t4)">
+  <p style="margin-top:var(--t4)">
     <span class="etiq">Contexte retenu</span>${esc(contexteNoms.join(" · "))}
   </p>` })}
 
@@ -400,7 +454,7 @@ function appReleve(V, D) {
 
 ${rubrique({ etiq: "Où ça en est", contenu: `
   <dl class="compteurs">
-    ${parStatut.map((x) => `<div><dt class="etiq">${esc(x.l)}</dt><dd><span class="mono grand">${x.n}</span></dd></div>`).join("")}
+    ${parStatut.map((x) => `<div><dt class="etiq">${esc(x.l)}</dt><dd><span class="grand">${x.n}</span></dd></div>`).join("")}
   </dl>` })}
 
 ${rubrique({ etiq: "Le relevé", aplat: true, contenu: `
@@ -434,7 +488,7 @@ ${rubrique({ etiq: "Tout le registre", aplat: true, contenu: `
     ${D.registre.map((r) => ligneRegistre(r)).join("")}
   </ul>
   <p class="rangee" style="margin-top:var(--t5)">
-    <button type="button" class="bouton" onclick="window.print()">Imprimer le registre</button>
+    <button type="button" class="bouton bouton-sobre" onclick="window.print()">Imprimer le registre</button>
   </p>` })}`;
 
   return page({
@@ -444,21 +498,21 @@ ${rubrique({ etiq: "Tout le registre", aplat: true, contenu: `
   });
 }
 
-/* --- Les 88 fiches, désormais dans l'application ----------------------------- */
+/* --- Les 88 fiches ---------------------------------------------------------- */
 function appSecteurs(V, METIERS) {
   const parSection = V.sections.map((s) => ({
     s, divisions: V.divisions.filter((d) => d.s === s.c)
   })).filter((g) => g.divisions.length);
 
-  const corps = `<section class="ouverture ouverture-app">
+  const corps = `<section class="tete-app">
   <div class="enveloppe">
-    <p class="reference etiq">
-      <span class="etiq-tampon">Référentiel</span>
-      <span>${V.divisions.length} divisions · ${V.sections.length} sections</span>
-      <span>${Object.keys(V.domaines).length} domaines</span>
-    </p>
+    <ul class="jalons">
+      <li><span class="fort">Référentiel</span></li>
+      <li><span>${V.divisions.length} divisions · ${V.sections.length} sections</span></li>
+      <li><span>${Object.keys(V.domaines).length} domaines</span></li>
+    </ul>
     <h1>Fiches par secteur</h1>
-    <p class="chapeau" style="margin-top:var(--t4)">
+    <p class="chapeau">
       La nomenclature d'activités française, division par division. Utile pour situer
       un client, un sous-traitant ou un donneur d'ordre. Cherchez par code, par libellé
       ou par le nom du métier.
@@ -472,6 +526,7 @@ function appSecteurs(V, METIERS) {
   </div>
 </section>
 
+<section class="rubrique">
 <div class="enveloppe">
   <p id="aucun-secteur" class="etat-vide" hidden>
     Aucun secteur ne correspond. Essayez un code à deux chiffres, ou un mot du libellé.
@@ -479,7 +534,7 @@ function appSecteurs(V, METIERS) {
   <div id="liste-secteurs">
     ${parSection.map((g) => `
     <section class="groupe-section" data-groupe>
-      <span class="etiq"><span class="etiq-tampon">${esc(g.s.c)}</span> &nbsp;${esc(g.s.l)}</span>
+      <span class="etiq">${esc(g.s.c)} — ${esc(g.s.l)}</span>
       <ul class="liste-divisions">
         ${g.divisions.map((d) => {
           const mots = METIERS[d.c] || [];
@@ -492,7 +547,8 @@ function appSecteurs(V, METIERS) {
       </ul>
     </section>`).join("\n")}
   </div>
-</div>`;
+</div>
+</section>`;
 
   return page({
     titre: `Fiches par secteur | ${SITE.nom}`,
@@ -508,20 +564,20 @@ function appSecteur(V, PIEGES, METIERS, d) {
   const p = PIEGES[d.c];
   const rythme = groupes.length ? groupes[0].f.l : "—";
 
-  const corps = `<section class="ouverture ouverture-app">
+  const corps = `<section class="tete-app">
   <div class="enveloppe">
-    <p class="reference etiq">
-      <span><a href="../secteurs.html">Fiches par secteur</a></span>
-      <span class="etiq-tampon">Fiche ${esc(d.c)}</span>
-      <span>Section ${esc(d.s)} — ${esc(section ? section.l : "")}</span>
-    </p>
+    <ul class="jalons">
+      <li><a href="../secteurs.html">Fiches par secteur</a></li>
+      <li><span class="fort">Fiche ${esc(d.c)}</span></li>
+      <li><span>Section ${esc(d.s)} — ${esc(section ? section.l : "")}</span></li>
+    </ul>
     <h1>${esc(d.l)}</h1>
-    ${mots.length ? `<p class="aussi"><span class="etiq">On dit aussi</span>${esc(mots.join(" · "))}</p>` : ""}
+    ${mots.length ? `<p class="chapeau"><span class="etiq">On dit aussi</span>${esc(mots.join(" · "))}</p>` : ""}
     <dl class="faits" style="margin-top:var(--t5)">
-      <div><dt class="etiq">Code NAF</dt><dd><span class="mono grand">${esc(d.c)}</span></dd></div>
-      <div><dt class="etiq">Domaines de base</dt><dd><span class="mono grand" id="compte-domaines">${base.length}</span></dd></div>
+      <div><dt class="etiq">Code NAF</dt><dd><span class="grand">${esc(d.c)}</span></dd></div>
+      <div><dt class="etiq">Domaines de base</dt><dd><span class="grand" id="compte-domaines">${base.length}</span></dd></div>
       <div><dt class="etiq">Rythme le plus serré</dt><dd>${esc(rythme)}</dd></div>
-      <div><dt class="etiq">Questions de contexte</dt><dd><span class="mono grand">${declencheurs.length}</span></dd></div>
+      <div><dt class="etiq">Questions de contexte</dt><dd><span class="grand">${declencheurs.length}</span></dd></div>
     </dl>
   </div>
 </section>
@@ -566,156 +622,483 @@ ${p ? rubrique({ etiq: "Le terrain", contenu: `
    Le site public
    ========================================================================== */
 
-function pageProduit(V, D, ECRANS) {
-  const ecran = (nom, titre, legende) => ECRANS.includes(nom) ? `
-    <figure class="ecran">
-      <img src="assets/ecrans/${esc(nom)}" alt="${esc(titre)}" loading="lazy" decoding="async" width="1280" height="860">
-      <figcaption><span class="etiq">${esc(titre)}</span> ${esc(legende)}</figcaption>
-    </figure>` : `<p class="ecran-absent etiq">Capture manquante : ${esc(nom)}</p>`;
+/* Un écran de l'application dans une maquette d'ordinateur portable.
+   Deux fichiers quand ils existent : la capture claire et la capture sombre.
+   Celle qui ne correspond pas au thème est en display:none, et un navigateur
+   ne télécharge pas une image lazy qui n'est pas affichée. */
+function portable(ECRANS, nom, alt) {
+  if (!ECRANS.includes(nom)) {
+    return `<p class="ecran-absent etiq">Capture manquante : ${esc(nom)} — lancer outils/captures.mjs</p>`;
+  }
+  const sombre = nom.replace(".png", "-sombre.png");
+  const img = (f, classe) => `<img class="${classe}" src="assets/ecrans/${esc(f)}" alt="${esc(alt)}"
+         loading="lazy" decoding="async" width="1280" height="860">`;
+  return `<figure class="portable" style="margin:0">
+         ${img(nom, "ecran-clair")}
+         ${ECRANS.includes(sombre) ? img(sombre, "ecran-sombre") : ""}
+       </figure>`;
+}
+
+function vitrine(ECRANS, { image, alt, titre, texte, lien, libelle }) {
+  return `<article class="vitrine" data-paraitre>
+  ${portable(ECRANS, image, alt)}
+  <div class="vitrine-texte">
+    <h2>${titre}</h2>
+    <p>${texte}</p>
+    <a class="lien-fleche" href="${esc(lien)}">${esc(libelle)} ${fleche}</a>
+  </div>
+</article>`;
+}
+
+function questionsSimulateur(declencheurs) {
+  return declencheurs.map((q) => `<label class="case">
+  <input type="checkbox" data-domaines="${esc(q.domaines.join(" "))}">
+  <span><span class="intitule">${esc(q.q)}</span><span class="aide">${esc(q.d)}</span></span>
+</label>`).join("\n");
+}
+
+function pageAccueil(V, D, METIERS, ECRANS) {
+  const nbDomaines = Object.keys(V.domaines).length;
+  const defaut = "43";                      // Travaux de construction spécialisés
+  const divDefaut = V.divisions.filter((d) => d.c === defaut)[0] || V.divisions[0];
+  const vuDefaut = perimetre(V, divDefaut.c);
+  const echeanceRetard = D.echeances.filter((e) => e.retard)[0];
+
+  const parSection = V.sections.map((s) => ({
+    s, divisions: V.divisions.filter((d) => d.s === s.c)
+  })).filter((g) => g.divisions.length);
 
   const corps = `
-<section class="ouverture ouverture-produit">
+<section class="heros">
   <div class="enveloppe">
-    <p class="reference etiq">
-      <span class="etiq-tampon">${esc(SITE.bareme)}</span>
-      <span>${esc(SITE.ville)}</span>
+    <div class="heros-texte">
+      <h1>La veille réglementaire de votre métier, tenue et prouvable</h1>
+    </div>
+    <p class="heros-sous">
+      Les textes qui vous concernent — et seulement ceux-là — relevés et analysés
+      chaque semaine. Un plan de veille écrit, un relevé daté, un registre de preuves
+      prêt pour l'audit.
     </p>
-    <h1>Votre veille réglementaire,<br>tenue et prouvable.</h1>
-    <p class="chapeau" style="margin-top:var(--t4)">
-      Les textes qui concernent votre métier, relevés et analysés chaque semaine.
-      Un plan de veille à jour, un relevé daté, un registre de preuves prêt pour l'audit.
-      Vous ouvrez l'application, vous voyez ce qui vous attend.
+    <p class="rangee rangee-centre">
+      <a class="bouton bouton-accent" href="connexion.html">Ouvrir l'application</a>
+      <a class="bouton bouton-sobre" href="tarifs.html">Voir les tarifs</a>
     </p>
-    <p class="rangee" style="margin-top:var(--t5)">
-      <a class="bouton" href="connexion.html">Voir l'application</a>
-      <a class="bouton bouton-sobre" href="tarifs.html">Tarifs</a>
+    <p class="gage">
+      ${sigle}
+      <span>${V.divisions.length} divisions d'activité couvertes</span>
+      <span class="doux">— aucun compte à créer pour regarder</span>
     </p>
-    ${ecran("bord.png", "Tableau de bord", "ce qui est en retard, ce qui attend une décision.")}
+
+    <div class="heros-visuel">
+      ${portable(ECRANS, "bord.png", "Le tableau de bord de l'application : revues en retard, textes à analyser, actions ouvertes.")}
+      <aside class="carte-flottante" aria-hidden="true">
+        <span class="etiq">Prochaine revue</span>
+        <p class="grand">${esc(echeanceRetard ? V.frequences[echeanceRetard.frequence].l : "Hebdomadaire")}</p>
+        <p class="doux">${esc(echeanceRetard ? dateFr(echeanceRetard.prochaine) : "")}</p>
+        <p><span class="marque-ajout">en retard</span></p>
+      </aside>
+    </div>
   </div>
 </section>
 
-${rubrique({ etiq: "Le relevé", aplat: true, contenu: `
-  <h2>Ce qui vous concerne, et rien d'autre</h2>
-  <p class="lecture" style="margin-top:var(--t3)">
-    Le reproche fait à toutes les plateformes de veille est le même : elles remontent tout,
-    donc on ne lit plus rien, et le texte qui comptait vraiment se perd. Ici le tri est fait
-    en amont, sur votre périmètre, et chaque texte arrive avec ce qu'il change pour vous.
-  </p>
-  ${ecran("releve.png", "Relevé des textes", "daté, rattaché à un domaine, avec l'état de la décision.")}` })}
+<section class="section">
+  <div class="enveloppe">
+    <div class="rail">
+      <span class="rail-fil" data-fil></span>
+      <div class="rail-item" data-paraitre data-compte="${V.divisions.length}">
+        <span class="chiffre">${V.divisions.length}</span>
+        <p class="legende">divisions d'activité couvertes, de la boulangerie au transport routier</p>
+      </div>
+      <div class="rail-item" data-paraitre data-compte="${nbDomaines}">
+        <span class="chiffre">${nbDomaines}</span>
+        <p class="legende">domaines de veille, chacun avec ses obligations, ses textes et ses sources</p>
+      </div>
+      <div class="rail-item" data-paraitre data-compte="${V.declencheurs.length}">
+        <span class="chiffre">${V.declencheurs.length}</span>
+        <p class="legende">questions de contexte qui ajoutent ou retirent un domaine du périmètre</p>
+      </div>
+      <div class="rail-item" data-paraitre>
+        <span class="chiffre">ISO</span>
+        <p class="legende">les référentiels où la veille est exigée : ISO 14001, ISO 45001, MASE, Qualiopi</p>
+      </div>
+    </div>
+  </div>
+</section>
 
-${rubrique({ etiq: "Le plan", contenu: `
-  <h2>Un périmètre écrit, pas une intuition</h2>
-  <p class="lecture" style="margin-top:var(--t3)">
-    ${Object.keys(V.domaines).length} domaines de veille, ${V.divisions.length} divisions
-    d'activité, ${V.declencheurs.length} questions de contexte. Votre plan en retient ce qui
-    vous concerne, avec pour chaque domaine un rythme de revue et un responsable désigné.
-  </p>
-  ${ecran("plan.png", "Mon plan de veille", "les domaines retenus, groupés par rythme de revue.")}` })}
+<section class="section section-tein">
+  <div class="enveloppe">
+    <h2 class="titre-section">Un outil pour chaque façon de travailler</h2>
 
-${rubrique({ etiq: "Les preuves", aplat: true, contenu: `
-  <h2>Ce qu'un auditeur demande vraiment</h2>
-  <p class="lecture" style="margin-top:var(--t3)">
-    L'écart le plus fréquemment relevé en audit n'est pas l'absence de veille : c'est la veille
-    faite et jamais tracée. Le registre enregistre chaque revue, chaque décision, chaque action,
-    avec sa date. Il s'imprime tel quel.
-  </p>
-  ${ecran("registre.png", "Registre de preuves", "chronologique, sans trou, imprimable.")}` })}
+    <div class="bascule" role="tablist" aria-label="Profil" data-bascule>
+      <span class="bascule-curseur" aria-hidden="true"></span>
+      <button type="button" role="tab" id="onglet-dirigeant" aria-selected="true" aria-controls="profil-dirigeant">Dirigeant</button>
+      <button type="button" role="tab" id="onglet-qhse" aria-selected="false" aria-controls="profil-qhse">Responsable QHSE</button>
+    </div>
 
-${rubrique({ etiq: "Le référentiel", contenu: `
-  <h2>${V.divisions.length} fiches de secteur</h2>
-  <p class="lecture" style="margin-top:var(--t3)">
-    Chaque division de la nomenclature NAF a sa fiche : les domaines qui s'y appliquent, les
-    obligations derrière chacun, les sources officielles, et les pièges propres au métier.
-    De quoi situer un client, un sous-traitant ou un donneur d'ordre en deux minutes.
-  </p>
-  ${ecran("secteurs.png", "Fiches par secteur", "cherchables par code, par libellé ou par métier.")}` })}
+    <ul class="traits" id="profil-dirigeant" role="tabpanel" aria-labelledby="onglet-dirigeant">
+      <li class="trait">
+        <svg class="icone" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 7v5l3 2"/><circle cx="12" cy="12" r="9"/></svg>
+        <div><h3>Ce qui est en retard, tout de suite</h3>
+        <p>Le tableau de bord s'ouvre sur les revues en retard, les textes qui attendent
+        une décision et les actions ouvertes. Pas de fil d'actualité à éplucher.</p></div>
+      </li>
+      <li class="trait">
+        <svg class="icone" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h14v16l-7-3-7 3Z"/><path d="M9 9h6"/></svg>
+        <div><h3>Un périmètre écrit, pas une intuition</h3>
+        <p>Votre plan dit quels domaines s'appliquent, à quel rythme les revoir et qui
+        en répond. C'est un document, pas une conversation.</p></div>
+      </li>
+      <li class="trait">
+        <svg class="icone" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 20V9l9-5 9 5v11"/><path d="M9 20v-6h6v6"/></svg>
+        <div><h3>De quoi répondre à un donneur d'ordre</h3>
+        <p>Les fiches de secteur situent un client ou un sous-traitant en deux minutes :
+        ce qui s'applique chez lui, et ce qu'il devrait pouvoir montrer.</p></div>
+      </li>
+      <li class="trait">
+        <svg class="icone" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 18V6m5 12V10m5 8V4m5 14v-7"/></svg>
+        <div><h3>Un prix affiché</h3>
+        <p>Les offres comparables sont presque toutes « sur devis ». La grille est sur
+        la page des tarifs, sans formulaire à remplir d'abord.</p></div>
+      </li>
+    </ul>
 
-${rubrique({ etiq: "Commencer", aplat: true, contenu: `
-  <div class="deux-colonnes">
-    <div>
-      <h2>Voir avant de décider</h2>
-      <p style="margin-top:var(--t3)">L'application est ouverte en démonstration, avec un jeu
-      d'essai. Vous voyez exactement ce qu'elle contient, sans créer de compte.</p>
-      <p class="rangee" style="margin-top:var(--t4)">
-        <a class="bouton" href="connexion.html">Entrer en démonstration</a>
-        <a class="bouton bouton-sobre" href="mailto:${esc(SITE.courriel)}">${esc(SITE.courriel)}</a>
+    <ul class="traits" id="profil-qhse" role="tabpanel" aria-labelledby="onglet-qhse" hidden>
+      <li class="trait">
+        <svg class="icone" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16M7 12h10m-7 7h4"/></svg>
+        <div><h3>Le tri est fait en amont</h3>
+        <p>Seuls les textes qui touchent votre périmètre arrivent, chacun avec ce qu'il
+        change pour vous. Les textes écartés sont tracés, avec leur motif.</p></div>
+      </li>
+      <li class="trait">
+        <svg class="icone" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 12l2 2 4-5"/><rect x="4" y="3" width="16" height="18" rx="2"/></svg>
+        <div><h3>Le registre que l'auditeur demande</h3>
+        <p>Chaque revue, chaque décision, chaque action est datée et conservée.
+        Une ligne ne se réécrit pas : une correction s'ajoute. Il s'imprime tel quel.</p></div>
+      </li>
+      <li class="trait">
+        <svg class="icone" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M12 3v3m0 12v3M3 12h3m12 0h3M5.6 5.6l2.1 2.1m8.6 8.6 2.1 2.1m0-12.8-2.1 2.1M7.7 16.3l-2.1 2.1"/></svg>
+        <div><h3>Le contexte change le périmètre</h3>
+        <p>${V.declencheurs.length} questions — installation classée, amiante, appareils de levage,
+        transport de marchandises — ajoutent les domaines qui vont avec.</p></div>
+      </li>
+      <li class="trait">
+        <svg class="icone" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 3 7v5c0 5 3.8 8.3 9 9 5.2-.7 9-4 9-9V7Z"/></svg>
+        <div><h3>Les sources sont citées</h3>
+        <p>Chaque domaine porte ses textes de référence et les sources officielles
+        où les vérifier. Rien ne vous est demandé sur parole.</p></div>
+      </li>
+    </ul>
+  </div>
+</section>
+
+<section class="section">
+  <div class="enveloppe">
+    <h2 class="titre-section">Les écrans, avant de vous engager</h2>
+    <p class="intro titre-section">Ce sont de vraies captures de l'application, prises automatiquement
+    à chaque publication. Pas une maquette.</p>
+
+    ${vitrine(ECRANS, {
+      image: "releve.png",
+      alt: "Le relevé des textes : chaque texte daté, rattaché à un domaine, avec l'état de la décision.",
+      titre: "Ce qui vous concerne, et rien d'autre",
+      texte: `Le reproche fait à toutes les plateformes de veille est le même : elles remontent
+        tout, donc on ne lit plus rien, et le texte qui comptait se perd. Ici le tri est fait en
+        amont, sur votre périmètre, et chaque texte arrive avec ce qu'il change pour vous.`,
+      lien: "connexion.html", libelle: "Voir le relevé"
+    })}
+
+    ${vitrine(ECRANS, {
+      image: "plan.png",
+      alt: "Le plan de veille : les domaines retenus, groupés par rythme de revue.",
+      titre: "Un plan de veille écrit, domaine par domaine",
+      texte: `${nbDomaines} domaines de veille, ${V.divisions.length} divisions d'activité,
+        ${V.declencheurs.length} questions de contexte. Votre plan n'en retient que ce qui vous
+        concerne, avec pour chacun un rythme de revue et un responsable désigné.`,
+      lien: "connexion.html", libelle: "Voir le plan"
+    })}
+
+    ${vitrine(ECRANS, {
+      image: "registre.png",
+      alt: "Le registre de preuves : revues, décisions et actions, chronologiques et datées.",
+      titre: "Ce qu'un auditeur demande vraiment",
+      texte: `L'écart le plus souvent relevé en audit n'est pas l'absence de veille : c'est la
+        veille faite et jamais tracée. Le registre enregistre chaque revue, chaque décision,
+        chaque action, avec sa date. Il s'imprime tel quel.`,
+      lien: "connexion.html", libelle: "Voir le registre"
+    })}
+
+    ${vitrine(ECRANS, {
+      image: "secteurs.png",
+      alt: "Les fiches de secteur, cherchables par code, par libellé ou par métier.",
+      titre: `${V.divisions.length} fiches de secteur`,
+      texte: `Chaque division de la nomenclature NAF a sa fiche : les domaines qui s'y appliquent,
+        les obligations derrière chacun, les sources officielles, et les pièges propres au métier.
+        Cherchable par code, par libellé ou par le nom du métier.`,
+      lien: "connexion.html", libelle: "Voir les fiches"
+    })}
+  </div>
+</section>
+
+<section class="section section-tein" id="simulateur">
+  <div class="enveloppe">
+    <h2 class="titre-section">Le plan de veille de votre métier</h2>
+    <p class="intro titre-section">Choisissez votre activité, cochez ce qui est vrai chez vous :
+    le périmètre se recalcule. C'est le même calcul que dans l'application.</p>
+
+    <div class="simulateur">
+      <div class="reglages">
+        <div class="reglage">
+          <label class="etiq" for="choix-division">Votre activité</label>
+          <select id="choix-division">
+            ${parSection.map((g) => `<optgroup label="${esc(g.s.c)} — ${esc(g.s.l)}">
+              ${g.divisions.map((d) => `<option value="${esc(d.c)}"${d.c === divDefaut.c ? " selected" : ""}>${esc(d.c)} — ${esc(d.l)}</option>`).join("")}
+            </optgroup>`).join("")}
+          </select>
+        </div>
+        <div class="reglage">
+          <span class="etiq">Votre contexte</span>
+          <div class="cases" id="sim-questions">
+            ${questionsSimulateur(vuDefaut.declencheurs)}
+          </div>
+        </div>
+      </div>
+
+      <div class="resultat">
+        <h3 id="sim-titre">${esc(divDefaut.l)}</h3>
+        <p>Valeur de votre périmètre, comparée au référentiel complet.</p>
+        <hr class="filet">
+
+        <ul class="coup-d-oeil">
+          <li>
+            <span class="pastille"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h14v16l-7-3-7 3Z"/></svg></span>
+            <span><span class="etiq">Domaines retenus</span><span class="valeur" id="sim-total">${vuDefaut.base.length}</span></span>
+          </li>
+          <li>
+            <span class="pastille ambre"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span>
+            <span><span class="etiq">Rythme le plus serré</span><span class="valeur" id="sim-rythme">${esc(vuDefaut.groupes.length ? vuDefaut.groupes[0].f.l : "—")}</span></span>
+          </li>
+          <li>
+            <span class="pastille verte"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></span>
+            <span><span class="etiq">Ajoutés par le contexte</span><span class="valeur" id="sim-contexte">0</span></span>
+          </li>
+        </ul>
+
+        <div class="jauge" id="sim-jauge" aria-hidden="true">
+          ${Array.from({ length: nbDomaines }, (_, i) =>
+            `<span${i < vuDefaut.base.length ? ' class="pleine"' : ""}></span>`).join("")}
+        </div>
+
+        <ul class="rythmes" id="sim-rythmes">
+          ${vuDefaut.groupes.map((g) => `<li>
+            <span class="nom">${esc(g.f.l)}</span>
+            <span class="mots">${esc(g.base.map((id) => V.domaines[id].nom).join(" · "))}</span>
+            <span class="compte">${g.base.length}</span>
+          </li>`).join("")}
+        </ul>
+
+        <p class="note-source" id="sim-phrase">
+          Pour <strong>${esc(divDefaut.l)}</strong> (NAF ${esc(divDefaut.c)}), le plan retient
+          <strong>${vuDefaut.base.length} domaines sur ${nbDomaines}</strong>. Le rythme le plus
+          serré est <strong>${esc(vuDefaut.groupes.length ? vuDefaut.groupes[0].f.l.toLowerCase() : "—")}</strong>.
+        </p>
+        <p class="note-source">
+          Le périmètre affiché est un cadre de départ, pas un avis juridique sur votre situation.
+          Source : le référentiel de ce site, construit à partir de Légifrance et des portails
+          publics cités sur chaque domaine.
+        </p>
+        <p style="margin-top:var(--t4)">
+          <a class="lien-fleche" id="sim-lien" href="app/secteur/${esc(divDefaut.c)}-${slug(divDefaut.l)}.html">Ouvrir la fiche complète ${fleche}</a>
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="enveloppe">
+    <h2 class="titre-section">Tous les secteurs, pas une sélection</h2>
+    <p class="intro titre-section">Les ${V.divisions.length} divisions de la nomenclature d'activités
+    française. Chacune a sa fiche.</p>
+    <div class="panneau-puces">
+      <ul class="puces">
+        ${V.divisions.map((d) => `<li><a href="app/secteur/${esc(d.c)}-${slug(d.l)}.html">
+          <span class="code">${esc(d.c)}</span><span class="nom">${esc(d.l)}</span></a></li>`).join("\n")}
+      </ul>
+    </div>
+    <p class="rangee rangee-centre" style="margin-top:var(--t5)">
+      <a class="bouton bouton-accent" href="connexion.html">Ouvrir l'application</a>
+    </p>
+  </div>
+</section>
+
+<section class="section section-tein">
+  <div class="enveloppe">
+    <h2 class="titre-section">Trois raisons de travailler avec nous</h2>
+    <ul class="raisons">
+      <li class="raison" data-paraitre>
+        <span class="numero" aria-hidden="true">1</span>
+        <h3>Le tri avant la masse</h3>
+        <p>Une veille qui remonte tout ne se lit plus. Le périmètre est écrit d'abord,
+        et seul ce qui le touche vous arrive — avec, pour chaque texte, ce qu'il change
+        concrètement chez vous.</p>
+      </li>
+      <li class="raison" data-paraitre>
+        <span class="numero" aria-hidden="true">2</span>
+        <h3>La preuve autant que la veille</h3>
+        <p>Faire la veille ne suffit pas : il faut pouvoir la montrer. Le registre garde
+        les revues, les décisions et les actions avec leurs dates, et s'imprime pour
+        l'audit sans retraitement.</p>
+      </li>
+      <li class="raison" data-paraitre>
+        <span class="numero" aria-hidden="true">3</span>
+        <h3>Quelqu'un en face</h3>
+        <p>Pierrel &amp; Co est un cabinet de conseil à ${esc(SITE.ville)}, pas un abonnement
+        anonyme. Un interlocuteur unique, qui connaît le site et qui vient dessus.</p>
+      </li>
+    </ul>
+  </div>
+</section>
+
+<section class="section">
+  <div class="enveloppe">
+    <h2 class="titre-section">D'où viennent les textes</h2>
+    <p class="intro titre-section">Les sources suivies sont publiques et citées. Vous pouvez
+    vérifier chaque ligne à sa source.</p>
+    <ul class="sources-bande">
+      ${V.sourcesGenerales.map((s) => `<li><a href="${esc(s.url)}" target="_blank" rel="noopener">${esc(s.nom)} ${sortant}</a></li>`).join("\n")}
+    </ul>
+    <div class="deux-colonnes" style="margin-top:var(--t6)">
+      <p class="reserve">
+        <strong>Ce que le service ne fait pas.</strong>
+        Il fournit un cadre méthodologique, pas un conseil juridique, et ne garantit pas
+        l'exhaustivité des textes applicables à une entreprise donnée. Chaque texte doit être
+        vérifié sur <a href="https://www.legifrance.gouv.fr" target="_blank" rel="noopener">Légifrance</a>
+        et l'analyse d'applicabilité validée par une personne compétente.
+      </p>
+      <p class="reserve">
+        <strong>Et ce site, aujourd'hui.</strong>
+        L'application est ouverte en démonstration, avec un jeu d'essai : il n'y a pas encore
+        de comptes ni de paiement. La « connexion » pose un jeton dans votre navigateur et ne
+        protège rien. Tout est écrit sur les écrans concernés.
       </p>
     </div>
-    <p class="reserve">
-      <strong>Une réserve, dite une fois pour toutes.</strong>
-      Le service fournit un cadre méthodologique, pas un conseil juridique, et ne garantit pas
-      l'exhaustivité des textes applicables à une entreprise donnée. Chaque texte doit être
-      vérifié sur <a href="https://www.legifrance.gouv.fr" target="_blank" rel="noopener">Légifrance</a>
-      et l'analyse d'applicabilité validée par une personne compétente.
+  </div>
+</section>
+
+<section class="bande-finale">
+  <div class="enveloppe">
+    <span class="marque">${sigle}<span>Pierrel <span class="co">&amp; Co</span></span></span>
+    <h2>Conseil en organisation et conformité, à ${esc(SITE.ville)}</h2>
+    <p class="mentions">
+      Clément Pierrel accompagne les entreprises de ${esc(SITE.zone)} sur leur organisation et
+      leur conformité réglementaire : cadrage du périmètre, veille tenue, registre de preuves,
+      préparation d'audit (ISO 14001, ISO 45001, MASE, Qualiopi). Le premier échange d'une heure
+      est sans engagement.
     </p>
-  </div>` })}`;
+    <p class="rangee">
+      <a class="bouton bouton-accent" href="mailto:${esc(SITE.courriel)}">${esc(SITE.courriel)}</a>
+      <a class="bouton bouton-sobre" href="tel:${esc(SITE.telephoneLien)}">${esc(SITE.telephone)}</a>
+    </p>
+  </div>
+</section>`;
 
   return page({
     titre: `${SITE.nom} — ${SITE.bareme}`,
     description: "Votre veille réglementaire tenue et prouvable : plan de veille, relevé des textes de votre métier, registre de preuves prêt pour l'audit.",
-    zone: "public", actif: "produit", corps
+    zone: "public", actif: "produit", corps, donneesPlan: true
   });
 }
 
 function pageTarifs(V) {
   const corps = `
-<section class="ouverture">
+<section class="heros">
   <div class="enveloppe">
-    <p class="reference etiq"><span class="etiq-tampon">Tarifs</span><span>Prix hors taxes</span></p>
-    <h1>Trois formules</h1>
-    <p class="chapeau" style="margin-top:var(--t4)">
-      Affichées, parce que presque personne ne le fait dans ce métier : les offres
-      comparables sont toutes « sur devis ».
-    </p>
-    <p class="reserve" style="margin-top:var(--t5)">
-      <strong>Proposition à valider.</strong> Ces montants sont une proposition construite
-      à partir de la revue du marché, pas une grille arrêtée par Clément Pierrel.
-      À confirmer avant toute mise en ligne publique.
+    <div class="heros-texte"><h1>Trois formules, prix affichés</h1></div>
+    <p class="heros-sous">
+      Affichés, parce que presque personne ne le fait dans ce métier : les offres
+      comparables sont toutes « sur devis ». Montants hors taxes.
     </p>
   </div>
 </section>
 
-${rubrique({ etiq: "Formules", contenu: `
-  <div class="formules">
-    <article class="formule">
-      <span class="etiq">01 — Cadrage</span>
-      <p class="prix"><span class="mono grand">890 €</span> <span class="etiq">une fois</span></p>
-      <p>Une demi-journée sur site, puis votre plan de veille écrit : les domaines qui
-      s'appliquent, le rythme de revue de chacun, les sources à suivre, le responsable désigné.
-      Vous repartez avec le document, que vous preniez la suite ou non.</p>
-    </article>
-    <article class="formule">
-      <span class="etiq">02 — Veille tenue</span>
-      <p class="prix"><span class="mono grand">180 €</span> <span class="etiq">par mois</span></p>
-      <p>Le cadrage, puis le relevé : les textes qui touchent votre périmètre, analysés et
-      datés, avec ce que chacun change pour vous. Accès à l'application et aux fiches de
-      secteur. Un site, un responsable.</p>
-    </article>
-    <article class="formule mise-en-avant">
-      <span class="etiq etiq-tampon">03 — Veille et preuves</span>
-      <p class="prix"><span class="mono grand">290 €</span> <span class="etiq">par mois</span></p>
-      <p>La veille tenue, plus le registre de preuves alimenté à chaque revue et une revue
-      annuelle de conformité sur site. C'est la formule pour qui passe un audit — ISO 14001,
-      ISO 45001, MASE, Qualiopi.</p>
-    </article>
-  </div>` })}
+<section class="section">
+  <div class="enveloppe">
+    <p class="reserve">
+      <strong>Proposition à valider.</strong> Ces montants sont une proposition construite
+      à partir de la revue du marché, pas une grille arrêtée par Clément Pierrel.
+      À confirmer avant toute mise en ligne publique.
+    </p>
 
-${rubrique({ etiq: "Ce qui n'est pas compris", aplat: true, contenu: `
-  <ul class="lecture">
-    <li>Le conseil juridique sur un point litigieux : vous serez orienté vers un avocat.</li>
-    <li>La certification elle-même : les organismes certificateurs restent indépendants.</li>
-    <li>Les démarches à votre place auprès de l'administration.</li>
-  </ul>
-  <p class="lecture" style="margin-top:var(--t4)">Multi-sites, groupes, secteurs très
-  réglementés : sur devis, parce que le périmètre change tout.</p>` })}
+    <div class="formules">
+      <article class="formule" data-paraitre>
+        <span class="etiq">01 — Cadrage</span>
+        <p class="prix"><span class="grand">890 €</span> <span class="etiq">une fois</span></p>
+        <p>Une demi-journée sur site, puis votre plan de veille écrit : les domaines qui
+        s'appliquent, le rythme de revue de chacun, les sources à suivre, le responsable
+        désigné. Vous repartez avec le document, que vous preniez la suite ou non.</p>
+        <a class="bouton bouton-sobre" href="mailto:${esc(SITE.courriel)}?subject=Cadrage">Demander un cadrage</a>
+      </article>
+      <article class="formule" data-paraitre>
+        <span class="etiq">02 — Veille tenue</span>
+        <p class="prix"><span class="grand">180 €</span> <span class="etiq">par mois</span></p>
+        <p>Le cadrage, puis le relevé : les textes qui touchent votre périmètre, analysés et
+        datés, avec ce que chacun change pour vous. Accès à l'application et aux fiches de
+        secteur. Un site, un responsable.</p>
+        <a class="bouton bouton-sobre" href="mailto:${esc(SITE.courriel)}?subject=Veille tenue">En parler</a>
+      </article>
+      <article class="formule mise-en-avant" data-paraitre>
+        <span class="etiq">03 — Veille et preuves</span>
+        <p class="prix"><span class="grand">290 €</span> <span class="etiq">par mois</span></p>
+        <p>La veille tenue, plus le registre de preuves alimenté à chaque revue et une revue
+        annuelle de conformité sur site. C'est la formule pour qui passe un audit — ISO 14001,
+        ISO 45001, MASE, Qualiopi.</p>
+        <a class="bouton bouton-accent" href="mailto:${esc(SITE.courriel)}?subject=Veille et preuves">En parler</a>
+      </article>
+    </div>
+  </div>
+</section>
 
-${rubrique({ etiq: "Contact", contenu: `
-  <p class="lecture">Un premier échange d'une heure, sans engagement. Décrivez votre activité
-  en trois lignes et ce qui vous inquiète.</p>
-  <p class="rangee" style="margin-top:var(--t4)">
-    <a class="bouton" href="mailto:${esc(SITE.courriel)}">${esc(SITE.courriel)}</a>
-    <a class="bouton bouton-sobre" href="tel:${esc(SITE.telephoneLien)}">${esc(SITE.telephone)}</a>
-  </p>` })}`;
+<section class="section section-tein">
+  <div class="enveloppe">
+    <h2 class="titre-section">Ce qui n'est pas compris</h2>
+    <ul class="raisons">
+      <li class="raison" data-paraitre>
+        <span class="numero" aria-hidden="true">—</span>
+        <h3>Le conseil juridique</h3>
+        <p>Sur un point litigieux, vous serez orienté vers un avocat. Le service donne
+        un cadre méthodologique, il ne tranche pas le droit.</p>
+      </li>
+      <li class="raison" data-paraitre>
+        <span class="numero" aria-hidden="true">—</span>
+        <h3>La certification</h3>
+        <p>Les organismes certificateurs restent indépendants. On prépare l'audit,
+        on ne le délivre pas.</p>
+      </li>
+      <li class="raison" data-paraitre>
+        <span class="numero" aria-hidden="true">—</span>
+        <h3>Les démarches à votre place</h3>
+        <p>Les déclarations auprès de l'administration restent les vôtres. Multi-sites,
+        groupes, secteurs très réglementés : sur devis, le périmètre change tout.</p>
+      </li>
+    </ul>
+  </div>
+</section>
+
+<section class="bande-finale">
+  <div class="enveloppe">
+    <span class="marque">${sigle}<span>Pierrel <span class="co">&amp; Co</span></span></span>
+    <h2>Un premier échange d'une heure, sans engagement</h2>
+    <p class="mentions">
+      Décrivez votre activité en trois lignes et ce qui vous inquiète : on vous dira
+      franchement si ${V.divisions.length} fiches de secteur et un registre vous servent,
+      ou si votre sujet est ailleurs.
+    </p>
+    <p class="rangee">
+      <a class="bouton bouton-accent" href="mailto:${esc(SITE.courriel)}">${esc(SITE.courriel)}</a>
+      <a class="bouton bouton-sobre" href="tel:${esc(SITE.telephoneLien)}">${esc(SITE.telephone)}</a>
+    </p>
+  </div>
+</section>`;
 
   return page({
     titre: `Tarifs | ${SITE.nom}`,
@@ -726,11 +1109,10 @@ ${rubrique({ etiq: "Contact", contenu: `
 
 function pageConnexion() {
   const corps = `
-<section class="ouverture">
+<section class="heros">
   <div class="enveloppe">
-    <p class="reference etiq"><span class="etiq-tampon">Accès</span></p>
-    <h1>Connexion</h1>
-    <div class="connexion">
+    <div class="heros-texte"><h1>Ouvrir l'application</h1></div>
+    <div class="connexion" style="margin-inline:auto">
       <p class="reserve">
         <strong>Il n'y a pas encore de comptes.</strong>
         L'authentification demande un service dédié, qui n'est pas en place : aucun identifiant
@@ -738,35 +1120,74 @@ function pageConnexion() {
         écran n'en demande pas. Le bouton ci-dessous ouvre l'application avec un jeu d'essai.
       </p>
       <p style="margin-top:var(--t4)">
-        <button type="button" class="bouton" id="entrer-demo">Entrer en démonstration</button>
+        <button type="button" class="bouton bouton-accent bouton-large" id="entrer-demo">Ouvrir la démonstration</button>
       </p>
       <p class="etiq" style="margin-top:var(--t3)" id="etat-session"></p>
-      <p style="margin-top:var(--t5)">
-        <a href="tarifs.html">Voir les tarifs</a> &nbsp;·&nbsp;
+      <p class="rangee rangee-centre" style="margin-top:var(--t5)">
+        <a href="tarifs.html">Voir les tarifs</a>
         <a href="mailto:${esc(SITE.courriel)}">Demander un accès</a>
       </p>
     </div>
   </div>
 </section>
 
-${rubrique({ etiq: "Ce qu'il reste à brancher", contenu: `
-  <p class="lecture">Pour de vrais comptes et un vrai abonnement, il faut deux services
-  extérieurs, qui s'ajoutent sans rien casser :</p>
-  <ul class="lecture">
-    <li><strong>L'authentification</strong> — Netlify Identity ou un équivalent, pour que les
-    comptes existent et que les pages de l'application ne soient plus servies à tout le monde.</li>
-    <li><strong>Le paiement</strong> — Stripe ou un équivalent, pour l'abonnement mensuel et
-    sa résiliation.</li>
-  </ul>
-  <p class="lecture" style="margin-top:var(--t4)">Tant qu'ils ne sont pas là, la connexion de
-  cette page ne protège rien : elle pose un jeton dans le navigateur, et le contenu des pages
-  de l'application reste lisible par qui regarde la source.</p>` })}`;
+<section class="section">
+  <div class="enveloppe">
+    <h2 class="titre-section">Ce qu'il reste à brancher</h2>
+    <ul class="raisons">
+      <li class="raison" data-paraitre>
+        <span class="numero" aria-hidden="true">1</span>
+        <h3>L'authentification</h3>
+        <p>Netlify Identity ou un équivalent, pour que les comptes existent et que les
+        pages de l'application ne soient plus servies à tout le monde.</p>
+      </li>
+      <li class="raison" data-paraitre>
+        <span class="numero" aria-hidden="true">2</span>
+        <h3>Le paiement</h3>
+        <p>Stripe ou un équivalent, pour l'abonnement mensuel, son renouvellement
+        et sa résiliation.</p>
+      </li>
+      <li class="raison" data-paraitre>
+        <span class="numero" aria-hidden="true">3</span>
+        <h3>En attendant</h3>
+        <p>La connexion de cette page ne protège rien : elle pose un jeton dans le
+        navigateur, et le contenu des pages de l'application reste lisible par qui
+        regarde la source.</p>
+      </li>
+    </ul>
+  </div>
+</section>`;
 
   return page({
     titre: `Connexion | ${SITE.nom}`,
     description: "Accès à l'application de veille réglementaire.",
     zone: "public", actif: "connexion", corps
   });
+}
+
+/* --- Les données du simulateur --------------------------------------------- */
+/* Le référentiel complet pèse 75 Ko : trop pour l'accueil. On n'y envoie que ce
+   dont le calcul a besoin — nom, famille et rythme des domaines, périmètre de
+   base de chaque division, questions de contexte. */
+function donneesPlan(V, METIERS) {
+  const f = {};
+  Object.keys(V.frequences).forEach((id) => { f[id] = { l: V.frequences[id].l, ordre: V.frequences[id].ordre }; });
+
+  const d = {};
+  Object.keys(V.domaines).forEach((id) => { d[id] = { n: V.domaines[id].nom, f: V.domaines[id].frequence }; });
+
+  const div = {};
+  V.divisions.forEach((x) => {
+    div[x.c] = { l: x.l, s: x.s, u: `${x.c}-${slug(x.l)}`, b: perimetre(V, x.c).base };
+  });
+
+  const q = V.declencheurs.map((x) => ({ id: x.id, q: x.q, d: x.d, dom: x.domaines }));
+
+  const mots = {};
+  Object.keys(METIERS).forEach((c) => { mots[c] = METIERS[c].slice(0, 8); });
+
+  return "/* Engendré par build.mjs — ne pas modifier à la main. */\n" +
+         "window.PLAN = " + JSON.stringify({ f, d, div, q, mots }) + ";\n";
 }
 
 /* ==========================================================================
@@ -833,7 +1254,10 @@ async function main() {
   await mkdir(join(SORTIE, "app", "secteur"), { recursive: true });
   await cp(resolve(RACINE, "assets"), join(SORTIE, "assets"), { recursive: true });
 
-  await writeFile(join(SORTIE, "index.html"), pageProduit(V, D, ECRANS));
+  const plan = donneesPlan(V, METIERS);
+  await writeFile(join(SORTIE, "assets", "plan-data.js"), plan);
+
+  await writeFile(join(SORTIE, "index.html"), pageAccueil(V, D, METIERS, ECRANS));
   await writeFile(join(SORTIE, "tarifs.html"), pageTarifs(V));
   await writeFile(join(SORTIE, "connexion.html"), pageConnexion());
 
@@ -849,9 +1273,10 @@ async function main() {
   }
 
   const total = await poids(SORTIE);
-  console.log(`  public              3 pages (produit, tarifs, connexion)`);
+  console.log(`  public              3 pages (accueil, tarifs, connexion)`);
   console.log(`  app/                5 écrans + ${V.divisions.length} fiches de secteur`);
   console.log(`  assets/             ${((await poids(join(SORTIE, "assets"))) / 1024).toFixed(1)} Ko`);
+  console.log(`  plan-data.js        ${(plan.length / 1024).toFixed(1)} Ko pour le simulateur`);
   console.log(`  écrans de l'accueil ${ECRANS.length ? ECRANS.length + " captures" : "AUCUNE — lancer outils/captures.mjs"}`);
   console.log(`\n_site/ prêt — ${(total / 1024).toFixed(1)} Ko, ${V.divisions.length + 8} pages, ` +
     `${Object.keys(V.domaines).length} domaines, ${Object.keys(PIEGES).length} secteurs avec pièges.`);

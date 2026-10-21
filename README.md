@@ -50,7 +50,20 @@ node outils/captures.mjs
 node build.mjs
 ```
 
+Dix fichiers : cinq clairs, cinq sombres (`bord.png` / `bord-sombre.png`). Sans
+le jeu sombre, un grand rectangle blanc trônerait au milieu de la page sombre.
 Si les captures manquent, l'accueil l'écrit au lieu d'afficher une image cassée.
+
+## La direction artistique
+
+Celle des plateformes financières françaises, reprise à la demande : une teinte
+saturée unique (indigo), une encre marine très sombre, des fonds teintés très
+pâles, des cartes blanches à grands rayons, des boutons pilule, de grands
+titres serrés en `Plus Jakarta Sans`. **Les écrans du produit sont le visuel
+principal** — pas d'illustration, pas de photographie d'agence.
+
+Pas de témoignage client : il n'y en a pas encore. La bande qui tiendrait cette
+place liste les sources officielles suivies, qui sont vérifiables.
 
 ## Les deux thèmes
 
@@ -58,12 +71,10 @@ Clair et sombre, **au choix du visiteur** : auto (on suit le système), clair, o
 sombre. Le choix est gardé dans le navigateur et appliqué avant le premier
 rendu, sinon la page clignote en clair avant de passer au sombre.
 
-Les quinze paires de contraste des deux thèmes tiennent le 4,5:1. La palette
-retenue — encre sur papier chaud, un seul rouge de tampon — s'écarte du navy et
-de l'ambre recommandés par `MASTER.md` : ce couple est le défaut de tous les
-générateurs, et c'est précisément ce qui faisait « trop IA ». Deux tokens de
-filet coexistent, un décoratif et un pour les contrôles, le critère non textuel
-de 3:1 ne visant pas les séparations.
+Les contrastes des deux thèmes sont mesurés dans Chromium, pas estimés à l'œil,
+et tiennent le 4,5:1 sur tout texte visible. Deux jetons de filet coexistent,
+un décoratif et un pour les contrôles, le critère non textuel de 3:1 ne visant
+pas les séparations.
 
 ## Trois règles tenues
 
