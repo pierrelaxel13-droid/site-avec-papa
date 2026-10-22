@@ -969,57 +969,86 @@ ${rubrique({ etiq: "Tout le registre", aplat: true, contenu: `
 /* Essayé en bulles : le diamètre portait le nombre de domaines, mais ça
    n'était pas beau et ça se lisait mal. Retour à une grille de cartes —
    la même que sur l'accueil — qui se parcourt et se cherche mieux. */
-function appSecteurs(V, METIERS) {
-  const parSection = V.sections.map((s) => ({
-    s, divisions: V.divisions.filter((d) => d.s === s.c)
-  })).filter((g) => g.divisions.length);
+function appSecteurs(V, METIERS, NAF) {
+  /* On n'affiche plus 88 divisions mais les 732 codes APE, groupés par la
+     division qui porte leur périmètre : une entreprise se reconnaît à son
+     code, pas à sa division. Sans contenu/naf.js, on retombe sur les
+     divisions seules, et la page le dit. */
+  const codes = NAF ? NAF.codes : [];
+  const parDivision = {};
+  codes.forEach((c) => { (parDivision[c.d] = parDivision[c.d] || []).push(c); });
+
+  const groupes = V.divisions.map((d) => ({
+    d,
+    section: V.sections.filter((x) => x.c === d.s)[0],
+    codes: parDivision[d.c] || []
+  }));
 
   const corps = `<section class="tete-app">
   <div class="enveloppe">
     <ul class="jalons">
       <li><span class="fort">Référentiel</span></li>
+      ${NAF ? `<li><span>${codes.length} codes APE</span></li>` : ""}
       <li><span>${V.divisions.length} divisions · ${V.sections.length} sections</span></li>
       <li><span>${Object.keys(V.domaines).length} domaines</span></li>
     </ul>
-    <h1>Tous les secteurs</h1>
+    <h1>Trouvez votre code</h1>
     <p class="chapeau">
-      La nomenclature d'activités française, division par division. Ouvrez un secteur
-      pour voir ses textes, ses obligations et les pièges du métier.
+      ${NAF ? `La nomenclature d'activités française en entier : ses ${codes.length} codes APE,
+      ceux que porte votre entreprise — 4322B, 5610A, 8690F. Chacun mène au périmètre
+      de veille de sa division, parce que c'est à ce niveau que les obligations se
+      ressemblent.`
+      : `La nomenclature d'activités française, division par division. Ouvrez un secteur
+      pour voir ses textes, ses obligations et les pièges du métier.`}
     </p>
     <div class="recherche" style="margin-top:var(--t5)">
-      <label class="etiq" for="recherche-secteur">Chercher</label>
-      <input type="search" id="recherche-secteur" placeholder="boulangerie, 43, transport…"
+      <label class="etiq" for="recherche-secteur">Chercher un code, un métier, un mot</label>
+      <input type="search" id="recherche-secteur" placeholder="4322B, plomberie, boulangerie, 43…"
              autocomplete="off" spellcheck="false">
-      <p class="recherche-compte etiq"><span id="compte-secteurs">${V.divisions.length} secteurs</span></p>
+      <p class="recherche-compte etiq"><span id="compte-secteurs"></span></p>
     </div>
+    ${NAF ? `<p class="note-source">
+      ${esc(NAF.source.nom)}, relevée le ${esc(dateFr(NAF.releve))}. Votre code APE figure
+      sur votre avis de situation INSEE et sur vos bulletins de paie.
+    </p>` : ""}
   </div>
 </section>
 
 <section class="rubrique">
-<div class="enveloppe">
+<div class="enveloppe" data-unite="${NAF ? "codes" : "secteurs"}">
   <p id="aucun-secteur" class="etat-vide" hidden>
-    Aucun secteur ne correspond. Essayez un code à deux chiffres, ou un mot du libellé.
+    Aucun code ne correspond. Essayez les deux premiers chiffres, ou un mot du métier.
   </p>
   <div id="liste-secteurs">
-    ${parSection.map((g) => `
-    <section class="grappe" data-groupe>
-      <h2 class="etiq"><span class="lettre">${esc(g.s.c)}</span> ${esc(g.s.l)}</h2>
+    ${groupes.map((g) => {
+      const mots = METIERS[g.d.c] || [];
+      const adresse = `secteur/${esc(g.d.c)}-${slug(g.d.l)}.html`;
+      const commun = [g.d.c, g.d.l, g.section ? g.section.l : "", ...mots].join(" ");
+      return `
+    <section class="grappe grappe-naf" data-groupe>
+      <h2 class="etiq">
+        <span class="lettre">${esc(g.d.c)}</span>
+        <a href="${adresse}">${esc(g.d.l)}</a>
+        <span class="precision">${g.codes.length ? `${g.codes.length} code${g.codes.length > 1 ? "s" : ""} APE` : "division"}</span>
+      </h2>
       <ul class="puces">
-        ${g.divisions.map((d) => {
-          const mots = METIERS[d.c] || [];
-          return `<li class="ligne-division" data-recherche="${esc([d.c, d.l, g.s.l, ...mots].join(" "))}">
-          <a href="secteur/${esc(d.c)}-${slug(d.l)}.html" title="${esc(d.l)}">
-            <span class="code">${esc(d.c)}</span><span class="nom">${esc(d.l)}</span></a></li>`;
-        }).join("\n")}
+        ${(g.codes.length ? g.codes.map((c) => `<li data-recherche="${esc([c.c, c.c.replace(".", ""), c.l, commun].join(" "))}">
+          <a href="${adresse}#ape-${esc(c.c.replace(".", ""))}" title="${esc(c.l)}">
+            <span class="code">${esc(c.c)}</span><span class="nom">${esc(c.l)}</span></a></li>`)
+          : [`<li data-recherche="${esc(commun)}">
+          <a href="${adresse}" title="${esc(g.d.l)}">
+            <span class="code">${esc(g.d.c)}</span><span class="nom">${esc(g.d.l)}</span></a></li>`]).join("\n")}
       </ul>
-    </section>`).join("\n")}
+    </section>`; }).join("\n")}
   </div>
 </div>
 </section>`;
 
   return page({
-    titre: `Tous les secteurs | ${SITE.nom}`,
-    description: "Les 88 divisions de la nomenclature NAF et leurs obligations.",
+    titre: `Trouvez votre code | ${SITE.nom}`,
+    description: NAF
+      ? `Les ${codes.length} codes APE de la nomenclature NAF, et le périmètre de veille de chacun.`
+      : "Les 88 divisions de la nomenclature NAF et leurs obligations.",
     racine: "../", zone: "app", actif: "secteurs", corps, verrou: true, formule: "cadrage"
   });
 }
@@ -1199,7 +1228,8 @@ function appTextes(V, TEXTES, parTexte, C) {
   });
 }
 
-function appSecteur(V, PIEGES, METIERS, TEXTES, d) {
+function appSecteur(V, PIEGES, METIERS, TEXTES, NAF, d) {
+  const apes = NAF ? NAF.codes.filter((c) => c.d === d.c) : [];
   const section = V.sections.filter((s) => s.c === d.s)[0];
   const mots = METIERS[d.c] || [];
   const { base, declencheurs, groupes } = perimetre(V, d.c);
@@ -1231,9 +1261,21 @@ function appSecteur(V, PIEGES, METIERS, TEXTES, d) {
       <div><dt class="etiq">Domaines de base</dt><dd><span class="grand" id="compte-domaines">${base.length}</span></dd></div>
       <div><dt class="etiq">Rythme le plus serré</dt><dd>${esc(rythme)}</dd></div>
       <div><dt class="etiq">Questions de contexte</dt><dd><span class="grand">${declencheurs.length}</span></dd></div>
+      ${apes.length ? `<div><dt class="etiq">Codes APE</dt><dd><span class="grand">${apes.length}</span></dd></div>` : ""}
     </dl>
   </div>
 </section>
+
+${apes.length ? rubrique({ etiq: "Les codes APE de ce secteur", aplat: true, contenu: `
+  <p class="lecture">Votre entreprise porte un de ces ${apes.length} codes — il est sur
+  votre avis de situation INSEE et sur vos bulletins de paie. Tous relèvent de la
+  division ${esc(d.c)}, et donc du même périmètre de veille : c'est à ce niveau que
+  les obligations se ressemblent.</p>
+  <ul class="puces codes-ape" style="margin-top:var(--t4)">
+    ${apes.map((c) => `<li id="ape-${esc(c.c.replace(".", ""))}">
+      <span class="code">${esc(c.c)}</span><span class="nom">${esc(c.l)}</span></li>`).join("")}
+  </ul>
+  <p class="note-source">${esc(NAF.source.nom)}, relevée le ${esc(dateFr(NAF.releve))}.</p>` }) : ""}
 
 ${rubrique({ etiq: "Les textes qui s'appliquent", contenu: `
   <p class="lecture">Tous les textes de référence du périmètre de ce secteur, sans
@@ -1287,7 +1329,7 @@ ${p ? rubrique({ etiq: "Le terrain", contenu: `
 /* Ce que le visiteur saisit ici ne part nulle part : c'est gardé dans son
    navigateur, et c'est écrit sur la page. Le périmètre se recalcule dessus,
    exactement comme le simulateur de l'accueil — même données, même règle. */
-function appReglages(V, D) {
+function appReglages(V, D, NAF, METIERS) {
   const parSection = V.sections.map((s) => ({
     s, divisions: V.divisions.filter((d) => d.s === s.c)
   })).filter((g) => g.divisions.length);
@@ -1328,13 +1370,31 @@ function appReglages(V, D) {
           <label class="etiq" for="e-nom">Raison sociale</label>
           <input type="text" id="e-nom" name="nom" placeholder="${esc(D.entreprise.nom)}" autocomplete="organization">
         </div>
+        ${NAF ? `<div class="reglage">
+          <label class="etiq" for="e-activite">Votre activité, en vos mots</label>
+          <input type="text" id="e-activite" name="activite" autocomplete="off" spellcheck="false"
+                 placeholder="plomberie chauffage, boulangerie, transport de marchandises…">
+          <p class="precision">Écrivez ce que vous faites : le site cherche votre code APE
+          parmi les ${NAF.codes.length} de la nomenclature.</p>
+          <div class="propositions" id="e-propositions" hidden></div>
+        </div>` : ""}
         <div class="reglage">
-          <label class="etiq" for="e-naf">Activité principale (NAF)</label>
+          <label class="etiq" for="e-naf">${NAF ? "Votre code APE" : "Activité principale (NAF)"}</label>
           <select id="e-naf" name="naf">
-            ${parSection.map((g) => `<optgroup label="${esc(g.s.c)} — ${esc(g.s.l)}">
+            ${NAF
+              ? V.divisions.map((d) => {
+                  const codes = NAF.codes.filter((c) => c.d === d.c);
+                  if (!codes.length) return "";
+                  const mots = METIERS[d.c] || [];
+                  return `<optgroup label="${esc(d.c)} — ${esc(d.l)}" data-mots="${esc(mots.join(" "))}">
+              ${codes.map((c) => `<option value="${esc(c.c)}"${c.d === D.entreprise.naf && c === codes[0] ? " selected" : ""}>${esc(c.c)} — ${esc(c.l)}</option>`).join("")}
+            </optgroup>`; }).join("")
+              : parSection.map((g) => `<optgroup label="${esc(g.s.c)} — ${esc(g.s.l)}">
               ${g.divisions.map((d) => `<option value="${esc(d.c)}"${d.c === D.entreprise.naf ? " selected" : ""}>${esc(d.c)} — ${esc(d.l)}</option>`).join("")}
             </optgroup>`).join("")}
           </select>
+          ${NAF ? `<p class="precision" id="e-division">Il figure sur votre avis de situation
+          INSEE et sur vos bulletins de paie. Le périmètre se calcule sur sa division.</p>` : ""}
         </div>
         <div class="reglage">
           <label class="etiq" for="e-ville">Commune de l'établissement</label>
@@ -2173,6 +2233,33 @@ function verifie(V, PIEGES, METIERS, D, TEXTES) {
   if (sInconnus.length) throw new Error(`Démonstration : statuts inconnus — ${[...new Set(sInconnus)].join(", ")}.`);
 }
 
+/* La nomenclature est engendrée, donc à vérifier comme le reste : un code APE
+   qui ne retombe sur aucune division enverrait le client sur une page absente. */
+function verifieNaf(V, NAF) {
+  if (!NAF || !Array.isArray(NAF.codes) || NAF.codes.length < 700)
+    throw new Error(`contenu/naf.js : ${NAF && NAF.codes ? NAF.codes.length : 0} codes APE, 732 attendus.`);
+
+  const divisions = new Set(V.divisions.map((d) => d.c));
+  const orphelins = NAF.codes.filter((c) => !divisions.has(c.d));
+  if (orphelins.length)
+    throw new Error(`Codes APE sans division dans le référentiel : ` +
+      `${orphelins.slice(0, 5).map((c) => `${c.c} → ${c.d}`).join(", ")}` +
+      `${orphelins.length > 5 ? ` (et ${orphelins.length - 5} autres)` : ""}`);
+
+  const vus = new Set();
+  for (const c of NAF.codes) {
+    if (!/^\d{2}\.\d{2}[A-Z]$/.test(c.c))
+      throw new Error(`Code APE mal formé : « ${c.c} ».`);
+    if (vus.has(c.c)) throw new Error(`Code APE en double : ${c.c}.`);
+    vus.add(c.c);
+    if (!c.l) throw new Error(`Code APE sans intitulé : ${c.c}.`);
+  }
+
+  const sansCode = V.divisions.filter((d) => !NAF.codes.some((c) => c.d === d.c));
+  if (sansCode.length)
+    throw new Error(`Divisions sans aucun code APE : ${sansCode.map((d) => d.c).join(", ")}.`);
+}
+
 /* Le texte des codes est relevé par un robot et posé dans la page sans être
    réécrit : il faut donc vérifier ce qu'on reçoit avant de le publier. Un
    périmètre qui ne tombe sur rien, un morceau vide, une balise qui n'a rien à
@@ -2234,6 +2321,12 @@ async function main() {
 
   // Le texte des codes n'existe que si outils/codes.mjs a tourné. Son absence
   // n'empêche pas de construire : les fiches gardent leur lien et le disent.
+  // La nomenclature NAF entière : 732 codes APE. Son absence n'empêche pas de
+  // construire — la page des secteurs retombe sur les 88 divisions seules.
+  const cheminNaf = resolve(RACINE, "contenu/naf.js");
+  const NAF = existsSync(cheminNaf) ? await chargeFichier("contenu/naf.js", "NAF") : null;
+  if (NAF) verifieNaf(V, NAF);
+
   const cheminCodes = resolve(RACINE, "contenu/codes.json");
   const C = existsSync(cheminCodes) ? JSON.parse(await readFile(cheminCodes, "utf8")) : null;
   if (C) verifieCodes(TEXTES, C);
@@ -2283,8 +2376,8 @@ async function main() {
   await writeFile(join(SORTIE, "app", "plan.html"), appPlan(V, D));
   await writeFile(join(SORTIE, "app", "releve.html"), appReleve(V, D, JO, C));
   await writeFile(join(SORTIE, "app", "registre.html"), appRegistre(V, D));
-  await writeFile(join(SORTIE, "app", "secteurs.html"), appSecteurs(V, METIERS));
-  await writeFile(join(SORTIE, "app", "reglages.html"), appReglages(V, D));
+  await writeFile(join(SORTIE, "app", "secteurs.html"), appSecteurs(V, METIERS, NAF));
+  await writeFile(join(SORTIE, "app", "reglages.html"), appReglages(V, D, NAF, METIERS));
 
   // Une page par texte de référence. parTexte dit, pour chaque référence, les
   // domaines qui la citent : c'est ce qui permet de lister les secteurs
@@ -2316,7 +2409,7 @@ async function main() {
 
   for (const d of V.divisions) {
     await writeFile(join(SORTIE, "app", "secteur", `${d.c}-${slug(d.l)}.html`),
-      appSecteur(V, PIEGES, METIERS, TEXTES, d));
+      appSecteur(V, PIEGES, METIERS, TEXTES, NAF, d));
   }
 
   const total = await poids(SORTIE);
@@ -2325,6 +2418,9 @@ async function main() {
   console.log(`  assets/             ${((await poids(join(SORTIE, "assets"))) / 1024).toFixed(1)} Ko`);
   console.log(`  plan-data.js        ${(plan.length / 1024).toFixed(1)} Ko pour le simulateur`);
   console.log(`  écrans de l'accueil ${ECRANS.length ? ECRANS.length + " captures" : "AUCUNE — lancer outils/captures.mjs"}`);
+  console.log(`  nomenclature NAF    ${NAF
+    ? NAF.codes.length + " codes APE sur " + V.divisions.length + " divisions, relevés le " + NAF.releve
+    : "AUCUNE — lancer outils/naf.mjs"}`);
   console.log(`  texte des codes     ${C
     ? C.morceaux.length + " pages, " + C.morceaux.reduce((n, m) => n + m.articles.length, 0) +
       " articles, " + C.codes.length + " codes, relevés le " + C.preleve +

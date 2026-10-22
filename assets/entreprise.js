@@ -48,9 +48,17 @@
       .replace(/>/g, "&gt;").replace(/"/g, "&quot;");
   }
 
+  /* Une entreprise porte un code APE à cinq caractères — 4322B. Le périmètre
+     de veille, lui, se calcule sur la division — 43. Les deux premiers
+     chiffres font le pont, et un ancien réglage qui ne gardait que la
+     division continue de marcher. */
+  function division(code) {
+    return String(code || "").replace(/[^0-9A-Za-z]/g, "").slice(0, 2);
+  }
+
   /* --- Le périmètre d'un code NAF et d'un contexte -------------------------- */
   function perimetre(naf, contexte) {
-    var div = P.div[naf];
+    var div = P.div[division(naf)];
     if (!div) return null;
     var vus = {}, liste = [], ajoutes = 0;
     div.b.forEach(function (id) { if (!vus[id]) { vus[id] = 1; liste.push(id); } });
@@ -90,7 +98,7 @@
     }
 
     function poserQuestions() {
-      var div = P.div[champs.naf.value];
+      var div = P.div[division(champs.naf.value)];
       if (!div) return;
       hoteContexte.innerHTML = questionsUtiles(div.b).map(function (q) {
         return '<label class="case"><input type="checkbox" data-question="' + echappe(q.id) + '"' +
@@ -104,6 +112,84 @@
           rendre();
         });
       });
+    }
+
+    /* --- Trouver son code APE à partir de ce qu'on fait ---------------------
+       Personne ne connaît son code APE par cœur. Le client écrit son métier,
+       on cherche dans les intitulés officiels — déjà présents dans la liste
+       déroulante, donc rien à télécharger de plus — et on propose. Il choisit :
+       on ne décide pas à sa place, parce qu'un code APE engage l'entreprise. */
+    function chercheurApe() {
+      var champ = $("#e-activite");
+      var hote = $("#e-propositions");
+      var cherche = window.PCO_CHERCHE;
+      if (!champ || !hote || !cherche) return;
+
+      /* Deux foins par code : son intitulé officiel, et les mots du métier
+         portés par sa division — personne ne cherche « travaux d'installation
+         d'équipements thermiques », on cherche « chauffagiste ». */
+      var options = [].slice.call(champs.naf.options).map(function (o) {
+        var groupe = o.parentNode && o.parentNode.getAttribute
+          ? (o.parentNode.getAttribute("data-mots") || "") : "";
+        var titre = o.parentNode && o.parentNode.label ? o.parentNode.label : "";
+        return {
+          v: o.value, t: o.textContent, dv: titre,
+          f: cherche.normalise(o.textContent),
+          g: cherche.normalise(o.textContent + " " + groupe)
+        };
+      });
+
+      function proposer() {
+        var q = cherche.normalise(champ.value.trim());
+        if (q.length < 3) { hote.hidden = true; hote.innerHTML = ""; return; }
+        /* Ceux dont l'intitulé répond passent devant ceux qui ne répondent que
+           par le métier de leur division : le plus précis d'abord. */
+        var exacts = options.filter(function (o) { return cherche.correspond(o.f, q); });
+        var larges = options.filter(function (o) {
+          return cherche.correspond(o.g, q) && exacts.indexOf(o) === -1;
+        });
+        var trouves = exacts.concat(larges);
+        hote.hidden = false;
+        if (!trouves.length) {
+          hote.innerHTML = '<p class="precision">Aucun code ne correspond. ' +
+            "Essayez un autre mot, ou prenez-le dans la liste ci-dessous.</p>";
+          return;
+        }
+        hote.innerHTML = '<p class="etiq">' + trouves.length +
+          (trouves.length > 1 ? " codes possibles" : " code possible") +
+          (trouves.length > 6 ? " — les six premiers" : "") + "</p>" +
+          trouves.slice(0, 6).map(function (o) {
+            return '<button type="button" class="proposition" data-code="' + echappe(o.v) + '">' +
+              echappe(o.t) +
+              (o.dv ? '<span class="precision">Division ' + echappe(o.dv) + "</span>" : "") +
+              "</button>";
+          }).join("");
+        $$(".proposition", hote).forEach(function (b) {
+          b.addEventListener("click", function () {
+            champs.naf.value = b.getAttribute("data-code");
+            hote.hidden = true;
+            champ.value = "";
+            poserQuestions();
+            rendre();
+            direLaDivision();
+            champs.naf.focus();
+          });
+        });
+      }
+
+      champ.addEventListener("input", proposer);
+    }
+
+    /* Le code choisi relève d'une division : c'est elle qui porte le périmètre,
+       et le client doit le voir écrit. */
+    function direLaDivision() {
+      var ligne = $("#e-division");
+      if (!ligne) return;
+      var div = P.div[division(champs.naf.value)];
+      ligne.textContent = div
+        ? "Division " + division(champs.naf.value) + " — " + div.l +
+          ". C'est à ce niveau que se calcule votre périmètre de veille."
+        : "Il figure sur votre avis de situation INSEE et sur vos bulletins de paie.";
     }
 
     function contexteCoche() {
@@ -146,14 +232,24 @@
         if (garde[k]) champs[k].value = garde[k];
       });
       if (garde.effectif != null) champs.effectif.value = garde.effectif;
-      if (garde.naf && P.div[garde.naf]) champs.naf.value = garde.naf;
+      if (garde.naf && P.div[division(garde.naf)]) {
+        champs.naf.value = garde.naf;
+        /* Un réglage enregistré avant la nomenclature complète ne contenait que
+           la division : on retombe sur son premier code APE. */
+        if (!champs.naf.value) {
+          var premier = champs.naf.querySelector('option[value^="' + garde.naf + '."]');
+          if (premier) champs.naf.value = premier.value;
+        }
+      }
       (garde.contexte || []).forEach(function (id) { coches[id] = true; });
     }
 
     poserQuestions();
     rendre();
+    direLaDivision();
 
-    champs.naf.addEventListener("change", function () { poserQuestions(); rendre(); });
+    champs.naf.addEventListener("change", function () { poserQuestions(); rendre(); direLaDivision(); });
+    chercheurApe();
     champs.nom.addEventListener("input", rendre);
 
     form.addEventListener("submit", function (e) {
@@ -181,6 +277,7 @@
         ? champs.naf.querySelector("option[selected]").value : champs.naf.value;
       poserQuestions();
       rendre();
+      direLaDivision();
       etat.textContent = "Revenu au jeu d'essai.";
     });
   }
