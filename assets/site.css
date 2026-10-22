@@ -1202,6 +1202,21 @@ details[open] > summary .chevron { transform: rotate(180deg); }
   margin-top: var(--t2);
   padding-top: var(--t4);
 }
+/* Le texte officiel, tel qu'il est publié : monospace mesurée, interligne
+   confortable, et une hauteur bornée pour qu'un décret de quarante pages ne
+   pousse pas le reste de la page hors de l'écran. */
+.texte-officiel {
+  margin-top: var(--t3);
+  padding: var(--t4);
+  max-height: 32rem; overflow-y: auto;
+  background: var(--carte-pale);
+  border: 1px solid var(--filet);
+  border-radius: var(--r2);
+  font-size: .95rem; line-height: 1.7;
+  white-space: normal; overflow-wrap: anywhere;
+  scrollbar-width: thin;
+}
+
 .detail-grille { display: grid; gap: var(--t4); margin-top: var(--t4); }
 @media (min-width: 52rem) { .detail-grille { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 .detail-grille > div { min-width: 0; }

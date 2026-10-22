@@ -28,6 +28,7 @@ un fichier de `_site/` ne sert à rien, il est effacé à chaque construction.
 | `contenu/demo.js` | Le jeu d'essai de l'application. |
 | `outils/captures.mjs` | Les vraies captures montrées sur l'accueil : ordinateur et téléphone, claires **et** sombres. |
 | `outils/icones.mjs` | Les icônes PNG du manifeste, rendues depuis `assets/favicon.svg`. |
+| `outils/jorf.mjs` | La relève du Journal officiel dans les données ouvertes de la DILA → `contenu/jo-releve.json`. |
 | `sw.js` | Le service worker, copié à la racine de `_site/`. Réseau d'abord pour les pages, cache d'abord pour l'habillage. |
 
 ## Prévisualiser, et vérifier pour de vrai
@@ -155,6 +156,14 @@ qu'il n'y a pas de client.
   d'abord » servait éternellement l'ancienne feuille de style aux visiteurs
   déjà venus. Ne jamais refiger ce nom. Et dans les sondes Playwright, passer
   `serviceWorkers: "block"` — sinon on vérifie une version périmée.
+- **Le relevé officiel est absent tant que `outils/jorf.mjs` n'a pas tourné**,
+  et l'application le dit. Ne jamais combler ce vide avec des textes inventés,
+  ni présenter le jeu d'essai comme un relevé réel : c'est la seule chose qui
+  rendrait ce produit malhonnête.
+- **L'extracteur de `jorf.mjs` n'a pas encore vu un XML réel de la DILA.** Il
+  préfère remonter « 0 texte extrait » qu'un contenu reconstitué. Au premier
+  passage réussi, vérifier ce qu'il sort contre le fichier d'origine avant de
+  publier quoi que ce soit.
 - **Une fiche de texte ne reproduit pas le texte officiel**, et ne doit jamais
   le faire : Légifrance seul fait foi, et une copie se périme en silence. La
   fiche dit ce que le texte exige. Le lien vers la source reste, en second.
