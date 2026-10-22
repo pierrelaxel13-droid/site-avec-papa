@@ -1,0 +1,78 @@
+# ==========================================================================
+# Pierrel & Co — la relève automatique
+# --------------------------------------------------------------------------
+# « Idéalement ce serait tout le temps, chaque seconde. » Ça ne servirait à
+# rien, et ça nous ferait couper l'accès aux sources. Voici pourquoi, et ce
+# qu'on fait à la place.
+#
+# À QUEL RYTHME LES SOURCES BOUGENT, VRAIMENT
+#   Journal officiel   une fois par jour, publié au petit matin.
+#   Codes consolidés   une fois par jour : la base LEGI est reconstruite la nuit.
+#   Flux des autorités quelques fois par jour, au gré des publications.
+# Interroger chaque seconde, c'est 86 400 requêtes par jour pour, au mieux,
+# une nouveauté — et un blocage assuré par les serveurs publics.
+#
+# CE QU'ON FAIT
+#   toutes les heures  les 25 sources d'actualité (léger : des flux).
+#   une fois par jour  les codes consolidés (lourd : 12 Mo à télécharger),
+#                      juste après que la base LEGI a été reconstruite.
+# Le délai maximum entre la parution d'un texte et l'alerte est donc d'une
+# heure. C'est déjà plus serré que le rythme des sources elles-mêmes.
+#
+# COMMENT ÇA ATTEINT LE SITE
+# Quand la relève change quelque chose, l'action le commite. Netlify voit le
+# commit et republie. Rien à régler ailleurs, aucune clé à poser.
+# ==========================================================================
+name: Relève
+
+on:
+  schedule:
+    - cron: "17 * * * *"      # toutes les heures, à 17 — pas à l'heure pile,
+                              # où tout le monde tape en même temps
+    - cron: "42 5 * * *"      # une fois par jour, 5 h 42 UTC ≈ 7 h 42 à Paris
+  workflow_dispatch:           # et à la demande, depuis l'onglet Actions
+
+permissions:
+  contents: write
+
+concurrency:
+  group: releve
+  cancel-in-progress: false
+
+jobs:
+  relever:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      # Les flux et le Journal officiel : à chaque passage.
+      - name: Les textes qui paraissent
+        run: node outils/veille.mjs --jours 2 || true
+
+      # Les codes consolidés : une fois par jour seulement. contenu/codes.json
+      # est suivi par git, et c'est en le comparant que le robot sait ce qui a
+      # changé — d'où le commit, qui fait la mémoire.
+      - name: Le texte des codes
+        if: github.event.schedule == '42 5 * * *' || github.event_name == 'workflow_dispatch'
+        run: node outils/codes.mjs || true
+
+      # On ne construit pas pour publier — Netlify s'en charge — mais pour
+      # refuser de commiter des données que le site ne saurait pas rendre.
+      - name: Vérifier que le site se construit
+        run: node build.mjs
+
+      - name: Commiter ce qui a bougé
+        run: |
+          if [ -z "$(git status --porcelain contenu/)" ]; then
+            echo "Rien n'a changé : pas de commit."
+            exit 0
+          fi
+          git config user.name  "Relève Pierrel & Co"
+          git config user.email "releve@users.noreply.github.com"
+          git add contenu/
+          git commit -m "Relève du $(date -u +%d/%m/%Y\ à\ %H:%M) UTC"
+          git push

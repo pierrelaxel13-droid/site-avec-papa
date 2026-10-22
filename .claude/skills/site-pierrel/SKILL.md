@@ -30,6 +30,7 @@ un fichier de `_site/` ne sert à rien, il est effacé à chaque construction.
 | `outils/icones.mjs` | Les icônes PNG du manifeste, rendues depuis `assets/favicon.svg`. |
 | `outils/veille.mjs` | La relève des 25 sources de `contenu/sources.js` → `contenu/veille-releve.json`. |
 | `contenu/liens.js` | Où lire chaque texte : `{ code: "…" }` (adresse reconstruite depuis l'annuaire LEGI) ou `{ url: "…" }`. **Le build échoue si une référence n'y est pas et n'est ni un code ni un texte européen reconnu.** |
+| `.github/workflows/releve.yml` | La relève planifiée : les flux toutes les heures, les codes une fois par jour, puis commit de `contenu/` si quelque chose a bougé. **`outils/codes.mjs` ne tourne plus à la construction Netlify** — le régénérer sans le commiter referait la même comparaison à l'infini. |
 | `outils/naf.mjs` | La nomenclature NAF entière → `contenu/naf.js` (732 codes APE). Source : `@socialgouv/codes-naf` sur le registre npm. |
 | `contenu/naf.js` | **Engendré** : 732 codes APE avec leur division. Ne pas modifier à la main. |
 | `outils/codes.mjs` | Le texte des codes consolidés → `contenu/codes.json` (193 pages, 4 718 articles), et la comparaison avec la relève précédente. Source : `@socialgouv/legi-data` sur le registre npm, joignable d'ici. |
@@ -195,6 +196,12 @@ qu'il n'y a pas de client.
   secteur avec `?ape=4322B`, le client voit son code en haut et les textes qui
   s'appliquent ; les 23 autres codes de la division restent repliés. Ne pas
   remettre de liste longue avant ce qu'il vient lire.
+- **Sur une fiche de secteur, les textes propres au métier passent devant**,
+  le socle commun à toute entreprise est replié dessous. Ne pas remettre les
+  deux à plat : c'est ce qui faisait « brouillon ».
+- **La date « en vigueur depuis » ne s'invente pas.** Elle vient du contenu
+  consolidé relevé (`dateDuTexte`). Quand il n'y en a pas, la page écrit
+  « pas encore relevée ».
 - **« Mon plan » porte les 44 domaines**, ceux hors périmètre posés `hidden`
   par `build.mjs` ; `suivrePlan()` (assets/entreprise.js) les réaffiche selon
   les réglages enregistrés. Ne pas revenir à un plan qui ne rendrait que le

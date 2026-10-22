@@ -943,6 +943,71 @@ ${rubrique({ etiq: "D’où ça vient dans votre veille", aplat: true, contenu: 
   });
 }
 
+/* La liste des textes d'un secteur : chacun se déplie sur ce qu'il exige, avec
+   sa date d'entrée en vigueur quand nous la relevons. */
+function listeDeTextes(V, C, LIENS, TEXTES, entrees) {
+  return `<ul class="textes textes-depliants">
+    ${entrees.map((x) => {
+      const L = lienDuTexte(C, LIENS, x.ref);
+      const f = TEXTES[x.ref] || {};
+      const quand = dateDuTexte(C, x.ref);
+      return `<li>
+      <details>
+        <summary>
+          <span class="ref">${esc(x.ref)}</span>
+          <span class="rattache">${esc(x.domaine)}</span>
+          <span class="source etiq">${quand && quand.depuis
+            ? `${quand.neuf ? `<span class="marque-neuf">Nouveau</span> ` : ""}depuis le ${esc(dateFr(quand.depuis))}`
+            : esc(x.nature)}</span>
+          ${chevron}
+        </summary>
+        <div class="detail">
+          ${f.porte ? `<p class="lecture">${esc(f.porte)}</p>` : ""}
+          ${f.qui ? `<p class="lecture"><strong>À qui ça s'applique.</strong> ${esc(f.qui)}</p>` : ""}
+          ${(f.exige || []).length ? `<span class="etiq" style="margin-top:var(--t4)">Ce que ce texte exige</span>
+          <ul class="exigences">${f.exige.map((e) => `<li>${esc(e)}</li>`).join("")}</ul>` : ""}
+          <p class="rangee" style="margin-top:var(--t4)">
+            <a class="bouton bouton-sobre" href="../texte/${slug(x.ref)}.html">La fiche ${fleche}</a>
+            <a class="bouton bouton-sobre" href="${esc(L.url)}" target="_blank" rel="noopener"
+               title="${esc(L.quoi)}">${esc(intituleDuLien(L))} ${sortant}</a>
+          </p>
+        </div>
+      </details>
+    </li>`; }).join("\n")}
+  </ul>`;
+}
+
+/* --- Depuis quand un texte est en vigueur -----------------------------------
+   « Lesquels sont nouveaux ? » est la première question d'un abonné. Quand
+   nous publions le texte consolidé, nous connaissons la date d'entrée en
+   vigueur de chacun de ses articles : la plus récente dit quand ce morceau de
+   droit a bougé pour la dernière fois. Quand nous ne publions pas le texte,
+   nous ne savons pas, et la page le dit — elle n'invente pas une date. */
+function dateDuTexte(C, ref) {
+  const T = texteDuSite(C, ref);
+  if (!T) return null;
+  let tard = "";
+  for (const m of T.morceaux)
+    for (const a of m.articles)
+      if (a.depuis && a.depuis > tard) tard = a.depuis;
+  return {
+    depuis: tard || null,
+    neuf: T.changements.length > 0,
+    articles: T.articles
+  };
+}
+
+/* Ce qu'on affiche dans la colonne « depuis quand ». */
+function celluleDepuis(C, ref) {
+  const d = dateDuTexte(C, ref);
+  if (!d || !d.depuis) {
+    return `<span class="tenu" title="Nous donnons la date d'entrée en vigueur des textes dont nous relevons le contenu consolidé. Celui-ci n'en fait pas encore partie : nous ne l'inventons pas.">pas encore relevée</span>`;
+  }
+  return `${d.neuf ? `<span class="marque-neuf">Nouveau</span> ` : ""}
+    <span class="mono date">${esc(dateFr(d.depuis))}</span>
+    <span class="precision">dernière évolution sur ${d.articles} article${d.articles > 1 ? "s" : ""} suivis</span>`;
+}
+
 /* --- Les textes en tableau, rangés par catégorie ----------------------------
    Une liste de cent vingt-quatre textes à la file, c'est du brouillon : on ne
    sait pas lequel regarde quoi. Ici chaque texte tombe dans sa catégorie —
@@ -962,7 +1027,15 @@ function tableauDeTextes(V, C, LIENS, TEXTES, entrees, racine = "", cherchable =
   const familles = Object.keys(V.classements)
     .map((id) => ({ id, cl: V.classements[id], textes: par[id] || [] }));
 
-  const sommaire = `<div class="tableau-boite">
+  const avecDate = entrees.filter((e) => (dateDuTexte(C, e.ref) || {}).depuis).length;
+  const neufs = entrees.filter((e) => (dateDuTexte(C, e.ref) || {}).neuf).length;
+
+  const sommaire = `${avecDate ? `<p class="note-source" style="margin-bottom:var(--t4)">
+    <strong>Lesquels sont nouveaux.</strong> La colonne « en vigueur depuis » donne la
+    dernière évolution du texte, pour les ${avecDate} textes dont nous publions le contenu
+    consolidé${neufs ? ` ; ${neufs} ${neufs > 1 ? "ont" : "a"} bougé à la dernière relève et porte${neufs > 1 ? "nt" : ""} la marque <span class="marque-neuf">Nouveau</span>` : " ; aucun n'a bougé à la dernière relève"}.
+    Pour les autres, nous n'avons pas encore la date, et nous ne l'inventons pas.
+  </p>` : ""}<div class="tableau-boite">
   <table class="tableau-familles">
   <thead><tr><th scope="col">Catégorie</th><th scope="col">Textes</th><th scope="col">Ce que c'est</th></tr></thead>
   <tbody>
@@ -984,6 +1057,7 @@ function tableauDeTextes(V, C, LIENS, TEXTES, entrees, racine = "", cherchable =
     <table class="tableau-textes">
       <thead><tr>
         <th scope="col">Texte</th>
+        <th scope="col">En vigueur depuis</th>
         <th scope="col">Ce qu'il exige</th>
         <th scope="col">Où le lire</th>
       </tr></thead>
@@ -993,12 +1067,15 @@ function tableauDeTextes(V, C, LIENS, TEXTES, entrees, racine = "", cherchable =
           const L = lienDuTexte(C, LIENS, e.ref);
           const exige = (f.exige || []).slice(0, 2);
           const fiche = `${racine}texte/${slug(e.ref)}.html`;
-          return `<tr${cherchable ? ` data-recherche="${esc([e.ref, f.nature || "", f.qui || "", e.domaine,
-            g.cl.l, ...(f.exige || [])].join(" "))}"` : ""}>
+          const quand = dateDuTexte(C, e.ref);
+          return `<tr${quand && quand.neuf ? ' class="ligne-neuve"' : ""}${cherchable
+            ? ` data-recherche="${esc([e.ref, f.nature || "", f.qui || "", e.domaine, g.cl.l,
+                quand && quand.neuf ? "nouveau récent" : "", ...(f.exige || [])].join(" "))}"` : ""}>
         <th scope="row" data-intitule="Texte">
           <a href="${fiche}">${esc(e.ref)}</a>
           <span class="precision">${esc(e.domaine)}${f.nature ? ` · ${esc(f.nature)}` : ""}</span>
           ${lienCarte(fiche, `Ouvrir la fiche : ${e.ref}`)}</th>
+        <td data-intitule="En vigueur depuis" class="cellule-depuis">${celluleDepuis(C, e.ref)}</td>
         <td data-intitule="Ce qu'il exige">${exige.length
           ? `<ul class="exige-court">${exige.map((x) => `<li>${esc(x)}</li>`).join("")}</ul>
              ${(f.exige || []).length > 2 ? `<span class="lien-fleche">les ${f.exige.length} points ${fleche}</span>` : ""}`
@@ -1484,9 +1561,15 @@ function appSecteur(V, PIEGES, METIERS, TEXTES, NAF, C, LIENS, d) {
   base.forEach((id) => {
     const dom = V.domaines[id];
     dom.textes.forEach((ref) => {
-      textes.push({ ref, id, domaine: dom.nom, nature: (TEXTES[ref] || {}).nature || "Texte" });
+      textes.push({ ref, id, domaine: dom.nom, nature: (TEXTES[ref] || {}).nature || "Texte",
+                    propre: V.transversaux.indexOf(id) === -1 });
     });
   });
+  /* « Que les textes qui concernent » : ceux du métier d'abord, le socle
+     commun à toute entreprise ensuite, replié. Les deux sont dans le
+     périmètre — on ne cache rien, on met le plus utile devant. */
+  const propres = textes.filter((t) => t.propre);
+  const socle = textes.filter((t) => !t.propre);
 
   const corps = `<section class="tete-app">
   <div class="enveloppe">
@@ -1513,35 +1596,22 @@ function appSecteur(V, PIEGES, METIERS, TEXTES, NAF, C, LIENS, d) {
 </section>
 
 ${rubrique({ etiq: "Les textes qui s'appliquent", contenu: `
-  <p class="lecture">Tous les textes de référence du périmètre de ce secteur, sans
-  détour : ${textes.length} textes. Chacun a sa fiche — à qui il s'applique, ce qu'il
-  exige — lisible ici, sans quitter le site.</p>
-  <ul class="textes textes-depliants">
-    ${textes.map((x) => {
-      const L = lienDuTexte(C, LIENS, x.ref);
-      const f = TEXTES[x.ref] || {};
-      return `<li>
-      <details>
-        <summary>
-          <span class="ref">${esc(x.ref)}</span>
-          <span class="rattache">${esc(x.domaine)}</span>
-          <span class="source etiq">${esc(x.nature)}</span>
-          ${chevron}
-        </summary>
-        <div class="detail">
-          ${f.porte ? `<p class="lecture">${esc(f.porte)}</p>` : ""}
-          ${f.qui ? `<p class="lecture"><strong>À qui ça s'applique.</strong> ${esc(f.qui)}</p>` : ""}
-          ${(f.exige || []).length ? `<span class="etiq" style="margin-top:var(--t4)">Ce que ce texte exige</span>
-          <ul class="exigences">${f.exige.map((e) => `<li>${esc(e)}</li>`).join("")}</ul>` : ""}
-          <p class="rangee" style="margin-top:var(--t4)">
-            <a class="bouton bouton-sobre" href="../texte/${slug(x.ref)}.html">La fiche ${fleche}</a>
-            <a class="bouton bouton-sobre" href="${esc(L.url)}" target="_blank" rel="noopener"
-               title="${esc(L.quoi)}">${esc(intituleDuLien(L))} ${sortant}</a>
-          </p>
-        </div>
-      </details>
-    </li>`; }).join("\n")}
-  </ul>` })}
+  <p class="lecture">${propres.length
+    ? `${propres.length} texte${propres.length > 1 ? "s" : ""} propre${propres.length > 1 ? "s" : ""} à ce métier, et ${socle.length} du socle commun à toute entreprise. Les premiers d'abord : ce sont eux qui vous distinguent.`
+    : `Ce secteur n'a pas de texte qui lui soit propre : son périmètre est celui du socle commun à toute entreprise, ${socle.length} textes.`}
+  Pour chacun, ce qu'il exige et où le lire — sans quitter la page.</p>
+
+  ${propres.length ? `<p class="etiq" style="margin-top:var(--t5)">Propres à ce métier</p>
+  ${listeDeTextes(V, C, LIENS, TEXTES, propres)}` : ""}
+
+  ${socle.length ? `<details class="pliant" style="margin-top:var(--t5)">
+    <summary>
+      <span class="titre">Le socle commun — ${socle.length} textes</span>
+      <span class="precision">Ce que toute entreprise tient, quel que soit son métier : travail, paie, données, fiscalité, environnement de base.</span>
+      ${chevron}
+    </summary>
+    ${listeDeTextes(V, C, LIENS, TEXTES, socle)}
+  </details>` : ""}` })}
 
 ${rubrique({ etiq: "Ce qu'il faut tenir, domaine par domaine", aplat: true, contenu: `
   <p class="lecture">Le socle commun à toute entreprise, plus ce qui tient à ce métier.
@@ -2405,6 +2475,14 @@ function donneesAvis(V, D, C) {
   /* La date de l'avis est celle où nous l'avons vu, pas celle où l'article a
      pris effet : c'est la première qui dit « c'est nouveau pour vous ». La
      seconde est dans le texte de l'avis, parce qu'elle commande le délai. */
+  /* Chaque avis mène à la fiche du texte : on y trouve le texte lui-même et
+     ce qu'il faut faire. C'est ce que l'abonné vient chercher en cliquant. */
+  const ficheDuMorceau = (morceau) => {
+    if (!C || !morceau) return "";
+    const ref = Object.keys(C.perimetres).filter((r) => (C.perimetres[r] || []).indexOf(morceau) !== -1)[0];
+    return ref ? `texte/${slug(ref)}.html` : `code/${morceau}.html`;
+  };
+
   const codes = !C ? [] : (C.changements || []).map((c) => ({
     d: C.preleve,
     t: `Article ${c.num} — ${c.codeTitre || "code suivi"}`,
@@ -2413,14 +2491,20 @@ function donneesAvis(V, D, C) {
       : c.quoi === "nouveau" ? "Entre dans votre périmètre." : "Sort de votre périmètre.") +
       (c.depuis ? ` En vigueur depuis le ${dateFr(c.depuis)}.` : ""),
     dom: c.codeTitre || "Codes suivis",
+    u: ficheDuMorceau(c.morceau),
     s: "a-analyser", p: 1
   }));
 
-  const avis = D.releve.map((x) => ({
-    d: x.date, t: x.titre, q: x.quoi,
-    dom: V.domaines[x.domaine] ? V.domaines[x.domaine].nom : x.domaine,
-    s: x.statut, p: x.priorite === "haute" ? 1 : 0
-  })).concat(codes).sort((a, b) => (a.d < b.d ? 1 : -1));
+  const avis = D.releve.map((x) => {
+    const dom = V.domaines[x.domaine];
+    const ref = dom && dom.textes.length ? dom.textes[0] : "";
+    return {
+      d: x.date, t: x.titre, q: x.quoi,
+      dom: dom ? dom.nom : x.domaine,
+      u: ref ? `texte/${slug(ref)}.html` : "",
+      s: x.statut, p: x.priorite === "haute" ? 1 : 0
+    };
+  }).concat(codes).sort((a, b) => (a.d < b.d ? 1 : -1));
   return "/* Engendré par build.mjs — ne pas modifier à la main. */\n" +
          "window.AVIS = " + JSON.stringify(avis) + ";\n";
 }

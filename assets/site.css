@@ -434,6 +434,11 @@ img { height: auto; display: block; }
 .avis a:hover { background: var(--carte-pale); }
 .avis.neuf a { border-left: 3px solid var(--accent); padding-left: calc(var(--t4) - 3px); }
 .avis.prioritaire .avis-dom { color: var(--ambre); }
+/* Un avis dit où il mène : « le texte et ce qu'il faut faire ». */
+.avis-aller {
+  display: block; margin-top: .3rem;
+  color: var(--accent); font-size: .86rem; font-weight: 600;
+}
 .avis-date { font-size: .8rem; color: var(--encre-tenue); }
 .avis-titre { color: var(--encre); font-weight: 600; font-size: .95rem; }
 .avis-quoi { font-size: .88rem; }
@@ -1740,7 +1745,18 @@ details[open] > summary .chevron { transform: rotate(180deg); }
   font-size: .78rem; font-weight: 600; letter-spacing: .06em; text-transform: uppercase;
   color: var(--encre-tenue); border-bottom-color: var(--filet-fort);
 }
-.tableau-textes tbody th { font-weight: 600; width: 30%; }
+.tableau-textes tbody th { font-weight: 600; width: 26%; }
+.tableau-textes .cellule-depuis { width: 16%; }
+.tableau-textes .cellule-depuis .date { display: block; }
+.tableau-textes .cellule-depuis .precision { font-size: .82rem; }
+/* Ce qui a bougé à la dernière relève se voit sans lire : une marque, et un
+   filet sur la ligne. La couleur seule ne dirait rien à qui ne la voit pas. */
+.marque-neuf {
+  display: inline-block; padding: .08rem .45rem;
+  border-radius: var(--rp); background: var(--accent); color: var(--bouton-texte);
+  font-size: .72rem; font-weight: 700; letter-spacing: .04em; text-transform: uppercase;
+}
+.tableau-textes .ligne-neuve th { box-shadow: inset 3px 0 0 var(--accent); }
 /* Toute la ligne ouvre la fiche : on clique la case, pas le nom. Les liens
    qu'elle contient restent au-dessus de la nappe. */
 .tableau-textes tbody tr { position: relative; }
@@ -1753,7 +1769,7 @@ details[open] > summary .chevron { transform: rotate(180deg); }
 .tableau-textes tbody tr:last-child th,
 .tableau-textes tbody tr:last-child td { border-bottom: 0; }
 .tableau-textes .precision { display: block; margin-top: .2rem; font-weight: 400; }
-.tableau-textes td:last-child { width: 22%; }
+.tableau-textes td:last-child { width: 20%; }
 .tableau-textes .lien-officiel { white-space: nowrap; }
 
 /* Ce qu'il exige : deux points, en clair, sans numéro ni cadre — c'est une

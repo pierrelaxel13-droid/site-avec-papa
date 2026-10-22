@@ -110,6 +110,46 @@ disparaissent si le visiteur vide les données du site. Aucun courriel ne part.
 Les deux pages le disent au-dessus des formulaires, avant qu'on y tape quoi
 que ce soit.
 
+## À quelle fréquence la relève tourne
+
+« Idéalement tout le temps, chaque seconde. » Ça ne servirait à rien : les
+sources ne bougent pas à ce rythme-là.
+
+| Source | Publie |
+| --- | --- |
+| Journal officiel | une fois par jour, au petit matin |
+| Codes consolidés (base LEGI) | une fois par jour, reconstruits la nuit |
+| Flux des autorités (CNIL, ANSES, INRS…) | quelques fois par jour |
+
+Interroger chaque seconde, ce serait 86 400 requêtes par jour pour au mieux
+une nouveauté — et un blocage assuré par les serveurs publics.
+
+`.github/workflows/releve.yml` fait donc ceci :
+
+- **toutes les heures** — les 25 sources d'actualité, qui sont des flux légers ;
+- **une fois par jour, 7 h 42 à Paris** — les codes consolidés, juste après que
+  la base LEGI a été reconstruite (12 Mo à télécharger : inutile d'y revenir
+  toutes les heures).
+
+**Le délai maximum entre la parution d'un texte et l'alerte est d'une heure**,
+soit plus serré que le rythme des sources elles-mêmes. Quand la relève change
+quelque chose, l'action le commite ; Netlify voit le commit et republie. Rien
+à régler, aucune clé à poser. L'action construit le site avant de commiter :
+elle refuse de livrer des données que `build.mjs` ne saurait pas rendre.
+
+`outils/codes.mjs` ne tourne donc **plus** à la construction Netlify :
+`contenu/codes.json` est suivi par git, et c'est en le comparant que le robot
+sait ce qui a changé. Le régénérer à chaque construction sans le commiter
+referait éternellement la même comparaison.
+
+## Lesquels sont nouveaux
+
+La page Textes et les fiches de secteur portent une colonne **« en vigueur
+depuis »** : la date de la dernière évolution du texte, pour ceux dont nous
+publions le contenu consolidé. Ce qui a bougé à la dernière relève porte la
+marque **Nouveau**. Pour les autres, nous n'avons pas la date, et la page le
+dit — elle ne l'invente pas.
+
 ## « Mon plan » suit « Mon entreprise »
 
 Le plan de veille était figé sur le jeu d'essai : on changeait d'entreprise

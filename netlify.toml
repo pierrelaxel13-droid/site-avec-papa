@@ -9,16 +9,19 @@
 # son format a changé, le site doit quand même se publier. build.mjs sait
 # construire sans relevé, et la page le dit au lieu d'inventer des textes.
 #
-# Deux robots, deux rôles :
-#   outils/codes.mjs  — le texte des codes consolidés, mot pour mot, et la
-#                       comparaison avec la relève précédente (ce qui a changé).
-#                       Sa source est le registre npm, joignable partout.
-#   outils/veille.mjs — ce qui paraît aujourd'hui sur les 25 sources officielles.
-# contenu/codes.json est suivi par git : la relève du jour se compare à celle de
-# la publication précédente, et c'est de cette différence que naissent les
-# alertes. Le site se publie même si l'un des deux échoue.
+# Deux robots, deux rôles, et un seul tourne ici :
+#   outils/veille.mjs — ce qui paraît sur les 25 sources officielles. Son
+#                       résultat n'est pas suivi par git : le relever à chaque
+#                       publication est sans effet de bord.
+#   outils/codes.mjs  — le texte des codes consolidés. Il tourne dans
+#                       .github/workflows/releve.yml, une fois par jour, PAS
+#                       ici : contenu/codes.json est suivi par git, et c'est en
+#                       le comparant que le robot sait ce qui a changé. Le
+#                       regénérer à chaque construction sans le commiter
+#                       referait éternellement la même comparaison.
+# Le site se publie même si la relève échoue.
 [build]
-  command = "node outils/codes.mjs || true; node outils/veille.mjs --jours 30 || true; node build.mjs"
+  command = "node outils/veille.mjs --jours 30 || true; node build.mjs"
   publish = "_site"
 
 [build.environment]
