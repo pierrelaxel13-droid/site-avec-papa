@@ -20,6 +20,7 @@ un fichier de `_site/` ne sert à rien, il est effacé à chaque construction.
 | `assets/theme.js` | Le choix de thème (auto / clair / sombre), appliqué avant le premier rendu. |
 | `assets/session.js` | Le jeton de démonstration et la formule ouverte. **Ce n'est pas une sécurité** — voir plus bas. |
 | `assets/entreprise.js` | Les deux volets de `app/reglages.html` : mon entreprise, mes alertes. Tout est gardé dans le navigateur. |
+| `assets/avis.js` | La cloche des nouveaux textes, sur tous les écrans de l'application. |
 | `assets/referentiel.js` | Le contenu métier → voir le skill `veille-reglementaire`. |
 | `contenu/metiers.js` | Les mots du métier qui rendent un secteur trouvable (« boulangerie » → division 10). |
 | `contenu/pieges.js` | Les pièges par secteur. `valide: false` tant que Clément Pierrel ne les a pas relus. |
@@ -148,6 +149,17 @@ qu'il n'y a pas de client.
 - **Le PDF, c'est l'impression du navigateur.** Pas de bibliothèque, pas de
   serveur : le bouton pose `body.impression-fiche`, marque la ligne, et la
   feuille d'impression ne garde que celle-là.
+- **Le nom du cache du service worker porte une empreinte**, posée par
+  `build.mjs` depuis le contenu de l'habillage. Il était figé : « cache
+  d'abord » servait éternellement l'ancienne feuille de style aux visiteurs
+  déjà venus. Ne jamais refiger ce nom. Et dans les sondes Playwright, passer
+  `serviceWorkers: "block"` — sinon on vérifie une version périmée.
+- **Les paliers des bulles sont des quartiles**, pas un découpage de l'écart
+  min–max : les tailles de périmètre se serrent en haut, et le découpage
+  linéaire mettait 30 divisions sur 88 dans la plus grosse bulle.
+- **Un débord par marge négative élargit la page** partout où rien ne le
+  rogne. Le pied de la maquette d'ordinateur débordait ainsi de 20 px hors du
+  héros, qui seul avait `overflow: hidden`.
 - **Ajouter une page publique** suppose trois gestes : la fonction dans
   `build.mjs`, son écriture dans `main()`, et le lien dans le menu **et** dans
   le pied de `page()`.

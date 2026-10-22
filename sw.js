@@ -21,7 +21,12 @@
    rien de confidentiel. Il ne met en cache que ce qui est déjà public.
    ========================================================================== */
 
-const CACHE = "pco-v3";
+/* Le nom du cache porte l'empreinte des fichiers d'habillage, posée par
+   build.mjs. Sans cela il ne changeait jamais : « cache d'abord » servait
+   éternellement l'ancienne feuille de style aux visiteurs déjà venus, et une
+   publication ne les atteignait plus. Le cache d'une empreinte disparue est
+   supprimé à l'activation. */
+const CACHE = "pco-__EMPREINTE__";
 const HORS_LIGNE = "accueil.html";
 
 self.addEventListener("install", (e) => {
