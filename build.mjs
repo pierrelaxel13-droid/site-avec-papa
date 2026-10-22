@@ -668,24 +668,85 @@ ${groupes.map((g) => {
   });
 }
 
+/* --- Le relevé officiel, quand il a été fait -------------------------------- */
+/* outils/jorf.mjs va chercher les textes au Journal officiel (données ouvertes
+   de la DILA, sans compte) et écrit contenu/jo-releve.json. Quand ce fichier
+   existe, l'application sert ces textes-là, avec leur contenu intégral. Quand
+   il n'existe pas, elle sert le jeu d'essai — et le dit. Jamais l'un déguisé
+   en l'autre. */
+function ligneJO(t, i) {
+  const noms = t.domaines.map((d) => d.nom);
+  return `<li class="ligne-releve statut-attente">
+  <details${i === 0 ? " open" : ""}>
+    <summary>
+      <span class="mono date">${esc(dateFr(t.date))}</span>
+      <span class="corps">
+        <span class="titre">${esc(t.titre)}</span>
+        <span class="quoi">${esc(t.corps.slice(0, 180).replace(/\s+\S*$/, ""))}…</span>
+        <span class="meta etiq">${esc(t.nature)} · ${esc(noms.join(" · "))}</span>
+      </span>
+      <span class="statut etiq">À analyser</span>
+      ${chevron}
+    </summary>
+    <div class="detail">
+      <p class="etiq">Texte intégral, tel que publié au Journal officiel</p>
+      <div class="texte-officiel">${esc(t.corps).replace(/\n/g, "<br>")}</div>
+      ${t.nota ? `<p class="note-source"><strong>Nota.</strong> ${esc(t.nota)}</p>` : ""}
+      <p class="note-source">
+        Source : Journal officiel de la République française, données ouvertes de la DILA,
+        sous Licence Ouverte. Version publiée le ${esc(dateFr(t.date))}${t.id ? ` — identifiant ${esc(t.id)}` : ""}.
+        En cas de doute, se référer à Légifrance, qui fait foi.
+      </p>
+      <p class="rangee" style="margin-top:var(--t4)">
+        <button type="button" class="bouton bouton-sobre imprimer-fiche">${imprimante} Enregistrer en PDF</button>
+      </p>
+    </div>
+  </details>
+</li>`;
+}
+
 /* --- Relevé ------------------------------------------------------------------ */
-function appReleve(V, D) {
+function appReleve(V, D, JO) {
   const parStatut = Object.keys(STATUTS).map((s) => ({
     s, l: STATUTS[s].l, n: D.releve.filter((t) => t.statut === s).length
   }));
+
+  const officiel = JO && JO.textes && JO.textes.length;
 
   const corps = enTeteApp(D, "Relevé des textes",
     "Les textes parus qui touchent votre périmètre, et seulement ceux-là. Ce que chacun change, et où en est la décision.",
     ficheDeLEntreprise(V, D)) + `
 
-${rubrique({ etiq: "Où ça en est", contenu: `
+${officiel ? rubrique({ etiq: "Relevé officiel", contenu: `
   <dl class="compteurs">
-    ${parStatut.map((x) => `<div><dt class="etiq">${esc(x.l)}</dt><dd><span class="grand">${x.n}</span></dd></div>`).join("")}
-  </dl>` })}
+    <div><dt class="etiq">Textes relevés</dt><dd><span class="grand">${JO.textes.length}</span></dd></div>
+    <div><dt class="etiq">Depuis le</dt><dd>${esc(dateFr(JO.depuis))}</dd></div>
+    <div><dt class="etiq">Dernière relève</dt><dd>${esc(dateFr(JO.releve_le))}</dd></div>
+  </dl>
+  <p class="lecture" style="margin-top:var(--t4)">
+    Ces textes viennent du Journal officiel, relevés automatiquement dans les données
+    ouvertes de la DILA et filtrés sur les domaines du référentiel. Le contenu intégral
+    est dans la page : rien à aller chercher ailleurs.
+  </p>
+  <ul class="liste-releve" style="margin-top:var(--t4)">
+    ${JO.textes.map((t, i) => ligneJO(t, i)).join("")}
+  </ul>` }) : rubrique({ etiq: "Relevé officiel", contenu: `
+  <p class="reserve">
+    <strong>Aucune relève n'a encore été faite.</strong>
+    Le robot qui va chercher les textes au Journal officiel est écrit
+    (<code>outils/jorf.mjs</code>) mais n'a pas encore tourné : l'hôte
+    <code>echanges.dila.gouv.fr</code> doit être autorisé par la politique réseau.
+    Tant qu'il n'a pas tourné, cette page montre le jeu d'essai ci-dessous, et
+    rien d'autre — pas de texte inventé.
+  </p>` })}
 
-${rubrique({ etiq: "Le relevé", aplat: true, contenu: `
-  <p class="lecture">Du plus récent au plus ancien. Les textes écartés ne figurent pas ici :
-  ils sont tracés dans le registre, avec le motif de leur mise à l'écart.</p>
+${rubrique({ etiq: officiel ? "Jeu d'essai" : "Le relevé", aplat: true, contenu: `
+  <p class="lecture">${officiel
+    ? "Les textes de démonstration, conservés pour montrer le cycle complet : analyse, décision, trace."
+    : "Du plus récent au plus ancien. Les textes écartés ne figurent pas ici : ils sont tracés dans le registre, avec le motif de leur mise à l'écart."}</p>
+  <dl class="compteurs" style="margin-top:var(--t4)">
+    ${parStatut.map((x) => `<div><dt class="etiq">${esc(x.l)}</dt><dd><span class="grand">${x.n}</span></dd></div>`).join("")}
+  </dl>
   <ul class="liste-releve" style="margin-top:var(--t4)">
     ${D.releve.map((t) => ligneReleve(V, t)).join("")}
   </ul>` })}`;
@@ -1879,6 +1940,11 @@ async function main() {
   const METIERS = await chargeFichier("contenu/metiers.js", "METIERS");
   const D = await chargeFichier("contenu/demo.js", "DEMO");
   const TEXTES = await chargeFichier("contenu/textes.js", "TEXTES");
+
+  // Le relevé officiel n'existe que si outils/jorf.mjs a tourné. Son absence
+  // n'empêche pas de construire : la page le dit, et montre le jeu d'essai.
+  const cheminJO = resolve(RACINE, "contenu/jo-releve.json");
+  const JO = existsSync(cheminJO) ? JSON.parse(await readFile(cheminJO, "utf8")) : null;
   verifie(V, PIEGES, METIERS, D, TEXTES);
 
   // Les écrans de l'accueil sont de vraies captures de l'application, prises
@@ -1922,7 +1988,7 @@ async function main() {
 
   await writeFile(join(SORTIE, "app", "index.html"), appTableauBord(V, D));
   await writeFile(join(SORTIE, "app", "plan.html"), appPlan(V, D));
-  await writeFile(join(SORTIE, "app", "releve.html"), appReleve(V, D));
+  await writeFile(join(SORTIE, "app", "releve.html"), appReleve(V, D, JO));
   await writeFile(join(SORTIE, "app", "registre.html"), appRegistre(V, D));
   await writeFile(join(SORTIE, "app", "secteurs.html"), appSecteurs(V, METIERS));
   await writeFile(join(SORTIE, "app", "reglages.html"), appReglages(V, D));
@@ -1953,6 +2019,8 @@ async function main() {
   console.log(`  assets/             ${((await poids(join(SORTIE, "assets"))) / 1024).toFixed(1)} Ko`);
   console.log(`  plan-data.js        ${(plan.length / 1024).toFixed(1)} Ko pour le simulateur`);
   console.log(`  écrans de l'accueil ${ECRANS.length ? ECRANS.length + " captures" : "AUCUNE — lancer outils/captures.mjs"}`);
+  console.log(`  relevé du JO        ${JO ? JO.textes.length + " textes, relevés le " + JO.releve_le
+    : "AUCUN — lancer outils/jorf.mjs (hôte echanges.dila.gouv.fr à autoriser)"}`);
   console.log(`\n_site/ prêt — ${(total / 1024).toFixed(1)} Ko, ` +
     `${V.divisions.length + Object.keys(parTexte).length + 10} pages, ` +
     `${Object.keys(V.domaines).length} domaines, ${Object.keys(PIEGES).length} secteurs avec pièges.`);

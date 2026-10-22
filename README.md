@@ -110,6 +110,34 @@ disparaissent si le visiteur vide les données du site. Aucun courriel ne part.
 Les deux pages le disent au-dessus des formulaires, avant qu'on y tape quoi
 que ce soit.
 
+## Aller chercher les nouveaux textes
+
+`outils/jorf.mjs` relève le Journal officiel et écrit `contenu/jo-releve.json`,
+que `build.mjs` publie dans l'application avec **le contenu intégral de chaque
+texte**, lisible sans quitter le site.
+
+```sh
+node outils/jorf.mjs              # les 7 derniers jours
+node outils/jorf.mjs --jours 30
+node build.mjs
+```
+
+La source est la DILA, en données ouvertes, **sans compte ni clé** :
+`https://echanges.dila.gouv.fr/OPENDATA/JORF/`. Les textes officiels français
+sont sous Licence Ouverte : les republier est permis en citant la source et la
+date de version, ce que fait chaque fiche engendrée.
+
+**Il n'a pas encore tourné.** La politique réseau de l'environnement refuse
+`echanges.dila.gouv.fr` (403 à la connexion). Il faut l'autoriser dans les
+domaines autorisés de l'environnement. Tant qu'il n'a pas tourné, l'application
+le dit sur la page du relevé et montre le jeu d'essai — jamais un texte inventé,
+et jamais l'un déguisé en l'autre.
+
+**L'extracteur n'a pas encore vu un XML réel.** Il lit les balises documentées
+du format DILA et se tait quand elles manquent : « 0 texte extrait » plutôt
+qu'un contenu reconstitué. Le premier passage demandera sans doute un
+ajustement, et le script dit où regarder.
+
 ## Les textes, sur le site
 
 `contenu/textes.js` porte **une fiche par référence citée** : 124 fiches,
