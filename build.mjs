@@ -117,8 +117,12 @@ const imprimante = `<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stro
 const chevron = `<svg class="chevron" viewBox="0 0 24 24" aria-hidden="true" fill="none"
   stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>`;
 
+/* La taille est posée ici, pas dans la feuille : ce pictogramme se glisse dans
+   des contextes très différents — puces, tableaux, notes — et partout où rien
+   ne le dimensionnait il s'affichait à la largeur de son conteneur. */
 const sortant = `<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor"
-  stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M8 16 16 8m0 0H9m7 0v7"/></svg>`;
+  stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"
+  style="width:.8em;height:.8em;display:inline-block;vertical-align:-.05em;flex:none"><path d="M8 16 16 8m0 0H9m7 0v7"/></svg>`;
 
 /* --- Le sélecteur de thème, identique partout ------------------------------- */
 const selecteurTheme = `<span class="theme" role="group" aria-label="Thème de la page">
@@ -676,26 +680,30 @@ ${groupes.map((g) => {
    en l'autre. */
 function ligneJO(t, i) {
   const noms = t.domaines.map((d) => d.nom);
-  return `<li class="ligne-releve statut-attente">
+  const droit = t.genre === "texte";
+  return `<li class="ligne-releve statut-${droit ? "attente" : "neutre"}">
   <details${i === 0 ? " open" : ""}>
     <summary>
       <span class="mono date">${esc(dateFr(t.date))}</span>
       <span class="corps">
         <span class="titre">${esc(t.titre)}</span>
         <span class="quoi">${esc(t.corps.slice(0, 180).replace(/\s+\S*$/, ""))}…</span>
-        <span class="meta etiq">${esc(t.nature)} · ${esc(noms.join(" · "))}</span>
+        <span class="meta etiq">${esc(t.sourceNom)} · ${esc(noms.join(" · "))}</span>
       </span>
-      <span class="statut etiq">À analyser</span>
+      <span class="statut etiq">${droit ? "Texte" : "Publication"}</span>
       ${chevron}
     </summary>
     <div class="detail">
-      <p class="etiq">Texte intégral, tel que publié au Journal officiel</p>
+      <p class="etiq">${droit ? "Texte intégral, tel que publié" : "Ce qu'en dit la source"}</p>
       <div class="texte-officiel">${esc(t.corps).replace(/\n/g, "<br>")}</div>
       ${t.nota ? `<p class="note-source"><strong>Nota.</strong> ${esc(t.nota)}</p>` : ""}
       <p class="note-source">
-        Source : Journal officiel de la République française, données ouvertes de la DILA,
-        sous Licence Ouverte. Version publiée le ${esc(dateFr(t.date))}${t.id ? ` — identifiant ${esc(t.id)}` : ""}.
-        En cas de doute, se référer à Légifrance, qui fait foi.
+        Source : ${esc(t.sourceNom)}. ${droit
+          ? "Texte officiel de la République française, sous Licence Ouverte."
+          : "Publication officielle, reproduite avec sa source et sa date — ce n'est pas du droit, c'est un commentaire officiel."}
+        Version du ${esc(dateFr(t.date))}${t.id && !/^http/.test(t.id) ? ` — identifiant ${esc(t.id)}` : ""}.
+        ${t.lien ? `<a href="${esc(t.lien)}" target="_blank" rel="noopener">Voir chez la source ${sortant}</a>` : ""}
+        En cas de doute, c'est la source qui fait foi.
       </p>
       <p class="rangee" style="margin-top:var(--t4)">
         <button type="button" class="bouton bouton-sobre imprimer-fiche">${imprimante} Enregistrer en PDF</button>
@@ -719,25 +727,36 @@ function appReleve(V, D, JO) {
 
 ${officiel ? rubrique({ etiq: "Relevé officiel", contenu: `
   <dl class="compteurs">
-    <div><dt class="etiq">Textes relevés</dt><dd><span class="grand">${JO.textes.length}</span></dd></div>
-    <div><dt class="etiq">Depuis le</dt><dd>${esc(dateFr(JO.depuis))}</dd></div>
+    <div><dt class="etiq">Textes de droit</dt><dd><span class="grand">${JO.textes.filter((x) => x.genre === "texte").length}</span></dd></div>
+    <div><dt class="etiq">Publications officielles</dt><dd><span class="grand">${JO.textes.filter((x) => x.genre !== "texte").length}</span></dd></div>
+    <div><dt class="etiq">Sources qui ont répondu</dt><dd><span class="grand">${JO.rapport.filter((r) => r.retenus).length}</span>
+      <span class="precision">sur ${JO.rapport.length} interrogées</span></dd></div>
     <div><dt class="etiq">Dernière relève</dt><dd>${esc(dateFr(JO.releve_le))}</dd></div>
   </dl>
   <p class="lecture" style="margin-top:var(--t4)">
-    Ces textes viennent du Journal officiel, relevés automatiquement dans les données
-    ouvertes de la DILA et filtrés sur les domaines du référentiel. Le contenu intégral
-    est dans la page : rien à aller chercher ailleurs.
+    Relevé automatiquement sur les sources officielles — Journal officiel en tête — et
+    filtré sur les domaines du référentiel. Le contenu est dans la page : rien à aller
+    chercher ailleurs. Un <strong>texte</strong> est du droit ; une
+    <strong>publication</strong> est un commentaire officiel, qui compte pour la veille
+    mais n'en est pas.
   </p>
+  ${JO.rapport.some((r) => r.souci) ? `<p class="reserve" style="margin-top:var(--t4)">
+    <strong>Sources muettes à la dernière relève.</strong>
+    ${esc(JO.rapport.filter((r) => r.souci).map((r) => r.nom).join(" · "))}.
+    Elles sont signalées plutôt que remplacées : ce qui n'a pas été relevé ne figure
+    pas ici, et ne doit pas être pris pour une absence de texte.</p>` : ""}
   <ul class="liste-releve" style="margin-top:var(--t4)">
     ${JO.textes.map((t, i) => ligneJO(t, i)).join("")}
   </ul>` }) : rubrique({ etiq: "Relevé officiel", contenu: `
   <p class="reserve">
     <strong>Aucune relève n'a encore été faite.</strong>
-    Le robot qui va chercher les textes au Journal officiel est écrit
-    (<code>outils/jorf.mjs</code>) mais n'a pas encore tourné : l'hôte
-    <code>echanges.dila.gouv.fr</code> doit être autorisé par la politique réseau.
-    Tant qu'il n'a pas tourné, cette page montre le jeu d'essai ci-dessous, et
-    rien d'autre — pas de texte inventé.
+    Le robot qui va chercher sur les sources officielles est écrit
+    (<code>outils/veille.mjs</code>, 25 sources déclarées dans
+    <code>contenu/sources.js</code>) mais n'a pas encore tourné : la politique réseau
+    de l'environnement de développement bloque ces hôtes. Il tourne à chaque
+    publication du site chez Netlify, où le réseau est libre.
+    Tant qu'il n'a pas tourné, cette page montre le jeu d'essai ci-dessous, et rien
+    d'autre — pas de texte inventé.
   </p>` })}
 
 ${rubrique({ etiq: officiel ? "Jeu d'essai" : "Le relevé", aplat: true, contenu: `
@@ -1943,7 +1962,7 @@ async function main() {
 
   // Le relevé officiel n'existe que si outils/jorf.mjs a tourné. Son absence
   // n'empêche pas de construire : la page le dit, et montre le jeu d'essai.
-  const cheminJO = resolve(RACINE, "contenu/jo-releve.json");
+  const cheminJO = resolve(RACINE, "contenu/veille-releve.json");
   const JO = existsSync(cheminJO) ? JSON.parse(await readFile(cheminJO, "utf8")) : null;
   verifie(V, PIEGES, METIERS, D, TEXTES);
 
@@ -2019,8 +2038,9 @@ async function main() {
   console.log(`  assets/             ${((await poids(join(SORTIE, "assets"))) / 1024).toFixed(1)} Ko`);
   console.log(`  plan-data.js        ${(plan.length / 1024).toFixed(1)} Ko pour le simulateur`);
   console.log(`  écrans de l'accueil ${ECRANS.length ? ECRANS.length + " captures" : "AUCUNE — lancer outils/captures.mjs"}`);
-  console.log(`  relevé du JO        ${JO ? JO.textes.length + " textes, relevés le " + JO.releve_le
-    : "AUCUN — lancer outils/jorf.mjs (hôte echanges.dila.gouv.fr à autoriser)"}`);
+  console.log(`  relève officielle   ${JO ? JO.textes.length + " entrées, relevées le " + JO.releve_le +
+    " (" + JO.rapport.filter((r) => r.retenus).length + " sources sur " + JO.rapport.length + ")"
+    : "AUCUNE — lancer outils/veille.mjs (tourne chez Netlify à chaque publication)"}`);
   console.log(`\n_site/ prêt — ${(total / 1024).toFixed(1)} Ko, ` +
     `${V.divisions.length + Object.keys(parTexte).length + 10} pages, ` +
     `${Object.keys(V.domaines).length} domaines, ${Object.keys(PIEGES).length} secteurs avec pièges.`);

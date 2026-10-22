@@ -110,33 +110,44 @@ disparaissent si le visiteur vide les données du site. Aucun courriel ne part.
 Les deux pages le disent au-dessus des formulaires, avant qu'on y tape quoi
 que ce soit.
 
-## Aller chercher les nouveaux textes
+## Aller chercher ce qui paraît
 
-`outils/jorf.mjs` relève le Journal officiel et écrit `contenu/jo-releve.json`,
-que `build.mjs` publie dans l'application avec **le contenu intégral de chaque
-texte**, lisible sans quitter le site.
+`outils/veille.mjs` relève **25 sources officielles** déclarées dans
+`contenu/sources.js`, et écrit `contenu/veille-releve.json`, que `build.mjs`
+publie dans l'application avec **le contenu dans la page**.
 
 ```sh
-node outils/jorf.mjs              # les 7 derniers jours
-node outils/jorf.mjs --jours 30
+node outils/veille.mjs --verifier   # interroge chaque source, n'écrit rien
+node outils/veille.mjs --jours 30
+node outils/veille.mjs --source cnil
 node build.mjs
 ```
 
-La source est la DILA, en données ouvertes, **sans compte ni clé** :
-`https://echanges.dila.gouv.fr/OPENDATA/JORF/`. Les textes officiels français
-sont sous Licence Ouverte : les republier est permis en citant la source et la
-date de version, ce que fait chaque fiche engendrée.
+Deux méthodes de relève. **`dila`** : les archives ouvertes de la DILA pour le
+Journal officiel — sans compte ni clé, un XML par texte, contenu intégral.
+**`rss`** : un flux, pour les autorités qui en publient (CNIL, CERT-FR, INRS,
+ANSES, ADEME, URSSAF, DGCCRF, ARCEP…).
 
-**Il n'a pas encore tourné.** La politique réseau de l'environnement refuse
-`echanges.dila.gouv.fr` (403 à la connexion). Il faut l'autoriser dans les
-domaines autorisés de l'environnement. Tant qu'il n'a pas tourné, l'application
-le dit sur la page du relevé et montre le jeu d'essai — jamais un texte inventé,
-et jamais l'un déguisé en l'autre.
+Deux genres, que l'application sépare et nomme : un **texte** est du droit ;
+une **publication** est un commentaire officiel — guide, avis, doctrine,
+alerte. Cela compte pour la veille, mais ce n'est pas la loi.
 
-**L'extracteur n'a pas encore vu un XML réel.** Il lit les balises documentées
-du format DILA et se tait quand elles manquent : « 0 texte extrait » plutôt
-qu'un contenu reconstitué. Le premier passage demandera sans doute un
-ajustement, et le script dit où regarder.
+**Où ça tourne.** Chez Netlify, à chaque publication : la commande de
+construction est `node outils/veille.mjs --jours 30 || true; node build.mjs`.
+Le `|| true` est délibéré — si une source tombe, le site doit se publier quand
+même. L'environnement de développement, lui, a une politique réseau qui refuse
+ces hôtes : la relève n'y tourne pas.
+
+**Ce que le robot ne fait jamais.** Inventer. Une source injoignable est
+signalée par son nom et son code d'erreur, dans le fichier et sur la page. Un
+flux au format inattendu remonte « 0 entrée ». Et si la relève entière ne
+ramène rien, rien n'est écrit : l'application continue d'afficher « aucune
+relève » et son jeu d'essai, nommé comme tel.
+
+**Les adresses de flux ne sont pas encore confirmées.** Elles portent toutes
+`confirme: false` dans `contenu/sources.js`, parce qu'aucune n'a pu être
+interrogée depuis cet environnement. `--verifier` dit lesquelles répondent :
+c'est au vu de ce rapport qu'on en passe une à `true`, jamais avant.
 
 ## Les textes, sur le site
 

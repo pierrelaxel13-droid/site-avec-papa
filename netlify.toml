@@ -1,6 +1,6 @@
 # Netlify : reconstruit et republie à chaque envoi sur la branche reliée.
 
-# La relève du Journal officiel tourne ICI, pas sur le poste de travail : les
+# La relève des sources officielles tourne ICI, pas sur le poste de travail : les
 # machines de construction de Netlify ont un accès réseau libre, alors que
 # l'environnement de développement a une politique qui refuse
 # echanges.dila.gouv.fr. Il n'y a donc rien à régler ailleurs.
@@ -9,7 +9,7 @@
 # son format a changé, le site doit quand même se publier. build.mjs sait
 # construire sans relevé, et la page le dit au lieu d'inventer des textes.
 [build]
-  command = "node outils/jorf.mjs --jours 30 || true; node build.mjs"
+  command = "node outils/veille.mjs --jours 30 || true; node build.mjs"
   publish = "_site"
 
 [build.environment]
