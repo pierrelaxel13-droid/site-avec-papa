@@ -19,6 +19,45 @@
     return String(s).toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
   }
 
+  /* --- Chercher comme on parle ----------------------------------------------
+     Le client tape « plomberie », le référentiel dit « plombier » ; il tape
+     « maçonnerie », le référentiel dit « maçon ». Une recherche qui ne trouve
+     pas son métier ne sert à rien. On coupe donc les terminaisons françaises
+     les plus courantes et on compare aussi la racine. Chaque mot de la demande
+     doit être trouvé : « boulangerie artisanale » cherche les deux. */
+  var TERMINAISONS = ["eries", "erie", "iers", "ier", "euses", "euse", "eurs",
+                      "eur", "ions", "ion", "ements", "ement", "ages", "age",
+                      "aux", "es", "s", "e"];
+
+  function racines(mot) {
+    var out = [mot];
+    for (var i = 0; i < TERMINAISONS.length; i++) {
+      var t = TERMINAISONS[i];
+      if (mot.length - t.length >= 4 && mot.slice(-t.length) === t) {
+        var r = mot.slice(0, mot.length - t.length);
+        out.push(r);
+        if (r.length > 4) out.push(r.slice(0, -1));   // maçonn → maçon
+        break;
+      }
+    }
+    return out;
+  }
+
+  function correspond(foin, demande) {
+    if (!demande) return true;
+    var mots = demande.split(/[^a-z0-9]+/).filter(function (m) { return m; });
+    for (var i = 0; i < mots.length; i++) {
+      var essais = racines(mots[i]);
+      var trouve = false;
+      for (var j = 0; j < essais.length && !trouve; j++) {
+        if (foin.indexOf(essais[j]) !== -1) trouve = true;
+      }
+      if (!trouve) return false;
+    }
+    return true;
+  }
+  window.PCO_CHERCHE = { normalise: normalise, correspond: correspond };
+
   /* --- Bandeau : filet et fond opaque dès le premier défilement ------------- */
   function bandeau() {
     var b = $(".bandeau");
@@ -288,12 +327,15 @@
       var q = normalise(champ.value.trim());
       var n = 0;
       entrees.forEach(function (e) {
-        var ok = !q || normalise(e.getAttribute("data-recherche")).indexOf(q) !== -1;
+        var ok = correspond(normalise(e.getAttribute("data-recherche")), q);
         e.hidden = !ok;
         if (ok) n++;
       });
       if (compteur) {
-        compteur.textContent = n === entrees.length ? entrees.length + " secteurs"
+        /* « secteurs », « codes », « textes » : la page dit ce qu'elle compte. */
+        var hote = liste.closest ? liste.closest("[data-unite]") : null;
+        var unite = (hote && hote.getAttribute("data-unite")) || "secteurs";
+        compteur.textContent = n === entrees.length ? entrees.length + " " + unite
                                                     : n + " sur " + entrees.length;
       }
       if (vide) vide.hidden = n !== 0;
