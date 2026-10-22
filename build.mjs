@@ -745,7 +745,7 @@ function articleDeLoi(a) {
 
 /* Ce que le dernier passage du robot a vu bouger. Pas une annonce : une
    comparaison de deux relevés, mot à mot, avec l'avant et l'après. */
-function ligneChangement(c) {
+function ligneChangement(c, vers = "code/") {
   const quoi = { modifie: "Texte modifié", nouveau: "Entre au périmètre", sorti: "Sort du périmètre" };
   return `<li class="changement change-${esc(c.quoi)}">
   <p class="article-tete">
@@ -764,7 +764,7 @@ function ligneChangement(c) {
     ${c.par ? `${c.par.lien
       ? `<a href="${esc(c.par.lien)}" target="_blank" rel="noopener">${esc(c.par.titre)} ${sortant}</a>`
       : esc(c.par.titre)} · ` : ""}
-    ${c.morceau ? `<a href="code/${esc(c.morceau)}.html#art-${esc(c.num)}">Lire l’article en entier</a>` : ""}
+    ${c.morceau ? `<a href="${vers}${esc(c.morceau)}.html#art-${esc(c.num)}">Lire l’article en entier</a>` : ""}
   </p>
 </li>`;
 }
@@ -821,7 +821,7 @@ function appMorceauDeCode(C, m, refs, precedent, suivant) {
 ${changes.length ? rubrique({ etiq: "Ce qui a changé ici", contenu: `
   <p class="lecture">Depuis la relève précédente, et rien d’autre : c’est une
   comparaison des deux versions, pas un commentaire.</p>
-  <ul class="changements" style="margin-top:var(--t4)">${changes.map(ligneChangement).join("")}</ul>` }) : ""}
+  <ul class="changements" style="margin-top:var(--t4)">${changes.map((c) => ligneChangement(c, "")).join("")}</ul>` }) : ""}
 
 ${rubrique({ etiq: "Le texte, mot pour mot", contenu: `
   <p class="lecture">Le texte officiel consolidé, tel qu’il est en vigueur, reproduit
@@ -836,7 +836,7 @@ ${rubrique({ etiq: "D’où ça vient dans votre veille", aplat: true, contenu: 
   ${refs.length ? `<p class="lecture">Ce morceau de code est le texte de référence
   de ${refs.length === 1 ? "la fiche suivante" : `${refs.length} fiches`} :</p>
   <ul class="puces" style="margin-top:var(--t4)">
-    ${refs.map((r) => `<li><a href="texte/${slug(r)}.html">
+    ${refs.map((r) => `<li><a href="../texte/${slug(r)}.html">
       <span class="code">fiche</span><span class="nom">${esc(r)}</span></a></li>`).join("")}
   </ul>` : ""}
   <p class="rangee" style="margin-top:var(--t5)">
@@ -908,7 +908,7 @@ ${C ? rubrique({ etiq: "Ce qui a changé dans les codes", contenu: `
     Le robot compare chaque article avec la relève précédente. Voici ce qui a bougé,
     mot à mot. Rien n’est deviné : c’est la différence entre deux versions.</p>
   <ul class="changements" style="margin-top:var(--t4)">
-    ${C.changements.slice(0, 40).map(ligneChangement).join("")}
+    ${C.changements.slice(0, 40).map((c) => ligneChangement(c, "code/")).join("")}
   </ul>
   ${C.changements.length > 40 ? `<p class="note-source">… et ${C.changements.length - 40} autres,
     visibles sur la fiche du texte concerné.</p>` : ""}`
@@ -1072,13 +1072,13 @@ ${rubrique({ etiq: "Où il s'applique", aplat: true, contenu: `
   de veille, et concerne ${secteurs.length} division${secteurs.length > 1 ? "s" : ""} d'activité sur
   ${V.divisions.length}.</p>
   <ul class="puces" style="margin-top:var(--t4)">
-    ${domaines.map((id) => `<li><a href="plan.html">
+    ${domaines.map((id) => `<li><a href="../plan.html">
       <span class="code">${esc(V.domaines[id].frequence.slice(0, 3))}</span>
       <span class="nom">${esc(V.domaines[id].nom)}</span></a></li>`).join("")}
   </ul>
   ${secteurs.length ? `<p class="etiq" style="margin-top:var(--t5)">Secteurs concernés</p>
   <ul class="puces" style="margin-top:var(--t3)">
-    ${secteurs.slice(0, 24).map((x) => `<li><a href="secteur/${esc(x.c)}-${slug(x.l)}.html" title="${esc(x.l)}">
+    ${secteurs.slice(0, 24).map((x) => `<li><a href="../secteur/${esc(x.c)}-${slug(x.l)}.html" title="${esc(x.l)}">
       <span class="code">${esc(x.c)}</span><span class="nom">${esc(x.l)}</span></a></li>`).join("")}
   </ul>
   ${secteurs.length > 24 ? `<p class="note-source">… et ${secteurs.length - 24} autres.</p>` : ""}` : ""}` })}
@@ -1086,7 +1086,7 @@ ${rubrique({ etiq: "Où il s'applique", aplat: true, contenu: `
 ${T && T.changements.length ? rubrique({ etiq: "Ce qui a changé", contenu: `
   <p class="lecture">Depuis la relève précédente, dans ce texte, et rien d’autre. C’est
   une comparaison des deux versions mot à mot : l’avant, l’après.</p>
-  <ul class="changements" style="margin-top:var(--t4)">${T.changements.map(ligneChangement).join("")}</ul>` }) : ""}
+  <ul class="changements" style="margin-top:var(--t4)">${T.changements.map((c) => ligneChangement(c, "../code/")).join("")}</ul>` }) : ""}
 
 ${T ? rubrique({ etiq: "Le texte, mot pour mot", contenu: `
   <dl class="compteurs">
