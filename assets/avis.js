@@ -59,11 +59,12 @@
 
     var ligne = function (a) {
       return '<li class="avis' + (a.d > depuis ? " neuf" : "") + (a.p ? " prioritaire" : "") + '">' +
-        '<a href="' + racine() + 'releve.html">' +
+        '<a href="' + racine() + (a.u || "releve.html") + '">' +
           '<span class="avis-date mono">' + echappe(dateFr(a.d)) + "</span>" +
           '<span class="avis-titre">' + echappe(a.t) + "</span>" +
           '<span class="avis-quoi">' + echappe(a.q) + "</span>" +
           '<span class="avis-dom etiq">' + echappe(a.dom) + (a.p ? " · prioritaire" : "") + "</span>" +
+          '<span class="avis-aller">Le texte et ce qu\'il faut faire</span>' +
         "</a></li>";
     };
 
