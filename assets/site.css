@@ -1599,6 +1599,11 @@ details[open] > summary .chevron { transform: rotate(180deg); }
 .tableau-familles .date { display: block; color: var(--encre-tenue); font-size: .85rem; }
 .tableau-familles .titre { display: block; color: var(--encre); }
 .tableau-familles td:last-child { color: var(--encre-douce); }
+/* Une famille sans texte reste dans le tableau : savoir qu'il n'y a rien du
+   côté de l'hygiène est une information, pas un trou. */
+.tableau-familles .famille-vide th,
+.tableau-familles .famille-vide td { color: var(--encre-tenue); }
+.tableau-familles .famille-vide .compte-famille { background: var(--carte-pale); color: var(--encre-tenue); }
 
 @media (max-width: 52rem) {
   .tableau-familles thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
