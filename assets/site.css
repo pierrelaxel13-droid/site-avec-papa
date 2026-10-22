@@ -1590,6 +1590,10 @@ details[open] > summary .chevron { transform: rotate(180deg); }
 .tableau-familles tbody th a:hover { color: var(--accent); text-decoration: underline; }
 .tableau-familles tbody tr:last-child th,
 .tableau-familles tbody tr:last-child td { border-bottom: 0; }
+/* Toute la ligne mène à sa catégorie : on clique la case, pas le mot. */
+.tableau-familles tbody tr { position: relative; }
+.tableau-familles tbody tr:hover:not(.famille-vide) { background: var(--carte-pale); }
+.tableau-familles a:not(.lien-carte) { position: relative; z-index: 1; }
 .tableau-familles .compte-famille {
   display: inline-grid; place-items: center; min-width: 2rem; height: 2rem;
   padding-inline: .4rem;
@@ -1679,9 +1683,13 @@ details[open] > summary .chevron { transform: rotate(180deg); }
    le texte. Pas de détour, pas de dépliant — c'est ce qu'il vient voir. */
 .conseils { list-style: none; padding: 0; margin: var(--t4) 0 0; display: grid; gap: var(--t4); }
 .conseils > li {
+  position: relative;
   padding: var(--t4) clamp(1rem, .7rem + 1vw, 1.4rem);
   background: var(--carte); border: 1px solid var(--filet); border-radius: var(--r2);
 }
+/* La carte entière ouvre la fiche du texte ; ses propres liens passent devant. */
+.conseils > li:hover { border-color: var(--filet-fort); }
+.conseils a:not(.lien-carte) { position: relative; z-index: 1; }
 .conseils .titre { margin: 0; font-weight: 600; font-size: 1.02rem; color: var(--encre); }
 .conseils .meta { display: block; margin: .2rem 0 0; }
 .conseils .a-faire { margin-top: var(--t3); }
@@ -1718,6 +1726,69 @@ details[open] > summary .chevron { transform: rotate(180deg); }
   .textes-depliants .rattache { grid-column: 2; }
   .textes-depliants .source { grid-column: 3; }
   .textes-depliants .chevron { grid-column: 4; }
+}
+
+/* --- 18 octies. Les textes en tableau ----------------------------------- */
+/* Trois colonnes, toujours les mêmes : le texte, ce qu'il exige, où le lire.
+   Sous 52 rem, une carte par ligne — même contenu, même ordre. */
+.tableau-textes { width: 100%; border-collapse: collapse; font-size: .95rem; }
+.tableau-textes th, .tableau-textes td {
+  padding: .85rem .9rem; text-align: left; vertical-align: top;
+  border-bottom: 1px solid var(--filet);
+}
+.tableau-textes thead th {
+  font-size: .78rem; font-weight: 600; letter-spacing: .06em; text-transform: uppercase;
+  color: var(--encre-tenue); border-bottom-color: var(--filet-fort);
+}
+.tableau-textes tbody th { font-weight: 600; width: 30%; }
+/* Toute la ligne ouvre la fiche : on clique la case, pas le nom. Les liens
+   qu'elle contient restent au-dessus de la nappe. */
+.tableau-textes tbody tr { position: relative; }
+.tableau-textes tbody tr:hover { background: var(--carte-pale); }
+.tableau-textes tbody tr:focus-within { background: var(--carte-pale); }
+.tableau-textes .lien-carte { border-radius: var(--r1); }
+.tableau-textes a:not(.lien-carte) { position: relative; z-index: 1; }
+.tableau-textes tbody th a { color: var(--encre); text-decoration: none; overflow-wrap: anywhere; }
+.tableau-textes tbody th a:hover { color: var(--accent); text-decoration: underline; }
+.tableau-textes tbody tr:last-child th,
+.tableau-textes tbody tr:last-child td { border-bottom: 0; }
+.tableau-textes .precision { display: block; margin-top: .2rem; font-weight: 400; }
+.tableau-textes td:last-child { width: 22%; }
+.tableau-textes .lien-officiel { white-space: nowrap; }
+
+/* Ce qu'il exige : deux points, en clair, sans numéro ni cadre — c'est une
+   colonne de tableau, pas la fiche. */
+.exige-court { margin: 0; padding-left: 1.05rem; color: var(--encre-douce); }
+.exige-court li { margin-bottom: .3rem; }
+.tableau-textes .lien-fleche { margin-top: .2rem; font-size: .88rem; }
+
+.famille-textes { margin-top: var(--t6); scroll-margin-top: 6rem; }
+.famille-textes h3 {
+  display: flex; flex-wrap: wrap; align-items: baseline; gap: .6rem;
+  margin: 0 0 .2rem; font-size: 1.22rem; letter-spacing: -.02em;
+}
+.famille-textes h3 .etiq { display: inline; }
+.famille-textes > .precision { margin: 0 0 var(--t4); }
+.famille-textes .tableau-boite { margin-top: var(--t3); }
+
+@media (max-width: 52rem) {
+  .tableau-textes thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+  .tableau-textes tbody tr {
+    display: grid; gap: .55rem;
+    margin-bottom: var(--t4); padding: var(--t4);
+    background: var(--carte); border: 1px solid var(--filet); border-radius: var(--r2);
+  }
+  .tableau-textes tbody th, .tableau-textes tbody td {
+    display: block; width: auto; padding: 0; border: 0;
+  }
+  .tableau-textes tbody td::before {
+    content: attr(data-intitule);
+    display: block; margin-bottom: .2rem;
+    font-size: .74rem; font-weight: 600; letter-spacing: .06em; text-transform: uppercase;
+    color: var(--encre-tenue);
+  }
+  .tableau-textes tbody th { font-size: 1.02rem; }
+  .tableau-textes .lien-officiel { white-space: normal; }
 }
 
 /* --- 19. Le texte officiel, mot pour mot --------------------------------- */

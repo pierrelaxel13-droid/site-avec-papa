@@ -91,7 +91,7 @@ const BALISES_GARDEES = new Set([
 
 function nettoieHtml(brut) {
   if (!brut) return "";
-  return String(brut)
+  let propre = String(brut)
     .replace(/<!--[\s\S]*?-->/g, "")
     .replace(/<\/?([a-zA-Z0-9]+)[^>]*>/g, (tout, nom) => {
       const n = nom.toLowerCase();
@@ -100,6 +100,20 @@ function nettoieHtml(brut) {
     })
     .replace(/[ \t]+/g, " ")
     .replace(/\s+(<\/(?:p|li|td|th)>)/g, "$1")
+    .trim();
+  /* Retirer une balise interdite laisse parfois un élément vide : il
+     creuserait un trou dans le texte officiel sans rien dire. On le remplace
+     par une espace, jamais par rien : sans elle, « diplômantes. » et « À
+     défaut » se colleraient, et la comparaison avec la relève précédente
+     signalerait un changement qui n'a pas eu lieu. On repasse tant qu'il en
+     reste, parce qu'un vide peut en cacher un autre. */
+  const VIDE = /<(p|li|td|th|tr|strong|em|b|i|u|sup|sub)>(?:\s|<br>)*<\/\1>/gi;
+  let avant;
+  do { avant = propre; propre = propre.replace(VIDE, " "); } while (propre !== avant);
+  return propre
+    .replace(/(?:<br>\s*){3,}/gi, "<br><br>")
+    .replace(/^(?:<br>\s*)+|(?:<br>\s*)+$/gi, "")
+    .replace(/[ \t]{2,}/g, " ")
     .trim();
 }
 

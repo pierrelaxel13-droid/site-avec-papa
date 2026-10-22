@@ -195,6 +195,15 @@ qu'il n'y a pas de client.
   secteur avec `?ape=4322B`, le client voit son code en haut et les textes qui
   s'appliquent ; les 23 autres codes de la division restent repliés. Ne pas
   remettre de liste longue avant ce qu'il vient lire.
+- **« Mon plan » porte les 44 domaines**, ceux hors périmètre posés `hidden`
+  par `build.mjs` ; `suivrePlan()` (assets/entreprise.js) les réaffiche selon
+  les réglages enregistrés. Ne pas revenir à un plan qui ne rendrait que le
+  périmètre du jeu d'essai : il cesserait de suivre l'entreprise.
+- **On clique la case, pas le mot.** Une ligne ou une carte qui mène quelque
+  part reçoit `lienCarte()` ; ses propres liens repassent devant en
+  `z-index: 1`.
+- **Le tableau par catégorie est pour la page Textes**, pas pour les fiches de
+  secteur : là, les textes se déplient.
 - **Le texte va à côté de sa source.** Sur la fiche de secteur, chaque texte se
   déplie sur ce qu'il exige, avec sa fiche et son lien officiel. Dans le plan
   et le tableau de bord, les actions et les textes liés sont visibles sans
