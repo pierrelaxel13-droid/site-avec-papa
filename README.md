@@ -110,16 +110,34 @@ disparaissent si le visiteur vide les données du site. Aucun courriel ne part.
 Les deux pages le disent au-dessus des formulaires, avant qu'on y tape quoi
 que ce soit.
 
-## Les secteurs, en bulles
+## Les textes, sur le site
 
-`app/secteurs.html` montre les 88 divisions en bulles : le diamètre porte le
-nombre de domaines de veille qui s'appliquent. Les paliers sont les
-**quartiles** de la distribution, pas un découpage de l'écart min–max — les
-valeurs réelles se serrent en haut, et un découpage linéaire mettait 30
-divisions dans la plus grosse taille et 3 dans la plus petite.
+`contenu/textes.js` porte **une fiche par référence citée** : 124 fiches,
+clés sur la référence exacte écrite dans le référentiel. `build.mjs` engendre
+`app/texte/<référence>.html` pour chacune, plus l'index `app/textes.html`.
+
+Une fiche dit, en français courant : **à qui ça s'applique**, **ce que le texte
+exige** point par point, **où il s'applique** (domaines et secteurs), et où lire
+l'officiel. Elle s'imprime en PDF. On lit tout sans quitter le site.
+
+**Elle ne reproduit pas le texte officiel.** Le texte intégral et à jour est sur
+Légifrance : lui seul fait foi, et une copie hébergée ici se périmerait en
+silence. Héberger le texte verbatim serait permis — le droit français est sous
+licence ouverte — mais suppose d'aller le chercher chaque jour, donc un compte
+PISTE pour l'API Légifrance et un serveur qui tourne. Ce n'est pas en place.
+
+Toutes les fiches sont en `valide: false` : les pages le disent. `build.mjs`
+refuse de construire si une référence n'a pas de fiche, si une fiche ne
+correspond à aucune référence, ou si deux références produisent la même adresse.
+
+## L'index des secteurs
+
+`app/secteurs.html` montre les 88 divisions en grille de cartes, groupées par
+section et cherchables. Essayé en bulles dimensionnées par le nombre de
+domaines : ce n'était pas beau et ça se lisait mal.
 
 La fiche d'un secteur ouvre sur **la liste à plat de ses textes de référence**,
-visible sans déplier ni quitter le site, chacun rattaché à son domaine.
+chacun menant à sa fiche sur le site.
 
 ## Enregistrer une fiche en PDF
 

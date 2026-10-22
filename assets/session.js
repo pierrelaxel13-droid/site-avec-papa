@@ -88,7 +88,8 @@
     if (active) {
       var exige = {
         "index.html": "veille", "plan.html": "cadrage", "releve.html": "veille",
-        "registre.html": "preuves", "secteurs.html": "cadrage"
+        "registre.html": "preuves", "secteurs.html": "cadrage",
+        "textes.html": "cadrage", "reglages.html": "cadrage"
       };
       var liens = document.querySelectorAll(".bandeau .menu a[href]");
       for (var i = 0; i < liens.length; i++) {

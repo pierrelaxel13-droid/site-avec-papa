@@ -1289,6 +1289,27 @@ details[open] > summary .chevron { transform: rotate(180deg); }
 .textes .source { font-size: .88rem; white-space: nowrap; }
 .textes .source svg { width: .75rem; height: .75rem; }
 
+/* Ce qu'un texte exige : la liste qu'on vient lire. */
+.exigences { margin: var(--t4) 0 0; padding-left: 0; list-style: none; display: grid; gap: var(--t3); max-width: 70ch; }
+.exigences li {
+  margin: 0; padding: var(--t3) var(--t4) var(--t3) calc(var(--t4) + 1.1rem);
+  background: var(--carte);
+  border: 1px solid var(--filet);
+  border-left: 3px solid var(--accent);
+  border-radius: 0 var(--r2) var(--r2) 0;
+  position: relative;
+}
+.exigences li::before {
+  content: counter(list-item);
+  position: absolute; left: var(--t4); top: var(--t3);
+  color: var(--accent); font-family: var(--mono); font-size: .8rem; font-weight: 700;
+}
+.exigences { counter-reset: list-item; }
+.exigences li { counter-increment: list-item; }
+
+.textes .ref a { color: var(--encre); text-decoration: none; }
+.textes .ref a:hover { color: var(--accent); text-decoration: underline; }
+
 .groupe-frequence { margin-top: var(--t5); }
 .groupe-frequence > .tete { margin-bottom: var(--t3); }
 .groupe-frequence > .tete .etiq { margin-top: var(--t2); text-transform: none; letter-spacing: 0; font-weight: 400; }
@@ -1330,10 +1351,8 @@ details[open] > summary .chevron { transform: rotate(180deg); }
 .recherche input:focus-visible { border-color: var(--accent); outline-offset: 2px; }
 .recherche-compte { margin-top: var(--t2); text-transform: none; letter-spacing: 0; font-weight: 500; }
 
-/* --- Les secteurs, en bulles -------------------------------------------
-   La taille porte une donnée : le nombre de domaines de veille qui
-   s'appliquent. Quatre paliers, parce qu'au-delà l'œil ne distingue plus. */
-.amas { display: grid; gap: var(--t5); }
+/* --- L'index des secteurs ----------------------------------------------- */
+.grappe + .grappe { margin-top: var(--t5); }
 .grappe > h2 {
   display: flex; align-items: center; gap: .6rem;
   margin-bottom: var(--t4);
@@ -1347,66 +1366,6 @@ details[open] > summary .chevron { transform: rotate(180deg); }
   color: var(--encre); font-family: var(--mono); font-size: .8rem; font-weight: 700;
 }
 
-.bulles {
-  display: flex; flex-wrap: wrap; align-items: flex-end;
-  gap: var(--t4) var(--t3);
-  list-style: none; padding: 0; margin: 0;
-}
-.bulles > li { margin: 0; }
-
-.bulle {
-  display: grid; justify-items: center; gap: .45rem;
-  width: 8.75rem;
-  text-decoration: none;
-  color: var(--encre-douce);
-}
-.bulle .rond {
-  display: grid; place-items: center;
-  border-radius: var(--rp);
-  background: var(--accent-clair);
-  color: var(--accent);
-  border: 1px solid var(--accent-filet);
-  font-family: var(--mono); font-weight: 700;
-  transition: transform .2s cubic-bezier(.2, .8, .3, 1), box-shadow .2s ease, background-color .2s ease;
-}
-.bulle .nom {
-  font-size: .8rem; line-height: 1.25; text-align: center;
-  display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical;
-  overflow: hidden; overflow-wrap: anywhere;
-}
-.bulle:hover, .bulle:focus-visible { color: var(--encre); }
-.bulle:hover .rond, .bulle:focus-visible .rond {
-  transform: translateY(-3px) scale(1.06);
-  box-shadow: var(--ombre-2);
-}
-
-/* Les quatre paliers : diamètre, corps et densité montent ensemble. */
-.bulle.p1 .rond { width: 3.1rem; height: 3.1rem; font-size: .82rem; }
-.bulle.p2 .rond { width: 3.9rem; height: 3.9rem; font-size: .95rem;
-  background: color-mix(in srgb, var(--accent) 22%, var(--accent-clair)); }
-.bulle.p3 .rond { width: 4.7rem; height: 4.7rem; font-size: 1.1rem;
-  background: color-mix(in srgb, var(--accent) 55%, var(--accent-clair));
-  border-color: transparent; color: #fff; }
-.bulle.p4 .rond { width: 5.5rem; height: 5.5rem; font-size: 1.25rem;
-  background: var(--accent); border-color: transparent; color: #fff; }
-:root[data-theme="dark"] .bulle.p3 .rond,
-:root[data-theme="dark"] .bulle.p4 .rond { color: #14142A; }
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) .bulle.p3 .rond,
-  :root:not([data-theme="light"]) .bulle.p4 .rond { color: #14142A; }
-}
-
-.legende-bulles {
-  display: flex; flex-wrap: wrap; align-items: center; gap: .5rem .75rem;
-  margin: var(--t4) 0 0; padding: 0; list-style: none;
-  font-size: .85rem; color: var(--encre-tenue);
-}
-.legende-bulles li { display: flex; align-items: center; gap: .4rem; margin: 0; }
-.bulle-exemple { display: block; border-radius: var(--rp); background: var(--accent-clair); border: 1px solid var(--accent-filet); }
-.bulle-exemple.p1 { width: .7rem; height: .7rem; }
-.bulle-exemple.p2 { width: 1rem; height: 1rem; background: color-mix(in srgb, var(--accent) 22%, var(--accent-clair)); }
-.bulle-exemple.p3 { width: 1.3rem; height: 1.3rem; background: color-mix(in srgb, var(--accent) 55%, var(--accent-clair)); border-color: transparent; }
-.bulle-exemple.p4 { width: 1.6rem; height: 1.6rem; background: var(--accent); border-color: transparent; }
 .etat-vide { padding: var(--t5); text-align: center; border: 1px dashed var(--filet-fort); border-radius: var(--r3); }
 
 /* --- Formules ----------------------------------------------------------- */
