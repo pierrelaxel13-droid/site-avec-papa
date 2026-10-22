@@ -6,3 +6,6 @@ node_modules/
 
 # Le relevé est engendré par outils/veille.mjs à chaque construction.
 contenu/veille-releve.json
+
+# Le paquet des codes, téléchargé puis extrait par outils/codes.mjs.
+.codes/
