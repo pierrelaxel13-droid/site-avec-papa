@@ -28,7 +28,8 @@ un fichier de `_site/` ne sert à rien, il est effacé à chaque construction.
 | `contenu/demo.js` | Le jeu d'essai de l'application. |
 | `outils/captures.mjs` | Les vraies captures montrées sur l'accueil : ordinateur et téléphone, claires **et** sombres. |
 | `outils/icones.mjs` | Les icônes PNG du manifeste, rendues depuis `assets/favicon.svg`. |
-| `outils/jorf.mjs` | La relève du Journal officiel dans les données ouvertes de la DILA → `contenu/jo-releve.json`. |
+| `outils/veille.mjs` | La relève des 25 sources de `contenu/sources.js` → `contenu/veille-releve.json`. |
+| `contenu/sources.js` | Les sources relevées : méthode (`dila`/`rss`), genre (`texte`/`actualite`), adresse du flux. |
 | `sw.js` | Le service worker, copié à la racine de `_site/`. Réseau d'abord pour les pages, cache d'abord pour l'habillage. |
 
 ## Prévisualiser, et vérifier pour de vrai
@@ -156,11 +157,18 @@ qu'il n'y a pas de client.
   d'abord » servait éternellement l'ancienne feuille de style aux visiteurs
   déjà venus. Ne jamais refiger ce nom. Et dans les sondes Playwright, passer
   `serviceWorkers: "block"` — sinon on vérifie une version périmée.
-- **Le relevé officiel est absent tant que `outils/jorf.mjs` n'a pas tourné**,
+- **Ne jamais confondre `texte` et `actualite`.** Un texte est du droit ; une
+  publication officielle est un commentaire. Les mélanger ferait passer un
+  guide de l'INRS pour une obligation, ce qui est exactement la faute qu'un
+  cabinet de conformité ne peut pas commettre.
+- **Une adresse de flux ne passe à `confirme: true` qu'après un
+  `--verifier` qui répond.** Aucune n'a pu être interrogée depuis cet
+  environnement : elles sont toutes à `false`, et c'est volontaire.
+- **Le relevé officiel est absent tant que `outils/veille.mjs` n'a pas tourné**,
   et l'application le dit. Ne jamais combler ce vide avec des textes inventés,
   ni présenter le jeu d'essai comme un relevé réel : c'est la seule chose qui
   rendrait ce produit malhonnête.
-- **L'extracteur de `jorf.mjs` n'a pas encore vu un XML réel de la DILA.** Il
+- **L'extracteur DILA de `veille.mjs` n'a pas encore vu un XML réel.** Il
   préfère remonter « 0 texte extrait » qu'un contenu reconstitué. Au premier
   passage réussi, vérifier ce qu'il sort contre le fichier d'origine avant de
   publier quoi que ce soit.

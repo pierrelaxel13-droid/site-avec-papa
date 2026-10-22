@@ -1,5 +1,8 @@
 _site/
 node_modules/
 
-# Archives de travail de outils/jorf.mjs
-.jorf/
+# Archives de travail de outils/veille.mjs
+.releve/
+
+# Le relevé est engendré par outils/veille.mjs à chaque construction.
+contenu/veille-releve.json
