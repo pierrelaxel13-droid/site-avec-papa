@@ -24,6 +24,7 @@ un fichier de `_site/` ne sert à rien, il est effacé à chaque construction.
 | `assets/referentiel.js` | Le contenu métier → voir le skill `veille-reglementaire`. |
 | `contenu/metiers.js` | Les mots du métier qui rendent un secteur trouvable (« boulangerie » → division 10). |
 | `contenu/pieges.js` | Les pièges par secteur. `valide: false` tant que Clément Pierrel ne les a pas relus. |
+| `contenu/textes.js` | Une fiche par référence citée : nature, à qui, ce qu'elle exige. Clé = la référence exacte du référentiel. |
 | `contenu/demo.js` | Le jeu d'essai de l'application. |
 | `outils/captures.mjs` | Les vraies captures montrées sur l'accueil : ordinateur et téléphone, claires **et** sombres. |
 | `outils/icones.mjs` | Les icônes PNG du manifeste, rendues depuis `assets/favicon.svg`. |
@@ -154,9 +155,12 @@ qu'il n'y a pas de client.
   d'abord » servait éternellement l'ancienne feuille de style aux visiteurs
   déjà venus. Ne jamais refiger ce nom. Et dans les sondes Playwright, passer
   `serviceWorkers: "block"` — sinon on vérifie une version périmée.
-- **Les paliers des bulles sont des quartiles**, pas un découpage de l'écart
-  min–max : les tailles de périmètre se serrent en haut, et le découpage
-  linéaire mettait 30 divisions sur 88 dans la plus grosse bulle.
+- **Une fiche de texte ne reproduit pas le texte officiel**, et ne doit jamais
+  le faire : Légifrance seul fait foi, et une copie se périme en silence. La
+  fiche dit ce que le texte exige. Le lien vers la source reste, en second.
+- **La clé d'une fiche est la référence au caractère près.** `build.mjs` refuse
+  de construire si une référence n'a pas de fiche ou si une fiche ne correspond
+  à aucune référence : renommer dans le référentiel suppose de renommer ici.
 - **Un débord par marge négative élargit la page** partout où rien ne le
   rogne. Le pied de la maquette d'ordinateur débordait ainsi de 20 px hors du
   héros, qui seul avait `overflow: hidden`.

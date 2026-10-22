@@ -202,6 +202,7 @@ function page({ titre, description, racine = "", zone = "public", actif = "", co
       ${lien("app/plan.html", "Mon plan", "plan")}
       ${lien("app/releve.html", "Relevé", "releve")}
       ${lien("app/registre.html", "Registre", "registre")}
+      ${lien("app/textes.html", "Textes", "textes")}
       ${lien("app/secteurs.html", "Secteurs", "secteurs")}
       ${lien("app/reglages.html", "Réglages", "reglages")}
       ${selecteurTheme}`;
@@ -724,28 +725,11 @@ ${rubrique({ etiq: "Tout le registre", aplat: true, contenu: `
   });
 }
 
-/* --- Les 88 fiches, en bulles ----------------------------------------------- */
-/* La taille d'une bulle dit le nombre de domaines de veille qui s'appliquent à
-   la division : une donnée, pas un ornement. Quatre paliers suffisent — au-delà
-   l'œil ne distingue plus, et les écarts réels vont de 8 à 17. */
+/* --- Les 88 fiches ----------------------------------------------------------- */
+/* Essayé en bulles : le diamètre portait le nombre de domaines, mais ça
+   n'était pas beau et ça se lisait mal. Retour à une grille de cartes —
+   la même que sur l'accueil — qui se parcourt et se cherche mieux. */
 function appSecteurs(V, METIERS) {
-  const tailles = {};
-  let mini = Infinity, maxi = 0;
-  V.divisions.forEach((d) => {
-    const n = perimetre(V, d.c).base.length;
-    tailles[d.c] = n;
-    if (n < mini) mini = n;
-    if (n > maxi) maxi = n;
-  });
-  // Découper l'écart min–max en quatre donnait 30 bulles au dernier palier et
-  // 3 au premier : les valeurs réelles se serrent en haut. On coupe donc aux
-  // quartiles de la distribution, ce qui met à peu près autant de divisions
-  // dans chaque taille et rend les écarts lisibles.
-  const triees = Object.values(tailles).sort((a, b) => a - b);
-  const quartile = (q) => triees[Math.floor(triees.length * q)];
-  const [q1, q2, q3] = [quartile(.25), quartile(.5), quartile(.75)];
-  const palier = (n) => (n <= q1 ? 1 : n <= q2 ? 2 : n <= q3 ? 3 : 4);
-
   const parSection = V.sections.map((s) => ({
     s, divisions: V.divisions.filter((d) => d.s === s.c)
   })).filter((g) => g.divisions.length);
@@ -759,9 +743,8 @@ function appSecteurs(V, METIERS) {
     </ul>
     <h1>Tous les secteurs</h1>
     <p class="chapeau">
-      La nomenclature d'activités française, division par division. Une bulle par
-      division : plus elle est grosse, plus il y a de domaines de veille qui
-      s'appliquent. Cliquez pour ouvrir la fiche et ses textes.
+      La nomenclature d'activités française, division par division. Ouvrez un secteur
+      pour voir ses textes, ses obligations et les pièges du métier.
     </p>
     <div class="recherche" style="margin-top:var(--t5)">
       <label class="etiq" for="recherche-secteur">Chercher</label>
@@ -769,13 +752,6 @@ function appSecteurs(V, METIERS) {
              autocomplete="off" spellcheck="false">
       <p class="recherche-compte etiq"><span id="compte-secteurs">${V.divisions.length} secteurs</span></p>
     </div>
-
-    <ul class="legende-bulles" aria-hidden="true">
-      <li><span class="bulle-exemple p1"></span>${mini} domaines</li>
-      <li><span class="bulle-exemple p2"></span></li>
-      <li><span class="bulle-exemple p3"></span></li>
-      <li><span class="bulle-exemple p4"></span>${maxi} domaines</li>
-    </ul>
   </div>
 </section>
 
@@ -784,19 +760,17 @@ function appSecteurs(V, METIERS) {
   <p id="aucun-secteur" class="etat-vide" hidden>
     Aucun secteur ne correspond. Essayez un code à deux chiffres, ou un mot du libellé.
   </p>
-  <div id="liste-secteurs" class="amas">
+  <div id="liste-secteurs">
     ${parSection.map((g) => `
     <section class="grappe" data-groupe>
       <h2 class="etiq"><span class="lettre">${esc(g.s.c)}</span> ${esc(g.s.l)}</h2>
-      <ul class="bulles">
+      <ul class="puces">
         ${g.divisions.map((d) => {
           const mots = METIERS[d.c] || [];
           return `<li class="ligne-division" data-recherche="${esc([d.c, d.l, g.s.l, ...mots].join(" "))}">
-          <a class="bulle p${palier(tailles[d.c])}" href="secteur/${esc(d.c)}-${slug(d.l)}.html"
-             title="${esc(d.l)} — ${tailles[d.c]} domaines de veille">
-            <span class="rond"><span class="code">${esc(d.c)}</span></span>
-            <span class="nom">${esc(d.l)}</span>
-          </a></li>`; }).join("\n")}
+          <a href="secteur/${esc(d.c)}-${slug(d.l)}.html" title="${esc(d.l)}">
+            <span class="code">${esc(d.c)}</span><span class="nom">${esc(d.l)}</span></a></li>`;
+        }).join("\n")}
       </ul>
     </section>`).join("\n")}
   </div>
@@ -810,7 +784,130 @@ function appSecteurs(V, METIERS) {
   });
 }
 
-function appSecteur(V, PIEGES, METIERS, d) {
+/* --- Une page par texte ---------------------------------------------------- */
+/* Le but : lire ce que le texte exige sans quitter le site. Ces fiches ne
+   reproduisent pas le texte officiel — il est sur Légifrance, lui seul fait
+   foi, et une copie se périme en silence. Elles disent ce qu'il exige, en
+   français courant. Le lien vers la source reste, en second. */
+function appTexte(V, TEXTES, METIERS, ref, fiche, domaines) {
+  const secteurs = V.divisions.filter((x) =>
+    domaines.some((id) => perimetre(V, x.c).base.indexOf(id) !== -1));
+
+  const corps = `<section class="tete-app">
+  <div class="enveloppe">
+    <ul class="jalons">
+      <li><a href="../textes.html">Tous les textes</a></li>
+      <li><span class="fort">Fiche de texte</span></li>
+      <li><span>${esc(fiche.nature)}</span></li>
+    </ul>
+    <h1>${esc(ref)}</h1>
+    ${fiche.porte ? `<p class="chapeau">${esc(fiche.porte)}</p>` : ""}
+    <dl class="faits" style="margin-top:var(--t5)">
+      <div><dt class="etiq">Nature</dt><dd>${esc(fiche.nature)}</dd></div>
+      <div><dt class="etiq">Points à tenir</dt><dd><span class="grand">${fiche.exige.length}</span></dd></div>
+      <div><dt class="etiq">Domaines concernés</dt><dd><span class="grand">${domaines.length}</span></dd></div>
+      <div><dt class="etiq">Secteurs concernés</dt><dd><span class="grand">${secteurs.length}</span></dd></div>
+    </dl>
+  </div>
+</section>
+
+${rubrique({ etiq: "Ce que ce texte exige", contenu: `
+  ${fiche.valide ? "" : `<p class="reserve" style="margin-bottom:var(--t4)">
+    <strong>Premier jet, en attente de relecture.</strong>
+    Cette fiche dit ce que le texte exige, en français courant. Elle n'a pas encore
+    été relue par Clément Pierrel. Le texte officiel et à jour est sur la source
+    citée plus bas : lui seul fait foi.</p>`}
+  ${fiche.qui ? `<p class="lecture"><strong>À qui ça s'applique.</strong> ${esc(fiche.qui)}</p>` : ""}
+  <ul class="exigences">
+    ${fiche.exige.map((x) => `<li>${esc(x)}</li>`).join("\n")}
+  </ul>
+  <p class="rangee" style="margin-top:var(--t5)">
+    <button type="button" class="bouton bouton-sobre" onclick="window.print()">${imprimante} Enregistrer en PDF</button>
+  </p>` })}
+
+${rubrique({ etiq: "Où il s'applique", aplat: true, contenu: `
+  <p class="lecture">Ce texte est rattaché à ${domaines.length} domaine${domaines.length > 1 ? "s" : ""}
+  de veille, et concerne ${secteurs.length} division${secteurs.length > 1 ? "s" : ""} d'activité sur
+  ${V.divisions.length}.</p>
+  <ul class="puces" style="margin-top:var(--t4)">
+    ${domaines.map((id) => `<li><a href="plan.html">
+      <span class="code">${esc(V.domaines[id].frequence.slice(0, 3))}</span>
+      <span class="nom">${esc(V.domaines[id].nom)}</span></a></li>`).join("")}
+  </ul>
+  ${secteurs.length ? `<p class="etiq" style="margin-top:var(--t5)">Secteurs concernés</p>
+  <ul class="puces" style="margin-top:var(--t3)">
+    ${secteurs.slice(0, 24).map((x) => `<li><a href="secteur/${esc(x.c)}-${slug(x.l)}.html" title="${esc(x.l)}">
+      <span class="code">${esc(x.c)}</span><span class="nom">${esc(x.l)}</span></a></li>`).join("")}
+  </ul>
+  ${secteurs.length > 24 ? `<p class="note-source">… et ${secteurs.length - 24} autres.</p>` : ""}` : ""}` })}
+
+${rubrique({ etiq: "Lire le texte officiel", contenu: `
+  <p class="lecture">La fiche ci-dessus est notre lecture du texte. Le texte intégral et
+  à jour est publié par l'État : lui seul fait foi, et c'est à lui qu'il faut se référer
+  en cas de doute ou de litige.</p>
+  <ul class="sources-bande" style="justify-content:flex-start">
+    ${[...new Set(domaines.flatMap((id) => V.domaines[id].sources.map((s) => JSON.stringify(s))))]
+      .map((s) => JSON.parse(s))
+      .map((s) => `<li><a href="${esc(s.url)}" target="_blank" rel="noopener">${esc(s.nom)} ${sortant}</a></li>`)
+      .join("")}
+  </ul>` })}`;
+
+  return page({
+    titre: `${ref} | ${SITE.nom}`,
+    description: `Ce qu'exige « ${ref} » : à qui ça s'applique, ce qu'il faut tenir, et où lire le texte officiel.`,
+    racine: "../../", zone: "app", actif: "textes", corps, verrou: true, formule: "cadrage"
+  });
+}
+
+/* --- L'index des textes ----------------------------------------------------- */
+function appTextes(V, TEXTES, parTexte) {
+  const refs = Object.keys(parTexte).sort((a, b) => a.localeCompare(b, "fr"));
+  const corps = `<section class="tete-app">
+  <div class="enveloppe">
+    <ul class="jalons">
+      <li><span class="fort">Textes</span></li>
+      <li><span>${refs.length} fiches</span></li>
+    </ul>
+    <h1>Tous les textes</h1>
+    <p class="chapeau">
+      Chaque texte de référence a sa fiche : à qui il s'applique, ce qu'il exige, et où
+      lire l'officiel. Lisible ici, sans quitter le site.
+    </p>
+    <div class="recherche" style="margin-top:var(--t5)">
+      <label class="etiq" for="recherche-secteur">Chercher</label>
+      <input type="search" id="recherche-secteur" placeholder="amiante, RGPD, code du travail…"
+             autocomplete="off" spellcheck="false">
+      <p class="recherche-compte etiq"><span id="compte-secteurs">${refs.length} textes</span></p>
+    </div>
+  </div>
+</section>
+
+<section class="rubrique">
+<div class="enveloppe">
+  <p id="aucun-secteur" class="etat-vide" hidden>Aucun texte ne correspond.</p>
+  <div id="liste-secteurs">
+    <ul class="textes" data-groupe>
+      ${refs.map((ref) => {
+        const f = TEXTES[ref];
+        const noms = parTexte[ref].map((id) => V.domaines[id].nom);
+        return `<li data-recherche="${esc([ref, f.nature, f.qui || "", ...noms].join(" "))}">
+        <span class="ref"><a href="texte/${slug(ref)}.html">${esc(ref)}</a></span>
+        <span class="rattache">${esc(noms.join(" · "))}</span>
+        <span class="source etiq">${esc(f.nature)}</span>
+      </li>`; }).join("\n")}
+    </ul>
+  </div>
+</div>
+</section>`;
+
+  return page({
+    titre: `Tous les textes | ${SITE.nom}`,
+    description: "Les textes de référence de la veille, et ce que chacun exige.",
+    racine: "../", zone: "app", actif: "textes", corps, verrou: true, formule: "cadrage"
+  });
+}
+
+function appSecteur(V, PIEGES, METIERS, TEXTES, d) {
   const section = V.sections.filter((s) => s.c === d.s)[0];
   const mots = METIERS[d.c] || [];
   const { base, declencheurs, groupes } = perimetre(V, d.c);
@@ -824,7 +921,7 @@ function appSecteur(V, PIEGES, METIERS, d) {
   base.forEach((id) => {
     const dom = V.domaines[id];
     dom.textes.forEach((ref) => {
-      textes.push({ ref, id, domaine: dom.nom, sources: dom.sources.slice(0, 1) });
+      textes.push({ ref, id, domaine: dom.nom, nature: (TEXTES[ref] || {}).nature || "Texte" });
     });
   });
 
@@ -848,14 +945,13 @@ function appSecteur(V, PIEGES, METIERS, d) {
 
 ${rubrique({ etiq: "Les textes qui s'appliquent", contenu: `
   <p class="lecture">Tous les textes de référence du périmètre de ce secteur, sans
-  détour : ${textes.length} textes, rattachés chacun à son domaine. La colonne de droite
-  mène à la source officielle, pour qui veut lire le texte intégral.</p>
+  détour : ${textes.length} textes. Chacun a sa fiche — à qui il s'applique, ce qu'il
+  exige — lisible ici, sans quitter le site.</p>
   <ul class="textes">
     ${textes.map((x) => `<li>
-      <span class="ref">${esc(x.ref)}</span>
+      <span class="ref"><a href="../texte/${slug(x.ref)}.html">${esc(x.ref)}</a></span>
       <span class="rattache"><a href="#domaine-${esc(x.id)}">${esc(x.domaine)}</a></span>
-      <span class="source">${x.sources.map((s) =>
-        `<a href="${esc(s.url)}" target="_blank" rel="noopener">${esc(s.nom)} ${sortant}</a>`).join("")}</span>
+      <span class="source etiq">${esc(x.nature)}</span>
     </li>`).join("\n")}
   </ul>` })}
 
@@ -1718,7 +1814,7 @@ function donneesPlan(V, METIERS) {
 /* ==========================================================================
    Garde-fous et construction
    ========================================================================== */
-function verifie(V, PIEGES, METIERS, D) {
+function verifie(V, PIEGES, METIERS, D, TEXTES) {
   if (!V) throw new Error("Référentiel introuvable : assets/referentiel.js n'expose rien.");
   if (V.divisions.length !== 88) throw new Error(`Divisions NAF : ${V.divisions.length}, 88 attendues.`);
   if (V.sections.length !== 21) throw new Error(`Sections NAF : ${V.sections.length}, 21 attendues.`);
@@ -1736,6 +1832,21 @@ function verifie(V, PIEGES, METIERS, D) {
     const inconnues = Object.keys(table).filter((c) => !V.divisions.some((d) => d.c === c));
     if (inconnues.length) throw new Error(`${nom} rattachés à des divisions inexistantes : ${inconnues.join(", ")}.`);
   }
+
+  // Chaque référence citée doit avoir sa fiche, et chaque fiche doit se
+  // rattacher à une référence : sans ces deux contrôles, un renommage dans le
+  // référentiel laisserait des liens vers des pages inexistantes.
+  const refs = [...new Set(Object.values(V.domaines).flatMap((d) => d.textes))];
+  const sansFiche = refs.filter((r) => !TEXTES[r]);
+  if (sansFiche.length) throw new Error(`Textes sans fiche : ${sansFiche.join(" | ")}.`);
+  const orphelines = Object.keys(TEXTES).filter((r) => refs.indexOf(r) === -1);
+  if (orphelines.length) throw new Error(`Fiches sans référence : ${orphelines.join(" | ")}.`);
+  const mal = Object.keys(TEXTES).filter((r) =>
+    !TEXTES[r].nature || !Array.isArray(TEXTES[r].exige) || !TEXTES[r].exige.length);
+  if (mal.length) throw new Error(`Fiches incomplètes : ${mal.join(" | ")}.`);
+  const adressesTextes = refs.map((r) => slug(r));
+  const doublonsTextes = adressesTextes.filter((n, i) => adressesTextes.indexOf(n) !== i);
+  if (doublonsTextes.length) throw new Error(`Adresses de texte en double : ${[...new Set(doublonsTextes)].join(", ")}.`);
 
   const noms = V.divisions.map((d) => `${d.c}-${slug(d.l)}`);
   const doublons = noms.filter((n, i) => noms.indexOf(n) !== i);
@@ -1767,7 +1878,8 @@ async function main() {
   const PIEGES = await chargeFichier("contenu/pieges.js", "PIEGES");
   const METIERS = await chargeFichier("contenu/metiers.js", "METIERS");
   const D = await chargeFichier("contenu/demo.js", "DEMO");
-  verifie(V, PIEGES, METIERS, D);
+  const TEXTES = await chargeFichier("contenu/textes.js", "TEXTES");
+  verifie(V, PIEGES, METIERS, D, TEXTES);
 
   // Les écrans de l'accueil sont de vraies captures de l'application, prises
   // par outils/captures.mjs. Tant qu'elles n'existent pas, la page le dit au
@@ -1777,6 +1889,7 @@ async function main() {
 
   await rm(SORTIE, { recursive: true, force: true });
   await mkdir(join(SORTIE, "app", "secteur"), { recursive: true });
+  await mkdir(join(SORTIE, "app", "texte"), { recursive: true });
   await cp(resolve(RACINE, "assets"), join(SORTIE, "assets"), { recursive: true });
 
   const plan = donneesPlan(V, METIERS);
@@ -1814,18 +1927,34 @@ async function main() {
   await writeFile(join(SORTIE, "app", "secteurs.html"), appSecteurs(V, METIERS));
   await writeFile(join(SORTIE, "app", "reglages.html"), appReglages(V, D));
 
+  // Une page par texte de référence. parTexte dit, pour chaque référence, les
+  // domaines qui la citent : c'est ce qui permet de lister les secteurs
+  // concernés sans recalculer 88 périmètres par page.
+  const parTexte = {};
+  Object.keys(V.domaines).forEach((id) => {
+    V.domaines[id].textes.forEach((ref) => {
+      (parTexte[ref] = parTexte[ref] || []).push(id);
+    });
+  });
+  await writeFile(join(SORTIE, "app", "textes.html"), appTextes(V, TEXTES, parTexte));
+  for (const ref of Object.keys(parTexte)) {
+    await writeFile(join(SORTIE, "app", "texte", `${slug(ref)}.html`),
+      appTexte(V, TEXTES, METIERS, ref, TEXTES[ref], parTexte[ref]));
+  }
+
   for (const d of V.divisions) {
     await writeFile(join(SORTIE, "app", "secteur", `${d.c}-${slug(d.l)}.html`),
-      appSecteur(V, PIEGES, METIERS, d));
+      appSecteur(V, PIEGES, METIERS, TEXTES, d));
   }
 
   const total = await poids(SORTIE);
   console.log(`  public              3 pages (accueil, abonnement, connexion)`);
-  console.log(`  app/                6 écrans + ${V.divisions.length} fiches de secteur`);
+  console.log(`  app/                7 écrans + ${V.divisions.length} fiches de secteur + ${Object.keys(parTexte).length} fiches de texte`);
   console.log(`  assets/             ${((await poids(join(SORTIE, "assets"))) / 1024).toFixed(1)} Ko`);
   console.log(`  plan-data.js        ${(plan.length / 1024).toFixed(1)} Ko pour le simulateur`);
   console.log(`  écrans de l'accueil ${ECRANS.length ? ECRANS.length + " captures" : "AUCUNE — lancer outils/captures.mjs"}`);
-  console.log(`\n_site/ prêt — ${(total / 1024).toFixed(1)} Ko, ${V.divisions.length + 8} pages, ` +
+  console.log(`\n_site/ prêt — ${(total / 1024).toFixed(1)} Ko, ` +
+    `${V.divisions.length + Object.keys(parTexte).length + 10} pages, ` +
     `${Object.keys(V.domaines).length} domaines, ${Object.keys(PIEGES).length} secteurs avec pièges.`);
 }
 
