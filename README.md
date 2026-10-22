@@ -110,6 +110,45 @@ disparaissent si le visiteur vide les données du site. Aucun courriel ne part.
 Les deux pages le disent au-dessus des formulaires, avant qu'on y tape quoi
 que ce soit.
 
+## Le texte officiel, sur le site
+
+Le client ne doit pas avoir à partir pour lire la loi. `outils/codes.mjs` va
+chercher les **codes consolidés**, en découpe les morceaux déclarés dans
+`contenu/perimetres.js`, et écrit `contenu/codes.json`, que `build.mjs` publie
+en **193 pages de texte intégral — 4 718 articles**.
+
+```sh
+node outils/codes.mjs                # relève, compare, écrit
+node outils/codes.mjs --sans-reseau  # réutilise le paquet déjà extrait
+node build.mjs
+```
+
+**D'où vient le texte.** De la base LEGI, la base officielle des codes et lois
+consolidés, dans l'extraction quotidienne publiée par la Fabrique numérique des
+ministères sociaux (`@socialgouv/legi-data` sur le registre npm), qui interroge
+l'API Légifrance. Licence ouverte : republier est permis, à condition de citer
+la source et la version — chaque page le fait, et renvoie sur Légifrance pour
+la version qui fait foi. Pas de compte, pas de clé, et le registre npm répond
+partout, y compris d'ici : c'est la seule source de texte intégral joignable
+depuis l'environnement de développement.
+
+**Trois codes aujourd'hui** — travail, sécurité sociale, rural et pêche
+maritime — parce que l'extraction n'en couvre pas d'autres. Les 111 autres
+fiches gardent leur lien vers la source et **le disent en toutes lettres** au
+lieu de laisser croire que le texte manque.
+
+**Ce que ça change, exactement.** `contenu/codes.json` est suivi par git. À
+chaque passage, le robot compare article par article avec la relève précédente
+et écrit ce qui a bougé : article nouveau, texte modifié — avec l'avant et
+l'après, mot à mot — ou article sorti du périmètre. C'est de là que viennent le
+bloc « ce qui a changé » du relevé, celui de la fiche concernée, et l'alerte de
+la cloche. Rien n'est deviné : c'est la différence entre deux relevés.
+
+**Ajouter un périmètre.** Une ligne dans `contenu/perimetres.js` : la référence
+exacte du référentiel, l'identifiant du code, et un motif qui désigne le
+morceau dans l'arbre (les titres joints par `/`). Si le motif ne tombe sur
+rien, l'outil s'arrête et le dit : `contenu/codes.json` n'est pas touché.
+
 ## Aller chercher ce qui paraît
 
 `outils/veille.mjs` relève **25 sources officielles** déclarées dans
@@ -133,7 +172,8 @@ une **publication** est un commentaire officiel — guide, avis, doctrine,
 alerte. Cela compte pour la veille, mais ce n'est pas la loi.
 
 **Où ça tourne.** Chez Netlify, à chaque publication : la commande de
-construction est `node outils/veille.mjs --jours 30 || true; node build.mjs`.
+construction est `node outils/codes.mjs || true; node outils/veille.mjs
+--jours 30 || true; node build.mjs`.
 Le `|| true` est délibéré — si une source tombe, le site doit se publier quand
 même. L'environnement de développement, lui, a une politique réseau qui refuse
 ces hôtes : la relève n'y tourne pas.

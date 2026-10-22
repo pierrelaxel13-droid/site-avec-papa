@@ -55,7 +55,9 @@ const slug = (s) => sansAccent(s).toLowerCase()
   .replace(/['’]/g, " ").replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "").slice(0, 70);
 
 const JOUR = { day: "numeric", month: "long", year: "numeric" };
-const dateFr = (iso) => new Date(iso + "T12:00:00Z").toLocaleDateString("fr-FR", JOUR);
+/* En français le premier du mois se dit « 1er » ; les autres jours, non. */
+const dateFr = (iso) => new Date(iso + "T12:00:00Z")
+  .toLocaleDateString("fr-FR", JOUR).replace(/^1 /, "1er ");
 
 /* --- Les trois formules, et ce que chacune ouvre ---------------------------- */
 /* Le rang décide : une page demande un rang, la session en porte un. C'est la
@@ -713,8 +715,144 @@ function ligneJO(t, i) {
 </li>`;
 }
 
+/* --- Le texte des codes, mot pour mot ---------------------------------------
+   outils/codes.mjs écrit contenu/codes.json : les morceaux de codes consolidés
+   que le client doit pouvoir lire chez nous, sans partir ailleurs. Le html de
+   chaque article y est déjà nettoyé par l'outil — balises de mise en forme
+   seulement, aucun attribut, aucun lien — et il est posé tel quel. C'est du
+   texte officiel : il ne doit pas être réécrit en passant.
+
+   Son absence n'empêche pas de construire. Les fiches gardent alors leur lien
+   vers la source et le disent. */
+const LEGI_ARTICLE = "https://www.legifrance.gouv.fr/codes/article_lc/";
+
+function articleDeLoi(a) {
+  const m = a.modifiePar[0];
+  return `<li class="article" id="art-${esc(a.num)}">
+  <p class="article-tete">
+    <span class="article-num">Article ${esc(a.num)}</span>
+    ${a.depuis ? `<span class="etiq">en vigueur depuis le ${esc(dateFr(a.depuis))}</span>` : ""}
+  </p>
+  <div class="texte-loi">${a.html}</div>
+  <p class="note-source">
+    ${m ? `${m.quoi === "cree" ? "Créé par" : "Modifié par"}
+      ${m.lien ? `<a href="${esc(m.lien)}" target="_blank" rel="noopener">${esc(m.titre)} ${sortant}</a>`
+               : esc(m.titre)} · ` : ""}
+    ${a.id ? `<a href="${LEGI_ARTICLE}${esc(a.id)}" target="_blank" rel="noopener">Vérifier sur Légifrance ${sortant}</a>` : ""}
+  </p>
+</li>`;
+}
+
+/* Ce que le dernier passage du robot a vu bouger. Pas une annonce : une
+   comparaison de deux relevés, mot à mot, avec l'avant et l'après. */
+function ligneChangement(c) {
+  const quoi = { modifie: "Texte modifié", nouveau: "Entre au périmètre", sorti: "Sort du périmètre" };
+  return `<li class="changement change-${esc(c.quoi)}">
+  <p class="article-tete">
+    <span class="article-num">Article ${esc(c.num)}</span>
+    <span class="etiq">${esc(quoi[c.quoi] || c.quoi)}</span>
+    ${c.depuis ? `<span class="etiq">en vigueur depuis le ${esc(dateFr(c.depuis))}</span>` : ""}
+  </p>
+  ${c.quoi === "modifie" ? `<dl class="avant-apres">
+    <div><dt class="etiq">Avant</dt><dd><span class="tenu">${esc(c.contexteAvant)} </span><del>${
+      esc(c.avant) || "—"}</del><span class="tenu"> ${esc(c.contexteApres)}</span></dd></div>
+    <div><dt class="etiq">Maintenant</dt><dd><span class="tenu">${esc(c.contexteAvant)} </span><ins>${
+      esc(c.apres) || "—"}</ins><span class="tenu"> ${esc(c.contexteApres)}</span></dd></div>
+  </dl>` : `<p class="lecture">${esc(c.apres || c.avant).slice(0, 400)}</p>`}
+  <p class="note-source">
+    ${c.codeTitre ? `${esc(c.codeTitre)} · ` : ""}
+    ${c.par ? `${c.par.lien
+      ? `<a href="${esc(c.par.lien)}" target="_blank" rel="noopener">${esc(c.par.titre)} ${sortant}</a>`
+      : esc(c.par.titre)} · ` : ""}
+    ${c.morceau ? `<a href="code/${esc(c.morceau)}.html#art-${esc(c.num)}">Lire l’article en entier</a>` : ""}
+  </p>
+</li>`;
+}
+
+/* Les morceaux de code attachés à une référence, et de quoi en parler. */
+function texteDuSite(C, ref) {
+  if (!C || !C.perimetres) return null;
+  const ids = C.perimetres[ref] || [];
+  if (!ids.length) return null;
+  const morceaux = ids.map((id) => C.morceaux.filter((m) => m.id === id)[0]).filter(Boolean);
+  if (!morceaux.length) return null;
+  return {
+    ids, morceaux,
+    articles: morceaux.reduce((s, m) => s + m.articles.length, 0),
+    code: C.codes.filter((c) => c.id === morceaux[0].code)[0] || { titre: morceaux[0].codeTitre, version: "" },
+    changements: (C.changements || []).filter((c) => ids.indexOf(c.morceau) !== -1)
+  };
+}
+
+function noteDeSource(C) {
+  return `<p class="note-source">
+    Source : ${esc(C.source.nom)} — ${esc(C.source.par)}. ${esc(C.source.licence)} : la
+    republication est permise, à charge de citer la source et la version, ce que fait
+    cette page. Relevé le ${esc(dateFr(C.preleve))} (${esc(C.paquet)}).
+    En cas de doute ou de litige, c’est la version publiée par l’État qui fait foi.
+  </p>`;
+}
+
+/* Une page par morceau : le texte en entier, et de quoi circuler dedans. */
+function appMorceauDeCode(C, m, refs, precedent, suivant) {
+  const intitule = m.chemin[m.chemin.length - 1];
+  const dessus = m.chemin.slice(0, -1);
+  const code = C.codes.filter((c) => c.id === m.code)[0] || { titre: m.codeTitre, version: "" };
+  const changes = (C.changements || []).filter((c) => c.morceau === m.id);
+
+  const corps = `<section class="tete-app">
+  <div class="enveloppe">
+    <ul class="jalons">
+      <li><a href="../textes.html">Tous les textes</a></li>
+      <li><span class="fort">${esc(code.titre)}</span></li>
+      <li><span>texte officiel</span></li>
+    </ul>
+    <h1>${esc(intitule)}</h1>
+    <p class="chapeau">${esc(dessus.join(" · "))}</p>
+    <dl class="faits" style="margin-top:var(--t5)">
+      <div><dt class="etiq">Articles</dt><dd><span class="grand">${m.articles.length}</span></dd></div>
+      <div><dt class="etiq">Du</dt><dd>${esc(m.articles[0].num)}</dd></div>
+      <div><dt class="etiq">Au</dt><dd>${esc(m.articles[m.articles.length - 1].num)}</dd></div>
+      <div><dt class="etiq">Version du code</dt><dd>${esc(code.version ? dateFr(code.version) : "—")}</dd></div>
+    </dl>
+  </div>
+</section>
+
+${changes.length ? rubrique({ etiq: "Ce qui a changé ici", contenu: `
+  <p class="lecture">Depuis la relève précédente, et rien d’autre : c’est une
+  comparaison des deux versions, pas un commentaire.</p>
+  <ul class="changements" style="margin-top:var(--t4)">${changes.map(ligneChangement).join("")}</ul>` }) : ""}
+
+${rubrique({ etiq: "Le texte, mot pour mot", contenu: `
+  <p class="lecture">Le texte officiel consolidé, tel qu’il est en vigueur, reproduit
+  ici en entier. Vous n’avez pas à aller le chercher ailleurs.</p>
+  <ul class="articles" style="margin-top:var(--t5)">${m.articles.map(articleDeLoi).join("")}</ul>
+  <p class="rangee" style="margin-top:var(--t5)">
+    <button type="button" class="bouton bouton-sobre" onclick="window.print()">${imprimante} Enregistrer en PDF</button>
+  </p>
+  ${noteDeSource(C)}` })}
+
+${rubrique({ etiq: "D’où ça vient dans votre veille", aplat: true, contenu: `
+  ${refs.length ? `<p class="lecture">Ce morceau de code est le texte de référence
+  de ${refs.length === 1 ? "la fiche suivante" : `${refs.length} fiches`} :</p>
+  <ul class="puces" style="margin-top:var(--t4)">
+    ${refs.map((r) => `<li><a href="texte/${slug(r)}.html">
+      <span class="code">fiche</span><span class="nom">${esc(r)}</span></a></li>`).join("")}
+  </ul>` : ""}
+  <p class="rangee" style="margin-top:var(--t5)">
+    ${precedent ? `<a class="lien-fleche" href="${esc(precedent.id)}.html">◀ ${esc(precedent.chemin[precedent.chemin.length - 1])}</a>` : ""}
+    ${suivant ? `<a class="lien-fleche" href="${esc(suivant.id)}.html">${esc(suivant.chemin[suivant.chemin.length - 1])} ${fleche}</a>` : ""}
+  </p>` })}`;
+
+  return page({
+    titre: `${intitule} | ${code.titre} | ${SITE.nom}`,
+    description: `${intitule} — ${m.articles.length} articles du ${code.titre}, texte officiel consolidé.`,
+    racine: "../../", zone: "app", actif: "textes", corps, verrou: true, formule: "cadrage"
+  });
+}
+
 /* --- Relevé ------------------------------------------------------------------ */
-function appReleve(V, D, JO) {
+function appReleve(V, D, JO, C) {
   const parStatut = Object.keys(STATUTS).map((s) => ({
     s, l: STATUTS[s].l, n: D.releve.filter((t) => t.statut === s).length
   }));
@@ -758,6 +896,28 @@ ${officiel ? rubrique({ etiq: "Relevé officiel", contenu: `
     Tant qu'il n'a pas tourné, cette page montre le jeu d'essai ci-dessous, et rien
     d'autre — pas de texte inventé.
   </p>` })}
+
+${C ? rubrique({ etiq: "Ce qui a changé dans les codes", contenu: `
+  <dl class="compteurs">
+    <div><dt class="etiq">Articles suivis</dt><dd><span class="grand">${C.morceaux.reduce((n, m) => n + m.articles.length, 0)}</span></dd></div>
+    <div><dt class="etiq">Codes suivis</dt><dd><span class="grand">${C.codes.length}</span></dd></div>
+    <div><dt class="etiq">Changements</dt><dd><span class="grand">${C.changements.length}</span></dd></div>
+    <div><dt class="etiq">Dernière relève</dt><dd>${esc(dateFr(C.preleve))}</dd></div>
+  </dl>
+  ${C.changements.length ? `<p class="lecture" style="margin-top:var(--t4)">
+    Le robot compare chaque article avec la relève précédente. Voici ce qui a bougé,
+    mot à mot. Rien n’est deviné : c’est la différence entre deux versions.</p>
+  <ul class="changements" style="margin-top:var(--t4)">
+    ${C.changements.slice(0, 40).map(ligneChangement).join("")}
+  </ul>
+  ${C.changements.length > 40 ? `<p class="note-source">… et ${C.changements.length - 40} autres,
+    visibles sur la fiche du texte concerné.</p>` : ""}`
+  : `<p class="lecture" style="margin-top:var(--t4)">
+    Aucun des ${C.morceaux.reduce((n, m) => n + m.articles.length, 0)} articles suivis n’a
+    changé depuis la relève précédente. C’est une comparaison article par article, pas une
+    absence d’information : le jour où un mot bouge, il apparaît ici, avec l’avant et
+    l’après, et part en alerte.</p>`}
+  ${noteDeSource(C)}` }) : ""}
 
 ${rubrique({ etiq: officiel ? "Jeu d'essai" : "Le relevé", aplat: true, contenu: `
   <p class="lecture">${officiel
@@ -869,7 +1029,8 @@ function appSecteurs(V, METIERS) {
    reproduisent pas le texte officiel — il est sur Légifrance, lui seul fait
    foi, et une copie se périme en silence. Elles disent ce qu'il exige, en
    français courant. Le lien vers la source reste, en second. */
-function appTexte(V, TEXTES, METIERS, ref, fiche, domaines) {
+function appTexte(V, TEXTES, METIERS, C, ref, fiche, domaines) {
+  const T = texteDuSite(C, ref);
   const secteurs = V.divisions.filter((x) =>
     domaines.some((id) => perimetre(V, x.c).base.indexOf(id) !== -1));
 
@@ -887,6 +1048,7 @@ function appTexte(V, TEXTES, METIERS, ref, fiche, domaines) {
       <div><dt class="etiq">Points à tenir</dt><dd><span class="grand">${fiche.exige.length}</span></dd></div>
       <div><dt class="etiq">Domaines concernés</dt><dd><span class="grand">${domaines.length}</span></dd></div>
       <div><dt class="etiq">Secteurs concernés</dt><dd><span class="grand">${secteurs.length}</span></dd></div>
+      ${T ? `<div><dt class="etiq">Articles sur le site</dt><dd><span class="grand">${T.articles}</span></dd></div>` : ""}
     </dl>
   </div>
 </section>
@@ -921,10 +1083,54 @@ ${rubrique({ etiq: "Où il s'applique", aplat: true, contenu: `
   </ul>
   ${secteurs.length > 24 ? `<p class="note-source">… et ${secteurs.length - 24} autres.</p>` : ""}` : ""}` })}
 
-${rubrique({ etiq: "Lire le texte officiel", contenu: `
-  <p class="lecture">La fiche ci-dessus est notre lecture du texte. Le texte intégral et
-  à jour est publié par l'État : lui seul fait foi, et c'est à lui qu'il faut se référer
-  en cas de doute ou de litige.</p>
+${T && T.changements.length ? rubrique({ etiq: "Ce qui a changé", contenu: `
+  <p class="lecture">Depuis la relève précédente, dans ce texte, et rien d’autre. C’est
+  une comparaison des deux versions mot à mot : l’avant, l’après.</p>
+  <ul class="changements" style="margin-top:var(--t4)">${T.changements.map(ligneChangement).join("")}</ul>` }) : ""}
+
+${T ? rubrique({ etiq: "Le texte, mot pour mot", contenu: `
+  <dl class="compteurs">
+    <div><dt class="etiq">Articles</dt><dd><span class="grand">${T.articles}</span></dd></div>
+    <div><dt class="etiq">Pages de texte</dt><dd><span class="grand">${T.morceaux.length}</span></dd></div>
+    <div><dt class="etiq">Version du code</dt><dd>${esc(T.code.version ? dateFr(T.code.version) : "—")}</dd></div>
+    <div><dt class="etiq">Relevé le</dt><dd>${esc(dateFr(C.preleve))}</dd></div>
+  </dl>
+  <p class="lecture" style="margin-top:var(--t4)">
+    Le texte officiel du <strong>${esc(T.code.titre)}</strong>, consolidé, tel qu’il est
+    en vigueur. Il est publié ici en entier : ${T.morceaux.length === 1
+      ? "le voici, de bout en bout."
+      : `${T.articles} articles, répartis en ${T.morceaux.length} pages pour rester lisibles.`}
+    Rien à aller chercher ailleurs.
+  </p>
+  ${T.morceaux.length === 1
+    ? `<ul class="articles" style="margin-top:var(--t5)">${T.morceaux[0].articles.map(articleDeLoi).join("")}</ul>`
+    : `<p class="etiq" style="margin-top:var(--t5)">Les premiers articles</p>
+       <ul class="articles" style="margin-top:var(--t3)">${T.morceaux[0].articles.slice(0, 3).map(articleDeLoi).join("")}</ul>
+       <p class="etiq" style="margin-top:var(--t5)">La suite, chapitre par chapitre</p>
+       <ul class="sommaire-code" style="margin-top:var(--t3)">
+         ${T.morceaux.map((m) => `<li><a href="../code/${esc(m.id)}.html">
+           <span class="nom">${esc(m.chemin[m.chemin.length - 1])}</span>
+           <span class="precision">${esc(m.chemin.slice(-3, -1).join(" · "))} ·
+             ${m.articles.length} article${m.articles.length > 1 ? "s" : ""}</span>
+           <span class="code">${esc(m.articles[0].num)} → ${esc(m.articles[m.articles.length - 1].num)}</span></a></li>`).join("")}
+       </ul>`}
+  <p class="rangee" style="margin-top:var(--t5)">
+    <button type="button" class="bouton bouton-sobre" onclick="window.print()">${imprimante} Enregistrer en PDF</button>
+  </p>
+  ${noteDeSource(C)}` }) : ""}
+
+${rubrique({ etiq: T ? "Vérifier à la source" : "Lire le texte officiel", contenu: `
+  <p class="lecture">${T
+    ? `Le texte ci-dessus est relevé automatiquement sur la base officielle des codes
+       consolidés, et republié ici sous Licence Ouverte. En cas de doute ou de litige,
+       c’est la version publiée par l’État qui fait foi : voici où la retrouver.`
+    : `La fiche ci-dessus est notre lecture du texte. Son texte intégral n’est pas
+       encore publié sur le site : la base consolidée que notre robot sait relever ne
+       couvre aujourd’hui que ${C && C.codes.length
+         ? C.codes.map((x) => esc(x.titre)).join(", ")
+         : "quelques codes"}. Pour celui-ci, le texte officiel et à jour est publié
+       par l’État — lui seul fait foi, et c’est à lui qu’il faut se référer en cas de
+       doute ou de litige.`}</p>
   <ul class="sources-bande" style="justify-content:flex-start">
     ${[...new Set(domaines.flatMap((id) => V.domaines[id].sources.map((s) => JSON.stringify(s))))]
       .map((s) => JSON.parse(s))
@@ -940,7 +1146,7 @@ ${rubrique({ etiq: "Lire le texte officiel", contenu: `
 }
 
 /* --- L'index des textes ----------------------------------------------------- */
-function appTextes(V, TEXTES, parTexte) {
+function appTextes(V, TEXTES, parTexte, C) {
   const refs = Object.keys(parTexte).sort((a, b) => a.localeCompare(b, "fr"));
   const corps = `<section class="tete-app">
   <div class="enveloppe">
@@ -950,8 +1156,11 @@ function appTextes(V, TEXTES, parTexte) {
     </ul>
     <h1>Tous les textes</h1>
     <p class="chapeau">
-      Chaque texte de référence a sa fiche : à qui il s'applique, ce qu'il exige, et où
-      lire l'officiel. Lisible ici, sans quitter le site.
+      Chaque texte de référence a sa fiche : à qui il s'applique, ce qu'il exige, et le
+      texte officiel lui-même quand nous savons le relever. Lisible ici, sans quitter
+      le site.${C ? ` <strong>${Object.keys(C.perimetres).filter((r) => (C.perimetres[r] || []).length).length} fiches
+      portent le texte intégral</strong>, soit ${C.morceaux.reduce((n, m) => n + m.articles.length, 0)}
+      articles de code, relevés le ${esc(dateFr(C.preleve))}.` : ""}
     </p>
     <div class="recherche" style="margin-top:var(--t5)">
       <label class="etiq" for="recherche-secteur">Chercher</label>
@@ -970,10 +1179,13 @@ function appTextes(V, TEXTES, parTexte) {
       ${refs.map((ref) => {
         const f = TEXTES[ref];
         const noms = parTexte[ref].map((id) => V.domaines[id].nom);
-        return `<li data-recherche="${esc([ref, f.nature, f.qui || "", ...noms].join(" "))}">
+        const T = texteDuSite(C, ref);
+        return `<li data-recherche="${esc([ref, f.nature, f.qui || "", ...noms,
+          T ? "texte intégral articles" : ""].join(" "))}">
         <span class="ref"><a href="texte/${slug(ref)}.html">${esc(ref)}</a></span>
         <span class="rattache">${esc(noms.join(" · "))}</span>
         <span class="source etiq">${esc(f.nature)}</span>
+        ${T ? `<span class="source etiq etiq-texte">${T.articles} articles</span>` : ""}
       </li>`; }).join("\n")}
     </ul>
   </div>
@@ -1856,12 +2068,28 @@ function pageConnexion() {
 /* Le relevé complet est engendré dans deux pages seulement ; la cloche, elle,
    vit sur tous les écrans. On en extrait donc le strict nécessaire — moins de
    deux kilo-octets — plutôt que de charger le référentiel partout. */
-function donneesAvis(V, D) {
+function donneesAvis(V, D, C) {
+  /* Un article de code qui bouge est une alerte, au même titre qu'un texte qui
+     paraît : c'est ce que l'abonné paie. La cloche les mélange, triés par date. */
+  /* La date de l'avis est celle où nous l'avons vu, pas celle où l'article a
+     pris effet : c'est la première qui dit « c'est nouveau pour vous ». La
+     seconde est dans le texte de l'avis, parce qu'elle commande le délai. */
+  const codes = !C ? [] : (C.changements || []).map((c) => ({
+    d: C.preleve,
+    t: `Article ${c.num} — ${c.codeTitre || "code suivi"}`,
+    q: (c.quoi === "modifie"
+      ? `Le texte a changé : « … ${String(c.apres || "").slice(0, 110)} … »`
+      : c.quoi === "nouveau" ? "Entre dans votre périmètre." : "Sort de votre périmètre.") +
+      (c.depuis ? ` En vigueur depuis le ${dateFr(c.depuis)}.` : ""),
+    dom: c.codeTitre || "Codes suivis",
+    s: "a-analyser", p: 1
+  }));
+
   const avis = D.releve.map((x) => ({
     d: x.date, t: x.titre, q: x.quoi,
     dom: V.domaines[x.domaine] ? V.domaines[x.domaine].nom : x.domaine,
     s: x.statut, p: x.priorite === "haute" ? 1 : 0
-  })).sort((a, b) => (a.d < b.d ? 1 : -1));
+  })).concat(codes).sort((a, b) => (a.d < b.d ? 1 : -1));
   return "/* Engendré par build.mjs — ne pas modifier à la main. */\n" +
          "window.AVIS = " + JSON.stringify(avis) + ";\n";
 }
@@ -1945,6 +2173,45 @@ function verifie(V, PIEGES, METIERS, D, TEXTES) {
   if (sInconnus.length) throw new Error(`Démonstration : statuts inconnus — ${[...new Set(sInconnus)].join(", ")}.`);
 }
 
+/* Le texte des codes est relevé par un robot et posé dans la page sans être
+   réécrit : il faut donc vérifier ce qu'on reçoit avant de le publier. Un
+   périmètre qui ne tombe sur rien, un morceau vide, une balise qui n'a rien à
+   faire là : on s'arrête, on ne publie pas. */
+function verifieCodes(TEXTES, C) {
+  if (!Array.isArray(C.morceaux) || !C.morceaux.length)
+    throw new Error("contenu/codes.json : aucun morceau de code.");
+
+  const inconnues = Object.keys(C.perimetres).filter((r) => !TEXTES[r]);
+  if (inconnues.length)
+    throw new Error(`Périmètre sur une référence qui n'existe pas : ${inconnues.join(" | ")}`);
+
+  const vus = new Set();
+  for (const m of C.morceaux) {
+    if (!/^[a-z0-9-]+$/.test(m.id))
+      throw new Error(`Morceau de code : « ${m.id} » ne fait pas un nom de fichier.`);
+    if (vus.has(m.id)) throw new Error(`Deux morceaux de code portent l'identifiant ${m.id}.`);
+    vus.add(m.id);
+    if (!m.articles.length) throw new Error(`Morceau de code ${m.id} : aucun article.`);
+    if (!m.chemin || m.chemin.length < 2) throw new Error(`Morceau de code ${m.id} : chemin trop court.`);
+    for (const a of m.articles) {
+      if (!a.num || !a.html) throw new Error(`Morceau ${m.id} : un article sans numéro ou sans texte.`);
+      const suspect = a.html.match(/<\s*(script|style|iframe|a|img|form|input)\b/i) ||
+                      a.html.match(/\son[a-z]+\s*=/i) || a.html.match(/<[a-z]+\s+[a-z-]+=/i);
+      if (suspect)
+        throw new Error(`Article ${a.num} : le texte relevé contient « ${suspect[0]} », ` +
+                        "ce qui ne passe pas le nettoyage d'outils/codes.mjs.");
+    }
+  }
+
+  const perdus = Object.entries(C.perimetres)
+    .flatMap(([r, ids]) => ids.filter((id) => !vus.has(id)).map((id) => `${r} → ${id}`));
+  if (perdus.length) throw new Error(`Périmètre qui pointe un morceau absent : ${perdus.join(" | ")}`);
+
+  const sans = Object.entries(C.perimetres).filter(([, ids]) => !ids.length).map(([r]) => r);
+  if (sans.length) throw new Error(`Périmètre vide : ${sans.join(" | ")}`);
+}
+
+
 async function poids(chemin) {
   const s = await stat(chemin);
   if (!s.isDirectory()) return s.size;
@@ -1964,6 +2231,12 @@ async function main() {
   // n'empêche pas de construire : la page le dit, et montre le jeu d'essai.
   const cheminJO = resolve(RACINE, "contenu/veille-releve.json");
   const JO = existsSync(cheminJO) ? JSON.parse(await readFile(cheminJO, "utf8")) : null;
+
+  // Le texte des codes n'existe que si outils/codes.mjs a tourné. Son absence
+  // n'empêche pas de construire : les fiches gardent leur lien et le disent.
+  const cheminCodes = resolve(RACINE, "contenu/codes.json");
+  const C = existsSync(cheminCodes) ? JSON.parse(await readFile(cheminCodes, "utf8")) : null;
+  if (C) verifieCodes(TEXTES, C);
   verifie(V, PIEGES, METIERS, D, TEXTES);
 
   // Les écrans de l'accueil sont de vraies captures de l'application, prises
@@ -1975,11 +2248,12 @@ async function main() {
   await rm(SORTIE, { recursive: true, force: true });
   await mkdir(join(SORTIE, "app", "secteur"), { recursive: true });
   await mkdir(join(SORTIE, "app", "texte"), { recursive: true });
+  await mkdir(join(SORTIE, "app", "code"), { recursive: true });
   await cp(resolve(RACINE, "assets"), join(SORTIE, "assets"), { recursive: true });
 
   const plan = donneesPlan(V, METIERS);
   await writeFile(join(SORTIE, "assets", "plan-data.js"), plan);
-  const avis = donneesAvis(V, D);
+  const avis = donneesAvis(V, D, C);
   await writeFile(join(SORTIE, "assets", "avis-data.js"), avis);
 
   // Le manifeste et le service worker vivent à la racine : un worker servi
@@ -2007,7 +2281,7 @@ async function main() {
 
   await writeFile(join(SORTIE, "app", "index.html"), appTableauBord(V, D));
   await writeFile(join(SORTIE, "app", "plan.html"), appPlan(V, D));
-  await writeFile(join(SORTIE, "app", "releve.html"), appReleve(V, D, JO));
+  await writeFile(join(SORTIE, "app", "releve.html"), appReleve(V, D, JO, C));
   await writeFile(join(SORTIE, "app", "registre.html"), appRegistre(V, D));
   await writeFile(join(SORTIE, "app", "secteurs.html"), appSecteurs(V, METIERS));
   await writeFile(join(SORTIE, "app", "reglages.html"), appReglages(V, D));
@@ -2021,10 +2295,23 @@ async function main() {
       (parTexte[ref] = parTexte[ref] || []).push(id);
     });
   });
-  await writeFile(join(SORTIE, "app", "textes.html"), appTextes(V, TEXTES, parTexte));
+  await writeFile(join(SORTIE, "app", "textes.html"), appTextes(V, TEXTES, parTexte, C));
   for (const ref of Object.keys(parTexte)) {
     await writeFile(join(SORTIE, "app", "texte", `${slug(ref)}.html`),
-      appTexte(V, TEXTES, METIERS, ref, TEXTES[ref], parTexte[ref]));
+      appTexte(V, TEXTES, METIERS, C, ref, TEXTES[ref], parTexte[ref]));
+  }
+
+  // Une page par morceau de code relevé : c'est là que le texte officiel se
+  // lit en entier. Les voisines sont celles du même code, dans l'ordre de
+  // l'arbre : on circule dans le code comme dans un code.
+  if (C) {
+    for (const m of C.morceaux) {
+      const voisines = C.morceaux.filter((x) => x.code === m.code);
+      const i = voisines.indexOf(m);
+      const refs = Object.keys(C.perimetres).filter((r) => (C.perimetres[r] || []).indexOf(m.id) !== -1);
+      await writeFile(join(SORTIE, "app", "code", `${m.id}.html`),
+        appMorceauDeCode(C, m, refs, voisines[i - 1], voisines[i + 1]));
+    }
   }
 
   for (const d of V.divisions) {
@@ -2038,11 +2325,16 @@ async function main() {
   console.log(`  assets/             ${((await poids(join(SORTIE, "assets"))) / 1024).toFixed(1)} Ko`);
   console.log(`  plan-data.js        ${(plan.length / 1024).toFixed(1)} Ko pour le simulateur`);
   console.log(`  écrans de l'accueil ${ECRANS.length ? ECRANS.length + " captures" : "AUCUNE — lancer outils/captures.mjs"}`);
+  console.log(`  texte des codes     ${C
+    ? C.morceaux.length + " pages, " + C.morceaux.reduce((n, m) => n + m.articles.length, 0) +
+      " articles, " + C.codes.length + " codes, relevés le " + C.preleve +
+      (C.changements.length ? " — " + C.changements.length + " changement(s)" : " — aucun changement")
+    : "AUCUN — lancer outils/codes.mjs"}`);
   console.log(`  relève officielle   ${JO ? JO.textes.length + " entrées, relevées le " + JO.releve_le +
     " (" + JO.rapport.filter((r) => r.retenus).length + " sources sur " + JO.rapport.length + ")"
     : "AUCUNE — lancer outils/veille.mjs (tourne chez Netlify à chaque publication)"}`);
   console.log(`\n_site/ prêt — ${(total / 1024).toFixed(1)} Ko, ` +
-    `${V.divisions.length + Object.keys(parTexte).length + 10} pages, ` +
+    `${V.divisions.length + Object.keys(parTexte).length + (C ? C.morceaux.length : 0) + 10} pages, ` +
     `${Object.keys(V.domaines).length} domaines, ${Object.keys(PIEGES).length} secteurs avec pièges.`);
 }
 
