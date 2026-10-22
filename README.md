@@ -65,6 +65,19 @@ principal** — pas d'illustration, pas de photographie d'agence.
 Pas de témoignage client : il n'y en a pas encore. La bande qui tiendrait cette
 place liste les sources officielles suivies, qui sont vérifiables.
 
+## Les nouveaux textes, et comment ils arrivent
+
+Dans l'application, une cloche compare la date du dernier texte lu — gardée
+dans le navigateur — aux dates du relevé, et montre ce qui est arrivé depuis.
+Elle est sur tous les écrans, elle marche hors ligne et sans compte, et elle
+est alimentée par `assets/avis-data.js`, deux kilo-octets engendrés depuis le
+jeu d'essai.
+
+**Elle ne peut pas envoyer de courriel, ni de notification système quand
+l'application est fermée.** Les deux supposent un serveur qui pousse : un
+service d'envoi pour le courriel, un serveur de push et une clé VAPID pour la
+notification système. Le panneau le dit plutôt que de le laisser croire.
+
 ## Les trois formules
 
 La formule choisie décide des écrans ouverts : **Cadrage** donne le plan de
@@ -96,6 +109,17 @@ saisies sont gardées sur l'appareil, ne sont transmises à personne, et
 disparaissent si le visiteur vide les données du site. Aucun courriel ne part.
 Les deux pages le disent au-dessus des formulaires, avant qu'on y tape quoi
 que ce soit.
+
+## Les secteurs, en bulles
+
+`app/secteurs.html` montre les 88 divisions en bulles : le diamètre porte le
+nombre de domaines de veille qui s'appliquent. Les paliers sont les
+**quartiles** de la distribution, pas un découpage de l'écart min–max — les
+valeurs réelles se serrent en haut, et un découpage linéaire mettait 30
+divisions dans la plus grosse taille et 3 dans la plus petite.
+
+La fiche d'un secteur ouvre sur **la liste à plat de ses textes de référence**,
+visible sans déplier ni quitter le site, chacun rattaché à son domaine.
 
 ## Enregistrer une fiche en PDF
 

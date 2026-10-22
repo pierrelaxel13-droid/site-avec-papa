@@ -24,6 +24,7 @@
 
 import { cp, rm, mkdir, writeFile, readFile, readdir, stat } from "node:fs/promises";
 import { existsSync } from "node:fs";
+import { createHash } from "node:crypto";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -194,9 +195,7 @@ function page({ titre, description, racine = "", zone = "public", actif = "", co
   const menuPublic = `
       ${lien("index.html", "Le produit", "produit")}
       ${lien("abonnement.html", "S'abonner", "abonnement")}
-      ${lien("connexion.html", "Connexion", "connexion")}
-      ${selecteurTheme}
-      <a class="bouton" href="${a("abonnement.html")}">Démarrer un abonnement</a>`;
+      ${selecteurTheme}`;
 
   const menuApp = `
       ${lien("app/index.html", "Tableau de bord", "bord")}
@@ -246,6 +245,30 @@ if (!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)")
     <a class="marque" href="${a(zone === "app" ? "app/index.html" : "index.html")}">
       ${sigle}<span>Pierrel <span class="co">&amp; Co</span></span>
     </a>
+    ${zone === "public" ? `<a class="bouton bouton-bandeau" href="${a("connexion.html")}">Connexion</a>` : ""}
+    ${zone === "app" ? `<div class="cloche-boite">
+      <button type="button" class="cloche" id="cloche" aria-expanded="false" aria-controls="panneau-avis">
+        <span class="cache-visuellement">Nouveaux textes</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"
+             stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M18 8.5a6 6 0 1 0-12 0c0 6-2 7.5-2 7.5h16s-2-1.5-2-7.5"/>
+          <path d="M10.4 19.5a2 2 0 0 0 3.2 0"/>
+        </svg>
+        <span class="pastille-compte" id="compte-avis" hidden>0</span>
+      </button>
+      <div class="panneau-avis" id="panneau-avis" hidden>
+        <div class="panneau-tete">
+          <h2>Nouveaux textes</h2>
+          <button type="button" class="lien-nu" id="tout-lu">Tout marquer comme lu</button>
+        </div>
+        <ul id="liste-avis"></ul>
+        <p class="panneau-pied">
+          Ces alertes s'affichent dans l'application. Pour les recevoir aussi par
+          courriel, il faut un serveur qui envoie — voir
+          <a href="${a("app/reglages.html")}">Réglages, Mes alertes</a>.
+        </p>
+      </div>
+    </div>` : ""}
     <button type="button" class="menu-bascule" aria-expanded="false" aria-controls="menu-principal">
       <span class="cache-visuellement">Ouvrir le menu</span>
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true">
@@ -345,7 +368,9 @@ ${zone === "public" ? bandeInstallation(a) : ""}
 
 ${donneesPlan ? `<script src="${a("assets/plan-data.js")}"></script>` : ""}
 <script src="${a("assets/app.js")}"></script>
-${zone === "app" ? `<script src="${a("assets/entreprise.js")}"></script>` : ""}
+${zone === "app" ? `<script src="${a("assets/avis-data.js")}"></script>
+<script src="${a("assets/entreprise.js")}"></script>
+<script src="${a("assets/avis.js")}"></script>` : ""}
 ${zone === "app" || verrou || actif === "connexion" || actif === "abonnement" ? `<script src="${a("assets/session.js")}"></script>` : ""}
 </body>
 </html>
@@ -376,7 +401,7 @@ function perimetre(V, code) {
 }
 
 function blocDomaine(id, d, origine, lienSecteur = "") {
-  return `<article class="bloc-domaine" data-domaine="${esc(id)}" data-origine="${origine}"${origine === "declencheur" ? " hidden" : ""}>
+  return `<article class="bloc-domaine" id="domaine-${esc(id)}" data-domaine="${esc(id)}" data-origine="${origine}"${origine === "declencheur" ? " hidden" : ""}>
   <div class="bloc-domaine-tete">
     <h3>${esc(d.nom)}</h3>
     ${origine === "declencheur" ? '<span class="marque-ajout">ajouté par votre contexte</span>' : ""}
@@ -699,8 +724,28 @@ ${rubrique({ etiq: "Tout le registre", aplat: true, contenu: `
   });
 }
 
-/* --- Les 88 fiches ---------------------------------------------------------- */
+/* --- Les 88 fiches, en bulles ----------------------------------------------- */
+/* La taille d'une bulle dit le nombre de domaines de veille qui s'appliquent à
+   la division : une donnée, pas un ornement. Quatre paliers suffisent — au-delà
+   l'œil ne distingue plus, et les écarts réels vont de 8 à 17. */
 function appSecteurs(V, METIERS) {
+  const tailles = {};
+  let mini = Infinity, maxi = 0;
+  V.divisions.forEach((d) => {
+    const n = perimetre(V, d.c).base.length;
+    tailles[d.c] = n;
+    if (n < mini) mini = n;
+    if (n > maxi) maxi = n;
+  });
+  // Découper l'écart min–max en quatre donnait 30 bulles au dernier palier et
+  // 3 au premier : les valeurs réelles se serrent en haut. On coupe donc aux
+  // quartiles de la distribution, ce qui met à peu près autant de divisions
+  // dans chaque taille et rend les écarts lisibles.
+  const triees = Object.values(tailles).sort((a, b) => a - b);
+  const quartile = (q) => triees[Math.floor(triees.length * q)];
+  const [q1, q2, q3] = [quartile(.25), quartile(.5), quartile(.75)];
+  const palier = (n) => (n <= q1 ? 1 : n <= q2 ? 2 : n <= q3 ? 3 : 4);
+
   const parSection = V.sections.map((s) => ({
     s, divisions: V.divisions.filter((d) => d.s === s.c)
   })).filter((g) => g.divisions.length);
@@ -712,11 +757,11 @@ function appSecteurs(V, METIERS) {
       <li><span>${V.divisions.length} divisions · ${V.sections.length} sections</span></li>
       <li><span>${Object.keys(V.domaines).length} domaines</span></li>
     </ul>
-    <h1>Fiches par secteur</h1>
+    <h1>Tous les secteurs</h1>
     <p class="chapeau">
-      La nomenclature d'activités française, division par division. Utile pour situer
-      un client, un sous-traitant ou un donneur d'ordre. Cherchez par code, par libellé
-      ou par le nom du métier.
+      La nomenclature d'activités française, division par division. Une bulle par
+      division : plus elle est grosse, plus il y a de domaines de veille qui
+      s'appliquent. Cliquez pour ouvrir la fiche et ses textes.
     </p>
     <div class="recherche" style="margin-top:var(--t5)">
       <label class="etiq" for="recherche-secteur">Chercher</label>
@@ -724,6 +769,13 @@ function appSecteurs(V, METIERS) {
              autocomplete="off" spellcheck="false">
       <p class="recherche-compte etiq"><span id="compte-secteurs">${V.divisions.length} secteurs</span></p>
     </div>
+
+    <ul class="legende-bulles" aria-hidden="true">
+      <li><span class="bulle-exemple p1"></span>${mini} domaines</li>
+      <li><span class="bulle-exemple p2"></span></li>
+      <li><span class="bulle-exemple p3"></span></li>
+      <li><span class="bulle-exemple p4"></span>${maxi} domaines</li>
+    </ul>
   </div>
 </section>
 
@@ -732,18 +784,18 @@ function appSecteurs(V, METIERS) {
   <p id="aucun-secteur" class="etat-vide" hidden>
     Aucun secteur ne correspond. Essayez un code à deux chiffres, ou un mot du libellé.
   </p>
-  <div id="liste-secteurs">
+  <div id="liste-secteurs" class="amas">
     ${parSection.map((g) => `
-    <section class="groupe-section" data-groupe>
-      <span class="etiq">${esc(g.s.c)} — ${esc(g.s.l)}</span>
-      <ul class="liste-divisions">
+    <section class="grappe" data-groupe>
+      <h2 class="etiq"><span class="lettre">${esc(g.s.c)}</span> ${esc(g.s.l)}</h2>
+      <ul class="bulles">
         ${g.divisions.map((d) => {
           const mots = METIERS[d.c] || [];
           return `<li class="ligne-division" data-recherche="${esc([d.c, d.l, g.s.l, ...mots].join(" "))}">
-          <a href="secteur/${esc(d.c)}-${slug(d.l)}.html">
-            <span class="code">${esc(d.c)}</span>
+          <a class="bulle p${palier(tailles[d.c])}" href="secteur/${esc(d.c)}-${slug(d.l)}.html"
+             title="${esc(d.l)} — ${tailles[d.c]} domaines de veille">
+            <span class="rond"><span class="code">${esc(d.c)}</span></span>
             <span class="nom">${esc(d.l)}</span>
-            <span class="mots">${esc(mots.slice(0, 5).join(" · "))}</span>
           </a></li>`; }).join("\n")}
       </ul>
     </section>`).join("\n")}
@@ -752,7 +804,7 @@ function appSecteurs(V, METIERS) {
 </section>`;
 
   return page({
-    titre: `Fiches par secteur | ${SITE.nom}`,
+    titre: `Tous les secteurs | ${SITE.nom}`,
     description: "Les 88 divisions de la nomenclature NAF et leurs obligations.",
     racine: "../", zone: "app", actif: "secteurs", corps, verrou: true, formule: "cadrage"
   });
@@ -765,6 +817,17 @@ function appSecteur(V, PIEGES, METIERS, d) {
   const p = PIEGES[d.c];
   const rythme = groupes.length ? groupes[0].f.l : "—";
 
+  // Tous les textes de référence du périmètre, mis à plat : c'est ce qu'on
+  // vient chercher sur une fiche de secteur, et ça ne doit pas être derrière
+  // un dépliant ni derrière un lien sortant.
+  const textes = [];
+  base.forEach((id) => {
+    const dom = V.domaines[id];
+    dom.textes.forEach((ref) => {
+      textes.push({ ref, id, domaine: dom.nom, sources: dom.sources.slice(0, 1) });
+    });
+  });
+
   const corps = `<section class="tete-app">
   <div class="enveloppe">
     <ul class="jalons">
@@ -775,7 +838,7 @@ function appSecteur(V, PIEGES, METIERS, d) {
     <h1>${esc(d.l)}</h1>
     ${mots.length ? `<p class="chapeau"><span class="etiq">On dit aussi</span>${esc(mots.join(" · "))}</p>` : ""}
     <dl class="faits" style="margin-top:var(--t5)">
-      <div><dt class="etiq">Code NAF</dt><dd><span class="grand">${esc(d.c)}</span></dd></div>
+      <div><dt class="etiq">Textes de référence</dt><dd><span class="grand">${textes.length}</span></dd></div>
       <div><dt class="etiq">Domaines de base</dt><dd><span class="grand" id="compte-domaines">${base.length}</span></dd></div>
       <div><dt class="etiq">Rythme le plus serré</dt><dd>${esc(rythme)}</dd></div>
       <div><dt class="etiq">Questions de contexte</dt><dd><span class="grand">${declencheurs.length}</span></dd></div>
@@ -783,7 +846,20 @@ function appSecteur(V, PIEGES, METIERS, d) {
   </div>
 </section>
 
-${rubrique({ etiq: "Périmètre", contenu: `
+${rubrique({ etiq: "Les textes qui s'appliquent", contenu: `
+  <p class="lecture">Tous les textes de référence du périmètre de ce secteur, sans
+  détour : ${textes.length} textes, rattachés chacun à son domaine. La colonne de droite
+  mène à la source officielle, pour qui veut lire le texte intégral.</p>
+  <ul class="textes">
+    ${textes.map((x) => `<li>
+      <span class="ref">${esc(x.ref)}</span>
+      <span class="rattache"><a href="#domaine-${esc(x.id)}">${esc(x.domaine)}</a></span>
+      <span class="source">${x.sources.map((s) =>
+        `<a href="${esc(s.url)}" target="_blank" rel="noopener">${esc(s.nom)} ${sortant}</a>`).join("")}</span>
+    </li>`).join("\n")}
+  </ul>` })}
+
+${rubrique({ etiq: "Ce qu'il faut tenir, domaine par domaine", aplat: true, contenu: `
   <p class="lecture">Le socle commun à toute entreprise, plus ce qui tient à ce métier.
   Groupé par rythme de revue.</p>
   ${groupes.map((g) => `
@@ -1600,6 +1676,20 @@ function pageConnexion() {
   });
 }
 
+/* --- Les avis : de quoi alimenter la cloche ------------------------------- */
+/* Le relevé complet est engendré dans deux pages seulement ; la cloche, elle,
+   vit sur tous les écrans. On en extrait donc le strict nécessaire — moins de
+   deux kilo-octets — plutôt que de charger le référentiel partout. */
+function donneesAvis(V, D) {
+  const avis = D.releve.map((x) => ({
+    d: x.date, t: x.titre, q: x.quoi,
+    dom: V.domaines[x.domaine] ? V.domaines[x.domaine].nom : x.domaine,
+    s: x.statut, p: x.priorite === "haute" ? 1 : 0
+  })).sort((a, b) => (a.d < b.d ? 1 : -1));
+  return "/* Engendré par build.mjs — ne pas modifier à la main. */\n" +
+         "window.AVIS = " + JSON.stringify(avis) + ";\n";
+}
+
 /* --- Les données du simulateur --------------------------------------------- */
 /* Le référentiel complet pèse 75 Ko : trop pour l'accueil. On n'y envoie que ce
    dont le calcul a besoin — nom, famille et rythme des domaines, périmètre de
@@ -1691,11 +1781,27 @@ async function main() {
 
   const plan = donneesPlan(V, METIERS);
   await writeFile(join(SORTIE, "assets", "plan-data.js"), plan);
+  const avis = donneesAvis(V, D);
+  await writeFile(join(SORTIE, "assets", "avis-data.js"), avis);
 
   // Le manifeste et le service worker vivent à la racine : un worker servi
   // depuis assets/ ne contrôlerait que assets/.
   await writeFile(join(SORTIE, "manifest.webmanifest"), MANIFESTE);
-  await cp(resolve(RACINE, "sw.js"), join(SORTIE, "sw.js"));
+
+  // Le cache du service worker est nommé d'après l'empreinte de l'habillage.
+  // Une empreinte stable évite de purger le cache pour rien ; une empreinte
+  // qui change purge tout, et c'est ce qui fait qu'une publication atteint
+  // les visiteurs déjà venus.
+  const habillage = ["site.css", "polices.css", "app.js", "theme.js",
+                     "session.js", "entreprise.js", "avis.js"];
+  const empreinte = createHash("sha256");
+  for (const f of habillage) empreinte.update(await readFile(join(SORTIE, "assets", f)));
+  empreinte.update(plan);
+  const version = empreinte.digest("hex").slice(0, 12);
+  const worker = (await readFile(resolve(RACINE, "sw.js"), "utf8")).replace("__EMPREINTE__", version);
+  if (worker.includes("__EMPREINTE__")) throw new Error("sw.js : l'empreinte n'a pas été posée.");
+  await writeFile(join(SORTIE, "sw.js"), worker);
+  console.log(`  cache du worker     pco-${version}`);
 
   await writeFile(join(SORTIE, "index.html"), pageAccueil(V, D, METIERS, ECRANS));
   await writeFile(join(SORTIE, "abonnement.html"), pageAbonnement(V));
