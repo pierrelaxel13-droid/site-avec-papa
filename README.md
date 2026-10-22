@@ -110,6 +110,25 @@ disparaissent si le visiteur vide les données du site. Aucun courriel ne part.
 Les deux pages le disent au-dessus des formulaires, avant qu'on y tape quoi
 que ce soit.
 
+## « Mon plan » suit « Mon entreprise »
+
+Le plan de veille était figé sur le jeu d'essai : on changeait d'entreprise
+dans Réglages, et les mêmes domaines restaient. La page porte maintenant les
+**44 domaines**, ceux hors périmètre posés `hidden` à la construction ; au
+chargement, `suivrePlan()` lit les réglages enregistrés, recalcule le
+périmètre avec `window.PLAN` et ne garde que ce qui s'applique. Les compteurs,
+le contexte retenu, le bandeau d'en-tête et le chapeau suivent. Sans
+JavaScript, la page affiche le périmètre du jeu d'essai — rien ne manque, et
+la page dit ce qu'elle montre.
+
+## On clique la case, pas le mot
+
+Partout où une ligne ou une carte mène quelque part, c'est **toute la case**
+qui est cliquable, par une nappe `.lien-carte` posée dessus ; les liens
+qu'elle contient repassent devant en `z-index: 1`. Vaut pour les lignes du
+tableau des textes, les lignes des tableaux de catégories, et les cartes de
+conseils du tableau de bord.
+
 ## Quatre familles, et ce qu'il faut faire
 
 Un texte qui paraît ne vaut rien tant qu'on ne sait pas de quoi il relève ni ce

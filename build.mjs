@@ -170,7 +170,7 @@ function bandeInstallation(a) {
           </button>
           <a class="bouton bouton-sobre" href="${a("connexion.html")}">Ouvrir dans le navigateur</a>
         </p>
-        <p class="etiq" id="etat-installation" style="margin-top:var(--t3)"></p>
+        <p class="etiq" id="etat-installation" role="status" style="margin-top:var(--t3)"></p>
       </div>
       <ul class="appareils">
         ${appareil("iPhone et iPad", "Dans Safari : <strong>Partager</strong>, puis <strong>Sur l'écran d'accueil</strong>.",
@@ -408,7 +408,7 @@ function perimetre(V, code) {
 }
 
 function blocDomaine(C, LIENS, id, d, origine, lienSecteur = "", racine = "") {
-  return `<article class="bloc-domaine" id="domaine-${esc(id)}" data-domaine="${esc(id)}" data-origine="${origine}"${origine === "declencheur" ? " hidden" : ""}>
+  return `<article class="bloc-domaine" id="domaine-${esc(id)}" data-domaine="${esc(id)}" data-origine="${origine}"${origine === "declencheur" || origine === "hors" ? " hidden" : ""}>
   <div class="bloc-domaine-tete">
     <h3>${esc(d.nom)}</h3>
     ${origine === "declencheur" ? '<span class="marque-ajout">ajouté par votre contexte</span>' : ""}
@@ -439,8 +439,8 @@ function blocDomaine(C, LIENS, id, d, origine, lienSecteur = "", racine = "") {
 }
 
 /* Une rubrique de l'application : un titre à gauche, le contenu dessous. */
-function rubrique({ etiq, contenu, aplat = false, id = "" }) {
-  return `<section class="rubrique${aplat ? " section-tein" : ""}"${id ? ` id="${id}"` : ""}>
+function rubrique({ etiq, contenu, aplat = false, id = "", attrs = "" }) {
+  return `<section class="rubrique${aplat ? " section-tein" : ""}"${id ? ` id="${id}"` : ""}${attrs}>
   <div class="enveloppe">
     <h2>${esc(etiq)}</h2>
     ${contenu}
@@ -469,11 +469,11 @@ function enTeteApp(D, titre, chapeau, lienNaf = "") {
   return `<section class="tete-app">
   <div class="enveloppe">
     <ul class="jalons">
-      <li><span class="fort">${esc(D.entreprise.nom)}</span></li>
-      <li>${lienNaf ? `<a href="${lienNaf}">NAF ${esc(D.entreprise.nafComplet)}</a>`
-                    : `<span>NAF ${esc(D.entreprise.nafComplet)}</span>`}</li>
-      <li><span>${esc(D.entreprise.ville)}</span></li>
-      <li><span>${esc(D.entreprise.effectif)} salariés</span></li>
+      <li><span class="fort" id="tete-nom">${esc(D.entreprise.nom)}</span></li>
+      <li>${lienNaf ? `<a href="${lienNaf}">NAF <span id="tete-naf">${esc(D.entreprise.nafComplet)}</span></a>`
+                    : `<span>NAF <span id="tete-naf">${esc(D.entreprise.nafComplet)}</span></span>`}</li>
+      <li><span id="tete-ville">${esc(D.entreprise.ville)}</span></li>
+      <li><span><span id="tete-effectif">${esc(D.entreprise.effectif)}</span> salariés</span></li>
       <li><span>Suivi depuis ${esc(D.entreprise.depuis)}</span></li>
     </ul>
     <h1>${esc(titre)}</h1>
@@ -524,6 +524,7 @@ ${aAnalyser.length ? rubrique({ etiq: "Ce qu'il faut faire maintenant", contenu:
       const ref = d.textes[0];
       const L = lienDuTexte(C, LIENS, ref);
       return `<li>
+      ${lienCarte(`texte/${slug(ref)}.html`, `Ouvrir la fiche : ${ref}`)}
       <p class="titre">${esc(t.titre)}</p>
       <p class="meta etiq">${esc(d.nom)}${t.priorite === "haute" ? " · prioritaire" : ""}</p>
       <ul class="a-faire">${(d.actions || []).slice(0, 3).map((a) => `<li>${esc(a)}</li>`).join("")}</ul>
@@ -659,7 +660,7 @@ function ligneRegistre(r) {
 
 /* --- Mon plan --------------------------------------------------------------- */
 function appPlan(V, D, C, LIENS) {
-  const { base, groupes } = perimetre(V, D.entreprise.naf);
+  const { base } = perimetre(V, D.entreprise.naf);
   const ajoutes = new Set();
   D.entreprise.contexte.forEach((qid) => {
     const q = V.declencheurs.filter((x) => x.id === qid)[0];
@@ -670,79 +671,55 @@ function appPlan(V, D, C, LIENS) {
   const contexteNoms = D.entreprise.contexte
     .map((qid) => (V.declencheurs.filter((x) => x.id === qid)[0] || {}).q).filter(Boolean);
 
+  /* La page porte les 44 domaines, pas seulement ceux du jeu d'essai : c'est
+     ce qui permet à « Mon entreprise » de la refaire sans recharger quoi que
+     ce soit. Sans JavaScript, seuls ceux du périmètre sont visibles — les
+     autres sont posés `hidden`, et rien ne manque à l'écran. */
+  const parFrequence = Object.keys(V.frequences)
+    .sort((a, b) => V.frequences[a].ordre - V.frequences[b].ordre)
+    .map((fid) => ({
+      id: fid, f: V.frequences[fid],
+      ids: Object.keys(V.domaines).filter((id) => V.domaines[id].frequence === fid)
+    }))
+    .filter((g) => g.ids.length);
+
   const corps = enTeteApp(D, "Mon plan de veille",
     `Le périmètre retenu pour ${esc(D.entreprise.nom)} : ${total} domaines, groupés par rythme de revue.`,
     ficheDeLEntreprise(V, D)) + `
 
-${rubrique({ etiq: "Le périmètre", contenu: `
+${rubrique({ etiq: "Le périmètre", id: "plan-perimetre", contenu: `
   <dl class="faits">
-    <div><dt class="etiq">Domaines suivis</dt><dd><span class="grand">${total}</span></dd></div>
-    <div><dt class="etiq">Division NAF</dt><dd><span class="grand">${esc(D.entreprise.naf)}</span></dd></div>
-    <div><dt class="etiq">Responsable</dt><dd>${esc(D.entreprise.responsable)}</dd></div>
+    <div><dt class="etiq">Domaines suivis</dt><dd><span class="grand" id="plan-total">${total}</span></dd></div>
+    <div><dt class="etiq">Code de l'entreprise</dt><dd><span class="grand" id="plan-naf">${esc(D.entreprise.nafComplet || D.entreprise.naf)}</span></dd></div>
+    <div><dt class="etiq">Responsable</dt><dd id="plan-responsable">${esc(D.entreprise.responsable)}</dd></div>
   </dl>
   <p style="margin-top:var(--t4)">
-    <span class="etiq">Contexte retenu</span>${esc(contexteNoms.join(" · "))}
+    <span class="etiq">Contexte retenu</span><span id="plan-contexte">${esc(contexteNoms.join(" · "))}</span>
+  </p>
+  <p class="note-source" id="plan-origine">
+    Ce plan est celui du jeu d'essai. Renseignez votre entreprise dans
+    <a href="reglages.html">Réglages</a> : il se refera dessus, ici même.
   </p>` })}
 
-${groupes.map((g) => {
-    const dansGroupe = [...g.base, ...g.ajout.filter((id) => ajoutes.has(id))];
-    if (!dansGroupe.length) return "";
+${parFrequence.map((g) => {
     const ech = D.echeances.filter((e) => e.frequence === g.id)[0];
-    return rubrique({ etiq: g.f.l, contenu: `
+    const dedans = g.ids.filter((id) => base.includes(id) || ajoutes.has(id));
+    return rubrique({ etiq: g.f.l, id: `frequence-${g.id}`, contenu: `
       <p class="lecture">${esc(g.f.d)}${ech ? ` Prochaine revue : <strong>${esc(dateFr(ech.prochaine))}</strong>${ech.retard ? " — en retard." : "."}` : ""}</p>
-      ${dansGroupe.map((id) => {
+      ${g.ids.map((id) => {
         const division = divisionDuDomaine(V, id);
-        return blocDomaine(C, LIENS, id, V.domaines[id], ajoutes.has(id) ? "declencheur-retenu" : "base",
+        const origine = base.includes(id) ? "base" : (ajoutes.has(id) ? "declencheur-retenu" : "hors");
+        return blocDomaine(C, LIENS, id, V.domaines[id], origine,
           division ? `secteur/${division}.html` : "");
-      }).join("\n")}` });
+      }).join("\n")}`, attrs: ` data-groupe-frequence="${esc(g.id)}"${dedans.length ? "" : " hidden"}` });
   }).join("\n")}`;
 
   return page({
     titre: `Mon plan de veille | ${SITE.nom}`,
     description: "Le périmètre de veille retenu.",
-    racine: "../", zone: "app", actif: "plan", corps, verrou: true, formule: "cadrage"
+    racine: "../", zone: "app", actif: "plan", corps, verrou: true, formule: "cadrage",
+    donneesPlan: true
   });
-}
-
-/* --- Le relevé officiel, quand il a été fait -------------------------------- */
-/* outils/jorf.mjs va chercher les textes au Journal officiel (données ouvertes
-   de la DILA, sans compte) et écrit contenu/jo-releve.json. Quand ce fichier
-   existe, l'application sert ces textes-là, avec leur contenu intégral. Quand
-   il n'existe pas, elle sert le jeu d'essai — et le dit. Jamais l'un déguisé
-   en l'autre. */
-function ligneJO(t, i) {
-  const noms = t.domaines.map((d) => d.nom);
-  const droit = t.genre === "texte";
-  return `<li class="ligne-releve statut-${droit ? "attente" : "neutre"}">
-  <details${i === 0 ? " open" : ""}>
-    <summary>
-      <span class="mono date">${esc(dateFr(t.date))}</span>
-      <span class="corps">
-        <span class="titre">${esc(t.titre)}</span>
-        <span class="quoi">${esc(t.corps.slice(0, 180).replace(/\s+\S*$/, ""))}…</span>
-        <span class="meta etiq">${esc(t.sourceNom)} · ${esc(noms.join(" · "))}</span>
-      </span>
-      <span class="statut etiq">${droit ? "Texte" : "Publication"}</span>
-      ${chevron}
-    </summary>
-    <div class="detail">
-      <p class="etiq">${droit ? "Texte intégral, tel que publié" : "Ce qu'en dit la source"}</p>
-      <div class="texte-officiel">${esc(t.corps).replace(/\n/g, "<br>")}</div>
-      ${t.nota ? `<p class="note-source"><strong>Nota.</strong> ${esc(t.nota)}</p>` : ""}
-      <p class="note-source">
-        Source : ${esc(t.sourceNom)}. ${droit
-          ? "Texte officiel de la République française, sous Licence Ouverte."
-          : "Publication officielle, reproduite avec sa source et sa date — ce n'est pas du droit, c'est un commentaire officiel."}
-        Version du ${esc(dateFr(t.date))}${t.id && !/^http/.test(t.id) ? ` — identifiant ${esc(t.id)}` : ""}.
-        ${t.lien ? `<a href="${esc(t.lien)}" target="_blank" rel="noopener">Voir chez la source ${sortant}</a>` : ""}
-        En cas de doute, c'est la source qui fait foi.
-      </p>
-      <p class="rangee" style="margin-top:var(--t4)">
-        <button type="button" class="bouton bouton-sobre imprimer-fiche">${imprimante} Enregistrer en PDF</button>
-      </p>
-    </div>
-  </details>
-</li>`;
 }
 
 /* --- Le lien du texte, pas celui du site -----------------------------------
@@ -966,6 +943,79 @@ ${rubrique({ etiq: "D’où ça vient dans votre veille", aplat: true, contenu: 
   });
 }
 
+/* --- Les textes en tableau, rangés par catégorie ----------------------------
+   Une liste de cent vingt-quatre textes à la file, c'est du brouillon : on ne
+   sait pas lequel regarde quoi. Ici chaque texte tombe dans sa catégorie —
+   santé & sécurité, hygiène, social, environnement, métier — et chaque
+   tableau dit trois choses : le texte, ce qu'il exige, où le lire.
+
+   Sous 52 rem, chaque ligne devient une carte : même contenu, même ordre,
+   sans défilement latéral. */
+function tableauDeTextes(V, C, LIENS, TEXTES, entrees, racine = "", cherchable = false) {
+  const par = {};
+  entrees.forEach((e) => {
+    const d = V.domaines[e.id];
+    const cl = d && V.classements[d.classement] ? d.classement : "metier";
+    (par[cl] = par[cl] || []).push(e);
+  });
+
+  const familles = Object.keys(V.classements)
+    .map((id) => ({ id, cl: V.classements[id], textes: par[id] || [] }));
+
+  const sommaire = `<div class="tableau-boite">
+  <table class="tableau-familles">
+  <thead><tr><th scope="col">Catégorie</th><th scope="col">Textes</th><th scope="col">Ce que c'est</th></tr></thead>
+  <tbody>
+    ${familles.map((g) => `<tr${g.textes.length ? "" : ' class="famille-vide"'}>
+      <th scope="row" data-intitule="Catégorie">${esc(g.cl.l)}${g.textes.length
+        ? lienCarte(`#textes-${esc(g.id)}`, `Aller à la catégorie ${g.cl.l}`) : ""}</th>
+      <td data-intitule="Textes"><span class="compte-famille">${g.textes.length}</span></td>
+      <td data-intitule="Ce que c'est">${esc(g.cl.d)}</td>
+    </tr>`).join("")}
+  </tbody>
+</table>
+</div>`;
+
+  const tables = familles.filter((g) => g.textes.length).map((g) => `
+  <section class="famille-textes" id="textes-${esc(g.id)}"${cherchable ? " data-groupe" : ""}>
+    <h3>${esc(g.cl.l)} <span class="etiq">${g.textes.length} texte${g.textes.length > 1 ? "s" : ""}</span></h3>
+    <p class="precision">${esc(g.cl.d)}</p>
+    <div class="tableau-boite">
+    <table class="tableau-textes">
+      <thead><tr>
+        <th scope="col">Texte</th>
+        <th scope="col">Ce qu'il exige</th>
+        <th scope="col">Où le lire</th>
+      </tr></thead>
+      <tbody>
+        ${g.textes.map((e) => {
+          const f = TEXTES[e.ref] || {};
+          const L = lienDuTexte(C, LIENS, e.ref);
+          const exige = (f.exige || []).slice(0, 2);
+          const fiche = `${racine}texte/${slug(e.ref)}.html`;
+          return `<tr${cherchable ? ` data-recherche="${esc([e.ref, f.nature || "", f.qui || "", e.domaine,
+            g.cl.l, ...(f.exige || [])].join(" "))}"` : ""}>
+        <th scope="row" data-intitule="Texte">
+          <a href="${fiche}">${esc(e.ref)}</a>
+          <span class="precision">${esc(e.domaine)}${f.nature ? ` · ${esc(f.nature)}` : ""}</span>
+          ${lienCarte(fiche, `Ouvrir la fiche : ${e.ref}`)}</th>
+        <td data-intitule="Ce qu'il exige">${exige.length
+          ? `<ul class="exige-court">${exige.map((x) => `<li>${esc(x)}</li>`).join("")}</ul>
+             ${(f.exige || []).length > 2 ? `<span class="lien-fleche">les ${f.exige.length} points ${fleche}</span>` : ""}`
+          : `<span class="tenu">Fiche à écrire.</span>`}</td>
+        <td data-intitule="Où le lire">
+          <a class="lien-officiel" href="${esc(L.url)}" target="_blank" rel="noopener"
+             title="${esc(L.quoi)}">${esc(intituleDuLien(L))} ${sortant}</a>
+          <span class="precision">${esc(L.quoi)}</span></td>
+      </tr>`; }).join("")}
+      </tbody>
+    </table>
+    </div>
+  </section>`).join("");
+
+  return { sommaire, tables };
+}
+
 /* --- Les textes rangés par nature ------------------------------------------
    « Plus clair » veut dire : ne pas servir une liste unique où tout se vaut.
    Un texte qui sort relève de la santé-sécurité, de l'hygiène, du social, de
@@ -1006,8 +1056,8 @@ function tableauDesFamilles(V, groupes, titreDe, dateDe, domaineDe) {
       const d = V.domaines[domaineDe(t)];
       const action = d && d.actions && d.actions.length ? d.actions[0] : "—";
       return `<tr>
-      <th scope="row" data-intitule="Famille">
-        <a href="#famille-${esc(g.id)}">${esc(g.cl.l)}</a></th>
+      <th scope="row" data-intitule="Famille">${esc(g.cl.l)}${
+        lienCarte(`#famille-${esc(g.id)}`, `Aller à la famille ${g.cl.l}`)}</th>
       <td data-intitule="Textes"><span class="compte-famille">${liste.length}</span></td>
       <td data-intitule="Le plus récent">
         <span class="mono date">${esc(dateFr(dateDe(t)))}</span>
@@ -1369,8 +1419,15 @@ ${rubrique({ etiq: T ? "Vérifier à la source" : "Lire le texte officiel", cont
 }
 
 /* --- L'index des textes ----------------------------------------------------- */
-function appTextes(V, TEXTES, parTexte, C) {
+function appTextes(V, TEXTES, parTexte, C, LIENS) {
   const refs = Object.keys(parTexte).sort((a, b) => a.localeCompare(b, "fr"));
+  /* Un texte peut être cité par plusieurs domaines : on le range dans la
+     catégorie du premier qui le cite, et on nomme les autres sous son titre. */
+  const entrees = refs.map((ref) => ({
+    ref, id: parTexte[ref][0],
+    domaine: parTexte[ref].map((id) => V.domaines[id].nom).join(" · ")
+  }));
+  const tableaux = tableauDeTextes(V, C, LIENS, TEXTES, entrees, "", true);
   const corps = `<section class="tete-app">
   <div class="enveloppe">
     <ul class="jalons">
@@ -1395,22 +1452,12 @@ function appTextes(V, TEXTES, parTexte, C) {
 </section>
 
 <section class="rubrique">
-<div class="enveloppe">
+<div class="enveloppe" data-unite="textes">
+  <h2>Les textes, par catégorie</h2>
+  ${tableaux.sommaire}
   <p id="aucun-secteur" class="etat-vide" hidden>Aucun texte ne correspond.</p>
   <div id="liste-secteurs">
-    <ul class="textes" data-groupe>
-      ${refs.map((ref) => {
-        const f = TEXTES[ref];
-        const noms = parTexte[ref].map((id) => V.domaines[id].nom);
-        const T = texteDuSite(C, ref);
-        return `<li data-recherche="${esc([ref, f.nature, f.qui || "", ...noms,
-          T ? "texte intégral articles" : ""].join(" "))}">
-        <span class="ref"><a href="texte/${slug(ref)}.html">${esc(ref)}</a></span>
-        <span class="rattache">${esc(noms.join(" · "))}</span>
-        <span class="source etiq">${esc(f.nature)}</span>
-        ${T ? `<span class="source etiq etiq-texte">${T.articles} articles</span>` : ""}
-      </li>`; }).join("\n")}
-    </ul>
+    ${tableaux.tables}
   </div>
 </div>
 </section>`;
@@ -1579,6 +1626,7 @@ function appReglages(V, D, NAF, METIERS) {
 
 <section class="rubrique" id="volet-entreprise" role="tabpanel" aria-labelledby="onglet-entreprise">
   <div class="enveloppe">
+    <h2 class="cache-visuellement">Mon entreprise</h2>
     <p class="reserve">
       <strong>Rien de ceci ne quitte votre navigateur.</strong>
       Il n'y a pas encore de serveur : ces informations sont gardées sur cet appareil
@@ -1672,6 +1720,7 @@ function appReglages(V, D, NAF, METIERS) {
 
 <section class="rubrique section-tein" id="volet-alertes" role="tabpanel" aria-labelledby="onglet-alertes" hidden>
   <div class="enveloppe">
+    <h2 class="cache-visuellement">Mes alertes</h2>
     <p class="reserve">
       <strong>Aucun courriel ne part aujourd'hui.</strong>
       L'envoi suppose un serveur, qui n'est pas en place. Ce que vous réglez ici est
@@ -2638,7 +2687,7 @@ async function main() {
       (parTexte[ref] = parTexte[ref] || []).push(id);
     });
   });
-  await writeFile(join(SORTIE, "app", "textes.html"), appTextes(V, TEXTES, parTexte, C));
+  await writeFile(join(SORTIE, "app", "textes.html"), appTextes(V, TEXTES, parTexte, C, LIENS));
   for (const ref of Object.keys(parTexte)) {
     await writeFile(join(SORTIE, "app", "texte", `${slug(ref)}.html`),
       appTexte(V, TEXTES, METIERS, C, LIENS, ref, TEXTES[ref], parTexte[ref]));

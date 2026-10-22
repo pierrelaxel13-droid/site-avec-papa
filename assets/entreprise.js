@@ -76,6 +76,73 @@
     return { div: div, liste: liste, ajoutes: ajoutes, paquets: paquets };
   }
 
+  /* --- L'en-tête de l'application dit la bonne entreprise -------------------
+     Le bandeau d'une page d'application nomme l'entreprise, son code, sa
+     commune. Il était figé sur le jeu d'essai : le plan disait « Boulangerie
+     Martin » pendant que l'en-tête disait « Maçonnerie Vidal ». */
+  function suivreEnTete() {
+    var garde = lire(CLE_E);
+    if (!garde) return;
+    var pose = function (id, valeur) {
+      var e = document.getElementById(id);
+      if (e && valeur) e.textContent = valeur;
+    };
+    pose("tete-nom", garde.nom);
+    pose("tete-naf", garde.naf);
+    pose("tete-ville", garde.ville);
+    pose("tete-effectif", garde.effectif);
+  }
+
+  /* --- « Mon plan » suit « Mon entreprise » ---------------------------------
+     La page porte les 44 domaines ; on ne garde que ceux du périmètre
+     enregistré. Sans réglages, elle reste sur le jeu d'essai et le dit.
+     Sans JavaScript, elle affiche le périmètre du jeu d'essai, posé à la
+     construction : rien ne disparaît. */
+  function suivrePlan() {
+    if (!document.getElementById("plan-perimetre") || !P) return;
+    var garde = lire(CLE_E);
+    if (!garde || !garde.naf) return;
+    var vue = perimetre(garde.naf, garde.contexte || []);
+    if (!vue) return;
+
+    var dedans = {};
+    vue.liste.forEach(function (id) { dedans[id] = 1; });
+    $$("[data-domaine]").forEach(function (b) {
+      b.hidden = !dedans[b.getAttribute("data-domaine")];
+    });
+    $$("[data-groupe-frequence]").forEach(function (g) {
+      g.hidden = !g.querySelector("[data-domaine]:not([hidden])");
+    });
+
+    var pose = function (id, texte) {
+      var e = document.getElementById(id);
+      if (e) e.textContent = texte;
+    };
+    pose("plan-total", vue.liste.length);
+    pose("plan-naf", garde.naf);
+    if (garde.responsable) pose("plan-responsable", garde.responsable);
+
+    var questions = (garde.contexte || []).map(function (qid) {
+      var q = P.q.filter(function (x) { return x.id === qid; })[0];
+      return q ? q.q : "";
+    }).filter(Boolean);
+    pose("plan-contexte", questions.length ? questions.join(" · ") : "aucune question retenue");
+
+    var origine = document.getElementById("plan-origine");
+    if (origine) {
+      origine.innerHTML = "Ce plan suit vos réglages : " +
+        (garde.nom ? "<strong>" + echappe(garde.nom) + "</strong>, " : "") +
+        "code " + echappe(garde.naf) + ", division " + echappe(division(garde.naf)) +
+        " — " + echappe(vue.div.l) + '. <a href="reglages.html">Les modifier</a>.';
+    }
+
+    var tete = document.querySelector(".tete-app .chapeau");
+    if (tete) {
+      tete.textContent = "Le périmètre retenu pour " + (garde.nom || vue.div.l) + " : " +
+        vue.liste.length + " domaines, groupés par rythme de revue.";
+    }
+  }
+
   /* --- L'écran « Mon entreprise » ------------------------------------------- */
   function ecranEntreprise() {
     var form = document.getElementById("form-entreprise");
@@ -371,6 +438,8 @@
     }
   }
 
+  suivreEnTete();
+  suivrePlan();
   ecranEntreprise();
   ecranAlertes();
   bandeauEntreprise();
