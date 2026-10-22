@@ -407,7 +407,7 @@ function perimetre(V, code) {
   return { base, declencheurs, ajoutables, groupes };
 }
 
-function blocDomaine(id, d, origine, lienSecteur = "") {
+function blocDomaine(C, LIENS, id, d, origine, lienSecteur = "", racine = "") {
   return `<article class="bloc-domaine" id="domaine-${esc(id)}" data-domaine="${esc(id)}" data-origine="${origine}"${origine === "declencheur" ? " hidden" : ""}>
   <div class="bloc-domaine-tete">
     <h3>${esc(d.nom)}</h3>
@@ -416,15 +416,20 @@ function blocDomaine(id, d, origine, lienSecteur = "") {
   <p class="bloc-domaine-resume">${esc(d.resume)}</p>
   <div class="bloc-domaine-corps">
     <div>
-      <span class="etiq">Ce qu'il faut tenir</span>
+      <span class="etiq">Ce qu'il faut faire</span>
+      <ul class="a-faire">${(d.actions || []).map((a) => `<li>${esc(a)}</li>`).join("")}</ul>
+      <span class="etiq" style="margin-top:var(--t4)">Ce qu'il faut tenir</span>
       <ul>${d.obligations.map((o) => `<li>${esc(o)}</li>`).join("")}</ul>
     </div>
     <div>
-      <span class="etiq">Textes de référence</span>
-      <ul>${d.textes.map((t) => `<li>${esc(t)}</li>`).join("")}</ul>
-      <span class="etiq" style="margin-top:var(--t4)">Sources officielles</span>
-      <ul>${d.sources.map((s) =>
-        `<li><a href="${esc(s.url)}" target="_blank" rel="noopener">${esc(s.nom)} ${sortant}</a></li>`).join("")}</ul>
+      <span class="etiq">Les textes, et où les lire</span>
+      <ul class="textes-lies">${d.textes.map((ref) => {
+        const L = lienDuTexte(C, LIENS, ref);
+        return `<li>
+        <a href="${racine}texte/${slug(ref)}.html">${esc(ref)}</a>
+        <a class="lien-officiel" href="${esc(L.url)}" target="_blank" rel="noopener"
+           title="${esc(L.quoi)}">${esc(intituleDuLien(L))} ${sortant}</a></li>`;
+      }).join("")}</ul>
     </div>
   </div>
   ${lienSecteur ? `<p style="margin-top:var(--t4)">
@@ -484,7 +489,7 @@ const lienCarte = (href, intitule) =>
   `<a class="lien-carte" href="${esc(href)}"><span class="cache-visuellement">${esc(intitule)}</span></a>`;
 
 /* --- Tableau de bord ------------------------------------------------------- */
-function appTableauBord(V, D, C) {
+function appTableauBord(V, D, C, LIENS) {
   const aAnalyser = D.releve.filter((t) => t.statut === "a-analyser");
   const ouvertes = D.registre.filter((r) => r.echeance && !r.clos);
   const enRetard = D.echeances.filter((e) => e.retard);
@@ -509,6 +514,27 @@ ${rubrique({ etiq: "À traiter", contenu: `
       <dd><span class="grand">${D.releve.length}</span>${lienCarte("releve.html", "Voir le relevé des textes")}</dd></div>
   </dl>` })}
 
+${aAnalyser.length ? rubrique({ etiq: "Ce qu'il faut faire maintenant", contenu: `
+  <p class="lecture">Les textes qui attendent une décision, et le geste à faire pour
+  chacun. Le texte officiel est au bout du lien : rien à chercher.</p>
+  <ul class="conseils">
+    ${aAnalyser.map((t) => {
+      const d = V.domaines[t.domaine];
+      if (!d) return "";
+      const ref = d.textes[0];
+      const L = lienDuTexte(C, LIENS, ref);
+      return `<li>
+      <p class="titre">${esc(t.titre)}</p>
+      <p class="meta etiq">${esc(d.nom)}${t.priorite === "haute" ? " · prioritaire" : ""}</p>
+      <ul class="a-faire">${(d.actions || []).slice(0, 3).map((a) => `<li>${esc(a)}</li>`).join("")}</ul>
+      <p class="note-source">
+        <a href="texte/${slug(ref)}.html">${esc(ref)}</a> ·
+        <a class="lien-officiel" href="${esc(L.url)}" target="_blank" rel="noopener"
+           title="${esc(L.quoi)}">${esc(intituleDuLien(L))} ${sortant}</a>
+      </p>
+    </li>`; }).join("")}
+  </ul>` }) : ""}
+
 ${rubrique({ etiq: "Prochaines revues", aplat: true, contenu: `
   <ul class="liste-echeances">
     ${D.echeances.map((e) => `<li${e.retard ? ' class="retard"' : ""}>
@@ -524,7 +550,7 @@ ${rubrique({ etiq: "Prochaines revues", aplat: true, contenu: `
 ${rubrique({ etiq: "En attente de vous", contenu: `
   <p class="lecture">Les textes relevés qui n'ont pas encore été tranchés.</p>
   <ul class="liste-releve" style="margin-top:var(--t4)">
-    ${aAnalyser.map((t) => ligneReleve(V, C, t)).join("")}
+    ${aAnalyser.map((t) => ligneReleve(V, C, LIENS, t)).join("")}
   </ul>
   <p style="margin-top:var(--t4)"><a class="lien-fleche" href="releve.html">Voir tout le relevé ${fleche}</a></p>` })}
 
@@ -545,7 +571,7 @@ ${rubrique({ etiq: "Dernières traces", aplat: true, contenu: `
 /* Une ligne de relevé s'ouvre sur ce qui la justifie : le domaine auquel elle
    est rattachée, ce qu'il faut y tenir, et les sources officielles où vérifier.
    Sans cela, l'écran se regarde mais ne se consulte pas. */
-function ligneReleve(V, C, t, racine = "") {
+function ligneReleve(V, C, LIENS, t, racine = "") {
   const s = STATUTS[t.statut] || STATUTS.analyse;
   const d = V.domaines[t.domaine];
   const division = divisionDuDomaine(V, t.domaine);
@@ -571,10 +597,10 @@ function ligneReleve(V, C, t, racine = "") {
         <div>
           <span class="etiq">Les textes, à la source</span>
           <ul>${d.textes.map((ref) => {
-            const L = lienDuTexte(C, ref);
+            const L = lienDuTexte(C, LIENS, ref);
             return `<li><a href="${racine}texte/${slug(ref)}.html">${esc(ref)}</a><br>
               <a class="lien-officiel" href="${esc(L.url)}" target="_blank" rel="noopener"
-                 title="${esc(L.quoi)}">${L.exact ? `Le texte sur ${esc(L.ou)}` : `Chercher ce texte sur ${esc(L.ou)}`} ${sortant}</a></li>`;
+                 title="${esc(L.quoi)}">${esc(intituleDuLien(L))} ${sortant}</a></li>`;
           }).join("")}</ul>
         </div>
       </div>` : ""}
@@ -632,7 +658,7 @@ function ligneRegistre(r) {
 }
 
 /* --- Mon plan --------------------------------------------------------------- */
-function appPlan(V, D) {
+function appPlan(V, D, C, LIENS) {
   const { base, groupes } = perimetre(V, D.entreprise.naf);
   const ajoutes = new Set();
   D.entreprise.contexte.forEach((qid) => {
@@ -666,7 +692,7 @@ ${groupes.map((g) => {
       <p class="lecture">${esc(g.f.d)}${ech ? ` Prochaine revue : <strong>${esc(dateFr(ech.prochaine))}</strong>${ech.retard ? " — en retard." : "."}` : ""}</p>
       ${dansGroupe.map((id) => {
         const division = divisionDuDomaine(V, id);
-        return blocDomaine(id, V.domaines[id], ajoutes.has(id) ? "declencheur-retenu" : "base",
+        return blocDomaine(C, LIENS, id, V.domaines[id], ajoutes.has(id) ? "declencheur-retenu" : "base",
           division ? `secteur/${division}.html` : "");
       }).join("\n")}` });
   }).join("\n")}`;
@@ -749,34 +775,60 @@ function celexDepuis(ref) {
   return `3${annee}${type}${String(numero).padStart(4, "0")}`;
 }
 
-function lienDuTexte(C, ref) {
-  /* « Code du travail — risque amiante », « Code de l'environnement, Livre V » :
-     on ne garde que le nom du code pour l'interroger. */
-  const tronc = ref.replace(/\s*\([^)]*\)/g, "").split(/\s[—–-]\s|,\s/)[0].trim();
+function lienDuTexte(C, LIENS, ref) {
   const annuaire = (C && C.annuaire) || [];
-  const cherche = normaliseTitre(tronc);
-  /* Les titres officiels traînent leur sigle — « Code général des impôts, CGI. »
-     On prend donc aussi le titre le plus court qui commence par le nôtre, et
-     jamais l'inverse : « Code rural » ne doit pas attraper « Code rural et de
-     la pêche maritime » si les deux existent. */
-  const code = annuaire.filter((a) => normaliseTitre(a.titre) === cherche)[0] ||
-    annuaire.filter((a) => normaliseTitre(a.titre).startsWith(`${cherche} `))
-      .sort((a, b) => a.titre.length - b.titre.length)[0];
-  if (code) {
-    return { url: `https://www.legifrance.gouv.fr/codes/texte_lc/${code.id}`,
-             exact: true, ou: "Légifrance", quoi: code.titre };
+  const parTitre = (titre) => {
+    const cherche = normaliseTitre(titre);
+    return annuaire.filter((a) => normaliseTitre(a.titre) === cherche)[0] ||
+      annuaire.filter((a) => normaliseTitre(a.titre).startsWith(`${cherche} `))
+        .sort((a, b) => a.titre.length - b.titre.length)[0];
+  };
+
+  /* 1. Ce que contenu/liens.js déclare pour cette référence, en premier :
+        c'est le seul endroit où un humain a tranché. */
+  const declare = LIENS && LIENS[ref];
+  if (declare && declare.code) {
+    const code = parTitre(declare.code);
+    if (code) {
+      return { url: `https://www.legifrance.gouv.fr/codes/texte_lc/${code.id}`,
+               ou: "Légifrance", quoi: declare.quoi || code.titre, direct: true };
+    }
+  }
+  if (declare && declare.url) {
+    const direct = /CELEX:|texte_lc\/|\/loda\/id\//.test(declare.url);
+    return { url: declare.url, ou: hote(declare.url), quoi: declare.quoi || ref, direct };
   }
 
+  /* 2. Un code français, reconnu à son nom dans l'annuaire de la base LEGI. */
+  const tronc = ref.replace(/\s*\([^)]*\)/g, "").split(/\s[—–-]\s|,\s/)[0].trim();
+  const code = parTitre(tronc);
+  if (code) {
+    return { url: `https://www.legifrance.gouv.fr/codes/texte_lc/${code.id}`,
+             ou: "Légifrance", quoi: code.titre, direct: true };
+  }
+
+  /* 3. Un texte européen, reconnu à son numéro. */
   const celex = celexDepuis(ref);
   if (celex) {
     return { url: `https://eur-lex.europa.eu/legal-content/FR/TXT/?uri=CELEX:${celex}`,
-             exact: true, ou: "EUR-Lex", quoi: `CELEX ${celex}` };
+             ou: "EUR-Lex", quoi: `le texte intégral (CELEX ${celex})`, direct: true };
   }
 
+  /* 4. Rien de déclaré : on le dit, et verifieLiens() l'aura déjà signalé. */
   return { url: `https://www.legifrance.gouv.fr/search/all?tab_selection=all&searchField=ALL&query=${
              encodeURIComponent(ref)}`,
-           exact: false, ou: "Légifrance", quoi: ref };
+           ou: "Légifrance", quoi: `la recherche « ${ref} »`, direct: false, orphelin: true };
 }
+
+/* Le nom du site, pour le dire sous le lien : « sur boss.gouv.fr ». */
+function hote(url) {
+  try { return new URL(url).host.replace(/^www\./, ""); } catch (e) { return "la source officielle"; }
+}
+
+/* Le mot sous le lien. Jamais « chercher » : ce serait rendre au client le
+   travail qu'il nous paie à faire. Soit on lui donne le texte, soit on lui
+   donne le recueil officiel qui le contient, et on le dit. */
+const intituleDuLien = (L) => L.direct ? "Lire le texte officiel" : "Voir les textes officiels";
 
 /* --- Le texte des codes, mot pour mot ---------------------------------------
    outils/codes.mjs écrit contenu/codes.json : les morceaux de codes consolidés
@@ -968,7 +1020,7 @@ function tableauDesFamilles(V, groupes, titreDe, dateDe, domaineDe) {
 }
 
 /* --- Relevé ------------------------------------------------------------------ */
-function appReleve(V, D, JO, C) {
+function appReleve(V, D, JO, C, LIENS) {
   const parStatut = Object.keys(STATUTS).map((s) => ({
     s, l: STATUTS[s].l, n: D.releve.filter((t) => t.statut === s).length
   }));
@@ -1049,7 +1101,7 @@ ${rubrique({ etiq: officiel ? "Jeu d'essai" : "Le relevé", aplat: true, contenu
     <h3>${esc(g.cl.l)} <span class="etiq">${g.textes.length} texte${g.textes.length > 1 ? "s" : ""}</span></h3>
     <p class="precision">${esc(g.cl.d)}</p>
     <ul class="liste-releve">
-      ${g.textes.map((t) => ligneReleve(V, C, t)).join("")}
+      ${g.textes.map((t) => ligneReleve(V, C, LIENS, t)).join("")}
     </ul>
   </section>`).join("")}` })}`;
 
@@ -1156,7 +1208,7 @@ function appSecteurs(V, METIERS, NAF) {
       </h2>
       <ul class="puces">
         ${(g.codes.length ? g.codes.map((c) => `<li data-recherche="${esc([c.c, c.c.replace(".", ""), c.l, commun].join(" "))}">
-          <a href="${adresse}#ape-${esc(c.c.replace(".", ""))}" title="${esc(c.l)}">
+          <a href="${adresse}?ape=${esc(c.c.replace(".", ""))}" title="${esc(c.l)}">
             <span class="code">${esc(c.c)}</span><span class="nom">${esc(c.l)}</span></a></li>`)
           : [`<li data-recherche="${esc(commun)}">
           <a href="${adresse}" title="${esc(g.d.l)}">
@@ -1181,9 +1233,9 @@ function appSecteurs(V, METIERS, NAF) {
    reproduisent pas le texte officiel — il est sur Légifrance, lui seul fait
    foi, et une copie se périme en silence. Elles disent ce qu'il exige, en
    français courant. Le lien vers la source reste, en second. */
-function appTexte(V, TEXTES, METIERS, C, ref, fiche, domaines) {
+function appTexte(V, TEXTES, METIERS, C, LIENS, ref, fiche, domaines) {
   const T = texteDuSite(C, ref);
-  const L = lienDuTexte(C, ref);
+  const L = lienDuTexte(C, LIENS, ref);
   /* Les actions de tous les domaines qui citent ce texte, sans doublon : c'est
      ce que le client doit faire le jour où il bouge. */
   const actions = [...new Set(domaines.flatMap((id) => V.domaines[id].actions || []))];
@@ -1225,7 +1277,7 @@ ${rubrique({ etiq: "Ce que ce texte exige", contenu: `
   </ul>` : ""}
   <p class="rangee" style="margin-top:var(--t5)">
     <a class="bouton bouton-accent" href="${esc(L.url)}" target="_blank" rel="noopener">
-      ${L.exact ? "Lire le texte officiel" : "Chercher ce texte"} ${sortant}</a>
+      ${esc(intituleDuLien(L))} ${sortant}</a>
     <button type="button" class="bouton bouton-sobre" onclick="window.print()">${imprimante} Enregistrer en PDF</button>
   </p>` })}
 
@@ -1295,12 +1347,12 @@ ${rubrique({ etiq: T ? "Vérifier à la source" : "Lire le texte officiel", cont
        doute ou de litige.`}</p>
   <p class="rangee" style="margin-top:var(--t4)">
     <a class="bouton bouton-accent" href="${esc(L.url)}" target="_blank" rel="noopener">
-      ${L.exact ? `Le texte sur ${esc(L.ou)}` : `Chercher ce texte sur ${esc(L.ou)}`} ${sortant}</a>
+      ${esc(intituleDuLien(L))} ${sortant}</a>
   </p>
-  <p class="note-source">${L.exact
-    ? `Lien direct vers le texte lui-même, par son identifiant officiel (${esc(L.quoi)}) — pas vers l'accueil d'un site.`
-    : `Nous n'avons pas encore l'identifiant officiel de ce texte : ce lien lance la
-       recherche à son nom sur ${esc(L.ou)}. Les textes qui en ont un y mènent directement.`}</p>
+  <p class="note-source">${L.direct
+    ? `Lien direct vers le texte lui-même : ${esc(L.quoi)}, sur ${esc(L.ou)}.`
+    : `Cette référence couvre plusieurs textes : le lien mène au recueil officiel qui les
+       publie — ${esc(L.quoi)}, sur ${esc(L.ou)}.`}</p>
   <p class="etiq" style="margin-top:var(--t5)">Les sources qui suivent ce domaine</p>
   <ul class="sources-bande" style="justify-content:flex-start;margin-top:var(--t3)">
     ${[...new Set(domaines.flatMap((id) => V.domaines[id].sources.map((s) => JSON.stringify(s))))]
@@ -1370,7 +1422,7 @@ function appTextes(V, TEXTES, parTexte, C) {
   });
 }
 
-function appSecteur(V, PIEGES, METIERS, TEXTES, NAF, C, d) {
+function appSecteur(V, PIEGES, METIERS, TEXTES, NAF, C, LIENS, d) {
   const apes = NAF ? NAF.codes.filter((c) => c.d === d.c) : [];
   const section = V.sections.filter((s) => s.c === d.s)[0];
   const mots = METIERS[d.c] || [];
@@ -1397,6 +1449,11 @@ function appSecteur(V, PIEGES, METIERS, TEXTES, NAF, C, d) {
       <li><span>Section ${esc(d.s)} — ${esc(section ? section.l : "")}</span></li>
     </ul>
     <h1>${esc(d.l)}</h1>
+    ${apes.length ? `<p class="code-choisi" id="code-choisi" hidden>
+      <span class="etiq">Votre code</span>
+      <span class="code" id="code-choisi-code"></span>
+      <span class="nom" id="code-choisi-nom"></span>
+    </p>` : ""}
     ${mots.length ? `<p class="chapeau"><span class="etiq">On dit aussi</span>${esc(mots.join(" · "))}</p>` : ""}
     <dl class="faits" style="margin-top:var(--t5)">
       <div><dt class="etiq">Textes de référence</dt><dd><span class="grand">${textes.length}</span></dd></div>
@@ -1408,29 +1465,34 @@ function appSecteur(V, PIEGES, METIERS, TEXTES, NAF, C, d) {
   </div>
 </section>
 
-${apes.length ? rubrique({ etiq: "Les codes APE de ce secteur", aplat: true, contenu: `
-  <p class="lecture">Votre entreprise porte un de ces ${apes.length} codes — il est sur
-  votre avis de situation INSEE et sur vos bulletins de paie. Tous relèvent de la
-  division ${esc(d.c)}, et donc du même périmètre de veille : c'est à ce niveau que
-  les obligations se ressemblent.</p>
-  <ul class="puces codes-ape" style="margin-top:var(--t4)">
-    ${apes.map((c) => `<li id="ape-${esc(c.c.replace(".", ""))}">
-      <span class="code">${esc(c.c)}</span><span class="nom">${esc(c.l)}</span></li>`).join("")}
-  </ul>
-  <p class="note-source">${esc(NAF.source.nom)}, relevée le ${esc(dateFr(NAF.releve))}.</p>` }) : ""}
-
 ${rubrique({ etiq: "Les textes qui s'appliquent", contenu: `
   <p class="lecture">Tous les textes de référence du périmètre de ce secteur, sans
   détour : ${textes.length} textes. Chacun a sa fiche — à qui il s'applique, ce qu'il
   exige — lisible ici, sans quitter le site.</p>
-  <ul class="textes">
+  <ul class="textes textes-depliants">
     ${textes.map((x) => {
-      const L = lienDuTexte(C, x.ref);
+      const L = lienDuTexte(C, LIENS, x.ref);
+      const f = TEXTES[x.ref] || {};
       return `<li>
-      <span class="ref"><a href="../texte/${slug(x.ref)}.html">${esc(x.ref)}</a></span>
-      <span class="rattache"><a href="#domaine-${esc(x.id)}">${esc(x.domaine)}</a></span>
-      <span class="source etiq"><a class="lien-officiel" href="${esc(L.url)}" target="_blank"
-        rel="noopener">${L.exact ? "le texte" : "chercher"} ${sortant}</a></span>
+      <details>
+        <summary>
+          <span class="ref">${esc(x.ref)}</span>
+          <span class="rattache">${esc(x.domaine)}</span>
+          <span class="source etiq">${esc(x.nature)}</span>
+          ${chevron}
+        </summary>
+        <div class="detail">
+          ${f.porte ? `<p class="lecture">${esc(f.porte)}</p>` : ""}
+          ${f.qui ? `<p class="lecture"><strong>À qui ça s'applique.</strong> ${esc(f.qui)}</p>` : ""}
+          ${(f.exige || []).length ? `<span class="etiq" style="margin-top:var(--t4)">Ce que ce texte exige</span>
+          <ul class="exigences">${f.exige.map((e) => `<li>${esc(e)}</li>`).join("")}</ul>` : ""}
+          <p class="rangee" style="margin-top:var(--t4)">
+            <a class="bouton bouton-sobre" href="../texte/${slug(x.ref)}.html">La fiche ${fleche}</a>
+            <a class="bouton bouton-sobre" href="${esc(L.url)}" target="_blank" rel="noopener"
+               title="${esc(L.quoi)}">${esc(intituleDuLien(L))} ${sortant}</a>
+          </p>
+        </div>
+      </details>
     </li>`; }).join("\n")}
   </ul>` })}
 
@@ -1440,8 +1502,8 @@ ${rubrique({ etiq: "Ce qu'il faut tenir, domaine par domaine", aplat: true, cont
   ${groupes.map((g) => `
   <div class="groupe-frequence" data-groupe-frequence="${esc(g.id)}">
     <div class="tete"><h3>${esc(g.f.l)}</h3><span class="etiq">${esc(g.f.d)}</span></div>
-    ${g.base.map((id) => blocDomaine(id, V.domaines[id], "base")).join("\n")}
-    ${g.ajout.map((id) => blocDomaine(id, V.domaines[id], "declencheur")).join("\n")}
+    ${g.base.map((id) => blocDomaine(C, LIENS, id, V.domaines[id], "base", "", "../")).join("\n")}
+    ${g.ajout.map((id) => blocDomaine(C, LIENS, id, V.domaines[id], "declencheur", "", "../")).join("\n")}
   </div>`).join("\n")}` })}
 
 ${declencheurs.length ? rubrique({ etiq: "Contexte", aplat: true, contenu: `
@@ -1453,6 +1515,21 @@ ${declencheurs.length ? rubrique({ etiq: "Contexte", aplat: true, contenu: `
       <span><span class="intitule">${esc(q.q)}</span><span class="aide">${esc(q.d)}</span></span>
     </label></li>`).join("\n")}
   </ul>` }) : ""}
+
+
+${apes.length ? rubrique({ etiq: "Les codes APE de cette division", aplat: true, id: "codes-ape", contenu: `
+  <details class="pliant" id="pliant-ape">
+    <summary>
+      <span class="titre">Voir les ${apes.length} codes APE de la division ${esc(d.c)}</span>
+      <span class="precision">Tous relèvent du même périmètre de veille : c'est à ce niveau que les obligations se ressemblent.</span>
+      ${chevron}
+    </summary>
+    <ul class="puces codes-ape" style="margin-top:var(--t4)">
+      ${apes.map((c) => `<li id="ape-${esc(c.c.replace(".", ""))}">
+        <span class="code">${esc(c.c)}</span><span class="nom">${esc(c.l)}</span></li>`).join("")}
+    </ul>
+    <p class="note-source">${esc(NAF.source.nom)}, relevée le ${esc(dateFr(NAF.releve))}.</p>
+  </details>` }) : ""}
 
 ${p ? rubrique({ etiq: "Le terrain", contenu: `
   ${p.valide ? "" : `<p class="reserve" style="margin-bottom:var(--t4)">
@@ -2378,6 +2455,31 @@ function verifie(V, PIEGES, METIERS, D, TEXTES) {
   if (sInconnus.length) throw new Error(`Démonstration : statuts inconnus — ${[...new Set(sInconnus)].join(", ")}.`);
 }
 
+/* Chaque texte de référence doit mener quelque part de précis. Si une
+   référence n'a ni code reconnu, ni numéro européen, ni ligne dans
+   contenu/liens.js, elle retomberait sur une recherche — c'est-à-dire sur du
+   travail rendu au client. On refuse de publier ça. */
+function verifieLiens(TEXTES, C, LIENS) {
+  const orphelines = Object.keys(TEXTES).filter((ref) => lienDuTexte(C, LIENS, ref).orphelin);
+  if (orphelines.length)
+    throw new Error(`Textes sans destination officielle (ajouter une ligne dans ` +
+      `contenu/liens.js) : ${orphelines.join(" | ")}`);
+
+  const inconnues = Object.keys(LIENS).filter((ref) => !TEXTES[ref]);
+  if (inconnues.length)
+    throw new Error(`contenu/liens.js cite des références qui n'existent pas : ${inconnues.join(" | ")}`);
+
+  for (const [ref, l] of Object.entries(LIENS)) {
+    if (!l.quoi) throw new Error(`contenu/liens.js : « ${ref} » ne dit pas ce qu'on va trouver.`);
+    if (l.url) {
+      try { new URL(l.url); } catch (e) { throw new Error(`contenu/liens.js : adresse invalide pour « ${ref} ».`); }
+      if (!/^https:/.test(l.url)) throw new Error(`contenu/liens.js : « ${ref} » n'est pas en https.`);
+    } else if (!l.code) {
+      throw new Error(`contenu/liens.js : « ${ref} » n'a ni « url » ni « code ».`);
+    }
+  }
+}
+
 /* La nomenclature est engendrée, donc à vérifier comme le reste : un code APE
    qui ne retombe sur aucune division enverrait le client sur une page absente. */
 function verifieNaf(V, NAF) {
@@ -2468,6 +2570,8 @@ async function main() {
   // n'empêche pas de construire : les fiches gardent leur lien et le disent.
   // La nomenclature NAF entière : 732 codes APE. Son absence n'empêche pas de
   // construire — la page des secteurs retombe sur les 88 divisions seules.
+  const LIENS = await chargeFichier("contenu/liens.js", "LIENS");
+
   const cheminNaf = resolve(RACINE, "contenu/naf.js");
   const NAF = existsSync(cheminNaf) ? await chargeFichier("contenu/naf.js", "NAF") : null;
   if (NAF) verifieNaf(V, NAF);
@@ -2475,6 +2579,7 @@ async function main() {
   const cheminCodes = resolve(RACINE, "contenu/codes.json");
   const C = existsSync(cheminCodes) ? JSON.parse(await readFile(cheminCodes, "utf8")) : null;
   if (C) verifieCodes(TEXTES, C);
+  verifieLiens(TEXTES, C, LIENS);
   verifie(V, PIEGES, METIERS, D, TEXTES);
 
   // Les écrans de l'accueil sont de vraies captures de l'application, prises
@@ -2517,9 +2622,9 @@ async function main() {
   await writeFile(join(SORTIE, "abonnement.html"), pageAbonnement(V));
   await writeFile(join(SORTIE, "connexion.html"), pageConnexion());
 
-  await writeFile(join(SORTIE, "app", "index.html"), appTableauBord(V, D, C));
-  await writeFile(join(SORTIE, "app", "plan.html"), appPlan(V, D));
-  await writeFile(join(SORTIE, "app", "releve.html"), appReleve(V, D, JO, C));
+  await writeFile(join(SORTIE, "app", "index.html"), appTableauBord(V, D, C, LIENS));
+  await writeFile(join(SORTIE, "app", "plan.html"), appPlan(V, D, C, LIENS));
+  await writeFile(join(SORTIE, "app", "releve.html"), appReleve(V, D, JO, C, LIENS));
   await writeFile(join(SORTIE, "app", "registre.html"), appRegistre(V, D));
   await writeFile(join(SORTIE, "app", "secteurs.html"), appSecteurs(V, METIERS, NAF));
   await writeFile(join(SORTIE, "app", "reglages.html"), appReglages(V, D, NAF, METIERS));
@@ -2536,7 +2641,7 @@ async function main() {
   await writeFile(join(SORTIE, "app", "textes.html"), appTextes(V, TEXTES, parTexte, C));
   for (const ref of Object.keys(parTexte)) {
     await writeFile(join(SORTIE, "app", "texte", `${slug(ref)}.html`),
-      appTexte(V, TEXTES, METIERS, C, ref, TEXTES[ref], parTexte[ref]));
+      appTexte(V, TEXTES, METIERS, C, LIENS, ref, TEXTES[ref], parTexte[ref]));
   }
 
   // Une page par morceau de code relevé : c'est là que le texte officiel se
@@ -2554,7 +2659,7 @@ async function main() {
 
   for (const d of V.divisions) {
     await writeFile(join(SORTIE, "app", "secteur", `${d.c}-${slug(d.l)}.html`),
-      appSecteur(V, PIEGES, METIERS, TEXTES, NAF, C, d));
+      appSecteur(V, PIEGES, METIERS, TEXTES, NAF, C, LIENS, d));
   }
 
   const total = await poids(SORTIE);

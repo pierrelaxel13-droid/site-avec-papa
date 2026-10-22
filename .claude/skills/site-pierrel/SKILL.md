@@ -29,6 +29,7 @@ un fichier de `_site/` ne sert à rien, il est effacé à chaque construction.
 | `outils/captures.mjs` | Les vraies captures montrées sur l'accueil : ordinateur et téléphone, claires **et** sombres. |
 | `outils/icones.mjs` | Les icônes PNG du manifeste, rendues depuis `assets/favicon.svg`. |
 | `outils/veille.mjs` | La relève des 25 sources de `contenu/sources.js` → `contenu/veille-releve.json`. |
+| `contenu/liens.js` | Où lire chaque texte : `{ code: "…" }` (adresse reconstruite depuis l'annuaire LEGI) ou `{ url: "…" }`. **Le build échoue si une référence n'y est pas et n'est ni un code ni un texte européen reconnu.** |
 | `outils/naf.mjs` | La nomenclature NAF entière → `contenu/naf.js` (732 codes APE). Source : `@socialgouv/codes-naf` sur le registre npm. |
 | `contenu/naf.js` | **Engendré** : 732 codes APE avec leur division. Ne pas modifier à la main. |
 | `outils/codes.mjs` | Le texte des codes consolidés → `contenu/codes.json` (193 pages, 4 718 articles), et la comparaison avec la relève précédente. Source : `@socialgouv/legi-data` sur le registre npm, joignable d'ici. |
@@ -187,9 +188,17 @@ qu'il n'y a pas de client.
   chiffres du code font le pont (`4322B` → division `43`). Ne pas créer de
   périmètre au niveau du code : les obligations ne se distinguent pas à ce
   niveau-là.
-- **52 des 124 fiches ont un lien exact vers leur texte**, les autres une
-  recherche nommée, annoncée comme telle. Ne jamais présenter une recherche
-  comme un lien direct.
+- **Jamais « chercher » sur le site.** 75 fiches mènent au texte même, 49 au
+  recueil officiel qui le publie, et la page dit lequel des deux. Une référence
+  sans destination fait échouer le build (`verifieLiens`).
+- **Une page ne montre que ce qu'on y est venu voir.** Arrivé sur une fiche de
+  secteur avec `?ape=4322B`, le client voit son code en haut et les textes qui
+  s'appliquent ; les 23 autres codes de la division restent repliés. Ne pas
+  remettre de liste longue avant ce qu'il vient lire.
+- **Le texte va à côté de sa source.** Sur la fiche de secteur, chaque texte se
+  déplie sur ce qu'il exige, avec sa fiche et son lien officiel. Dans le plan
+  et le tableau de bord, les actions et les textes liés sont visibles sans
+  rien déplier.
 - **L'extracteur DILA de `veille.mjs` n'a pas encore vu un XML réel.** Il
   préfère remonter « 0 texte extrait » qu'un contenu reconstitué. Au premier
   passage réussi, vérifier ce qu'il sort contre le fichier d'origine avant de
