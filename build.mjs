@@ -484,7 +484,7 @@ const lienCarte = (href, intitule) =>
   `<a class="lien-carte" href="${esc(href)}"><span class="cache-visuellement">${esc(intitule)}</span></a>`;
 
 /* --- Tableau de bord ------------------------------------------------------- */
-function appTableauBord(V, D) {
+function appTableauBord(V, D, C) {
   const aAnalyser = D.releve.filter((t) => t.statut === "a-analyser");
   const ouvertes = D.registre.filter((r) => r.echeance && !r.clos);
   const enRetard = D.echeances.filter((e) => e.retard);
@@ -524,7 +524,7 @@ ${rubrique({ etiq: "Prochaines revues", aplat: true, contenu: `
 ${rubrique({ etiq: "En attente de vous", contenu: `
   <p class="lecture">Les textes relevés qui n'ont pas encore été tranchés.</p>
   <ul class="liste-releve" style="margin-top:var(--t4)">
-    ${aAnalyser.map((t) => ligneReleve(V, t)).join("")}
+    ${aAnalyser.map((t) => ligneReleve(V, C, t)).join("")}
   </ul>
   <p style="margin-top:var(--t4)"><a class="lien-fleche" href="releve.html">Voir tout le relevé ${fleche}</a></p>` })}
 
@@ -545,7 +545,7 @@ ${rubrique({ etiq: "Dernières traces", aplat: true, contenu: `
 /* Une ligne de relevé s'ouvre sur ce qui la justifie : le domaine auquel elle
    est rattachée, ce qu'il faut y tenir, et les sources officielles où vérifier.
    Sans cela, l'écran se regarde mais ne se consulte pas. */
-function ligneReleve(V, t, racine = "") {
+function ligneReleve(V, C, t, racine = "") {
   const s = STATUTS[t.statut] || STATUTS.analyse;
   const d = V.domaines[t.domaine];
   const division = divisionDuDomaine(V, t.domaine);
@@ -565,13 +565,17 @@ function ligneReleve(V, t, racine = "") {
       ${d ? `<p class="lecture">${esc(d.resume)}</p>
       <div class="detail-grille">
         <div>
-          <span class="etiq">Ce qu'il faut tenir</span>
-          <ul>${d.obligations.slice(0, 4).map((o) => `<li>${esc(o)}</li>`).join("")}</ul>
+          <span class="etiq">Ce qu'il faut faire</span>
+          <ul class="a-faire">${(d.actions || []).map((a) => `<li>${esc(a)}</li>`).join("")}</ul>
         </div>
         <div>
-          <span class="etiq">Vérifier à la source</span>
-          <ul>${d.sources.map((x) =>
-            `<li><a href="${esc(x.url)}" target="_blank" rel="noopener">${esc(x.nom)} ${sortant}</a></li>`).join("")}</ul>
+          <span class="etiq">Les textes, à la source</span>
+          <ul>${d.textes.map((ref) => {
+            const L = lienDuTexte(C, ref);
+            return `<li><a href="${racine}texte/${slug(ref)}.html">${esc(ref)}</a><br>
+              <a class="lien-officiel" href="${esc(L.url)}" target="_blank" rel="noopener"
+                 title="${esc(L.quoi)}">${L.exact ? `Le texte sur ${esc(L.ou)}` : `Chercher ce texte sur ${esc(L.ou)}`} ${sortant}</a></li>`;
+          }).join("")}</ul>
         </div>
       </div>` : ""}
       <p class="rangee" style="margin-top:var(--t4)">
@@ -715,6 +719,65 @@ function ligneJO(t, i) {
 </li>`;
 }
 
+/* --- Le lien du texte, pas celui du site -----------------------------------
+   « Voir la source » renvoyait sur l'accueil de Légifrance ou de l'INRS : au
+   client de retrouver son texte. Ici on vise le texte lui-même, à partir de
+   son identifiant officiel.
+
+   Trois cas, dans cet ordre :
+     1. un code français — son identifiant LEGITEXT vient de l'annuaire que
+        relève outils/codes.mjs, donc de la base LEGI elle-même ;
+     2. un texte européen — son numéro CELEX se déduit de sa référence
+        (« Règlement (UE) 2016/679 » → 32016R0679) ;
+     3. le reste — une recherche nommée sur Légifrance, et la page le dit :
+        « chercher ce texte », pas « voir le texte ».
+
+   Ce qui n'est pas exact est annoncé comme tel. Un lien qui ment coûte plus
+   cher qu'un lien qui manque. */
+const normaliseTitre = (s) => sansAccent(String(s)).toLowerCase()
+  .replace(/[’']/g, " ").replace(/[^a-z0-9]+/g, " ").trim();
+
+function celexDepuis(ref) {
+  const m = ref.match(/\b(R[eè]glement|Directive)\b[^0-9]*(\d{1,4})\s*\/\s*(\d{2,4})/i);
+  if (!m) return null;
+  const type = /^R/i.test(m[1]) ? "R" : "L";
+  let a = Number(m[2]), b = Number(m[3]);
+  // « 1907/2006 » : le numéro puis l'année ; « 2016/679 » : l'inverse.
+  const annee = a >= 1950 ? a : (b >= 1950 ? b : 0);
+  const numero = annee === a ? b : a;
+  if (!annee || !numero) return null;
+  return `3${annee}${type}${String(numero).padStart(4, "0")}`;
+}
+
+function lienDuTexte(C, ref) {
+  /* « Code du travail — risque amiante », « Code de l'environnement, Livre V » :
+     on ne garde que le nom du code pour l'interroger. */
+  const tronc = ref.replace(/\s*\([^)]*\)/g, "").split(/\s[—–-]\s|,\s/)[0].trim();
+  const annuaire = (C && C.annuaire) || [];
+  const cherche = normaliseTitre(tronc);
+  /* Les titres officiels traînent leur sigle — « Code général des impôts, CGI. »
+     On prend donc aussi le titre le plus court qui commence par le nôtre, et
+     jamais l'inverse : « Code rural » ne doit pas attraper « Code rural et de
+     la pêche maritime » si les deux existent. */
+  const code = annuaire.filter((a) => normaliseTitre(a.titre) === cherche)[0] ||
+    annuaire.filter((a) => normaliseTitre(a.titre).startsWith(`${cherche} `))
+      .sort((a, b) => a.titre.length - b.titre.length)[0];
+  if (code) {
+    return { url: `https://www.legifrance.gouv.fr/codes/texte_lc/${code.id}`,
+             exact: true, ou: "Légifrance", quoi: code.titre };
+  }
+
+  const celex = celexDepuis(ref);
+  if (celex) {
+    return { url: `https://eur-lex.europa.eu/legal-content/FR/TXT/?uri=CELEX:${celex}`,
+             exact: true, ou: "EUR-Lex", quoi: `CELEX ${celex}` };
+  }
+
+  return { url: `https://www.legifrance.gouv.fr/search/all?tab_selection=all&searchField=ALL&query=${
+             encodeURIComponent(ref)}`,
+           exact: false, ou: "Légifrance", quoi: ref };
+}
+
 /* --- Le texte des codes, mot pour mot ---------------------------------------
    outils/codes.mjs écrit contenu/codes.json : les morceaux de codes consolidés
    que le client doit pouvoir lire chez nous, sans partir ailleurs. Le html de
@@ -851,6 +914,53 @@ ${rubrique({ etiq: "D’où ça vient dans votre veille", aplat: true, contenu: 
   });
 }
 
+/* --- Les textes rangés par nature ------------------------------------------
+   « Plus clair » veut dire : ne pas servir une liste unique où tout se vaut.
+   Un texte qui sort relève de la santé-sécurité, de l'hygiène, du social, de
+   l'environnement, ou du métier. Le tableau le dit d'un coup d'œil, et dit ce
+   qu'il faut faire en premier ; les listes dessous donnent le détail. */
+function groupesParClassement(V, entrees, domaineDe) {
+  const par = {};
+  entrees.forEach((t) => {
+    const d = V.domaines[domaineDe(t)];
+    const cl = d && V.classements[d.classement] ? d.classement : "metier";
+    (par[cl] = par[cl] || []).push(t);
+  });
+  return Object.keys(V.classements)
+    .filter((id) => par[id] && par[id].length)
+    .map((id) => ({ id, cl: V.classements[id], textes: par[id] }));
+}
+
+function tableauDesFamilles(V, groupes, titreDe, dateDe, domaineDe) {
+  if (!groupes.length) return "";
+  return `<div class="tableau-boite">
+  <table class="tableau-familles">
+  <thead><tr>
+    <th scope="col">Famille</th>
+    <th scope="col">Textes</th>
+    <th scope="col">Le plus récent</th>
+    <th scope="col">Ce qu'il faut faire en premier</th>
+  </tr></thead>
+  <tbody>
+    ${groupes.map((g) => {
+      const liste = g.textes.slice().sort((a, b) => (dateDe(a) < dateDe(b) ? 1 : -1));
+      const t = liste[0];
+      const d = V.domaines[domaineDe(t)];
+      const action = d && d.actions && d.actions.length ? d.actions[0] : "—";
+      return `<tr>
+      <th scope="row" data-intitule="Famille">
+        <a href="#famille-${esc(g.id)}">${esc(g.cl.l)}</a></th>
+      <td data-intitule="Textes"><span class="compte-famille">${liste.length}</span></td>
+      <td data-intitule="Le plus récent">
+        <span class="mono date">${esc(dateFr(dateDe(t)))}</span>
+        <span class="titre">${esc(titreDe(t))}</span></td>
+      <td data-intitule="Ce qu'il faut faire en premier">${esc(action)}</td>
+    </tr>`; }).join("")}
+  </tbody>
+</table>
+</div>`;
+}
+
 /* --- Relevé ------------------------------------------------------------------ */
 function appReleve(V, D, JO, C) {
   const parStatut = Object.keys(STATUTS).map((s) => ({
@@ -858,6 +968,7 @@ function appReleve(V, D, JO, C) {
   }));
 
   const officiel = JO && JO.textes && JO.textes.length;
+  const groupes = groupesParClassement(V, D.releve, (t) => t.domaine);
 
   const corps = enTeteApp(D, "Relevé des textes",
     "Les textes parus qui touchent votre périmètre, et seulement ceux-là. Ce que chacun change, et où en est la décision.",
@@ -922,13 +1033,19 @@ ${C ? rubrique({ etiq: "Ce qui a changé dans les codes", contenu: `
 ${rubrique({ etiq: officiel ? "Jeu d'essai" : "Le relevé", aplat: true, contenu: `
   <p class="lecture">${officiel
     ? "Les textes de démonstration, conservés pour montrer le cycle complet : analyse, décision, trace."
-    : "Du plus récent au plus ancien. Les textes écartés ne figurent pas ici : ils sont tracés dans le registre, avec le motif de leur mise à l'écart."}</p>
+    : "Rangés par nature : ce qui touche les personnes, ce qui touche l'hygiène, ce qui touche le contrat, ce qui touche le site, et ce qui tient à votre métier. Les textes écartés ne figurent pas ici : ils sont tracés dans le registre, avec le motif de leur mise à l'écart."}</p>
   <dl class="compteurs" style="margin-top:var(--t4)">
     ${parStatut.map((x) => `<div><dt class="etiq">${esc(x.l)}</dt><dd><span class="grand">${x.n}</span></dd></div>`).join("")}
   </dl>
-  <ul class="liste-releve" style="margin-top:var(--t4)">
-    ${D.releve.map((t) => ligneReleve(V, t)).join("")}
-  </ul>` })}`;
+  ${tableauDesFamilles(V, groupes, (t) => t.titre, (t) => t.date, (t) => t.domaine)}
+  ${groupes.map((g) => `
+  <section class="famille-releve" id="famille-${esc(g.id)}">
+    <h3>${esc(g.cl.l)} <span class="etiq">${g.textes.length} texte${g.textes.length > 1 ? "s" : ""}</span></h3>
+    <p class="precision">${esc(g.cl.d)}</p>
+    <ul class="liste-releve">
+      ${g.textes.map((t) => ligneReleve(V, C, t)).join("")}
+    </ul>
+  </section>`).join("")}` })}`;
 
   return page({
     titre: `Relevé des textes | ${SITE.nom}`,
@@ -1060,6 +1177,10 @@ function appSecteurs(V, METIERS, NAF) {
    français courant. Le lien vers la source reste, en second. */
 function appTexte(V, TEXTES, METIERS, C, ref, fiche, domaines) {
   const T = texteDuSite(C, ref);
+  const L = lienDuTexte(C, ref);
+  /* Les actions de tous les domaines qui citent ce texte, sans doublon : c'est
+     ce que le client doit faire le jour où il bouge. */
+  const actions = [...new Set(domaines.flatMap((id) => V.domaines[id].actions || []))];
   const secteurs = V.divisions.filter((x) =>
     domaines.some((id) => perimetre(V, x.c).base.indexOf(id) !== -1));
 
@@ -1092,7 +1213,13 @@ ${rubrique({ etiq: "Ce que ce texte exige", contenu: `
   <ul class="exigences">
     ${fiche.exige.map((x) => `<li>${esc(x)}</li>`).join("\n")}
   </ul>
+  ${actions.length ? `<p class="etiq" style="margin-top:var(--t5)">Ce qu'il faut faire quand ce texte bouge</p>
+  <ul class="a-faire" style="margin-top:var(--t3)">
+    ${actions.map((a) => `<li>${esc(a)}</li>`).join("")}
+  </ul>` : ""}
   <p class="rangee" style="margin-top:var(--t5)">
+    <a class="bouton bouton-accent" href="${esc(L.url)}" target="_blank" rel="noopener">
+      ${L.exact ? "Lire le texte officiel" : "Chercher ce texte"} ${sortant}</a>
     <button type="button" class="bouton bouton-sobre" onclick="window.print()">${imprimante} Enregistrer en PDF</button>
   </p>` })}
 
@@ -1160,7 +1287,16 @@ ${rubrique({ etiq: T ? "Vérifier à la source" : "Lire le texte officiel", cont
          : "quelques codes"}. Pour celui-ci, le texte officiel et à jour est publié
        par l’État — lui seul fait foi, et c’est à lui qu’il faut se référer en cas de
        doute ou de litige.`}</p>
-  <ul class="sources-bande" style="justify-content:flex-start">
+  <p class="rangee" style="margin-top:var(--t4)">
+    <a class="bouton bouton-accent" href="${esc(L.url)}" target="_blank" rel="noopener">
+      ${L.exact ? `Le texte sur ${esc(L.ou)}` : `Chercher ce texte sur ${esc(L.ou)}`} ${sortant}</a>
+  </p>
+  <p class="note-source">${L.exact
+    ? `Lien direct vers le texte lui-même, par son identifiant officiel (${esc(L.quoi)}) — pas vers l'accueil d'un site.`
+    : `Nous n'avons pas encore l'identifiant officiel de ce texte : ce lien lance la
+       recherche à son nom sur ${esc(L.ou)}. Les textes qui en ont un y mènent directement.`}</p>
+  <p class="etiq" style="margin-top:var(--t5)">Les sources qui suivent ce domaine</p>
+  <ul class="sources-bande" style="justify-content:flex-start;margin-top:var(--t3)">
     ${[...new Set(domaines.flatMap((id) => V.domaines[id].sources.map((s) => JSON.stringify(s))))]
       .map((s) => JSON.parse(s))
       .map((s) => `<li><a href="${esc(s.url)}" target="_blank" rel="noopener">${esc(s.nom)} ${sortant}</a></li>`)
@@ -1228,7 +1364,7 @@ function appTextes(V, TEXTES, parTexte, C) {
   });
 }
 
-function appSecteur(V, PIEGES, METIERS, TEXTES, NAF, d) {
+function appSecteur(V, PIEGES, METIERS, TEXTES, NAF, C, d) {
   const apes = NAF ? NAF.codes.filter((c) => c.d === d.c) : [];
   const section = V.sections.filter((s) => s.c === d.s)[0];
   const mots = METIERS[d.c] || [];
@@ -1282,11 +1418,14 @@ ${rubrique({ etiq: "Les textes qui s'appliquent", contenu: `
   détour : ${textes.length} textes. Chacun a sa fiche — à qui il s'applique, ce qu'il
   exige — lisible ici, sans quitter le site.</p>
   <ul class="textes">
-    ${textes.map((x) => `<li>
+    ${textes.map((x) => {
+      const L = lienDuTexte(C, x.ref);
+      return `<li>
       <span class="ref"><a href="../texte/${slug(x.ref)}.html">${esc(x.ref)}</a></span>
       <span class="rattache"><a href="#domaine-${esc(x.id)}">${esc(x.domaine)}</a></span>
-      <span class="source etiq">${esc(x.nature)}</span>
-    </li>`).join("\n")}
+      <span class="source etiq"><a class="lien-officiel" href="${esc(L.url)}" target="_blank"
+        rel="noopener">${L.exact ? "le texte" : "chercher"} ${sortant}</a></span>
+    </li>`; }).join("\n")}
   </ul>` })}
 
 ${rubrique({ etiq: "Ce qu'il faut tenir, domaine par domaine", aplat: true, contenu: `
@@ -2372,7 +2511,7 @@ async function main() {
   await writeFile(join(SORTIE, "abonnement.html"), pageAbonnement(V));
   await writeFile(join(SORTIE, "connexion.html"), pageConnexion());
 
-  await writeFile(join(SORTIE, "app", "index.html"), appTableauBord(V, D));
+  await writeFile(join(SORTIE, "app", "index.html"), appTableauBord(V, D, C));
   await writeFile(join(SORTIE, "app", "plan.html"), appPlan(V, D));
   await writeFile(join(SORTIE, "app", "releve.html"), appReleve(V, D, JO, C));
   await writeFile(join(SORTIE, "app", "registre.html"), appRegistre(V, D));
@@ -2409,7 +2548,7 @@ async function main() {
 
   for (const d of V.divisions) {
     await writeFile(join(SORTIE, "app", "secteur", `${d.c}-${slug(d.l)}.html`),
-      appSecteur(V, PIEGES, METIERS, TEXTES, NAF, d));
+      appSecteur(V, PIEGES, METIERS, TEXTES, NAF, C, d));
   }
 
   const total = await poids(SORTIE);
