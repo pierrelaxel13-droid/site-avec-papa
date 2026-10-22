@@ -927,8 +927,7 @@ function groupesParClassement(V, entrees, domaineDe) {
     (par[cl] = par[cl] || []).push(t);
   });
   return Object.keys(V.classements)
-    .filter((id) => par[id] && par[id].length)
-    .map((id) => ({ id, cl: V.classements[id], textes: par[id] }));
+    .map((id) => ({ id, cl: V.classements[id], textes: par[id] || [] }));
 }
 
 function tableauDesFamilles(V, groupes, titreDe, dateDe, domaineDe) {
@@ -944,6 +943,13 @@ function tableauDesFamilles(V, groupes, titreDe, dateDe, domaineDe) {
   <tbody>
     ${groupes.map((g) => {
       const liste = g.textes.slice().sort((a, b) => (dateDe(a) < dateDe(b) ? 1 : -1));
+      if (!liste.length) {
+        return `<tr class="famille-vide">
+      <th scope="row" data-intitule="Famille">${esc(g.cl.l)}</th>
+      <td data-intitule="Textes"><span class="compte-famille">0</span></td>
+      <td data-intitule="Le plus récent" colspan="2">Rien à traiter de ce côté sur la période.</td>
+    </tr>`;
+      }
       const t = liste[0];
       const d = V.domaines[domaineDe(t)];
       const action = d && d.actions && d.actions.length ? d.actions[0] : "—";
@@ -1038,7 +1044,7 @@ ${rubrique({ etiq: officiel ? "Jeu d'essai" : "Le relevé", aplat: true, contenu
     ${parStatut.map((x) => `<div><dt class="etiq">${esc(x.l)}</dt><dd><span class="grand">${x.n}</span></dd></div>`).join("")}
   </dl>
   ${tableauDesFamilles(V, groupes, (t) => t.titre, (t) => t.date, (t) => t.domaine)}
-  ${groupes.map((g) => `
+  ${groupes.filter((g) => g.textes.length).map((g) => `
   <section class="famille-releve" id="famille-${esc(g.id)}">
     <h3>${esc(g.cl.l)} <span class="etiq">${g.textes.length} texte${g.textes.length > 1 ? "s" : ""}</span></h3>
     <p class="precision">${esc(g.cl.d)}</p>
