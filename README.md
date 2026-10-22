@@ -143,9 +143,18 @@ ordre :
 3. **le reste** — une recherche à son nom sur Légifrance, et la page le dit :
    « chercher ce texte », pas « voir le texte ».
 
-**52 des 124 fiches ont aujourd'hui un lien exact**, les 72 autres une
-recherche nommée. Un lien qui ment coûte plus cher qu'un lien qui manque : ce
-qui n'est pas exact est annoncé comme tel, sur la page.
+`contenu/liens.js` passe avant tout le reste : c'est le seul endroit où un
+humain tranche, référence par référence. Une ligne y donne soit le code où le
+texte est codifié (`{ code: "Code du travail" }`, dont l'adresse est
+reconstruite depuis l'annuaire LEGI, jamais écrite à la main), soit l'adresse
+de l'autorité qui le publie (`{ url: "https://boss.gouv.fr" }`). **75 des 124
+fiches mènent au texte lui-même**, les 49 autres au recueil officiel qui le
+publie — conventions collectives, AIDA pour les ICPE, EUR-Lex.
+
+**Le mot « chercher » a disparu du site.** Renvoyer le client vers une
+recherche, c'est lui rendre le travail qu'il nous paie à faire. `build.mjs`
+refuse de construire si une référence n'a aucune destination : `verifieLiens()`
+la nomme et s'arrête.
 
 ## Le texte officiel, sur le site
 

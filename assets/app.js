@@ -348,6 +348,26 @@
     filtre();
   }
 
+  /* --- Le code APE qu'on vient de choisir -----------------------------------
+     On arrive sur la fiche depuis un code précis : c'est celui-là qu'on veut
+     voir, en haut, et pas la liste des vingt-trois autres. Elle reste repliée
+     en bas pour qui la cherche. Sans JavaScript, la fiche s'ouvre normalement
+     et rien ne manque. */
+  function codeChoisi() {
+    var cible = document.getElementById("code-choisi");
+    if (!cible) return;
+    var code = "";
+    try { code = new URLSearchParams(window.location.search).get("ape") || ""; } catch (e) { return; }
+    if (!code) return;
+    var ligne = document.getElementById("ape-" + code.replace(/[^0-9A-Za-z]/g, ""));
+    if (!ligne) return;
+    var c = ligne.querySelector(".code"), n = ligne.querySelector(".nom");
+    document.getElementById("code-choisi-code").textContent = c ? c.textContent : code;
+    document.getElementById("code-choisi-nom").textContent = n ? n.textContent : "";
+    cible.hidden = false;
+    ligne.classList.add("choisi");
+  }
+
   /* --- Affiner le périmètre sur une fiche de secteur ------------------------- */
   function affiner() {
     var hote = $("#declencheurs");
@@ -476,6 +496,7 @@
   imprimerFiche();
   serviceWorker();
   installation();
+  codeChoisi();
   bandeau();
   menu();
   bascules();
