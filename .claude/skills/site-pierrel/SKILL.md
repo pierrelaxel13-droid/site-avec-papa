@@ -29,6 +29,8 @@ un fichier de `_site/` ne sert à rien, il est effacé à chaque construction.
 | `outils/captures.mjs` | Les vraies captures montrées sur l'accueil : ordinateur et téléphone, claires **et** sombres. |
 | `outils/icones.mjs` | Les icônes PNG du manifeste, rendues depuis `assets/favicon.svg`. |
 | `outils/veille.mjs` | La relève des 25 sources de `contenu/sources.js` → `contenu/veille-releve.json`. |
+| `outils/naf.mjs` | La nomenclature NAF entière → `contenu/naf.js` (732 codes APE). Source : `@socialgouv/codes-naf` sur le registre npm. |
+| `contenu/naf.js` | **Engendré** : 732 codes APE avec leur division. Ne pas modifier à la main. |
 | `outils/codes.mjs` | Le texte des codes consolidés → `contenu/codes.json` (193 pages, 4 718 articles), et la comparaison avec la relève précédente. Source : `@socialgouv/legi-data` sur le registre npm, joignable d'ici. |
 | `contenu/perimetres.js` | Quel morceau de code va sur quelle fiche : référence exacte, identifiant du code, motif sur le chemin des titres. |
 | `contenu/codes.json` | **Suivi par git** : c'est en le comparant que le robot sait ce qui a changé. Ne pas le modifier à la main. |
@@ -177,6 +179,17 @@ qu'il n'y a pas de client.
   périmètre pour un code absent : `outils/codes.mjs` s'arrêterait.
 - **Le découpage de `contenu/perimetres.js` est une aide à la lecture**, pas un
   avis juridique : à relire par Clément Pierrel.
+- **Les `actions` des 44 domaines sont un premier jet**, comme les pièges : à
+  relire par Clément Pierrel. Le `classement` (santé-sécurité, hygiène, social,
+  environnement, métier) commande les tableaux du relevé — le changer change ce
+  que voit le client.
+- **Le périmètre se calcule par division, pas par code APE.** Les deux premiers
+  chiffres du code font le pont (`4322B` → division `43`). Ne pas créer de
+  périmètre au niveau du code : les obligations ne se distinguent pas à ce
+  niveau-là.
+- **52 des 124 fiches ont un lien exact vers leur texte**, les autres une
+  recherche nommée, annoncée comme telle. Ne jamais présenter une recherche
+  comme un lien direct.
 - **L'extracteur DILA de `veille.mjs` n'a pas encore vu un XML réel.** Il
   préfère remonter « 0 texte extrait » qu'un contenu reconstitué. Au premier
   passage réussi, vérifier ce qu'il sort contre le fichier d'origine avant de

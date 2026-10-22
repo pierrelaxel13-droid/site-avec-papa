@@ -110,6 +110,43 @@ disparaissent si le visiteur vide les données du site. Aucun courriel ne part.
 Les deux pages le disent au-dessus des formulaires, avant qu'on y tape quoi
 que ce soit.
 
+## Quatre familles, et ce qu'il faut faire
+
+Un texte qui paraît ne vaut rien tant qu'on ne sait pas de quoi il relève ni ce
+qu'il demande. Chacun des 44 domaines porte donc deux choses de plus :
+
+- un **classement** parmi cinq — santé & sécurité, hygiène, social,
+  environnement, métier & gestion. Le relevé s'ouvre sur un tableau qui range
+  les textes dans ces familles, dit combien il y en a, lequel est le plus
+  récent, et **ce qu'il faut faire en premier** ; les listes dessous donnent le
+  détail, famille par famille.
+- des **actions** : trois ou quatre gestes concrets à faire quand le texte
+  bouge — mettre à jour le DUERP, reprendre le plan de maîtrise sanitaire,
+  prévenir la paie. Elles s'affichent dans le détail de chaque ligne du relevé
+  et sur la fiche du texte.
+
+Ces actions sont un **premier jet**, comme les 90 pièges : à relire par Clément
+Pierrel. Elles vivent dans `assets/referentiel.js`, au même endroit que les
+obligations du domaine.
+
+## Le lien du texte, pas celui du site
+
+« Voir la source » renvoyait sur l'accueil de Légifrance ou de l'INRS, au client
+de se débrouiller. `lienDuTexte()` vise maintenant le texte lui-même, dans cet
+ordre :
+
+1. **un code français** — son identifiant `LEGITEXT` vient de l'annuaire des
+   73 codes en vigueur que relève `outils/codes.mjs` dans la base LEGI, d'où
+   `legifrance.gouv.fr/codes/texte_lc/LEGITEXT000006072050` ;
+2. **un texte européen** — son numéro CELEX se déduit de sa référence :
+   « Règlement (UE) 2016/679 » donne `32016R0679`, d'où le lien EUR-Lex ;
+3. **le reste** — une recherche à son nom sur Légifrance, et la page le dit :
+   « chercher ce texte », pas « voir le texte ».
+
+**52 des 124 fiches ont aujourd'hui un lien exact**, les 72 autres une
+recherche nommée. Un lien qui ment coûte plus cher qu'un lien qui manque : ce
+qui n'est pas exact est annoncé comme tel, sur la page.
+
 ## Le texte officiel, sur le site
 
 Le client ne doit pas avoir à partir pour lire la loi. `outils/codes.mjs` va

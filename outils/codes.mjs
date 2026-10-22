@@ -299,6 +299,22 @@ async function main() {
   else paquet = await telecharge();
 
   const dossier = join(TRAVAIL, "package", "data");
+
+  /* L'annuaire de tous les codes de la base LEGI, pas seulement des quatre
+     dont on publie le texte : il donne l'identifiant officiel de chacun, donc
+     l'adresse exacte de son texte sur Légifrance. C'est ce qui permet à une
+     fiche de pointer le texte lui-même, et non la page d'accueil d'un site. */
+  let annuaire = [];
+  try {
+    annuaire = JSON.parse(await readFile(join(dossier, "index.json"), "utf8"))
+      .filter((x) => x.id && x.titre && /^LEGITEXT/.test(x.id))
+      .map((x) => ({ id: x.id, titre: String(x.titre).replace(/\s+/g, " ").trim(),
+                     etat: x.etat || "" }))
+      .filter((x) => x.etat === "VIGUEUR");
+    console.log(`  annuaire : ${annuaire.length} codes en vigueur avec leur identifiant`);
+  } catch (e) {
+    console.log(`  annuaire : index.json illisible (${e.message}) — les fiches garderont leurs liens de source`);
+  }
   const morceaux = [];
   const parRef = {};
   const codesVus = [];
@@ -393,6 +409,7 @@ async function main() {
       url: "https://www.data.gouv.fr/fr/datasets/legi-codes-lois-et-reglements-consolides/"
     },
     codes: codesVus,
+    annuaire,
     morceaux: utiles,
     perimetres: parRef,
     changements: []

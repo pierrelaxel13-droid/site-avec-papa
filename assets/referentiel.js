@@ -140,6 +140,21 @@ window.VEILLE = (function () {
   /* ---------------------------------------------------------- FAMILLES DE VEILLE
      « Il y a plusieurs veilles réglementaires » : chaque domaine est rattaché
      à une famille, qui correspond à un pilote et à un rythme différents.     */
+  /* ------------------------------------------------------------ CLASSEMENT */
+  /* La famille dit de quelle veille relève un domaine. Le classement, lui, dit
+     où le texte tombe quand il paraît : c'est la colonne du tableau que lit le
+     client. Quatre entrées qu'il nomme lui-même — santé-sécurité, hygiène,
+     social, environnement — et une cinquième pour ce qui tient au métier et à
+     la gestion, qu'on ne jette pas pour autant. L'ordre compte : c'est celui
+     des tableaux. */
+  var classements = {
+    "sante-securite": { l: "Santé & sécurité", d: "Ce qui protège les personnes au travail : risques, vérifications, formations." },
+    hygiene:          { l: "Hygiène", d: "Ce qui protège la santé du public et des consommateurs : aliments, soins, produits." },
+    social:           { l: "Social", d: "Le contrat, la paie, les relations collectives." },
+    environnement:    { l: "Environnement", d: "Eau, air, déchets, énergie, installations classées." },
+    metier:           { l: "Métier & gestion", d: "Ce qui tient à votre activité : autorisations, clients, données, fiscalité." }
+  };
+
   var familles = {
     social: { l: "Veille sociale", d: "Droit du travail, paie, relations collectives." },
     sst: { l: "Veille santé-sécurité", d: "Prévention des risques professionnels, vérifications, aptitudes." },
@@ -157,6 +172,13 @@ window.VEILLE = (function () {
     sst: {
       nom: "Santé et sécurité au travail",
       famille: "sst", frequence: "hebdomadaire",
+      classement: "sante-securite",
+      actions: [
+        "Mettre à jour le document unique (DUERP) et dater la mise à jour",
+        "Vérifier que les formations et habilitations visées sont encore valables",
+        "Informer le CSE ou les salariés, et garder la trace de cette information",
+        "Reprendre les consignes de poste si le texte change une façon de travailler"
+      ],
       resume: "Obligation générale de sécurité de l'employeur : évaluation des risques, prévention, formation, suivi médical.",
       textes: ["Code du travail, 4e partie (santé et sécurité)", "Décrets et arrêtés d'application par risque", "Accords de branche de prévention"],
       obligations: ["DUERP rédigé, daté et mis à jour", "Formations et habilitations à jour", "Vérifications périodiques des équipements", "Suivi médical et affichages obligatoires"],
@@ -170,6 +192,13 @@ window.VEILLE = (function () {
     social: {
       nom: "Droit du travail et relations sociales",
       famille: "social", frequence: "mensuelle",
+      classement: "social",
+      actions: [
+        "Relire les clauses de contrat et d'avenant que le texte touche",
+        "Mettre à jour le règlement intérieur et les affichages obligatoires",
+        "Informer et, s'il y a lieu, consulter le CSE avant d'appliquer",
+        "Prévenir la paie si la mesure a un effet sur la rémunération"
+      ],
       resume: "Contrats, durée du travail, rémunération, représentation du personnel, convention collective applicable.",
       textes: ["Code du travail", "Convention collective de branche (IDCC)", "Accords d'entreprise"],
       obligations: ["Convention collective identifiée et appliquée", "Affichage et registre du personnel", "Égalité professionnelle et index", "Entretiens et obligations de formation"],
@@ -183,6 +212,13 @@ window.VEILLE = (function () {
     paie: {
       nom: "Paie, cotisations et protection sociale",
       famille: "social", frequence: "mensuelle",
+      classement: "social",
+      actions: [
+        "Passer la consigne au service paie ou au cabinet comptable, par écrit",
+        "Vérifier le paramétrage du logiciel de paie sur la période visée",
+        "Contrôler un bulletin d'essai avant la prochaine échéance DSN",
+        "Garder la trace de la date d'entrée en vigueur appliquée"
+      ],
       resume: "Assiettes et taux de cotisations, exonérations, DSN, SMIC et minima conventionnels.",
       textes: ["Code de la sécurité sociale", "Bulletin officiel de la Sécurité sociale (BOSS)", "Lois de financement de la sécurité sociale"],
       obligations: ["Taux et plafonds à jour dans le logiciel de paie", "DSN mensuelle conforme", "Minima conventionnels respectés", "Suivi des exonérations et aides à l'embauche"],
@@ -196,6 +232,12 @@ window.VEILLE = (function () {
     fiscal: {
       nom: "Fiscalité, facturation et comptabilité",
       famille: "fisc", frequence: "mensuelle",
+      classement: "metier",
+      actions: [
+        "Transmettre le texte au comptable et fixer qui applique quoi",
+        "Vérifier les mentions obligatoires des devis et des factures",
+        "Repérer la première échéance déclarative concernée"
+      ],
       resume: "TVA, impôt sur les bénéfices, taxes locales, obligations de facturation et de tenue des comptes.",
       textes: ["Code général des impôts", "Livre des procédures fiscales", "Loi de finances annuelle", "Plan comptable général"],
       obligations: ["Mentions obligatoires sur les factures", "Échéancier déclaratif respecté", "Préparation de la facturation électronique", "Conservation des pièces justificatives"],
@@ -209,6 +251,13 @@ window.VEILLE = (function () {
     rgpd: {
       nom: "Données personnelles (RGPD)",
       famille: "num", frequence: "mensuelle",
+      classement: "metier",
+      actions: [
+        "Mettre à jour le registre des traitements concerné",
+        "Reprendre la mention d'information remise aux personnes",
+        "Vérifier le contrat du sous-traitant visé par le texte",
+        "Réexaminer l'analyse d'impact si le traitement est à risque"
+      ],
       resume: "Traitements de données de salariés, clients ou prospects : base légale, information, durées, sécurité, sous-traitance.",
       textes: ["Règlement (UE) 2016/679 — RGPD", "Loi Informatique et Libertés", "Lignes directrices et sanctions CNIL"],
       obligations: ["Registre des traitements tenu à jour", "Mentions d'information et gestion des droits", "Contrats de sous-traitance conformes", "Procédure de violation de données"],
@@ -222,6 +271,12 @@ window.VEILLE = (function () {
     cyber: {
       nom: "Cybersécurité et systèmes d'information",
       famille: "num", frequence: "mensuelle",
+      classement: "metier",
+      actions: [
+        "Vérifier si l'entreprise entre dans le champ (taille, secteur)",
+        "Mettre à jour la liste des mesures techniques exigées et l'écart qui reste",
+        "Désigner qui déclare un incident, et sous quel délai"
+      ],
       resume: "Sécurisation du SI, gestion des incidents, exigences de la directive NIS 2 pour les entités concernées.",
       textes: ["Directive (UE) 2022/2555 (NIS 2) et sa transposition", "Référentiels et guides ANSSI"],
       obligations: ["Sauvegardes testées et restaurables", "Gestion des accès et des mots de passe", "Procédure de notification d'incident", "Sensibilisation des équipes"],
@@ -234,6 +289,12 @@ window.VEILLE = (function () {
     env_general: {
       nom: "Environnement — socle commun",
       famille: "env", frequence: "trimestrielle",
+      classement: "environnement",
+      actions: [
+        "Vérifier si l'établissement est dans le champ du texte",
+        "Mettre à jour le classement ou la déclaration concernée",
+        "Programmer le contrôle ou l'analyse demandés"
+      ],
       resume: "Tri et traçabilité des déchets de l'entreprise, sobriété énergétique, mobilité, informations environnementales.",
       textes: ["Code de l'environnement", "Loi AGEC (économie circulaire)", "Obligations de tri dites « 5 flux »"],
       obligations: ["Tri à la source et contrats d'enlèvement", "Bordereaux et registre des déchets", "Suivi des consommations d'énergie", "Affichage des consignes de tri"],
@@ -248,6 +309,12 @@ window.VEILLE = (function () {
     icpe: {
       nom: "Installations classées (ICPE)",
       famille: "env", frequence: "hebdomadaire",
+      classement: "environnement",
+      actions: [
+        "Comparer la nouvelle rubrique au classement actuel de l'installation",
+        "Prévenir l'inspection des installations classées si le classement change",
+        "Mettre à jour l'étude de dangers ou le porter à connaissance"
+      ],
       resume: "Activités soumises à déclaration, enregistrement ou autorisation au titre de la nomenclature ICPE.",
       textes: ["Code de l'environnement, livre V", "Nomenclature des installations classées", "Arrêtés ministériels de prescriptions générales", "Arrêté préfectoral propre au site"],
       obligations: ["Régime ICPE identifié et à jour", "Prescriptions de l'arrêté respectées", "Contrôles et mesures périodiques", "Registres et déclaration annuelle (GEREP)"],
@@ -261,6 +328,12 @@ window.VEILLE = (function () {
     dechets: {
       nom: "Déchets, REP et économie circulaire",
       famille: "env", frequence: "mensuelle",
+      classement: "environnement",
+      actions: [
+        "Vérifier le tri et les bennes sur site contre la nouvelle liste",
+        "Reprendre les bordereaux et le registre de suivi des déchets",
+        "Contrôler l'agrément du prestataire de collecte"
+      ],
       resume: "Responsabilité du producteur de déchets, filières à responsabilité élargie (REP), traçabilité et valorisation.",
       textes: ["Code de l'environnement, livre V titre IV", "Loi AGEC", "Arrêtés de filières REP"],
       obligations: ["Registre des déchets et bordereaux (Trackdéchets)", "Adhésion à l'éco-organisme de la filière", "Éco-contribution et information du consommateur", "Contrats avec des exutoires autorisés"],
@@ -274,6 +347,12 @@ window.VEILLE = (function () {
     eau: {
       nom: "Eau, rejets et milieux aquatiques",
       famille: "env", frequence: "mensuelle",
+      classement: "environnement",
+      actions: [
+        "Comparer les valeurs de rejet autorisées à vos dernières analyses",
+        "Programmer l'autosurveillance au rythme demandé",
+        "Prévenir le gestionnaire du réseau si le raccordement est visé"
+      ],
       resume: "Prélèvements, raccordement et rejets d'eaux usées ou pluviales, autorisations et redevances.",
       textes: ["Code de l'environnement (loi sur l'eau)", "Arrêtés de prescriptions de rejet", "Règlement d'assainissement local"],
       obligations: ["Autorisation de déversement à jour", "Auto-surveillance des rejets", "Gestion des eaux pluviales et rétention", "Redevances agence de l'eau"],
@@ -286,6 +365,8 @@ window.VEILLE = (function () {
     air: {
       nom: "Air, émissions et nuisances",
       famille: "env", frequence: "trimestrielle",
+      classement: "environnement",
+      actions: ["Vérifier les valeurs d'émission et la périodicité des mesures", "Programmer le contrôle périodique par un organisme agréé"],
       resume: "Émissions atmosphériques, poussières, COV, odeurs et bruit de voisinage industriel.",
       textes: ["Code de l'environnement", "Arrêtés d'émissions applicables à l'activité", "Réglementation du bruit de voisinage"],
       obligations: ["Mesures périodiques d'émissions", "Entretien des dispositifs de captation", "Suivi des plaintes de riverains", "Déclaration des émissions"],
@@ -298,6 +379,12 @@ window.VEILLE = (function () {
     energie_tertiaire: {
       nom: "Performance énergétique des bâtiments d'activité",
       famille: "env", frequence: "trimestrielle",
+      classement: "environnement",
+      actions: [
+        "Vérifier si la surface de l'établissement entre dans le champ",
+        "Déposer ou corriger la déclaration annuelle sur OPERAT",
+        "Comparer la consommation de l'année à l'objectif de la période"
+      ],
       resume: "Réduction des consommations des bâtiments tertiaires, pilotage des équipements techniques, audits.",
       textes: ["Code de la construction et de l'habitation", "Dispositif éco-énergie tertiaire (décret tertiaire)", "Réglementation sur les systèmes d'automatisation (BACS)"],
       obligations: ["Déclaration annuelle des consommations (OPERAT)", "Plan d'actions de réduction", "Pilotage / GTB des installations", "Audit énergétique si seuils atteints"],
@@ -310,6 +397,13 @@ window.VEILLE = (function () {
     chimie: {
       nom: "Produits chimiques et risque chimique",
       famille: "sst", frequence: "hebdomadaire",
+      classement: "sante-securite",
+      actions: [
+        "Mettre à jour les fiches de données de sécurité des produits visés",
+        "Reprendre l'inventaire des produits et l'évaluation du risque chimique",
+        "Vérifier les valeurs limites d'exposition et le besoin de mesures d'air",
+        "Reprendre l'étiquetage et le stockage si la classification change"
+      ],
       resume: "Classification, étiquetage, fiches de données de sécurité, substances soumises à autorisation ou restriction.",
       textes: ["Règlement (CE) 1907/2006 REACH", "Règlement (CE) 1272/2008 CLP", "Code du travail — risque chimique et ACD/CMR"],
       obligations: ["FDS à jour et accessibles", "Inventaire des substances et repérage CMR", "Ventilation et EPI adaptés", "Contrôle des valeurs limites d'exposition"],
@@ -323,6 +417,12 @@ window.VEILLE = (function () {
     atex: {
       nom: "Risques industriels majeurs et ATEX",
       famille: "sst", frequence: "hebdomadaire",
+      classement: "sante-securite",
+      actions: [
+        "Reprendre le document relatif à la protection contre les explosions",
+        "Vérifier le zonage ATEX et le matériel installé dans ces zones",
+        "Contrôler les habilitations des intervenants en zone"
+      ],
       resume: "Atmosphères explosives, stockage de produits dangereux, établissements relevant de la directive Seveso.",
       textes: ["Directive 2012/18/UE (Seveso 3)", "Code du travail — ATEX", "Arrêtés de stockage de liquides inflammables"],
       obligations: ["Document relatif à la protection contre les explosions", "Zonage ATEX et matériel conforme", "Plan d'opération interne si requis", "Étude de dangers tenue à jour"],
@@ -335,6 +435,8 @@ window.VEILLE = (function () {
     extractive: {
       nom: "Activités extractives et code minier",
       famille: "sect", frequence: "mensuelle",
+      classement: "environnement",
+      actions: ["Vérifier la validité du titre minier ou de l'autorisation d'exploiter", "Mettre à jour le dossier de prescriptions du RGIE concerné"],
       resume: "Titres miniers et autorisations de carrière, remise en état des sites, sécurité des travaux souterrains.",
       textes: ["Code minier", "Code de l'environnement (carrières en ICPE)", "Règlement général des industries extractives"],
       obligations: ["Titre ou autorisation valide", "Garanties financières de remise en état", "Plan de tirs et sécurité des fronts", "Suivi des poussières et vibrations"],
@@ -347,6 +449,8 @@ window.VEILLE = (function () {
     energie_reseau: {
       nom: "Production et fourniture d'énergie",
       famille: "sect", frequence: "hebdomadaire",
+      classement: "metier",
+      actions: ["Vérifier l'effet du texte sur le contrat de fourniture ou de raccordement", "Prévenir le gestionnaire de réseau si une obligation nouvelle s'applique"],
       resume: "Autorisations de production, accès aux réseaux, obligations d'achat, protection des consommateurs d'énergie.",
       textes: ["Code de l'énergie", "Délibérations de la CRE", "Règles de raccordement des gestionnaires de réseau"],
       obligations: ["Autorisations et contrats d'accès à jour", "Obligations de comptage et de déclaration", "Conformité des contrats de fourniture", "Suivi des tarifs réglementés"],
@@ -361,6 +465,12 @@ window.VEILLE = (function () {
     construction: {
       nom: "Règles de construction et d'ouvrage",
       famille: "tech", frequence: "hebdomadaire",
+      classement: "metier",
+      actions: [
+        "Transmettre le texte à la maîtrise d'œuvre pour les chantiers en cours",
+        "Vérifier les pièces du marché et les DTU visés",
+        "Contrôler la date d'application : dépôt du permis, ou ouverture du chantier"
+      ],
       resume: "Règles techniques de construction, performance énergétique et environnementale, autorisations d'urbanisme, garanties.",
       textes: ["Code de la construction et de l'habitation", "Code de l'urbanisme", "RE2020", "DTU et normes NF applicables", "Code civil — garanties légales"],
       obligations: ["Assurance décennale et RC pro en cours", "Respect des DTU et règles de l'art", "Attestations thermiques et environnementales", "Réception des travaux et lever des réserves"],
@@ -374,6 +484,12 @@ window.VEILLE = (function () {
     chantier_sps: {
       nom: "Sécurité des chantiers et coordination",
       famille: "sst", frequence: "hebdomadaire",
+      classement: "sante-securite",
+      actions: [
+        "Vérifier si l'opération exige un coordonnateur SPS, et à quel niveau",
+        "Mettre à jour le PGC, le PPSPS ou le plan de prévention",
+        "Reprendre l'inspection commune préalable avec les entreprises"
+      ],
       resume: "Prévention sur les opérations de bâtiment et génie civil : coordination SPS, plans de prévention, co-activité.",
       textes: ["Code du travail — chantiers de bâtiment et génie civil", "Règles de coordination SPS", "Recommandations OPPBTP"],
       obligations: ["PPSPS / plan de prévention établi", "Déclaration préalable et registre-journal", "Accueil sécurité des intervenants", "Vérification des échafaudages et protections"],
@@ -386,6 +502,12 @@ window.VEILLE = (function () {
     amiante: {
       nom: "Amiante, plomb et matériaux dangereux du bâti",
       famille: "sst", frequence: "hebdomadaire",
+      classement: "sante-securite",
+      actions: [
+        "Vérifier si un repérage avant travaux est exigé pour l'opération",
+        "Contrôler la certification de l'entreprise de retrait ou d'encapsulage",
+        "Reprendre le mode opératoire et le contrôle d'empoussièrement"
+      ],
       resume: "Repérage avant travaux, sous-sections 3 et 4, protection des travailleurs et gestion des déchets dangereux.",
       textes: ["Code du travail — risque amiante", "Code de la santé publique — repérages", "Arrêtés de formation et de certification"],
       obligations: ["Repérage avant travaux exigé du donneur d'ordre", "Certification de l'entreprise si retrait", "Mode opératoire ou plan de retrait", "Traçabilité des déchets amiantés"],
@@ -398,6 +520,12 @@ window.VEILLE = (function () {
     levage: {
       nom: "Équipements de travail, levage et vérifications",
       famille: "sst", frequence: "mensuelle",
+      classement: "sante-securite",
+      actions: [
+        "Mettre à jour le registre de sécurité et le calendrier des vérifications",
+        "Vérifier la périodicité et l'organisme de la prochaine vérification",
+        "Contrôler les autorisations de conduite et les CACES concernés"
+      ],
       resume: "Conformité des machines et engins, vérifications générales périodiques, conduite et habilitations.",
       textes: ["Code du travail — équipements de travail", "Arrêtés de vérifications périodiques", "Règlement (UE) 2023/1230 sur les machines"],
       obligations: ["Registre de sécurité et rapports de VGP", "Autorisations de conduite et CACES", "Carnets de maintenance des engins", "Contrôle des accessoires de levage"],
@@ -410,6 +538,12 @@ window.VEILLE = (function () {
     erp: {
       nom: "Locaux recevant du public : incendie et accessibilité",
       famille: "tech", frequence: "trimestrielle",
+      classement: "sante-securite",
+      actions: [
+        "Vérifier le classement de l'établissement : type et catégorie",
+        "Mettre à jour le registre de sécurité et le registre public d'accessibilité",
+        "Programmer la visite de la commission de sécurité si elle est exigée"
+      ],
       resume: "Classement ERP, sécurité incendie, accessibilité des personnes handicapées, contrôles périodiques.",
       textes: ["Code de la construction et de l'habitation", "Règlement de sécurité contre l'incendie dans les ERP", "Règles d'accessibilité des ERP"],
       obligations: ["Registre de sécurité tenu à jour", "Vérifications des installations techniques", "Exercices d'évacuation", "Registre public d'accessibilité"],
@@ -422,6 +556,12 @@ window.VEILLE = (function () {
     produits_ce: {
       nom: "Conformité des produits et marquage CE",
       famille: "tech", frequence: "mensuelle",
+      classement: "metier",
+      actions: [
+        "Vérifier la déclaration UE de conformité et le marquage des produits visés",
+        "Reprendre la notice et l'étiquetage dans la langue exigée",
+        "Contrôler la norme harmonisée appliquée, et sa version"
+      ],
       resume: "Exigences essentielles applicables aux produits mis sur le marché, documentation technique, déclaration UE.",
       textes: ["Règlements et directives d'harmonisation de l'UE", "Normes harmonisées citées au JOUE", "Code de la consommation — conformité et sécurité"],
       obligations: ["Déclaration UE de conformité et dossier technique", "Notices et étiquetage conformes", "Traçabilité des lots et des fournisseurs", "Surveillance des rappels de produits"],
@@ -437,6 +577,12 @@ window.VEILLE = (function () {
     consommation: {
       nom: "Droit de la consommation et pratiques commerciales",
       famille: "sect", frequence: "mensuelle",
+      classement: "metier",
+      actions: [
+        "Reprendre les conditions générales de vente et les mentions précontractuelles",
+        "Vérifier l'information sur les prix, les garanties et la rétractation",
+        "Former l'équipe de vente au changement"
+      ],
       resume: "Information précontractuelle, prix, garanties, démarchage, vente à distance, clauses abusives.",
       textes: ["Code de la consommation", "Code de commerce — pratiques restrictives", "Règles de la vente en ligne"],
       obligations: ["CGV et information sur les prix conformes", "Droit de rétractation et garanties affichés", "Médiateur de la consommation désigné", "Conformité des promotions et soldes"],
@@ -449,6 +595,13 @@ window.VEILLE = (function () {
     alimentaire: {
       nom: "Hygiène et sécurité des aliments",
       famille: "sect", frequence: "hebdomadaire",
+      classement: "hygiene",
+      actions: [
+        "Mettre à jour le plan de maîtrise sanitaire et l'HACCP",
+        "Vérifier l'étiquetage, les allergènes et les dates de durabilité",
+        "Reprendre les relevés de température et la traçabilité",
+        "Contrôler la déclaration ou l'agrément sanitaire de l'établissement"
+      ],
       resume: "Paquet hygiène, plan de maîtrise sanitaire, HACCP, étiquetage et information du consommateur.",
       textes: ["Règlement (CE) 178/2002", "Règlement (CE) 852/2004", "Règlement (UE) 1169/2011 (INCO)", "Code rural et de la pêche maritime"],
       obligations: ["Déclaration d'activité et agrément si requis", "Plan de maîtrise sanitaire et HACCP", "Traçabilité et gestion des retraits-rappels", "Formation hygiène du personnel"],
@@ -462,6 +615,13 @@ window.VEILLE = (function () {
     agri: {
       nom: "Agriculture, pêche et santé des végétaux et animaux",
       famille: "sect", frequence: "mensuelle",
+      classement: "hygiene",
+      actions: [
+        "Vérifier l'autorisation de mise sur le marché des produits utilisés",
+        "Mettre à jour le registre phytosanitaire et les doses appliquées",
+        "Contrôler la validité du Certiphyto des applicateurs",
+        "Programmer le contrôle périodique du pulvérisateur"
+      ],
       resume: "Aides PAC et conditionnalité, produits phytopharmaceutiques, bien-être animal, quotas et licences de pêche.",
       textes: ["Code rural et de la pêche maritime", "Règlements PAC", "Réglementation sur les produits phytopharmaceutiques"],
       obligations: ["Registre phytosanitaire et certificat (Certiphyto)", "Respect des zones de non-traitement", "Identification et registre des animaux", "Déclarations PAC dans les délais"],
@@ -475,6 +635,12 @@ window.VEILLE = (function () {
     douane: {
       nom: "Douane et échanges internationaux",
       famille: "sect", frequence: "mensuelle",
+      classement: "metier",
+      actions: [
+        "Vérifier le classement tarifaire et l'origine des marchandises visées",
+        "Mettre à jour les documents d'accompagnement et les déclarations",
+        "Contrôler que les autorisations douanières sont toujours valides"
+      ],
       resume: "Classement tarifaire, origine, régimes douaniers, contrôles à l'import-export et sanctions internationales.",
       textes: ["Code des douanes de l'Union", "Code des douanes national", "Mesures restrictives de l'UE"],
       obligations: ["Numéro EORI et déclarations conformes", "Justification de l'origine et des préférences", "Contrôle des listes de sanctions", "Archivage des documents douaniers"],
@@ -489,6 +655,13 @@ window.VEILLE = (function () {
     transport: {
       nom: "Transport, logistique et marchandises dangereuses",
       famille: "sect", frequence: "hebdomadaire",
+      classement: "metier",
+      actions: [
+        "Vérifier la validité de la licence de transport et des attestations",
+        "Reprendre le plan de chargement si les règles ADR changent",
+        "Contrôler les temps de conduite et le paramétrage du tachygraphe",
+        "Mettre à jour les consignes écrites et la formation des conducteurs"
+      ],
       resume: "Accès à la profession, temps de conduite et de repos, chronotachygraphe, transport de matières dangereuses.",
       textes: ["Code des transports", "Règlements européens sur les temps de conduite et le tachygraphe", "Accord ADR"],
       obligations: ["Licence de transport et capacité professionnelle", "Suivi des temps de conduite et de repos", "Conseiller à la sécurité ADR si concerné", "Contrôles techniques et arrimage des charges"],
@@ -503,6 +676,12 @@ window.VEILLE = (function () {
     sanitaire: {
       nom: "Santé, médico-social et autorisations d'activité",
       famille: "sect", frequence: "hebdomadaire",
+      classement: "hygiene",
+      actions: [
+        "Vérifier l'autorisation d'activité et sa date de renouvellement",
+        "Mettre à jour les protocoles de soins et les registres exigés",
+        "Reprendre l'évaluation interne ou externe si son cadre change"
+      ],
       resume: "Autorisations et agréments, qualité et sécurité des soins, droits des usagers, évaluation des établissements.",
       textes: ["Code de la santé publique", "Code de l'action sociale et des familles", "Référentiels d'évaluation nationaux"],
       obligations: ["Autorisation d'activité en cours de validité", "Déclaration des événements indésirables graves", "Projet d'établissement et droits des usagers", "Démarche qualité et évaluation périodique"],
@@ -516,6 +695,12 @@ window.VEILLE = (function () {
     pharma: {
       nom: "Produits de santé et dispositifs médicaux",
       famille: "sect", frequence: "quotidienne",
+      classement: "hygiene",
+      actions: [
+        "Vérifier la conformité aux bonnes pratiques visées",
+        "Mettre à jour le dossier technique ou l'enregistrement du produit",
+        "Reprendre la matériovigilance ou la pharmacovigilance concernée"
+      ],
       resume: "Autorisations de mise sur le marché, bonnes pratiques, vigilance, publicité des produits de santé.",
       textes: ["Code de la santé publique", "Règlement (UE) 2017/745 sur les dispositifs médicaux", "Bonnes pratiques de fabrication et de distribution"],
       obligations: ["Autorisations et certificats à jour", "Système qualité et traçabilité des lots", "Déclarations de vigilance", "Contrôle de la publicité et des liens d'intérêts"],
@@ -528,6 +713,12 @@ window.VEILLE = (function () {
     deontologie: {
       nom: "Professions réglementées et déontologie",
       famille: "sect", frequence: "mensuelle",
+      classement: "metier",
+      actions: [
+        "Vérifier l'inscription et les obligations de formation continue",
+        "Mettre à jour les mentions obligatoires et l'assurance professionnelle",
+        "Reprendre les règles de publicité et de conflit d'intérêts"
+      ],
       resume: "Conditions d'exercice, inscription à un ordre ou une instance, obligations de formation et de secret professionnel.",
       textes: ["Textes propres à chaque profession", "Codes de déontologie", "Obligations de formation continue"],
       obligations: ["Inscription et assurance professionnelle à jour", "Formation continue justifiée", "Secret professionnel et conflits d'intérêts", "Obligations de mandat et de facturation"],
@@ -542,6 +733,12 @@ window.VEILLE = (function () {
     finance: {
       nom: "Services financiers, assurance et LCB-FT",
       famille: "sect", frequence: "quotidienne",
+      classement: "metier",
+      actions: [
+        "Mettre à jour la cartographie des risques LCB-FT",
+        "Reprendre les procédures de connaissance du client",
+        "Vérifier le circuit de déclaration de soupçon et qui en répond"
+      ],
       resume: "Agréments et immatriculations, information et conseil du client, lutte contre le blanchiment et le financement du terrorisme.",
       textes: ["Code monétaire et financier", "Code des assurances", "Règlements européens et doctrine des autorités"],
       obligations: ["Agrément ou immatriculation ORIAS valide", "Dispositif LCB-FT et gel des avoirs", "Devoir de conseil formalisé", "Reporting réglementaire dans les délais"],
@@ -555,6 +752,12 @@ window.VEILLE = (function () {
     immobilier: {
       nom: "Activités immobilières et gestion locative",
       famille: "sect", frequence: "mensuelle",
+      classement: "metier",
+      actions: [
+        "Vérifier la validité de la carte professionnelle et de la garantie financière",
+        "Reprendre les mandats et les informations précontractuelles",
+        "Mettre à jour les diagnostics exigés avant location ou vente"
+      ],
       resume: "Carte professionnelle, mandats, diagnostics obligatoires, encadrement des loyers et copropriété.",
       textes: ["Loi Hoguet et son décret d'application", "Code de la construction et de l'habitation", "Loi du 6 juillet 1989 sur les baux d'habitation"],
       obligations: ["Carte professionnelle et garantie financière", "Mandats écrits et registres", "Diagnostics et DPE annexés", "Décence et performance énergétique des logements loués"],
@@ -568,6 +771,12 @@ window.VEILLE = (function () {
     marches_publics: {
       nom: "Commande publique",
       famille: "sect", frequence: "mensuelle",
+      classement: "metier",
+      actions: [
+        "Vérifier les seuils et la procédure applicable à la consultation en cours",
+        "Reprendre les pièces du marché que le texte touche",
+        "Contrôler les clauses sociales et environnementales exigées"
+      ],
       resume: "Règles de passation et d'exécution des marchés publics, sous-traitance, délais de paiement, avances et révisions.",
       textes: ["Code de la commande publique", "Cahiers des clauses administratives générales", "Directives européennes marchés"],
       obligations: ["Attestations sociales et fiscales à jour", "Déclaration de sous-traitance agréée", "Respect des formalismes de facturation (Chorus Pro)", "Suivi des pénalités et des révisions de prix"],
@@ -581,6 +790,12 @@ window.VEILLE = (function () {
     travail_temporaire: {
       nom: "Intérim, placement et mise à disposition",
       famille: "social", frequence: "mensuelle",
+      classement: "social",
+      actions: [
+        "Vérifier la garantie financière et les mentions des contrats de mission",
+        "Reprendre les contrats de mise à disposition en cours",
+        "Contrôler l'égalité de traitement et le suivi médical des intérimaires"
+      ],
       resume: "Garantie financière, contrats de mission, égalité de traitement, obligations envers l'entreprise utilisatrice.",
       textes: ["Code du travail — travail temporaire", "Déclarations obligatoires aux autorités", "Convention collective du travail temporaire"],
       obligations: ["Garantie financière et déclaration d'activité", "Contrats de mission et de mise à disposition", "Suivi médical et sécurité des intérimaires", "Relevé mensuel des contrats"],
@@ -593,6 +808,8 @@ window.VEILLE = (function () {
     securite_privee: {
       nom: "Sécurité privée et surveillance",
       famille: "sect", frequence: "mensuelle",
+      classement: "metier",
+      actions: ["Vérifier la validité des cartes professionnelles et de l'autorisation CNAPS", "Mettre à jour les consignes et le registre des interventions"],
       resume: "Autorisation d'exercice, cartes professionnelles des agents, déontologie et encadrement des prestations.",
       textes: ["Code de la sécurité intérieure", "Code de déontologie des activités privées de sécurité"],
       obligations: ["Autorisation d'exercice et agréments dirigeants", "Cartes professionnelles valides", "Registres et tenue des agents", "Contrats conformes et information du client"],
@@ -605,6 +822,12 @@ window.VEILLE = (function () {
     enseignement: {
       nom: "Enseignement, formation et certification qualité",
       famille: "sect", frequence: "mensuelle",
+      classement: "metier",
+      actions: [
+        "Vérifier la certification Qualiopi et les indicateurs concernés",
+        "Mettre à jour les programmes et les conventions de formation",
+        "Reprendre l'information des stagiaires et les émargements"
+      ],
       resume: "Déclaration d'activité, référentiel qualité pour les financements, apprentissage, protection des mineurs.",
       textes: ["Code de l'éducation", "Code du travail — formation professionnelle", "Référentiel national qualité (Qualiopi)"],
       obligations: ["Déclaration d'activité et bilan pédagogique", "Certification qualité si financements publics", "Conventions et information des stagiaires", "Encadrement et sécurité des apprenants"],
@@ -617,6 +840,12 @@ window.VEILLE = (function () {
     culture_spectacle: {
       nom: "Spectacle vivant, audiovisuel et droits d'auteur",
       famille: "sect", frequence: "mensuelle",
+      classement: "metier",
+      actions: [
+        "Vérifier la licence d'entrepreneur de spectacles et sa déclaration",
+        "Reprendre les contrats d'engagement et les déclarations au GUSO",
+        "Contrôler les droits d'auteur et les déclarations à la SACEM"
+      ],
       resume: "Licence d'entrepreneur de spectacles, emploi d'artistes, droits d'auteur et droits voisins, sécurité des lieux.",
       textes: ["Code du travail — spectacle et intermittents", "Code de la propriété intellectuelle", "Réglementation des lieux de spectacle"],
       obligations: ["Récépissé de déclaration d'entrepreneur de spectacles", "Contrats d'engagement et GUSO", "Déclarations aux sociétés de gestion collective", "Sécurité du public et des installations temporaires"],
@@ -629,6 +858,8 @@ window.VEILLE = (function () {
     propriete_intel: {
       nom: "Propriété intellectuelle et contenus",
       famille: "sect", frequence: "trimestrielle",
+      classement: "metier",
+      actions: ["Vérifier les autorisations d'usage des contenus et des images", "Reprendre les contrats de cession de droits"],
       resume: "Droits d'auteur et droits voisins, marques, cession de droits, exploitation des contenus et des images.",
       textes: ["Code de la propriété intellectuelle", "Directives européennes sur le droit d'auteur"],
       obligations: ["Cessions de droits écrites", "Autorisations d'image et de voix", "Surveillance des marques et noms de domaine", "Mentions de crédits et de sources"],
@@ -641,6 +872,8 @@ window.VEILLE = (function () {
     telecom: {
       nom: "Communications électroniques et audiovisuel",
       famille: "sect", frequence: "mensuelle",
+      classement: "metier",
+      actions: ["Vérifier les obligations déclaratives auprès de l'ARCEP", "Reprendre les informations contractuelles dues aux abonnés"],
       resume: "Déclaration d'opérateur, qualité de service, protection des abonnés, obligations des services audiovisuels.",
       textes: ["Code des postes et des communications électroniques", "Décisions de l'ARCEP", "Réglementation des services audiovisuels"],
       obligations: ["Déclaration d'activité auprès du régulateur", "Obligations contractuelles envers les abonnés", "Conservation et confidentialité des données de trafic", "Obligations de couverture et de reporting"],
@@ -653,6 +886,8 @@ window.VEILLE = (function () {
     accessibilite_num: {
       nom: "Accessibilité numérique",
       famille: "num", frequence: "trimestrielle",
+      classement: "metier",
+      actions: ["Mettre à jour la déclaration d'accessibilité du site", "Programmer l'audit RGAA et le plan de mise en conformité"],
       resume: "Accessibilité des sites et applications, déclaration de conformité, schéma pluriannuel pour les acteurs concernés.",
       textes: ["Référentiel général d'amélioration de l'accessibilité (RGAA)", "Directive (UE) 2019/882 (accessibilité des produits et services)"],
       obligations: ["Audit d'accessibilité et déclaration", "Schéma pluriannuel de mise en conformité", "Page d'aide et contact accessibilité", "Prise en compte dès la conception"],
@@ -665,6 +900,8 @@ window.VEILLE = (function () {
     jeux: {
       nom: "Jeux d'argent et de hasard",
       famille: "sect", frequence: "hebdomadaire",
+      classement: "metier",
+      actions: ["Vérifier l'agrément et les obligations de jeu responsable", "Reprendre les contrôles d'âge et la lutte contre le blanchiment"],
       resume: "Agréments et licences, protection des joueurs, lutte contre le blanchiment, encadrement de la publicité.",
       textes: ["Code de la sécurité intérieure", "Réglementation des jeux en ligne", "Décisions de l'Autorité nationale des jeux"],
       obligations: ["Agrément ou licence en cours", "Dispositif de jeu responsable et interdits de jeu", "Dispositif LCB-FT", "Encadrement des communications commerciales"],
@@ -677,6 +914,12 @@ window.VEILLE = (function () {
     sport: {
       nom: "Activités physiques et sportives",
       famille: "sect", frequence: "mensuelle",
+      classement: "metier",
+      actions: [
+        "Vérifier les diplômes et les cartes professionnelles des encadrants",
+        "Contrôler les obligations d'assurance et d'affichage",
+        "Reprendre le contrôle périodique des équipements sportifs"
+      ],
       resume: "Déclaration des éducateurs et des établissements, sécurité des équipements, encadrement des mineurs.",
       textes: ["Code du sport", "Arrêtés relatifs aux équipements et aux diplômes"],
       obligations: ["Déclaration de l'établissement APS", "Diplômes et cartes professionnelles des éducateurs", "Affichage des garanties et assurances", "Contrôle des équipements et normes de sécurité"],
@@ -689,6 +932,12 @@ window.VEILLE = (function () {
     hotellerie: {
       nom: "Hébergement touristique et accueil",
       famille: "sect", frequence: "mensuelle",
+      classement: "metier",
+      actions: [
+        "Vérifier le classement de l'établissement et l'affichage des prix",
+        "Reprendre la collecte de la taxe de séjour",
+        "Contrôler la sécurité incendie des locaux d'hébergement"
+      ],
       resume: "Classement et déclaration d'activité, taxe de séjour, fiche individuelle de police, sécurité des hébergements.",
       textes: ["Code du tourisme", "Code général des collectivités territoriales (taxe de séjour)", "Règlement de sécurité des ERP de type O"],
       obligations: ["Déclaration en mairie et classement", "Collecte et reversement de la taxe de séjour", "Affichage des prix et information du client", "Sécurité incendie et registre de sécurité"],
@@ -701,6 +950,12 @@ window.VEILLE = (function () {
     association: {
       nom: "Régime associatif et subventions",
       famille: "sect", frequence: "trimestrielle",
+      classement: "metier",
+      actions: [
+        "Vérifier le respect du contrat d'engagement républicain",
+        "Mettre à jour les statuts et les déclarations en préfecture",
+        "Reprendre le compte rendu financier des subventions reçues"
+      ],
       resume: "Obligations déclaratives, gestion désintéressée et fiscalité, contrôle de l'emploi des subventions, bénévolat.",
       textes: ["Loi du 1er juillet 1901", "Code général des impôts — régime des organismes sans but lucratif", "Contrat d'engagement républicain"],
       obligations: ["Déclarations de modification en préfecture", "Comptes annuels et commissaire si seuils", "Justification de l'emploi des subventions", "Encadrement du bénévolat et des défraiements"],
@@ -996,6 +1251,7 @@ window.VEILLE = (function () {
     sections: sections,
     divisions: divisions,
     familles: familles,
+    classements: classements,
     domaines: domaines,
     motsCles: motsCles,
     transversaux: transversaux,
