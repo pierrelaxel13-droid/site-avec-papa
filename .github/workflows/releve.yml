@@ -49,24 +49,38 @@ jobs:
         with:
           node-version: "22"
 
-      # Les flux et le Journal officiel : à chaque passage.
+      # Les flux et le Journal officiel : à chaque passage. Un échec ne doit
+      # pas arrêter la relève, mais il doit se voir dans le journal du passage.
       - name: Les textes qui paraissent
-        run: node outils/veille.mjs --jours 2 || true
+        run: |
+          node outils/veille.mjs --jours 2 2>&1 | tee releve-flux.log || \
+            echo "::warning::Relève des flux : $(tail -c 500 releve-flux.log | tr '\n' ' ')"
 
       # Les codes consolidés : une fois par jour seulement. contenu/codes.json
       # est suivi par git, et c'est en le comparant que le robot sait ce qui a
       # changé — d'où le commit, qui fait la mémoire.
       - name: Le texte des codes
         if: github.event.schedule == '42 5 * * *' || github.event_name == 'workflow_dispatch'
-        run: node outils/codes.mjs || true
+        run: |
+          node outils/codes.mjs 2>&1 | tee releve-codes.log || \
+            echo "::warning::Relève des codes : $(tail -c 500 releve-codes.log | tr '\n' ' ')"
 
       # On ne construit pas pour publier — Netlify s'en charge — mais pour
       # refuser de commiter des données que le site ne saurait pas rendre.
+      # Si la construction refuse les données relevées, il faut lire pourquoi
+      # sans ouvrir le journal : le message part en annotation du passage.
       - name: Vérifier que le site se construit
-        run: node build.mjs
+        run: |
+          if ! node build.mjs > construction.log 2>&1; then
+            echo "::error::build.mjs refuse la relève — $(tail -c 900 construction.log | tr '\n' ' ')"
+            cat construction.log
+            exit 1
+          fi
+          cat construction.log
 
       - name: Commiter ce qui a bougé
         run: |
+          rm -f construction.log releve-flux.log releve-codes.log
           if [ -z "$(git status --porcelain contenu/)" ]; then
             echo "Rien n'a changé : pas de commit."
             exit 0
