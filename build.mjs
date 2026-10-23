@@ -983,7 +983,7 @@ function listeDeTextes(V, C, LIENS, TEXTES, entrees) {
    existe, l'application sert ces textes-là, avec leur contenu intégral. Quand
    il n'existe pas, elle sert le jeu d'essai — et le dit. Jamais l'un déguisé
    en l'autre. */
-function ligneJO(V, t, i) {
+function ligneJO(V, t, i, releveLe = "") {
   const noms = t.domaines.map((d) => d.nom);
   const droit = t.genre === "texte";
   /* Les gestes à faire, pris sur les domaines auxquels le texte est rattaché :
@@ -995,13 +995,19 @@ function ligneJO(V, t, i) {
      sont pas les mêmes. */
   const quand = t.dateTexte || t.date;
   const vu = t.vuLe || t.date;
+  /* « Lesquels sont nouveaux ? » Ceux que la dernière relève a vus passer pour
+     la première fois. Nous ne connaissons pas la date d'entrée en vigueur d'un
+     texte qui vient de paraître — nous ne l'inventons donc pas, nous disons la
+     date qu'il porte, et nous marquons ce qui est arrivé depuis la dernière
+     relève. */
+  const neuf = Boolean(releveLe) && vu === releveLe;
 
-  return `<li class="ligne-releve statut-${droit ? "attente" : "neutre"}">
+  return `<li class="ligne-releve statut-${droit ? "attente" : "neutre"}${neuf ? " est-neuf" : ""}">
   <details${i === 0 ? " open" : ""}>
     <summary>
       <span class="mono date">${esc(dateFr(quand))}</span>
       <span class="corps">
-        <span class="titre">${esc(t.titre)}</span>
+        <span class="titre">${neuf ? `<span class="marque-neuf">Nouveau</span> ` : ""}${esc(t.titre)}</span>
         <span class="quoi">${esc(String(t.corps || "").slice(0, 180).replace(/\s+\S*$/, ""))}…</span>
         <span class="meta etiq">${esc(t.sourceNom)} · ${esc(noms.join(" · "))}${
           quand !== vu ? ` · relevé le ${esc(dateFr(vu))}` : ""}</span>
@@ -1166,7 +1172,7 @@ function groupesParClassement(V, entrees, domaineDe) {
     .map((id) => ({ id, cl: V.classements[id], textes: par[id] || [] }));
 }
 
-function tableauDesFamilles(V, groupes, titreDe, dateDe, domaineDe) {
+function tableauDesFamilles(V, groupes, titreDe, dateDe, domaineDe, prefixe = "", marqueDe = null) {
   if (!groupes.length) return "";
   return `<div class="tableau-boite">
   <table class="tableau-familles">
@@ -1191,11 +1197,12 @@ function tableauDesFamilles(V, groupes, titreDe, dateDe, domaineDe) {
       const action = d && d.actions && d.actions.length ? d.actions[0] : "—";
       return `<tr>
       <th scope="row" data-intitule="Famille">${esc(g.cl.l)}${
-        lienCarte(`#famille-${esc(g.id)}`, `Aller à la famille ${g.cl.l}`)}</th>
+        lienCarte(`#${esc(prefixe)}famille-${esc(g.id)}`, `Aller à la famille ${g.cl.l}`)}</th>
       <td data-intitule="Textes"><span class="compte-famille">${liste.length}</span></td>
       <td data-intitule="Le plus récent">
         <span class="mono date">${esc(dateFr(dateDe(t)))}</span>
-        <span class="titre">${esc(titreDe(t))}</span></td>
+        <span class="titre">${esc(titreDe(t))}</span>${
+          marqueDe ? `<span class="statut etiq">${esc(marqueDe(t))}</span>` : ""}</td>
       <td data-intitule="Ce qu'il faut faire en premier">${esc(action)}</td>
     </tr>`; }).join("")}
   </tbody>
@@ -1212,6 +1219,13 @@ function appReleve(V, D, JO, C, LIENS, SOURCES = []) {
 
   const officiel = JO && JO.textes && JO.textes.length;
   const groupes = groupesParClassement(V, D.releve, (t) => t.domaine);
+  /* Les textes relevés, rangés par famille : santé-sécurité, hygiène, social,
+     environnement, métier. Cent quarante-deux textes d'affilée, c'est illisible ;
+     rangés par nature, on voit d'un coup d'œil où il y a du travail. */
+  const domaineJO = (t) => (t.domaines && t.domaines[0] ? t.domaines[0].id : "");
+  const groupesJO = officiel ? groupesParClassement(V, JO.textes, domaineJO) : [];
+  const neufsJO = officiel
+    ? JO.textes.filter((t) => (t.vuLe || t.date) === JO.releve_le).length : 0;
 
   const corps = enTeteApp(D, "Relevé des textes",
     "Les textes parus qui touchent votre périmètre, et seulement ceux-là. Ce que chacun change, et où en est la décision.",
@@ -1244,9 +1258,25 @@ ${officiel ? rubrique({ etiq: "Relevé officiel", contenu: `
     ${esc(JO.rapport.filter((r) => r.souci).map((r) => r.nom).join(" · "))}.
     Elles sont signalées plutôt que remplacées : ce qui n'a pas été relevé ne figure
     pas ici, et ne doit pas être pris pour une absence de texte.</p>` : ""}
-  <ul class="liste-releve" style="margin-top:var(--t4)">
-    ${JO.textes.map((t, i) => ligneJO(V, t, i)).join("")}
-  </ul>` }) : rubrique({ etiq: "Relevé officiel", contenu: `
+  <p class="lecture" style="margin-top:var(--t4)">
+    <strong>Rangés par famille.</strong> La colonne « le plus récent » dit où ça a bougé
+    en dernier, et « ce qu'il faut faire en premier » ce que vous avez à faire de ce
+    côté. Cliquez la ligne pour descendre à la famille${neufsJO ? ` ; ${neufsJO} texte${
+      neufsJO > 1 ? "s sont arrivés" : " est arrivé"} à la dernière relève et porte${
+      neufsJO > 1 ? "nt" : ""} la marque <span class="marque-neuf">Nouveau</span>` : ""}.
+    Chaque texte s'ouvre ici même, en entier, avec ce qu'il faut faire.
+  </p>
+  ${tableauDesFamilles(V, groupesJO, (t) => t.titre, (t) => t.dateTexte || t.date,
+                       domaineJO, "jo-", (t) => (t.genre === "texte" ? "Texte" : "Publication"))}
+  ${(() => { let n = 0; return groupesJO.filter((g) => g.textes.length).map((g) => `
+  <section class="famille-releve" id="jo-famille-${esc(g.id)}">
+    <h3>${esc(g.cl.l)} <span class="etiq">${g.textes.length} texte${g.textes.length > 1 ? "s" : ""}</span></h3>
+    <p class="precision">${esc(g.cl.d)}</p>
+    <ul class="liste-releve">
+      ${g.textes.slice().sort((a, b) => ((a.dateTexte || a.date) < (b.dateTexte || b.date) ? 1 : -1))
+                .map((t) => ligneJO(V, t, n++, JO.releve_le)).join("")}
+    </ul>
+  </section>`).join(""); })()}` }) : rubrique({ etiq: "Relevé officiel", contenu: `
   <p class="reserve">
     <strong>Aucune relève n'a encore été faite.</strong>
     Le robot qui va chercher sur les sources officielles tourne
