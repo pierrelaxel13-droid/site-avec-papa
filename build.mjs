@@ -234,14 +234,7 @@ ${zone === "app" ? '<meta name="robots" content="noindex">' : ""}
 <link rel="stylesheet" href="${a("assets/polices.css")}">
 <link rel="stylesheet" href="${a("assets/site.css")}">
 <script src="${a("assets/theme.js")}"></script>
-<script>/* Avant tout rendu : sinon la page clignote en clair, et les éléments
-   qui doivent apparaître en défilant sauteraient de visible à caché.
-   Le document n'est marqué « anime » que si JavaScript tourne et que le
-   visiteur n'a pas demandé moins d'animations — sans quoi rien n'est caché. */
-window.PCO_THEME.appliquer();
-if (!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches)) {
-  document.documentElement.classList.add("anime");
-}</script>
+<script src="${a("assets/amorce.js")}"></script>
 </head>
 <body class="zone-${zone}" data-racine="${racine || "./"}"${formule ? ` data-formule="${esc(formule)}"` : ""}${attrsBody}>
 

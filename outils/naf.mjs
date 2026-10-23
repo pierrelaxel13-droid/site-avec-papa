@@ -29,6 +29,7 @@ import { mkdir, readFile, writeFile, rm } from "node:fs/promises";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { execFile } from "node:child_process";
+import { createHash } from "node:crypto";
 import { promisify } from "node:util";
 
 const execFileP = promisify(execFile);
@@ -40,6 +41,42 @@ const PAQUET = "@socialgouv/codes-naf";
 const args = process.argv.slice(2);
 const i = args.indexOf("--version");
 const VERSION = i !== -1 && args[i + 1] ? args[i + 1] : null;
+
+/* --- L'empreinte de l'archive --------------------------------------------
+   Le registre npm publie, à côté de l'adresse de chaque archive, l'empreinte
+   de son contenu. Télécharger sans la vérifier, c'est faire confiance au
+   transport ; la vérifier, c'est faire confiance à ce que l'éditeur a publié.
+   Ce n'est pas théorique pour ce site : le texte de loi que nous republions
+   sort de cette archive. Une archive trafiquée ne pourrait pas exécuter de
+   code — rien de ce qu'elle contient n'est exécuté, seulement lu comme du
+   JSON — mais elle pourrait mettre du faux droit dans les pages, ce qui est
+   exactement ce qu'un service de veille ne doit jamais faire.
+
+   Sans empreinte publiée, on s'arrête : mieux vaut pas de relève qu'une
+   relève dont on ne peut rien dire. */
+function verifieEmpreinte(octets, dist) {
+  const integrite = dist && dist.integrity;
+  if (integrite) {
+    /* « sha512-<base64> ». Le registre peut en donner plusieurs, séparées par
+       une espace ; il suffit qu'une corresponde. */
+    const formes = String(integrite).trim().split(/\s+/);
+    for (const f of formes) {
+      const sep = f.indexOf("-");
+      const algo = f.slice(0, sep), attendu = f.slice(sep + 1);
+      if (!/^sha(256|384|512)$/.test(algo)) continue;
+      if (createHash(algo).update(octets).digest("base64") === attendu) return `${algo} vérifié`;
+    }
+    throw new Error(`empreinte refusée : l'archive ne correspond pas à « ${integrite} »`);
+  }
+  if (dist && dist.shasum) {
+    const obtenu = createHash("sha1").update(octets).digest("hex");
+    if (obtenu !== dist.shasum) {
+      throw new Error(`empreinte refusée : sha1 ${obtenu} au lieu de ${dist.shasum}`);
+    }
+    return "sha1 vérifié";
+  }
+  throw new Error("le registre ne publie aucune empreinte pour cette archive : on n'ouvre pas");
+}
 
 async function main() {
   const meta = await (await fetch(`https://registry.npmjs.org/${PAQUET}`,
@@ -53,8 +90,10 @@ async function main() {
   const archive = join(TRAVAIL, "paquet.tgz");
   const r = await fetch(infos.dist.tarball, { signal: AbortSignal.timeout(120000) });
   if (!r.ok) throw new Error(`téléchargement : HTTP ${r.status}`);
-  await writeFile(archive, Buffer.from(await r.arrayBuffer()));
-  await execFileP("tar", ["-xzf", archive, "-C", TRAVAIL]);
+  const octets = Buffer.from(await r.arrayBuffer());
+  console.log(`  empreinte : ${verifieEmpreinte(octets, infos.dist)}`);
+  await writeFile(archive, octets);
+  await execFileP("tar", ["-xzf", archive, "-C", TRAVAIL, "--no-same-owner"]);
 
   const brut = JSON.parse(await readFile(join(TRAVAIL, "package", "index.json"), "utf8"));
   const par = (n) => brut.filter((x) => x.id.length === n);

@@ -31,13 +31,42 @@
 # ou par n'importe quel service de cron. Chaque construction relit le JO et
 # recompare les codes.
 
+# --- Sécurité, sur tout ce qui est servi -------------------------------------
+# Ces en-têtes ne protègent presque rien aujourd'hui : le site est statique, il
+# n'y a ni compte ni donnée. Ils sont posés maintenant parce qu'ils se posent
+# mal sur un site vivant : le jour où il y aura des sessions, une faille
+# d'injection deviendra un vol de compte, et il vaut mieux que la politique
+# soit déjà éprouvée que découverte ce jour-là.
+#
+# script-src 'self' : aucun script écrit dans le HTML ne s'exécute. C'est la
+#   règle qui compte, et le site se l'applique — assets/amorce.js existe pour
+#   ça. Ne jamais y ajouter 'unsafe-inline' : ce serait rendre la règle inutile.
+# style-src accepte 'unsafe-inline' : les 415 pages portent des attributs
+#   style=. Un attribut de style n'exécute rien ; le danger est dans les
+#   scripts, et eux restent fermés.
+# frame-ancestors 'none' : personne ne peut afficher le site dans une iframe
+#   chez lui pour faire cliquer un visiteur à son insu.
+# base-uri et object-src : deux façons connues de détourner une page, dont le
+#   site n'a aucun usage.
+# img-src accepte data: parce que deux dessins de la feuille de style sont
+#   écrits dedans — la coche des listes et le cadenas. Un SVG chargé comme
+#   image n'exécute pas de script, contrairement à un SVG mis dans la page.
+[[headers]]
+  for = "/*"
+  [headers.values]
+    Content-Security-Policy = "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'; manifest-src 'self'; worker-src 'self'; frame-src 'none'; object-src 'none'; base-uri 'none'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests"
+    X-Content-Type-Options = "nosniff"
+    X-Frame-Options = "DENY"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Cross-Origin-Opener-Policy = "same-origin"
+    Permissions-Policy = "camera=(), microphone=(), geolocation=(), payment=(), usb=()"
+    Strict-Transport-Security = "max-age=31536000; includeSubDomains"
+
 # Les pages sont engendrées : il faut qu'une correction se voie tout de suite.
 [[headers]]
   for = "/*.html"
   [headers.values]
     Cache-Control = "public, max-age=0, must-revalidate"
-    X-Content-Type-Options = "nosniff"
-    Referrer-Policy = "strict-origin-when-cross-origin"
 
 [[headers]]
   for = "/assets/*"

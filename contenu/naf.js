@@ -5,7 +5,7 @@
 
    732 codes APE (sous-classes), 121 classes,
    272 groupes, 88 divisions.
-   NAF rév. 2 de l'INSEE, relevée le 2026-10-22
+   NAF rév. 2 de l'INSEE, relevée le 2026-10-23
    dans @socialgouv/codes-naf 1.1.1.
 
    Une entreprise porte un code APE à cinq caractères (4322B). Le périmètre de
@@ -16,7 +16,7 @@
 window.NAF = {
   version: "NAF rév. 2",
   paquet: "@socialgouv/codes-naf 1.1.1",
-  releve: "2026-10-22",
+  releve: "2026-10-23",
   source: {
     nom: "Nomenclature d'activités française (NAF rév. 2), INSEE",
     url: "https://www.insee.fr/fr/information/2120875"

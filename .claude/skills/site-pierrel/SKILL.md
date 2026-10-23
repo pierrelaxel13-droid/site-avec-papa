@@ -18,6 +18,7 @@ un fichier de `_site/` ne sert à rien, il est effacé à chaque construction.
 | `assets/site.css` | Toute la mise en forme, les deux thèmes, le mouvement et l'impression. |
 | `assets/app.js` | Bandeau, menu repliable, bascules, simulateur, recherche, affinage du périmètre, apparitions. |
 | `assets/theme.js` | Le choix de thème (auto / clair / sombre), appliqué avant le premier rendu. |
+| `assets/amorce.js` | Les trois lignes qui appliquent le thème et arment les apparitions, avant tout rendu. Elles tenaient dans la page ; elles en sont sorties parce que la politique de sécurité interdit désormais tout script écrit dans le HTML. **Ne jamais remettre de `<script>` en ligne dans `build.mjs`** : il serait refusé par le navigateur. |
 | `assets/session.js` | Le jeton de démonstration et la formule ouverte. **Ce n'est pas une sécurité** — voir plus bas. |
 | `assets/entreprise.js` | Les deux volets de `app/reglages.html` : mon entreprise, mes alertes. Tout est gardé dans le navigateur. |
 | `assets/avis.js` | La cloche des nouveaux textes, sur tous les écrans de l'application. |

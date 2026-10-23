@@ -34,6 +34,9 @@ on:
     - cron: "42 5 * * *"      # une fois par jour, 5 h 42 UTC ≈ 7 h 42 à Paris
   workflow_dispatch:           # et à la demande, depuis l'onglet Actions
 
+# Le robot n'a besoin que d'une chose : écrire dans ce dépôt. Tout le reste
+# lui est refusé, pour que le jeton qu'il porte ne serve à rien d'autre si
+# quelque chose tournait mal pendant un passage.
 permissions:
   contents: write
 
@@ -45,9 +48,14 @@ jobs:
   relever:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      # Les actions sont épinglées sur un commit précis, pas sur « v4 ».
+      # Une étiquette peut être déplacée ; un commit, non. En échange elles ne
+      # se mettent plus à jour toutes seules : la version est écrite à côté
+      # pour qu'on sache quoi relever, et c'est à faire à la main de temps en
+      # temps — https://github.com/actions/checkout/releases
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
           node-version: "22"
 
