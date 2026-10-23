@@ -57,7 +57,7 @@
    "nom": "BOFiP — doctrine fiscale",
    "entrees": 0,
    "retenus": 0,
-   "souci": "injoignable (fetch failed) — hôte probablement refusé par la politique réseau"
+   "souci": "HTTP 404"
   },
   {
    "id": "cnil",
@@ -104,9 +104,9 @@
   {
    "id": "rappelconso",
    "nom": "RappelConso — rappels de produits",
-   "entrees": 20,
+   "entrees": 0,
    "retenus": 0,
-   "souci": null
+   "souci": "HTTP 404"
   },
   {
    "id": "dgccrf",
