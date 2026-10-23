@@ -306,10 +306,25 @@ flux au format inattendu remonte « 0 entrée ». Et si la relève entière ne
 ramène rien, rien n'est écrit : l'application continue d'afficher « aucune
 relève » et son jeu d'essai, nommé comme tel.
 
-**Les adresses de flux ne sont pas encore confirmées.** Elles portent toutes
-`confirme: false` dans `contenu/sources.js`, parce qu'aucune n'a pu être
-interrogée depuis cet environnement. `--verifier` dit lesquelles répondent :
-c'est au vu de ce rapport qu'on en passe une à `true`, jamais avant.
+**Les adresses ont été vérifiées le 23 octobre 2026**, depuis une machine qui
+joint ces hôtes. Résultat, dans `contenu/sources-rapport.txt` :
+
+| | |
+| --- | --- |
+| **6 répondent et donnent des entrées** | Journal officiel (863 archives), CNIL, CERT-FR avis, CERT-FR alertes, RappelConso, Douane |
+| 4 répondent sans rien donner | adresses périmées : EUR-Lex dit « ce flux n'existe plus », l'INRS et le ministère du Travail renvoient une page HTML, l'ADEME sert le flux des commentaires de sa page presse, vide |
+| 9 renvoient 404 | l'adresse n'existe pas |
+| 6 refusent la connexion ou répondent 403 | |
+
+Les six qui marchent portent `confirme: true`. **Les dix-neuf autres gardent
+`confirme: false` et une note datée disant ce qu'elles ont répondu** — on ne
+leur invente pas une adresse de remplacement. Le site, lui, annonce le nombre
+de sources qui répondent, pas le nombre de sources déclarées.
+
+Au passage, cette vérification a répondu à la seule question qui portait sur
+notre code : **notre lecteur de flux n'a aucun défaut.** L'ADEME nous envoyait
+un flux vide ; les trois autres, du HTML. Pour relancer la vérification :
+l'étape « Vérifier les sources » de l'action, qui ne tourne qu'à la demande.
 
 ## Les textes, sur le site
 
