@@ -1221,13 +1221,12 @@ ${officiel ? rubrique({ etiq: "Relevé officiel", contenu: `
   </ul>` }) : rubrique({ etiq: "Relevé officiel", contenu: `
   <p class="reserve">
     <strong>Aucune relève n'a encore été faite.</strong>
-    Le robot qui va chercher sur les sources officielles est écrit
-    (<code>outils/veille.mjs</code>, 25 sources déclarées dans
-    <code>contenu/sources.js</code>) mais n'a pas encore tourné : la politique réseau
-    de l'environnement de développement bloque ces hôtes. Il tourne à chaque
-    publication du site chez Netlify, où le réseau est libre.
-    Tant qu'il n'a pas tourné, cette page montre le jeu d'essai ci-dessous, et rien
-    d'autre — pas de texte inventé.
+    Le robot qui va chercher sur les 25 sources officielles tourne
+    <strong>toutes les heures</strong>, et le texte des codes une fois par jour ;
+    ce qu'il trouve est publié aussitôt. Cette page-ci a été construite sans
+    relevé — c'est le cas sur un poste de développement, dont le réseau ne joint
+    pas ces hôtes. Elle montre donc le jeu d'essai ci-dessous, et rien d'autre :
+    pas de texte inventé.
   </p>` })}
 
 ${C ? rubrique({ etiq: "Ce qui a changé dans les codes", contenu: `
@@ -2848,7 +2847,7 @@ async function main() {
     : "AUCUN — lancer outils/codes.mjs"}`);
   console.log(`  relève officielle   ${JO ? JO.textes.length + " entrées, relevées le " + JO.releve_le +
     " (" + JO.rapport.filter((r) => r.retenus).length + " sources sur " + JO.rapport.length + ")"
-    : "AUCUNE — lancer outils/veille.mjs (tourne chez Netlify à chaque publication)"}`);
+    : "AUCUNE — lancer outils/veille.mjs (tourne toutes les heures dans .github/workflows/releve.yml)"}`);
   console.log(`\n_site/ prêt — ${(total / 1024).toFixed(1)} Ko, ` +
     `${V.divisions.length + Object.keys(parTexte).length + (C ? C.morceaux.length : 0) + 10} pages, ` +
     `${Object.keys(V.domaines).length} domaines, ${Object.keys(PIEGES).length} secteurs avec pièges.`);
