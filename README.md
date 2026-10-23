@@ -110,6 +110,23 @@ disparaissent si le visiteur vide les données du site. Aucun courriel ne part.
 Les deux pages le disent au-dessus des formulaires, avant qu'on y tape quoi
 que ce soit.
 
+## Exercer le code qui dort
+
+La plupart du temps, `contenu/veille-releve.json` n'existe pas : le site se
+construit alors sans relevé officiel, et tout le code qui ne s'allume qu'avec
+des textes relevés **n'est jamais exécuté**. C'est par là qu'une fonction
+manquante est passée jusqu'en production — le premier passage de la relève
+l'a trouvée, et a refusé de publier.
+
+`outils/releve-exemple.json` a la forme exacte de ce qu'écrit
+`outils/veille.mjs` : trois textes inventés, un rapport avec une source
+muette. Le poser à la place du relevé et construire, c'est exercer ce
+chemin-là sans réseau. L'action le fait à chaque passage, après la vraie
+relève, puis remet ce qui avait été relevé.
+
+**Ce fichier est un jeu d'essai et le dit dans sa première clé.** Il ne doit
+jamais être publié comme s'il était officiel.
+
 ## À quelle fréquence la relève tourne
 
 « Idéalement tout le temps, chaque seconde. » Ça ne servirait à rien : les
