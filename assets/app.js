@@ -152,6 +152,32 @@
   }
 
   /* --- Bascules à deux segments --------------------------------------------- */
+  /* --- Ouvrir une fiche la remonte en haut de l'écran -----------------------
+     Les fiches sont longues. Cliquée en bas de l'écran, une fiche s'ouvrait
+     sous le pli : le client voyait le bas du texte, ou rien, et devait
+     remonter à la main. On la ramène donc juste sous le bandeau, pour qu'elle
+     commence là où on lit. On ne bouge pas quand elle y est déjà, et on ne
+     bouge jamais à la fermeture. */
+  function remonterLesFiches() {
+    var OUVRABLE = ".ligne-releve, .ligne-registre, .liste-echeances li, .famille-releve, .textes";
+
+    function sousLeBandeau() {
+      var b = $(".bandeau");
+      return (b ? b.getBoundingClientRect().height : 64) + 16;
+    }
+
+    document.addEventListener("toggle", function (e) {
+      var d = e.target;
+      if (!d || d.tagName !== "DETAILS" || !d.open) return;
+      if (!d.closest(OUVRABLE)) return;
+      var som = d.querySelector("summary");
+      if (!som) return;
+      var ecart = som.getBoundingClientRect().top - sousLeBandeau();
+      if (Math.abs(ecart) < 8) return;
+      window.scrollBy({ top: ecart, left: 0, behavior: SOBRE ? "auto" : "smooth" });
+    }, true);
+  }
+
   function bascules() {
     $$("[data-bascule]").forEach(function (groupe) {
       var boutons = $$("button", groupe);
@@ -499,6 +525,7 @@
   codeChoisi();
   bandeau();
   menu();
+  remonterLesFiches();
   bascules();
   simulateur();
   rechercheSecteurs();

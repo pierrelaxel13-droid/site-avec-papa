@@ -1192,6 +1192,32 @@ body.verrouille main > *:not(#verrou) { display: none; }
   .ligne-registre summary { grid-template-columns: 7.5rem minmax(0, 1fr) 1.5rem; align-items: start; }
 }
 
+/* Sur petit écran la grille n'a que deux colonnes : la date, le corps et la
+   pastille d'état se mettent les uns sous les autres, sur toute la largeur.
+   Sans cette règle, le corps tombait dans la colonne de 1,5 rem réservée au
+   chevron et le titre s'écrivait une lettre par ligne — des fiches hautes de
+   huit écrans. */
+@media (max-width: 45.999rem) {
+  .ligne-releve summary > *:not(.chevron),
+  .ligne-registre summary > *:not(.chevron) { grid-column: 1; }
+  .ligne-releve summary > .chevron,
+  .ligne-registre summary > .chevron { grid-column: 2; grid-row: 1; }
+
+  /* Un titre de Journal officiel fait parfois quatre cents signes : sur un
+     téléphone, une fiche fermée mangeait l'écran entier et on n'en voyait
+     qu'une à la fois. Fermée, elle montre le début ; ouverte, tout. */
+  .ligne-releve details:not([open]) .titre,
+  .ligne-registre details:not([open]) .titre,
+  .ligne-releve details:not([open]) .quoi,
+  .ligne-registre details:not([open]) .quoi {
+    display: -webkit-box; -webkit-box-orient: vertical; overflow: hidden;
+  }
+  .ligne-releve details:not([open]) .titre,
+  .ligne-registre details:not([open]) .titre { -webkit-line-clamp: 4; line-clamp: 4; }
+  .ligne-releve details:not([open]) .quoi,
+  .ligne-registre details:not([open]) .quoi { -webkit-line-clamp: 2; line-clamp: 2; }
+}
+
 .chevron {
   width: 1.1rem; height: 1.1rem; justify-self: end; align-self: start;
   margin-top: .2rem; color: var(--filet-controle);
@@ -1537,7 +1563,6 @@ details[open] > summary .chevron { transform: rotate(180deg); }
   border: 1px solid var(--filet);
   border-radius: var(--r2);
   color: var(--encre); font-weight: 600; font-size: .98rem;
-  scroll-margin-top: 6rem;
 }
 .codes-ape li:target { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-clair); }
 .codes-ape .nom {
@@ -1634,7 +1659,7 @@ details[open] > summary .chevron { transform: rotate(180deg); }
 }
 
 /* Les familles du relevé, dessous : même grammaire que le reste. */
-.famille-releve { margin-top: var(--t6); scroll-margin-top: 6rem; }
+.famille-releve { margin-top: var(--t6); }
 .famille-releve h3 {
   display: flex; flex-wrap: wrap; align-items: baseline; gap: .6rem;
   margin: 0 0 .2rem; font-size: 1.22rem; letter-spacing: -.02em;
@@ -1778,7 +1803,7 @@ details[open] > summary .chevron { transform: rotate(180deg); }
 .exige-court li { margin-bottom: .3rem; }
 .tableau-textes .lien-fleche { margin-top: .2rem; font-size: .88rem; }
 
-.famille-textes { margin-top: var(--t6); scroll-margin-top: 6rem; }
+.famille-textes { margin-top: var(--t6); }
 .famille-textes h3 {
   display: flex; flex-wrap: wrap; align-items: baseline; gap: .6rem;
   margin: 0 0 .2rem; font-size: 1.22rem; letter-spacing: -.02em;
@@ -1818,7 +1843,6 @@ details[open] > summary .chevron { transform: rotate(180deg); }
   background: var(--carte);
   border: 1px solid var(--filet);
   border-radius: var(--r2);
-  scroll-margin-top: 6rem;
 }
 .article:target { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-clair); }
 .article-tete {
@@ -1853,7 +1877,14 @@ details[open] > summary .chevron { transform: rotate(180deg); }
 .texte-loi caption { padding-bottom: .4rem; color: var(--encre-tenue); font-size: .88rem; text-align: left; }
 
 /* Le sommaire d'un code : une ligne par page de texte. */
-.sommaire-code { list-style: none; padding: 0; margin: 0; display: grid; gap: .5rem; }
+/* La colonne de la grille se cale sur la largeur disponible, jamais sur le
+   plus long des sommaires : sans minmax(0, 1fr) et min-width, un intitulé
+   large poussait toute la liste hors de l'écran du téléphone. */
+.sommaire-code {
+  list-style: none; padding: 0; margin: 0;
+  display: grid; grid-template-columns: minmax(0, 1fr); gap: .5rem;
+}
+.sommaire-code > li { min-width: 0; }
 .sommaire-code a {
   display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: .3rem var(--t3);
   align-items: baseline;
@@ -1871,6 +1902,17 @@ details[open] > summary .chevron { transform: rotate(180deg); }
 .sommaire-code .code {
   grid-row: 1; grid-column: 2;
   font-family: var(--mono); font-size: .82rem; color: var(--encre-tenue); white-space: nowrap;
+}
+/* Sur téléphone la plage d'articles passe en dessous : à côté, elle volait la
+   place de l'intitulé. */
+@media (max-width: 45.999rem) {
+  .sommaire-code a { grid-template-columns: minmax(0, 1fr); }
+  .sommaire-code .code {
+    grid-row: auto; grid-column: 1;
+    /* « Annexe I à l'article R4312-1 → Annexe II à l'article D4322-3 » tient
+       sur une ligne d'écran large, pas sur un téléphone : là, elle se coupe. */
+    white-space: normal; overflow-wrap: anywhere;
+  }
 }
 
 /* L'étiquette qui dit, dans la liste des textes, que celui-là est publié ici. */
