@@ -983,28 +983,48 @@ function listeDeTextes(V, C, LIENS, TEXTES, entrees) {
    existe, l'application sert ces textes-là, avec leur contenu intégral. Quand
    il n'existe pas, elle sert le jeu d'essai — et le dit. Jamais l'un déguisé
    en l'autre. */
-function ligneJO(t, i) {
+function ligneJO(V, t, i) {
   const noms = t.domaines.map((d) => d.nom);
-  return `<li class="ligne-releve statut-attente">
+  const droit = t.genre === "texte";
+  /* Les gestes à faire, pris sur les domaines auxquels le texte est rattaché :
+     un abonné qui lit « un texte est sorti » veut savoir quoi faire. */
+  const actions = [...new Set(t.domaines.flatMap((d) =>
+    (V.domaines[d.id] || {}).actions || []))].slice(0, 4);
+  /* La date du texte vient de son titre quand il la porte ; la date d'archive
+     dit seulement quand nous l'avons vu passer. Les deux sont utiles, et ce ne
+     sont pas les mêmes. */
+  const quand = t.dateTexte || t.date;
+  const vu = t.vuLe || t.date;
+
+  return `<li class="ligne-releve statut-${droit ? "attente" : "neutre"}">
   <details${i === 0 ? " open" : ""}>
     <summary>
-      <span class="mono date">${esc(dateFr(t.date))}</span>
+      <span class="mono date">${esc(dateFr(quand))}</span>
       <span class="corps">
         <span class="titre">${esc(t.titre)}</span>
-        <span class="quoi">${esc(t.corps.slice(0, 180).replace(/\s+\S*$/, ""))}…</span>
-        <span class="meta etiq">${esc(t.nature)} · ${esc(noms.join(" · "))}</span>
+        <span class="quoi">${esc(String(t.corps || "").slice(0, 180).replace(/\s+\S*$/, ""))}…</span>
+        <span class="meta etiq">${esc(t.sourceNom)} · ${esc(noms.join(" · "))}${
+          quand !== vu ? ` · relevé le ${esc(dateFr(vu))}` : ""}</span>
       </span>
-      <span class="statut etiq">À analyser</span>
+      <span class="statut etiq">${droit ? "Texte" : "Publication"}</span>
       ${chevron}
     </summary>
     <div class="detail">
-      <p class="etiq">Texte intégral, tel que publié au Journal officiel</p>
-      <div class="texte-officiel">${esc(t.corps).replace(/\n/g, "<br>")}</div>
+      ${actions.length ? `<p class="etiq">Ce qu'il faut faire</p>
+      <ul class="a-faire">${actions.map((a) => `<li>${esc(a)}</li>`).join("")}</ul>` : ""}
+      <p class="etiq" style="margin-top:var(--t4)">${droit ? "Texte intégral, tel que publié" : "Ce qu'en dit la source"}</p>
+      <div class="texte-officiel">${esc(String(t.corps || "")).replace(/\n/g, "<br>")}</div>
       ${t.nota ? `<p class="note-source"><strong>Nota.</strong> ${esc(t.nota)}</p>` : ""}
       <p class="note-source">
-        Source : Journal officiel de la République française, données ouvertes de la DILA,
-        sous Licence Ouverte. Version publiée le ${esc(dateFr(t.date))}${t.id ? ` — identifiant ${esc(t.id)}` : ""}.
-        En cas de doute, se référer à Légifrance, qui fait foi.
+        Source : ${esc(t.sourceNom)}. ${droit
+          ? "Texte officiel de la République française, sous Licence Ouverte."
+          : "Publication officielle, reproduite avec sa source et sa date — ce n'est pas du droit, c'est un commentaire officiel."}
+        ${quand !== vu ? `Texte du ${esc(dateFr(quand))}, relevé le ${esc(dateFr(vu))}`
+                       : `Publié le ${esc(dateFr(quand))}`}${
+          t.id && !/^http/.test(t.id) ? ` — identifiant ${esc(t.id)}` : ""}.
+        ${t.morceaux > 1 ? `Recollé à partir de ${t.morceaux} fichiers de l'archive.` : ""}
+        ${t.lien ? `<a href="${esc(t.lien)}" target="_blank" rel="noopener">Voir chez la source ${sortant}</a>` : ""}
+        En cas de doute, c'est la source qui fait foi.
       </p>
       <p class="rangee" style="margin-top:var(--t4)">
         <button type="button" class="bouton bouton-sobre imprimer-fiche">${imprimante} Enregistrer en PDF</button>
@@ -1217,7 +1237,7 @@ ${officiel ? rubrique({ etiq: "Relevé officiel", contenu: `
     Elles sont signalées plutôt que remplacées : ce qui n'a pas été relevé ne figure
     pas ici, et ne doit pas être pris pour une absence de texte.</p>` : ""}
   <ul class="liste-releve" style="margin-top:var(--t4)">
-    ${JO.textes.map((t, i) => ligneJO(t, i)).join("")}
+    ${JO.textes.map((t, i) => ligneJO(V, t, i)).join("")}
   </ul>` }) : rubrique({ etiq: "Relevé officiel", contenu: `
   <p class="reserve">
     <strong>Aucune relève n'a encore été faite.</strong>
