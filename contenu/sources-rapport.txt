@@ -3,13 +3,16 @@ Vérification de 25 sources.
   jorf             répond — 863 archives
   eurlex-l         répond — 0 entrées  ← format à revoir
                   type : application/xml
-                  début : <?xml version="1.0" encoding="UTF-8"?> <?xml-stylesheet type="text/xsl" media="screen" href="null"?> <rss version="2.0"> <channel> <description>The RSS feed doesn't exist or is no longer valid.</descr
+                  début : <?xml version="1.0" encoding="UTF-8"?> <?xml-stylesheet type="text/xsl" media="screen" href="null"?> <rss version="2.0"> <channel> <description>The RSS feed doesn't exist or is no longer valid.</description> </channel> </rss>
+                  balises : 0 <item>, 0 <entry>, 0 <ns:item>
   inrs             répond — 0 entrées  ← format à revoir
                   type : text/html;charset=UTF-8
-                  début : <!doctype html> <html class="no-js" prefix="og: http://ogp.me/ns#" lang="fr"> <head> <!-- Font brother-1816 --> <link rel="stylesheet" href="https://ressources.inrs.fr/web4/css/jlv0nau.css"> <title>Pa
+                  début : <!doctype html> <html class="no-js" prefix="og: http://ogp.me/ns#" lang="fr"> <head> <!-- Font brother-1816 --> <link rel="stylesheet" href="https://ressources.inrs.fr/web4/css/jlv0nau.css"> <title>Page introuvable - INRS</title><meta property="og:title" content="Page introuvable - INRS"/> <meta name="twitter:title" content="Page introuvable - INRS"/> <meta http-equiv="X-UA-Compatible" content="IE=edge" /> <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"> <meta name="viewport" content="width=device-width, initial-scale=1.0, minimal-ui"> <meta name="google-site-verification" content="LKbNOlAwhO9zGI6VX9r_B55v4VBV9sWuh_dGb3TSKVo" /> <meta name="google-site-verification" conten
+                  balises : 0 <item>, 0 <entry>, 0 <ns:item>
   travail          répond — 0 entrées  ← format à revoir
                   type : text/html
-                  début : <!DOCTYPE html> <html><head> <meta http-equiv="Pragma" content="no-cache"/> <meta http-equiv="Expires" content="-1"/> <meta http-equiv="CacheControl" content="no-cache"/> <meta http-equiv="Content-Typ
+                  début : <!DOCTYPE html> <html><head> <meta http-equiv="Pragma" content="no-cache"/> <meta http-equiv="Expires" content="-1"/> <meta http-equiv="CacheControl" content="no-cache"/> <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/> <link rel="shortcut icon" href="data:;base64,iVBORw0KGgo="/> <script type="text/javascript"> (function(){ window["bobcmn"] = "101110101010112000000062000000052000000062000000012e92b7ff4200000096200000000200000002300000000300000000300000006/TSPD/300000008TSPD_10130000000cTSPD_101_DID300000005https3000000b0087dc22938ab20000be8bc2fc36f4338eed08bcf330a51317441ea953a1ff9f3050408ed1466f14c085477d5aa0a2800df7d4d8d0abe357b64e192ba640bf2fb76ee468ba015736750e4104c5d
+                  balises : 0 <item>, 0 <entry>, 0 <ns:item>
   oppbtp           HTTP 404
   boss             injoignable (fetch failed) — hôte probablement refusé par la politique réseau
   urssaf           injoignable (fetch failed) — hôte probablement refusé par la politique réseau
@@ -21,7 +24,8 @@ Vérification de 25 sources.
   ineris-aida      HTTP 404
   ademe            répond — 0 entrées  ← format à revoir
                   type : application/rss+xml; charset=UTF-8
-                  début : <?xml version="1.0" encoding="UTF-8"?><rss version="2.0" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom" x
+                  début : <?xml version="1.0" encoding="UTF-8"?><rss version="2.0" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:sy="http://purl.org/rss/1.0/modules/syndication/" > <channel> <title> Commentaires sur : Presse </title> <atom:link href="https://www.ademe.fr/presse/feed/" rel="self" type="application/rss+xml" /> <link>https://www.ademe.fr/presse/</link> <description></description> <lastBuildDate>Sat, 18 Apr 2026 21:09:54 +0000</lastBuildDate> <sy:updatePeriod> hourly </sy:updatePeriod> <sy:updateFrequency> 1 </sy:updateFrequency> </channel> </rss>
+                  balises : 0 <item>, 0 <entry>, 0 <ns:item>
   rappelconso      répond — 20 entrées
   dgccrf           injoignable (HTTP 403) — hôte probablement refusé par la politique réseau
   anses            HTTP 404
