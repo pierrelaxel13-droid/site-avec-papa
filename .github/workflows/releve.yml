@@ -51,6 +51,16 @@ jobs:
         with:
           node-version: "22"
 
+      # À la demande seulement : interroger les 25 sources une par une et écrire
+      # qui répond. Dix-neuf d'entre elles sont déclarées « confirme: false »
+      # parce que leur adresse n'a jamais été vérifiée contre le vrai serveur ;
+      # c'est ici qu'on le fait, et le rapport reste dans le dépôt.
+      - name: Vérifier les sources une par une
+        if: github.event_name == 'workflow_dispatch'
+        run: |
+          node outils/veille.mjs --verifier 2>&1 | tee contenu/sources-rapport.txt
+          echo "::notice::$(grep -c 'répond' contenu/sources-rapport.txt) source(s) répondent."
+
       # Les flux et le Journal officiel : à chaque passage. Un échec ne doit
       # pas arrêter la relève, mais il doit se voir dans le journal du passage.
       - name: Les textes qui paraissent
