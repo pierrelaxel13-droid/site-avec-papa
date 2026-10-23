@@ -2,8 +2,14 @@ Vérification de 25 sources.
 
   jorf             répond — 863 archives
   eurlex-l         répond — 0 entrées  ← format à revoir
+                  type : application/xml
+                  début : <?xml version="1.0" encoding="UTF-8"?> <?xml-stylesheet type="text/xsl" media="screen" href="null"?> <rss version="2.0"> <channel> <description>The RSS feed doesn't exist or is no longer valid.</descr
   inrs             répond — 0 entrées  ← format à revoir
+                  type : text/html;charset=UTF-8
+                  début : <!doctype html> <html class="no-js" prefix="og: http://ogp.me/ns#" lang="fr"> <head> <!-- Font brother-1816 --> <link rel="stylesheet" href="https://ressources.inrs.fr/web4/css/jlv0nau.css"> <title>Pa
   travail          répond — 0 entrées  ← format à revoir
+                  type : text/html
+                  début : <!DOCTYPE html> <html><head> <meta http-equiv="Pragma" content="no-cache"/> <meta http-equiv="Expires" content="-1"/> <meta http-equiv="CacheControl" content="no-cache"/> <meta http-equiv="Content-Typ
   oppbtp           HTTP 404
   boss             injoignable (fetch failed) — hôte probablement refusé par la politique réseau
   urssaf           injoignable (fetch failed) — hôte probablement refusé par la politique réseau
@@ -14,6 +20,8 @@ Vérification de 25 sources.
   ecologie         HTTP 404
   ineris-aida      HTTP 404
   ademe            répond — 0 entrées  ← format à revoir
+                  type : application/rss+xml; charset=UTF-8
+                  début : <?xml version="1.0" encoding="UTF-8"?><rss version="2.0" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom" x
   rappelconso      répond — 20 entrées
   dgccrf           injoignable (HTTP 403) — hôte probablement refusé par la politique réseau
   anses            HTTP 404
