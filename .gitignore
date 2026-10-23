@@ -4,8 +4,9 @@ node_modules/
 # Archives de travail de outils/veille.mjs
 .releve/
 
-# Le relevé est engendré par outils/veille.mjs à chaque construction.
-contenu/veille-releve.json
+# contenu/veille-releve.json n'est PAS ignoré : c'est en le commitant que la
+# relève horaire atteint le site. Un fichier ignoré ne déclenche aucune
+# republication — la veille tournerait pour rien.
 
 # Le paquet des codes, téléchargé puis extrait par outils/codes.mjs.
 .codes/

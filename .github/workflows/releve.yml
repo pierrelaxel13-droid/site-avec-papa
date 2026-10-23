@@ -13,15 +13,17 @@
 # une nouveauté — et un blocage assuré par les serveurs publics.
 #
 # CE QU'ON FAIT
-#   toutes les heures  les 25 sources d'actualité (léger : des flux).
+#   toutes les heures  les 25 sources d'actualité, sur quatorze jours glissants.
 #   une fois par jour  les codes consolidés (lourd : 12 Mo à télécharger),
 #                      juste après que la base LEGI a été reconstruite.
 # Le délai maximum entre la parution d'un texte et l'alerte est donc d'une
 # heure. C'est déjà plus serré que le rythme des sources elles-mêmes.
 #
 # COMMENT ÇA ATTEINT LE SITE
-# Quand la relève change quelque chose, l'action le commite. Netlify voit le
-# commit et republie. Rien à régler ailleurs, aucune clé à poser.
+# Quand la relève change quelque chose, l'action le commite — contenu/ est
+# suivi par git, relevé compris. Netlify voit le commit et republie, sans rien
+# relever lui-même : le site affiche exactement ce qui est dans l'historique.
+# Rien à régler ailleurs, aucune clé à poser.
 # ==========================================================================
 name: Relève
 
@@ -53,7 +55,7 @@ jobs:
       # pas arrêter la relève, mais il doit se voir dans le journal du passage.
       - name: Les textes qui paraissent
         run: |
-          node outils/veille.mjs --jours 2 2>&1 | tee releve-flux.log || \
+          node outils/veille.mjs --jours 14 2>&1 | tee releve-flux.log || \
             echo "::warning::Relève des flux : $(tail -c 500 releve-flux.log | tr '\n' ' ')"
 
       # Les codes consolidés : une fois par jour seulement. contenu/codes.json
@@ -108,6 +110,10 @@ jobs:
           fi
           git config user.name  "Relève Pierrel & Co"
           git config user.email "releve@users.noreply.github.com"
+          taille=$(du -k contenu/veille-releve.json 2>/dev/null | cut -f1 || echo 0)
+          if [ "$taille" -gt 5120 ]; then
+            echo "::warning::Le relevé pèse ${taille} Ko — réduire la fenêtre de --jours."
+          fi
           git add contenu/
           git commit -m "Relève du $(date -u +%d/%m/%Y\ à\ %H:%M) UTC"
           git push
