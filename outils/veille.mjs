@@ -379,9 +379,13 @@ async function main() {
            qu'elle envoie : neuf fois sur dix ce n'est pas un flux, c'est une
            page d'accueil ou un message d'erreur en HTML. */
         if (!n) {
-          const debut = corps.replace(/\s+/g, " ").trim().slice(0, 200);
+          const debut = corps.replace(/\s+/g, " ").trim().slice(0, 700);
           console.log(`${" ".repeat(18)}type : ${r.headers.get("content-type") || "inconnu"}`);
           console.log(`${" ".repeat(18)}début : ${debut}`);
+          console.log(`${" ".repeat(18)}balises : ` +
+            `${(corps.match(/<item[\s>]/gi) || []).length} <item>, ` +
+            `${(corps.match(/<entry[\s>]/gi) || []).length} <entry>, ` +
+            `${(corps.match(/<[a-z]+:item[\s>]/gi) || []).length} <ns:item>`);
         }
         if (n) vivantes++;
       } catch (e) {
