@@ -9,19 +9,17 @@
 # son format a changé, le site doit quand même se publier. build.mjs sait
 # construire sans relevé, et la page le dit au lieu d'inventer des textes.
 #
-# Deux robots, deux rôles, et un seul tourne ici :
-#   outils/veille.mjs — ce qui paraît sur les 25 sources officielles. Son
-#                       résultat n'est pas suivi par git : le relever à chaque
-#                       publication est sans effet de bord.
-#   outils/codes.mjs  — le texte des codes consolidés. Il tourne dans
-#                       .github/workflows/releve.yml, une fois par jour, PAS
-#                       ici : contenu/codes.json est suivi par git, et c'est en
-#                       le comparant que le robot sait ce qui a changé. Le
-#                       regénérer à chaque construction sans le commiter
-#                       referait éternellement la même comparaison.
-# Le site se publie même si la relève échoue.
+# AUCUNE RELÈVE ICI. Les deux robots tournent dans
+# .github/workflows/releve.yml, qui commite ce qu'il a trouvé ; Netlify voit le
+# commit et republie. C'est voulu :
+#   — ce que le site affiche est exactement ce qui est commité, donc lisible
+#     dans l'historique et reproductible ;
+#   — relever ici en plus écraserait, dans le bac à sable de la construction,
+#     le relevé qui vient d'être commité, et le site montrerait autre chose
+#     que ce que git dit.
+# Netlify ne fait donc qu'une chose : construire.
 [build]
-  command = "node outils/veille.mjs --jours 30 || true; node build.mjs"
+  command = "node build.mjs"
   publish = "_site"
 
 [build.environment]
