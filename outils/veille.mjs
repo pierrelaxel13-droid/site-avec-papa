@@ -375,6 +375,14 @@ async function main() {
           : lisFlux(corps).length;
         console.log(`répond — ${n} ${s.type === "dila" ? "archives" : "entrées"}` +
                     (n ? "" : "  ← format à revoir"));
+        /* Une source qui répond sans rien donner mérite qu'on regarde ce
+           qu'elle envoie : neuf fois sur dix ce n'est pas un flux, c'est une
+           page d'accueil ou un message d'erreur en HTML. */
+        if (!n) {
+          const debut = corps.replace(/\s+/g, " ").trim().slice(0, 200);
+          console.log(`${" ".repeat(18)}type : ${r.headers.get("content-type") || "inconnu"}`);
+          console.log(`${" ".repeat(18)}début : ${debut}`);
+        }
         if (n) vivantes++;
       } catch (e) {
         console.log(diagnostic(e));

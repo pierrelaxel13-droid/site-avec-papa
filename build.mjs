@@ -1204,7 +1204,8 @@ function tableauDesFamilles(V, groupes, titreDe, dateDe, domaineDe) {
 }
 
 /* --- Relevé ------------------------------------------------------------------ */
-function appReleve(V, D, JO, C, LIENS) {
+function appReleve(V, D, JO, C, LIENS, SOURCES = []) {
+  const confirmees = SOURCES.filter((x) => x.confirme);
   const parStatut = Object.keys(STATUTS).map((s) => ({
     s, l: STATUTS[s].l, n: D.releve.filter((t) => t.statut === s).length
   }));
@@ -1225,12 +1226,19 @@ ${officiel ? rubrique({ etiq: "Relevé officiel", contenu: `
     <div><dt class="etiq">Dernière relève</dt><dd>${esc(dateFr(JO.releve_le))}</dd></div>
   </dl>
   <p class="lecture" style="margin-top:var(--t4)">
-    Relevé automatiquement sur les sources officielles — Journal officiel en tête — et
+    Relevé automatiquement sur ${confirmees.length} sources officielles vérifiées —
+    Journal officiel en tête — et
     filtré sur les domaines du référentiel. Le contenu est dans la page : rien à aller
     chercher ailleurs. Un <strong>texte</strong> est du droit ; une
     <strong>publication</strong> est un commentaire officiel, qui compte pour la veille
     mais n'en est pas.
   </p>
+  ${SOURCES.length > confirmees.length ? `<p class="note-source" style="margin-top:var(--t4)">
+    ${SOURCES.length - confirmees.length} autres sources sont déclarées mais pas encore
+    exploitables : leur adresse n'existe plus, refuse le robot, ou répond dans un format
+    que nous ne savons pas lire. Chacune porte dans <code>contenu/sources.js</code> ce
+    qu'elle a répondu, et à quelle date. Nous ne les comptons pas tant qu'elles ne
+    donnent rien.</p>` : ""}
   ${JO.rapport.some((r) => r.souci) ? `<p class="reserve" style="margin-top:var(--t4)">
     <strong>Sources muettes à la dernière relève.</strong>
     ${esc(JO.rapport.filter((r) => r.souci).map((r) => r.nom).join(" · "))}.
@@ -1241,7 +1249,7 @@ ${officiel ? rubrique({ etiq: "Relevé officiel", contenu: `
   </ul>` }) : rubrique({ etiq: "Relevé officiel", contenu: `
   <p class="reserve">
     <strong>Aucune relève n'a encore été faite.</strong>
-    Le robot qui va chercher sur les 25 sources officielles tourne
+    Le robot qui va chercher sur les sources officielles tourne
     <strong>toutes les heures</strong>, et le texte des codes une fois par jour ;
     ce qu'il trouve est publié aussitôt. Cette page-ci a été construite sans
     relevé — c'est le cas sur un poste de développement, dont le réseau ne joint
@@ -2761,6 +2769,8 @@ async function main() {
   // construire — la page des secteurs retombe sur les 88 divisions seules.
   const LIENS = await chargeFichier("contenu/liens.js", "LIENS");
 
+  const SOURCES = await chargeFichier("contenu/sources.js", "SOURCES");
+
   const cheminNaf = resolve(RACINE, "contenu/naf.js");
   const NAF = existsSync(cheminNaf) ? await chargeFichier("contenu/naf.js", "NAF") : null;
   if (NAF) verifieNaf(V, NAF);
@@ -2813,7 +2823,7 @@ async function main() {
 
   await writeFile(join(SORTIE, "app", "index.html"), appTableauBord(V, D, C, LIENS));
   await writeFile(join(SORTIE, "app", "plan.html"), appPlan(V, D, C, LIENS));
-  await writeFile(join(SORTIE, "app", "releve.html"), appReleve(V, D, JO, C, LIENS));
+  await writeFile(join(SORTIE, "app", "releve.html"), appReleve(V, D, JO, C, LIENS, SOURCES));
   await writeFile(join(SORTIE, "app", "registre.html"), appRegistre(V, D));
   await writeFile(join(SORTIE, "app", "secteurs.html"), appSecteurs(V, METIERS, NAF));
   await writeFile(join(SORTIE, "app", "reglages.html"), appReglages(V, D, NAF, METIERS));
