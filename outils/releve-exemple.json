@@ -4,40 +4,100 @@
   "releve_le": "2026-10-23",
   "depuis": "2026-10-21",
   "rapport": [
-    { "id": "jorf", "nom": "Journal officiel (DILA)", "entrees": 148, "retenus": 2, "souci": null },
-    { "id": "cnil", "nom": "CNIL", "entrees": 20, "retenus": 1, "souci": null },
-    { "id": "inrs", "nom": "INRS", "entrees": 0, "retenus": 0, "souci": "format inattendu — aucune entrée lue" }
+    {
+      "id": "jorf",
+      "nom": "Journal officiel (DILA)",
+      "entrees": 148,
+      "retenus": 2,
+      "souci": null
+    },
+    {
+      "id": "cnil",
+      "nom": "CNIL",
+      "entrees": 20,
+      "retenus": 1,
+      "souci": null
+    },
+    {
+      "id": "inrs",
+      "nom": "INRS",
+      "entrees": 0,
+      "retenus": 0,
+      "souci": "format inattendu — aucune entrée lue"
+    }
   ],
   "textes": [
     {
-      "source": "jorf", "sourceNom": "Journal officiel (DILA)", "genre": "texte",
+      "source": "jorf",
+      "sourceNom": "Journal officiel (DILA)",
+      "genre": "texte",
       "id": "JORFTEXT000000000001",
       "titre": "Arrêté du 22 octobre 2026 modifiant l'arrêté relatif aux vérifications périodiques des installations électriques",
-      "nature": "ARRETE", "date": "2026-10-22",
+      "nature": "ARRETE",
+      "date": "2026-10-22",
       "corps": "Article 1er. — L'article 3 de l'arrêté du 26 décembre 2011 est complété par un alinéa ainsi rédigé : « La vérification est renouvelée après toute modification de structure de l'installation. » Article 2. — Le présent arrêté entre en vigueur le 1er janvier 2027.",
       "nota": "Entrée en vigueur différée au 1er janvier 2027.",
       "lien": "https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000000000001",
-      "domaines": [{ "id": "levage", "nom": "Équipements de travail, levage et vérifications", "mots": ["verification"] }]
+      "domaines": [
+        {
+          "id": "levage",
+          "nom": "Équipements de travail, levage et vérifications",
+          "mots": [
+            "verification"
+          ]
+        }
+      ],
+      "dateTexte": "2026-10-22",
+      "vuLe": "2026-10-23",
+      "morceaux": 3
     },
     {
-      "source": "jorf", "sourceNom": "Journal officiel (DILA)", "genre": "texte",
+      "source": "jorf",
+      "sourceNom": "Journal officiel (DILA)",
+      "genre": "texte",
       "id": "JORFTEXT000000000002",
       "titre": "Décret du 21 octobre 2026 relatif au tri des déchets de chantier",
-      "nature": "DECRET", "date": "2026-10-21",
+      "nature": "DECRET",
+      "date": "2026-10-21",
       "corps": "Article 1er. — Les déchets de plâtre font l'objet d'une collecte séparée sur les chantiers produisant plus de dix mètres cubes de déchets.",
       "nota": "",
       "lien": "https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000000000002",
-      "domaines": [{ "id": "dechets", "nom": "Déchets, REP et économie circulaire", "mots": ["dechet"] }]
+      "domaines": [
+        {
+          "id": "dechets",
+          "nom": "Déchets, REP et économie circulaire",
+          "mots": [
+            "dechet"
+          ]
+        }
+      ],
+      "dateTexte": "2026-10-21",
+      "vuLe": "2026-10-23",
+      "morceaux": 3
     },
     {
-      "source": "cnil", "sourceNom": "CNIL", "genre": "actualite",
+      "source": "cnil",
+      "sourceNom": "CNIL",
+      "genre": "actualite",
       "id": "https://www.cnil.fr/fr/exemple-de-publication",
       "titre": "La CNIL publie une recommandation sur les durées de conservation en entreprise",
-      "nature": "Publication officielle", "date": "2026-10-22",
+      "nature": "Publication officielle",
+      "date": "2026-10-22",
       "corps": "La recommandation précise les durées usuelles de conservation des données de gestion du personnel et rappelle l'obligation de les inscrire au registre des traitements.",
       "nota": "",
       "lien": "https://www.cnil.fr/fr/exemple-de-publication",
-      "domaines": [{ "id": "rgpd", "nom": "Données personnelles (RGPD)", "mots": ["conservation"] }]
+      "domaines": [
+        {
+          "id": "rgpd",
+          "nom": "Données personnelles (RGPD)",
+          "mots": [
+            "conservation"
+          ]
+        }
+      ],
+      "dateTexte": "",
+      "vuLe": "2026-10-23",
+      "morceaux": 3
     }
   ]
 }
