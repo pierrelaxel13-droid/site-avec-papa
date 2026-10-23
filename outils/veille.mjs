@@ -154,18 +154,113 @@ function lisTexteDila(xml) {
   };
 }
 
-/* --- Rattachement aux domaines --------------------------------------------- */
-/* Un texte n'est retenu que si un mot-clé d'un domaine apparaît. Les mots de
-   moins de cinq lettres sont écartés : « eau » ou « air » ramèneraient tout. */
+/* --- Rattachement aux domaines ---------------------------------------------
+   Première version : un mot-clé n'importe où dans le titre ou le corps. Sur
+   une vraie journée du Journal officiel, ça retenait 13 625 entrées sur
+   42 200 — autant dire tout. Parce que tout acte commence par « Vu le code du
+   travail ; Vu le code de la sécurité sociale », et qu'un nom de code dans les
+   visas ne dit rien du sujet.
+
+   Deuxième version, celle-ci, réglée sur une vraie relève :
+
+   1. LE TITRE SEUL. Un texte qui vous concerne le dit dans son titre. Le corps
+      ne sert qu'à lire, pas à trier.
+   2. LE SUJET, PAS LE FONDEMENT. On écarte les mots-clés qui nomment un code,
+      une loi, un règlement : ils désignent le fondement juridique, que tout
+      acte cite. Restent les sujets — amiante, échafaudage, déchets, carrières.
+   3. PAS LES ACTES INDIVIDUELS. Nominations, agréments, listes de prix de
+      spécialités pharmaceutiques, avis de concours : ce sont des décisions
+      particulières, pas de la réglementation.
+
+   Sur la même journée : 234 textes retenus, et ils parlent d'empoussièrement
+   amiante, de cahiers des charges REP, de plafonds de sécurité sociale. */
+
+/* Un mot-clé qui nomme un texte plutôt qu'un sujet. */
+const MOT_FAIBLE = /^(code |loi |reglement|directive|convention|accord |arrete|decret)/;
+
+/* Les séries administratives du Journal officiel : du droit individuel. */
+const ACTE_INDIVIDUEL = new RegExp([
+  "specialites? pharmaceutiques",
+  "avis relatif aux prix",
+  "liste des (titres|medicaments|produits|specialites)",
+  "appel au mecenat",
+  "avis d.appel",
+  "avis de (vacance|concours)",
+  "portant (nomination|agrement|extension|delegation|renouvellement|cessation" +
+    "|inscription|radiation|habilitation|designation|titularisation|promotion)",
+  "^decision n",
+  "liste des candidats",
+  "tableau d.avancement",
+  "medaille",
+  "legion d.honneur",
+  "ordre national",
+  "cours des monnaies"
+].join("|"), "i");
+
 function rattache(V, titre, corps) {
-  const foin = normalise(`${titre} ${String(corps).slice(0, 20000)}`);
+  const foin = normalise(titre);
+  if (ACTE_INDIVIDUEL.test(foin)) return [];
   const touches = [];
   for (const [id, d] of Object.entries(V.domaines)) {
-    const mots = (d.motsCles || []).map(normalise).filter((m) => m.length > 4);
+    const mots = (d.motsCles || []).map(normalise)
+      .filter((m) => m.length > 4 && !MOT_FAIBLE.test(m));
     const trouves = mots.filter((m) => foin.includes(m));
     if (trouves.length) touches.push({ id, nom: d.nom, mots: trouves.slice(0, 3) });
   }
   return touches;
+}
+
+/* --- Fondre les morceaux d'un même texte ------------------------------------
+   Les archives du Journal officiel donnent un fichier par ARTICLE et par
+   SECTION, pas un par texte : un décret de 2013 est arrivé en 1 482 morceaux,
+   tous avec le même titre. Publier ça, c'est publier mille fois le même texte.
+   On refond donc par titre, en recollant les morceaux dans l'ordre où ils sont
+   venus, sans répéter deux fois le même. */
+const PLAFOND_CORPS = 60000;
+
+function fond(entrees) {
+  const par = new Map();
+  for (const t of entrees) {
+    /* La clé est le titre seul : un titre de texte officiel porte sa date,
+       donc deux textes différents ne peuvent pas la partager. Le même texte
+       reparaît en revanche dans les archives de plusieurs jours — c'est ce
+       qu'on veut fondre. On garde la date la plus récente où on l'a vu. */
+    const cle = t.titre;
+    if (!par.has(cle)) par.set(cle, { ...t, corps: "", morceaux: 0, vus: new Set() });
+    const e = par.get(cle);
+    if (t.date > e.date) e.date = t.date;
+    const c = String(t.corps || "").trim();
+    if (!c || e.vus.has(c)) continue;
+    e.vus.add(c);
+    e.morceaux++;
+    if (e.corps.length < PLAFOND_CORPS) e.corps += (e.corps ? "\n\n" : "") + c;
+  }
+  return [...par.values()].map((e) => {
+    delete e.vus;
+    /* Le plafond vaut pour le résultat, pas seulement pour la décision
+       d'ajouter : un seul morceau peut être énorme à lui tout seul. */
+    if (e.corps.length > PLAFOND_CORPS) {
+      e.corps = `${e.corps.slice(0, PLAFOND_CORPS).replace(/\s+\S*$/, "")}` +
+        "\n\n[…] Texte tronqué ici ; la suite est à la source.";
+    }
+    return e;
+  });
+}
+
+/* La date du texte, lue dans son titre — « Arrêté du 14 août 2012 ». Les
+   archives datent de leur jour de parution, qui n'est pas celui du texte quand
+   il y est republié. Mieux vaut la vraie date, et dire quand on l'a vu. */
+const MOIS = ["janvier", "fevrier", "mars", "avril", "mai", "juin", "juillet",
+              "aout", "septembre", "octobre", "novembre", "decembre"];
+
+function dateDuTitre(titre) {
+  const m = normalise(titre).match(/\bdu (\d{1,2})(?:er)? ([a-z]+) (\d{4})\b/);
+  if (!m) return "";
+  const mois = MOIS.indexOf(m[2]);
+  if (mois === -1) return "";
+  const a = Number(m[3]);
+  if (a < 1800 || a > 2100) return "";
+  return `${a}-${String(mois + 1).padStart(2, "0")}-${String(Number(m[1])).padStart(2, "0")}`;
 }
 
 /* --- Relève d'une source par flux ------------------------------------------ */
@@ -317,9 +412,17 @@ async function main() {
     process.exit(4);
   }
 
-  tout.sort((a, b) => (a.date < b.date ? 1 : -1));
+  const fondus = fond(tout).map((t) => ({
+    ...t,
+    dateTexte: dateDuTitre(t.titre) || "",
+    vuLe: t.date
+  }));
+  fondus.sort((a, b) => (a.vuLe < b.vuLe ? 1 : (a.vuLe > b.vuLe ? -1 : (a.titre < b.titre ? -1 : 1))));
   const vus = new Set();
-  const propres = tout.filter((t) => (vus.has(t.id) ? false : (vus.add(t.id), true)));
+  const propres = fondus.filter((t) => {
+    const cle = `${t.titre}|${t.dateTexte || t.vuLe}`;
+    return vus.has(cle) ? false : (vus.add(cle), true);
+  });
 
   await writeFile(SORTIE, JSON.stringify({
     licence: "Textes officiels de la République française — Licence Ouverte. " +
@@ -333,7 +436,8 @@ async function main() {
   if (!GARDER) await rm(TRAVAIL, { recursive: true, force: true });
 
   const parGenre = propres.reduce((a, t) => ((a[t.genre] = (a[t.genre] || 0) + 1), a), {});
-  console.log(`\n${propres.length} entrées écrites dans contenu/veille-releve.json`);
+  console.log(`\n${propres.length} textes écrits dans contenu/veille-releve.json` +
+    ` (${tout.length} morceaux relevés, fondus par titre)`);
   console.log(`  ${parGenre.texte || 0} textes de droit, ${parGenre.actualite || 0} publications officielles.`);
   console.log("Relancer node build.mjs pour les publier.");
 }
