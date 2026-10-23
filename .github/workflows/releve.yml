@@ -78,9 +78,30 @@ jobs:
           fi
           cat construction.log
 
+      # Quand la relève ne ramène rien — c'est le cas la plupart des heures —
+      # le code qui ne s'allume qu'avec des textes relevés n'est pas exercé.
+      # C'est par là qu'une fonction manquante est passée jusqu'ici. On
+      # construit donc aussi avec un jeu d'essai qui a la forme d'une vraie
+      # relève, puis on remet ce qui avait été relevé pour de bon.
+      - name: Vérifier que le site tient avec une relève
+        run: |
+          cp contenu/veille-releve.json vraie-releve.json 2>/dev/null || true
+          cp outils/releve-exemple.json contenu/veille-releve.json
+          if ! node build.mjs > construction-essai.log 2>&1; then
+            echo "::error::build.mjs refuse une relève bien formée — $(tail -c 900 construction-essai.log | tr '\n' ' ')"
+            cat construction-essai.log
+            exit 1
+          fi
+          if [ -f vraie-releve.json ]; then
+            mv vraie-releve.json contenu/veille-releve.json
+          else
+            rm -f contenu/veille-releve.json
+          fi
+          node build.mjs > /dev/null
+
       - name: Commiter ce qui a bougé
         run: |
-          rm -f construction.log releve-flux.log releve-codes.log
+          rm -f construction.log construction-essai.log releve-flux.log releve-codes.log vraie-releve.json
           if [ -z "$(git status --porcelain contenu/)" ]; then
             echo "Rien n'a changé : pas de commit."
             exit 0

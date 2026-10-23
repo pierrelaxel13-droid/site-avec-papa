@@ -977,6 +977,43 @@ function listeDeTextes(V, C, LIENS, TEXTES, entrees) {
   </ul>`;
 }
 
+/* --- Le relevé officiel, quand il a été fait -------------------------------- */
+/* outils/jorf.mjs va chercher les textes au Journal officiel (données ouvertes
+   de la DILA, sans compte) et écrit contenu/jo-releve.json. Quand ce fichier
+   existe, l'application sert ces textes-là, avec leur contenu intégral. Quand
+   il n'existe pas, elle sert le jeu d'essai — et le dit. Jamais l'un déguisé
+   en l'autre. */
+function ligneJO(t, i) {
+  const noms = t.domaines.map((d) => d.nom);
+  return `<li class="ligne-releve statut-attente">
+  <details${i === 0 ? " open" : ""}>
+    <summary>
+      <span class="mono date">${esc(dateFr(t.date))}</span>
+      <span class="corps">
+        <span class="titre">${esc(t.titre)}</span>
+        <span class="quoi">${esc(t.corps.slice(0, 180).replace(/\s+\S*$/, ""))}…</span>
+        <span class="meta etiq">${esc(t.nature)} · ${esc(noms.join(" · "))}</span>
+      </span>
+      <span class="statut etiq">À analyser</span>
+      ${chevron}
+    </summary>
+    <div class="detail">
+      <p class="etiq">Texte intégral, tel que publié au Journal officiel</p>
+      <div class="texte-officiel">${esc(t.corps).replace(/\n/g, "<br>")}</div>
+      ${t.nota ? `<p class="note-source"><strong>Nota.</strong> ${esc(t.nota)}</p>` : ""}
+      <p class="note-source">
+        Source : Journal officiel de la République française, données ouvertes de la DILA,
+        sous Licence Ouverte. Version publiée le ${esc(dateFr(t.date))}${t.id ? ` — identifiant ${esc(t.id)}` : ""}.
+        En cas de doute, se référer à Légifrance, qui fait foi.
+      </p>
+      <p class="rangee" style="margin-top:var(--t4)">
+        <button type="button" class="bouton bouton-sobre imprimer-fiche">${imprimante} Enregistrer en PDF</button>
+      </p>
+    </div>
+  </details>
+</li>`;
+}
+
 /* --- Depuis quand un texte est en vigueur -----------------------------------
    « Lesquels sont nouveaux ? » est la première question d'un abonné. Quand
    nous publions le texte consolidé, nous connaissons la date d'entrée en

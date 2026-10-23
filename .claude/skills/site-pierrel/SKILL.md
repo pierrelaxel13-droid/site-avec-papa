@@ -31,6 +31,7 @@ un fichier de `_site/` ne sert à rien, il est effacé à chaque construction.
 | `outils/veille.mjs` | La relève des 25 sources de `contenu/sources.js` → `contenu/veille-releve.json`. |
 | `contenu/liens.js` | Où lire chaque texte : `{ code: "…" }` (adresse reconstruite depuis l'annuaire LEGI) ou `{ url: "…" }`. **Le build échoue si une référence n'y est pas et n'est ni un code ni un texte européen reconnu.** |
 | `.github/workflows/releve.yml` | La relève planifiée : les flux toutes les heures, les codes une fois par jour, puis commit de `contenu/` si quelque chose a bougé. **`outils/codes.mjs` ne tourne plus à la construction Netlify** — le régénérer sans le commiter referait la même comparaison à l'infini. |
+| `outils/releve-exemple.json` | Jeu d'essai à la forme d'une vraie relève. Le poser dans `contenu/veille-releve.json` et construire est le **seul** moyen d'exercer, sans réseau, le code qui ne s'allume qu'avec des textes relevés (`ligneJO`, la rubrique « relevé officiel »). À faire après toute retouche de `build.mjs`. |
 | `outils/naf.mjs` | La nomenclature NAF entière → `contenu/naf.js` (732 codes APE). Source : `@socialgouv/codes-naf` sur le registre npm. |
 | `contenu/naf.js` | **Engendré** : 732 codes APE avec leur division. Ne pas modifier à la main. |
 | `outils/codes.mjs` | Le texte des codes consolidés → `contenu/codes.json` (193 pages, 4 718 articles), et la comparaison avec la relève précédente. Source : `@socialgouv/legi-data` sur le registre npm, joignable d'ici. |

@@ -1,0 +1,43 @@
+{
+  "_lisez_moi": "JEU D'ESSAI, PAS UNE RELÈVE. Ce fichier a la forme exacte de ce qu'écrit outils/veille.mjs dans contenu/veille-releve.json. Il sert à construire le site comme s'il y avait eu une relève, sans réseau : c'est le seul moyen, depuis un environnement qui ne joint pas les sources, d'exercer le code qui ne s'allume qu'avec de vrais textes. Les textes ci-dessous sont inventés et ne doivent jamais être publiés comme s'ils étaient officiels.",
+  "licence": "Jeu d'essai — ne pas publier.",
+  "releve_le": "2026-10-23",
+  "depuis": "2026-10-21",
+  "rapport": [
+    { "id": "jorf", "nom": "Journal officiel (DILA)", "entrees": 148, "retenus": 2, "souci": null },
+    { "id": "cnil", "nom": "CNIL", "entrees": 20, "retenus": 1, "souci": null },
+    { "id": "inrs", "nom": "INRS", "entrees": 0, "retenus": 0, "souci": "format inattendu — aucune entrée lue" }
+  ],
+  "textes": [
+    {
+      "source": "jorf", "sourceNom": "Journal officiel (DILA)", "genre": "texte",
+      "id": "JORFTEXT000000000001",
+      "titre": "Arrêté du 22 octobre 2026 modifiant l'arrêté relatif aux vérifications périodiques des installations électriques",
+      "nature": "ARRETE", "date": "2026-10-22",
+      "corps": "Article 1er. — L'article 3 de l'arrêté du 26 décembre 2011 est complété par un alinéa ainsi rédigé : « La vérification est renouvelée après toute modification de structure de l'installation. » Article 2. — Le présent arrêté entre en vigueur le 1er janvier 2027.",
+      "nota": "Entrée en vigueur différée au 1er janvier 2027.",
+      "lien": "https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000000000001",
+      "domaines": [{ "id": "levage", "nom": "Équipements de travail, levage et vérifications", "mots": ["verification"] }]
+    },
+    {
+      "source": "jorf", "sourceNom": "Journal officiel (DILA)", "genre": "texte",
+      "id": "JORFTEXT000000000002",
+      "titre": "Décret du 21 octobre 2026 relatif au tri des déchets de chantier",
+      "nature": "DECRET", "date": "2026-10-21",
+      "corps": "Article 1er. — Les déchets de plâtre font l'objet d'une collecte séparée sur les chantiers produisant plus de dix mètres cubes de déchets.",
+      "nota": "",
+      "lien": "https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000000000002",
+      "domaines": [{ "id": "dechets", "nom": "Déchets, REP et économie circulaire", "mots": ["dechet"] }]
+    },
+    {
+      "source": "cnil", "sourceNom": "CNIL", "genre": "actualite",
+      "id": "https://www.cnil.fr/fr/exemple-de-publication",
+      "titre": "La CNIL publie une recommandation sur les durées de conservation en entreprise",
+      "nature": "Publication officielle", "date": "2026-10-22",
+      "corps": "La recommandation précise les durées usuelles de conservation des données de gestion du personnel et rappelle l'obligation de les inscrire au registre des traitements.",
+      "nota": "",
+      "lien": "https://www.cnil.fr/fr/exemple-de-publication",
+      "domaines": [{ "id": "rgpd", "nom": "Données personnelles (RGPD)", "mots": ["conservation"] }]
+    }
+  ]
+}
