@@ -1,0 +1,30 @@
+Vérification de 25 sources.
+
+  jorf             répond — 863 archives
+  eurlex-l         répond — 0 entrées  ← format à revoir
+  inrs             répond — 0 entrées  ← format à revoir
+  travail          répond — 0 entrées  ← format à revoir
+  oppbtp           HTTP 404
+  boss             injoignable (fetch failed) — hôte probablement refusé par la politique réseau
+  urssaf           injoignable (fetch failed) — hôte probablement refusé par la politique réseau
+  bofip            injoignable (fetch failed) — hôte probablement refusé par la politique réseau
+  cnil             répond — 10 entrées
+  certfr-avis      répond — 40 entrées
+  certfr-alerte    répond — 40 entrées
+  ecologie         HTTP 404
+  ineris-aida      HTTP 404
+  ademe            répond — 0 entrées  ← format à revoir
+  rappelconso      répond — 20 entrées
+  dgccrf           injoignable (HTTP 403) — hôte probablement refusé par la politique réseau
+  anses            HTTP 404
+  entreprendre     HTTP 404
+  acpr             injoignable (HTTP 403) — hôte probablement refusé par la politique réseau
+  amf              HTTP 404
+  arcep            HTTP 404
+  has              injoignable (fetch failed) — hôte probablement refusé par la politique réseau
+  ansm             HTTP 404
+  douane           répond — 10 entrées
+  boamp            HTTP 404
+
+6 source(s) sur 25 exploitables.
+Passer « confirme: true » dans contenu/sources.js pour celles-là, et seulement celles-là.
