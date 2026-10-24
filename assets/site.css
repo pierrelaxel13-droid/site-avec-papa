@@ -541,14 +541,36 @@ img { height: auto; display: block; }
 .heros-visuel .mobile {
   position: absolute; right: 0; bottom: 0; z-index: 2;
   width: min(13rem, 23%);
+  /* Incliné ici seulement, là où il chevauche le portable : c'est ce
+     décalage qui donne la profondeur. Posé seul, droit, il est plus lisible.
+     L'origine en bas à droite garde le coin contre le bord, pour que la
+     rotation n'élargisse pas la page. */
+  transform: rotate(-3deg);
+  transform-origin: 100% 100%;
 }
 /* Sur téléphone, l'ordinateur réduit à 60 % d'un écran de 390 px ne montre
    plus rien : on garde la seule maquette qui reste lisible à cette taille.
    L'image écartée est en lazy : le navigateur ne la télécharge pas. */
 @media (max-width: 52rem) {
   .heros-visuel .portable { display: none; }
-  .heros-visuel .mobile { position: static; width: min(15rem, 64%); }
+  /* Seul à l'écran, il se remet droit : il n'a plus rien à chevaucher. */
+  .heros-visuel .mobile { position: static; width: min(15rem, 64%); transform: none; }
 }
+/* La force du reflet de verre. Sur une capture claire il se perd s'il est
+   trop discret ; sur une capture sombre, la même valeur devient deux grandes
+   bandes grises en travers de l'écran. Il est donc réglé par thème, dans le
+   même ordre en trois temps que les jetons de couleur — sinon un thème forcé
+   ne passerait pas. */
+.portable, .mobile { --reflet: .16; --reflet-bis: .06; }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .portable,
+  :root:not([data-theme="light"]) .mobile { --reflet: .05; --reflet-bis: .022; }
+}
+:root[data-theme="dark"] .portable,
+:root[data-theme="dark"] .mobile { --reflet: .05; --reflet-bis: .022; }
+:root[data-theme="light"] .portable,
+:root[data-theme="light"] .mobile { --reflet: .16; --reflet-bis: .06; }
+
 /* --- 7. Maquettes d'appareil -------------------------------------------
    Dessinées en CSS, sans image : un châssis, un liseré clair sur l'arête
    éclairée, un pied, et une ombre portée au sol. Rien de photographique —
@@ -564,9 +586,23 @@ img { height: auto; display: block; }
   --alu-clair: #D9DCE3;
   --alu: #AEB3BE;
   --alu-sombre: #7E8491;
+  isolation: isolate;
   --rail: clamp(.2rem, .09rem + .36vw, .36rem);
   --cadre: clamp(.26rem, .12rem + .46vw, .46rem);
   --arrondi: clamp(.7rem, .35rem + 1.1vw, 1.25rem);
+}
+
+/* L'ombre au sol : la machine est posée sur quelque chose, elle ne flotte
+   pas. Elle déborde vers le bas, jamais sur les côtés — un débord latéral
+   élargirait la page. */
+.portable::after {
+  content: ""; position: absolute; z-index: -1; pointer-events: none;
+  left: 5%; right: 5%; bottom: -3.5%;
+  height: 9%;
+  border-radius: 50%;
+  background: radial-gradient(ellipse 50% 50% at 50% 50%,
+    rgba(12, 14, 30, .38) 0%, rgba(12, 14, 30, .16) 55%, transparent 74%);
+  filter: blur(9px);
 }
 
 /* Le capot : le liseré d'aluminium au-dehors... */
@@ -605,7 +641,11 @@ img { height: auto; display: block; }
   inset: var(--cadre) var(--cadre) calc(var(--cadre) * 1.5);
   border-radius: calc(var(--arrondi) * .3);
   background: linear-gradient(104deg,
-    rgba(255, 255, 255, .13) 0 16%, rgba(255, 255, 255, 0) 17% 100%);
+    rgba(255, 255, 255, var(--reflet)) 0 9%,
+    rgba(255, 255, 255, var(--reflet-bis)) 9% 15%,
+    rgba(255, 255, 255, 0) 15% 46%,
+    rgba(255, 255, 255, var(--reflet-bis)) 46% 52%,
+    rgba(255, 255, 255, 0) 52% 100%);
 }
 .portable img {
   /* Pas de « display » ici : c'est lui qui choisit la capture claire ou la
@@ -699,7 +739,11 @@ img { height: auto; display: block; }
   inset: var(--cadre);
   border-radius: calc(var(--arrondi) - var(--tranche) - var(--cadre));
   background: linear-gradient(104deg,
-    rgba(255, 255, 255, .12) 0 15%, rgba(255, 255, 255, 0) 16% 100%);
+    rgba(255, 255, 255, var(--reflet)) 0 9%,
+    rgba(255, 255, 255, var(--reflet-bis)) 9% 15%,
+    rgba(255, 255, 255, 0) 15% 46%,
+    rgba(255, 255, 255, var(--reflet-bis)) 46% 52%,
+    rgba(255, 255, 255, 0) 52% 100%);
 }
 .mobile img {
   /* Pas de « display » ici : c'est lui qui choisit la capture claire ou la
