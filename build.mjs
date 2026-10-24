@@ -2838,6 +2838,15 @@ async function main() {
   const worker = (await readFile(resolve(RACINE, "sw.js"), "utf8")).replace("__EMPREINTE__", version);
   if (worker.includes("__EMPREINTE__")) throw new Error("sw.js : l'empreinte n'a pas été posée.");
   await writeFile(join(SORTIE, "sw.js"), worker);
+
+  /* Un repère pour savoir, depuis l'extérieur, quelle version est réellement
+     en ligne. Netlify pose COMMIT_REF à la construction ; on le recopie tel
+     quel. Sans lui — construction sur un poste — on écrit « local », ce qui
+     est l'information honnête. C'est ce fichier que lit
+     .github/workflows/verifie-en-ligne.yml pour dire si le site publié est
+     bien celui du dernier commit, ou s'il est resté en arrière. */
+  await writeFile(join(SORTIE, "version.txt"),
+    `${process.env.COMMIT_REF || "local"}\n${new Date().toISOString()}\n`);
   console.log(`  cache du worker     pco-${version}`);
 
   await writeFile(join(SORTIE, "index.html"), pageAccueil(V, D, METIERS, ECRANS));
