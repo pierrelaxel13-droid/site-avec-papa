@@ -1967,9 +1967,17 @@ function portable(ECRANS, nom, alt) {
   const sombre = nom.replace(".png", "-sombre.png");
   const img = (f, classe) => `<img class="${classe}" src="assets/ecrans/${esc(f)}" alt="${esc(alt)}"
          loading="lazy" decoding="async" width="1280" height="860">`;
+  /* Le capot et le socle sont deux éléments à part : chacun porte ses propres
+     détails — l'encoche et le reflet pour l'un, la charnière et l'échancrure
+     d'ouverture pour l'autre — et deux pseudo-éléments n'y auraient pas
+     suffi. Rien n'est une photographie : c'est un boîtier dessiné, qui tient
+     l'écran sans lui voler la vedette. */
   return `<figure class="portable" style="margin:0">
-         ${img(nom, "ecran-clair")}
-         ${ECRANS.includes(sombre) ? img(sombre, "ecran-sombre") : ""}
+         <span class="capot"><span class="dalle">
+           ${img(nom, "ecran-clair")}
+           ${ECRANS.includes(sombre) ? img(sombre, "ecran-sombre") : ""}
+         </span></span>
+         <span class="socle"></span>
        </figure>`;
 }
 
@@ -1978,9 +1986,14 @@ function mobile(ECRANS, nom, alt) {
   const sombre = nom.replace(".png", "-sombre.png");
   const img = (f, classe) => `<img class="${classe}" src="assets/ecrans/${esc(f)}" alt="${esc(alt)}"
          loading="lazy" decoding="async" width="390" height="844">`;
+  /* Deux coques l'une dans l'autre : la tranche claire au-dehors, le cadre
+     noir au-dedans. C'est ce qui fait reconnaître un téléphone d'aujourd'hui,
+     plus encore que l'arrondi. */
   return `<figure class="mobile" style="margin:0">
-         ${img(nom, "ecran-clair")}
-         ${ECRANS.includes(sombre) ? img(sombre, "ecran-sombre") : ""}
+         <span class="chassis">
+           ${img(nom, "ecran-clair")}
+           ${ECRANS.includes(sombre) ? img(sombre, "ecran-sombre") : ""}
+         </span>
        </figure>`;
 }
 

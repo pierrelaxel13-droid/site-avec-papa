@@ -553,81 +553,161 @@ img { height: auto; display: block; }
    Dessinées en CSS, sans image : un châssis, un liseré clair sur l'arête
    éclairée, un pied, et une ombre portée au sol. Rien de photographique —
    l'écran reste le sujet, le boîtier est là pour le tenir. */
+/* --- L'ordinateur portable -------------------------------------------------
+   Un boîtier d'aluminium, pas de plastique sombre : c'est la couleur qui fait
+   reconnaître la machine avant la forme. Le capot porte l'encoche et un
+   reflet de verre ; le socle porte la charnière et l'échancrure d'ouverture.
+   Rien de photographique, et aucune marque : c'est un dessin, l'écran reste
+   le sujet. */
 .portable {
   position: relative;
-  --cadre: clamp(.45rem, .2rem + .8vw, .8rem);
+  --alu-clair: #D9DCE3;
+  --alu: #AEB3BE;
+  --alu-sombre: #7E8491;
+  --rail: clamp(.2rem, .09rem + .36vw, .36rem);
+  --cadre: clamp(.26rem, .12rem + .46vw, .46rem);
   --arrondi: clamp(.7rem, .35rem + 1.1vw, 1.25rem);
-  padding: var(--cadre) var(--cadre) calc(var(--cadre) * .55);
-  border-radius: var(--arrondi) var(--arrondi) calc(var(--arrondi) * .35) calc(var(--arrondi) * .35);
-  background:
-    linear-gradient(170deg, #4C4C64 0%, #2A2A3D 14%, #1B1B2C 60%, #14141F 100%);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, .22),
-    inset 0 0 0 1px rgba(255, 255, 255, .06),
-    var(--ombre-3);
-}
-/* La caméra, minuscule, dans le liseré du haut. */
-.portable::before {
-  content: ""; position: absolute; z-index: 2;
-  top: calc(var(--cadre) * .42); left: 50%; transform: translateX(-50%);
-  width: 5px; height: 5px; border-radius: var(--rp);
-  background: radial-gradient(circle at 35% 30%, #5B6072, #0C0C14 70%);
-}
-/* Le pied, avec l'encoche d'ouverture. Il reste dans la largeur du cadre :
-   un débord par marge négative élargissait la page de 20 px partout où rien
-   ne le rognait. */
-.portable::after {
-  content: ""; display: block;
-  height: clamp(.6rem, .32rem + .95vw, 1.05rem);
-  margin: calc(var(--cadre) * .55) 0 0;
-  border-radius: 0 0 clamp(.5rem, .3rem + .6vw, .9rem) clamp(.5rem, .3rem + .6vw, .9rem);
-  background:
-    radial-gradient(ellipse 14% 150% at 50% -10%, rgba(0, 0, 0, .55) 60%, transparent 62%),
-    linear-gradient(180deg, #3F3F55 0%, #2A2A3C 42%, #4E4E67 100%);
-  box-shadow: 0 1px 0 rgba(255, 255, 255, .18) inset, 0 16px 28px -18px rgba(0, 0, 0, .7);
-}
-.portable img {
-  width: 100%;
-  border-radius: calc(var(--arrondi) * .45);
-  background: var(--carte);
-  box-shadow: 0 0 0 1px rgba(0, 0, 0, .5);
 }
 
-.mobile {
-  position: relative;
-  --cadre: clamp(.3rem, .15rem + .5vw, .5rem);
-  --arrondi: clamp(1.1rem, .6rem + 1.6vw, 2.2rem);
-  padding: var(--cadre);
-  border-radius: var(--arrondi);
-  background: linear-gradient(150deg, #585870 0%, #26263A 22%, #161624 70%, #1E1E2E 100%);
+/* Le capot : le liseré d'aluminium au-dehors... */
+.portable .capot {
+  display: block;
+  padding: var(--rail);
+  border-radius: var(--arrondi) var(--arrondi) calc(var(--arrondi) * .22) calc(var(--arrondi) * .22);
+  background:
+    linear-gradient(170deg, var(--alu-clair) 0%, var(--alu) 22%, var(--alu-sombre) 100%);
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, .28),
-    inset 0 0 0 1px rgba(255, 255, 255, .07),
+    inset 0 0 0 1px rgba(255, 255, 255, .55),
     var(--ombre-3);
 }
-/* Les deux boutons de tranche, côté droit. */
-.mobile::after {
-  content: ""; position: absolute; right: -2px; top: 22%;
-  width: 2px; height: 9%;
-  border-radius: 0 var(--rp) var(--rp) 0;
-  background: linear-gradient(180deg, #5A5A72, #2C2C40);
-  box-shadow: 0 calc(13% + .9rem) 0 0 #44445A;
+/* ...et le cadre noir au-dedans. C'est lui qui porte l'encoche : posée sur
+   l'aluminium, elle avait l'air d'une étiquette collée. */
+.portable .dalle {
+  position: relative; display: block;
+  padding: var(--cadre) var(--cadre) calc(var(--cadre) * 1.5);
+  border-radius: calc(var(--arrondi) - var(--rail)) calc(var(--arrondi) - var(--rail))
+                 calc(var(--arrondi) * .14) calc(var(--arrondi) * .14);
+  background: #0A0A11;
 }
-/* L'îlot du haut, posé par-dessus l'écran. */
+/* L'encoche, creusée dans le cadre haut, avec l'objectif dedans. */
+.portable .dalle::before {
+  content: ""; position: absolute; z-index: 3;
+  top: 0; left: 50%; transform: translateX(-50%);
+  width: clamp(4rem, 1.8rem + 6.4vw, 8.2rem);
+  height: calc(var(--cadre) * 2.1);
+  border-radius: 0 0 calc(var(--cadre) * .9) calc(var(--cadre) * .9);
+  background: #0A0A11;
+  box-shadow: inset 0 calc(var(--cadre) * -.75) 0 calc(var(--cadre) * -.62) rgba(120, 130, 160, .5);
+}
+/* Le reflet du verre : une diagonale très pâle, posée sur tout l'écran. */
+.portable .dalle::after {
+  content: ""; position: absolute; z-index: 2; pointer-events: none;
+  inset: var(--cadre) var(--cadre) calc(var(--cadre) * 1.5);
+  border-radius: calc(var(--arrondi) * .3);
+  background: linear-gradient(104deg,
+    rgba(255, 255, 255, .13) 0 16%, rgba(255, 255, 255, 0) 17% 100%);
+}
+.portable img {
+  /* Pas de « display » ici : c'est lui qui choisit la capture claire ou la
+     sombre, plus bas, et une règle plus précise le lui prendrait. */
+  position: relative; z-index: 1;
+  width: 100%; vertical-align: top;
+  border-radius: calc(var(--arrondi) * .3);
+  background: var(--carte);
+}
+/* Le socle, vu de face : la charnière en haut, l'échancrure d'ouverture en
+   bas. Il reste dans la largeur du capot — un débord par marge négative
+   élargissait la page de 20 px partout où rien ne le rognait. */
+.portable .socle {
+  position: relative; display: block;
+  height: clamp(.65rem, .34rem + 1vw, 1.15rem);
+  margin-top: 0;
+  border-radius: 0 0 clamp(.5rem, .3rem + .6vw, .9rem) clamp(.5rem, .3rem + .6vw, .9rem);
+  background: linear-gradient(180deg,
+    var(--alu-sombre) 0%, var(--alu-clair) 26%, var(--alu) 62%, var(--alu-sombre) 100%);
+  box-shadow: 0 18px 30px -20px rgba(0, 0, 0, .75);
+}
+/* La charnière : un trait sombre, pile à la jonction. */
+.portable .socle::before {
+  content: ""; position: absolute; inset: 0 0 auto;
+  height: 2px;
+  background: linear-gradient(180deg, rgba(0, 0, 0, .45), rgba(0, 0, 0, .12));
+}
+/* L'échancrure où l'on glisse le doigt pour ouvrir. */
+.portable .socle::after {
+  content: ""; position: absolute;
+  top: 0; left: 50%; transform: translateX(-50%);
+  width: 13%; height: 46%;
+  border-radius: 0 0 999px 999px;
+  background: radial-gradient(ellipse 100% 100% at 50% 0%,
+    rgba(0, 0, 0, .42) 58%, rgba(0, 0, 0, .12) 100%);
+}
+
+/* --- Le téléphone -----------------------------------------------------------
+   Deux coques : la tranche claire au-dehors, le cadre noir au-dedans. L'îlot
+   du haut et les boutons de tranche font le reste. */
+.mobile {
+  position: relative;
+  --tranche: clamp(.16rem, .07rem + .3vw, .3rem);
+  --cadre: clamp(.22rem, .1rem + .4vw, .42rem);
+  --arrondi: clamp(1.3rem, .7rem + 1.9vw, 2.6rem);
+  padding: var(--tranche);
+  border-radius: var(--arrondi);
+  background: linear-gradient(142deg,
+    #E4E6EB 0%, #A9AEBA 16%, #6F7482 42%, #9BA0AC 72%, #5C6170 100%);
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, .45),
+    var(--ombre-3);
+}
+/* Les boutons de la tranche droite : veille, un seul et plus long. */
+.mobile::after {
+  content: ""; position: absolute; right: calc(var(--tranche) * -1); top: 26%;
+  width: calc(var(--tranche) * 1.1); height: 11%;
+  border-radius: 0 var(--rp) var(--rp) 0;
+  background: linear-gradient(180deg, #C6CAD3, #6A6F7D);
+}
+/* Ceux de la tranche gauche : le bouton d'action, puis les deux du volume. */
 .mobile::before {
-  content: ""; position: absolute; z-index: 2;
-  top: calc(var(--cadre) + clamp(.2rem, .1rem + .25vw, .4rem));
+  content: ""; position: absolute; left: calc(var(--tranche) * -1); top: 19%;
+  width: calc(var(--tranche) * 1.1); height: 5%;
+  border-radius: var(--rp) 0 0 var(--rp);
+  background: linear-gradient(180deg, #C6CAD3, #6A6F7D);
+  box-shadow:
+    0 calc(8% + .55rem) 0 0 #9BA0AC,
+    0 calc(16% + 1.5rem) 0 0 #9BA0AC;
+}
+/* Le cadre noir, entre la tranche et l'écran. */
+.mobile .chassis {
+  position: relative; display: block;
+  padding: var(--cadre);
+  border-radius: calc(var(--arrondi) - var(--tranche));
+  background: #07070C;
+}
+/* L'îlot du haut, avec l'objectif dedans. */
+.mobile .chassis::before {
+  content: ""; position: absolute; z-index: 3;
+  top: calc(var(--cadre) + clamp(.18rem, .08rem + .22vw, .4rem));
   left: 50%; transform: translateX(-50%);
-  width: 34%; height: clamp(.42rem, .25rem + .4vw, .72rem);
+  width: 27%; height: clamp(.4rem, .22rem + .42vw, .78rem);
   border-radius: var(--rp);
-  background: #07070E;
-  box-shadow: 0 0 0 1px rgba(255, 255, 255, .05);
+  background: #05050A;
+  box-shadow: inset calc(27% / 3) 0 0 -0.14rem rgba(70, 80, 110, .5);
+}
+/* Le reflet, même diagonale que sur le portable. */
+.mobile .chassis::after {
+  content: ""; position: absolute; z-index: 2; pointer-events: none;
+  inset: var(--cadre);
+  border-radius: calc(var(--arrondi) - var(--tranche) - var(--cadre));
+  background: linear-gradient(104deg,
+    rgba(255, 255, 255, .12) 0 15%, rgba(255, 255, 255, 0) 16% 100%);
 }
 .mobile img {
-  width: 100%;
-  border-radius: calc(var(--arrondi) - var(--cadre));
+  /* Pas de « display » ici : c'est lui qui choisit la capture claire ou la
+     sombre, plus bas, et une règle plus précise le lui prendrait. */
+  position: relative; z-index: 1;
+  width: 100%; vertical-align: top;
+  border-radius: calc(var(--arrondi) - var(--tranche) - var(--cadre));
   background: var(--carte);
-  box-shadow: 0 0 0 1px rgba(0, 0, 0, .5);
 }
 
 /* Une seule des deux captures est affichée. Les règles sombres suivent le même

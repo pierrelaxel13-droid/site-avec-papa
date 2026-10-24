@@ -173,6 +173,20 @@
       var som = d.querySelector("summary");
       if (!som) return;
       var ecart = som.getBoundingClientRect().top - sousLeBandeau();
+
+      /* Un titre de Journal officiel fait parfois quatre cents signes. Ouvert,
+         il remplit l'écran d'un téléphone à lui seul, et « ce qu'il faut
+         faire » tombe juste sous le pli — six pixels suffisent pour que le
+         client ne le voie pas et croie qu'il n'y a rien. Dans ce cas on
+         descend plus bas que le sommaire : le titre, il vient de le lire pour
+         cliquer dessus ; c'est la suite qu'il est venu chercher. */
+      var detail = d.querySelector(".detail");
+      if (detail) {
+        var apres = detail.getBoundingClientRect().top - ecart;
+        var pli = window.innerHeight * 0.62;
+        if (apres > pli) ecart += apres - pli;
+      }
+
       if (Math.abs(ecart) < 8) return;
       window.scrollBy({ top: ecart, left: 0, behavior: SOBRE ? "auto" : "smooth" });
     }, true);
