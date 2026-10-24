@@ -5,6 +5,13 @@ description: "Modifier et publier le site Pierrel & Co de ce dépôt (build.mjs,
 
 # Le site Pierrel & Co
 
+**En ligne : https://adorable-marigold-fd062f.netlify.app** — Netlify
+construit la branche `main` à chaque envoi, et publie environ une minute plus
+tard. Rien d'autre n'est à faire pour mettre à jour le site : pousser suffit.
+Cet environnement de développement n'atteint pas `netlify.app` ; la
+vérification se fait donc en servant `_site/` en local avec les en-têtes de
+`netlify.toml`, jamais en ouvrant l'adresse publique.
+
 Site statique **entièrement engendré** par `build.mjs`. Aucune dépendance,
 aucun framework, pas de `package.json`, et il n'en faut pas. **Ne jamais
 introduire de bundler, de bibliothèque d'animation ni de `npm install`.**

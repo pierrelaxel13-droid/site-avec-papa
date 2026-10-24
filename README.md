@@ -1,5 +1,10 @@
 # Pierrel & Co — veille réglementaire, secteur par secteur
 
+**En ligne : https://adorable-marigold-fd062f.netlify.app**
+Netlify construit depuis la branche `main` à chaque envoi ; une modification
+est publiée environ une minute plus tard. Le nom de domaine propre reste à
+brancher.
+
 Site statique engendré, sans dépendance ni framework. La porte d'entrée est le
 **secteur** : une page par division de la nomenclature NAF, avec ce qui s'y
 applique, à quel rythme le revoir, et les pièges du métier.
@@ -7,7 +12,7 @@ applique, à quel rythme le revoir, et les pièges du métier.
 ## Deux zones
 
 ```sh
-node build.mjs                      # engendre _site/ : 96 pages
+node build.mjs                      # engendre _site/ : 415 pages
 python3 -m http.server -d _site 8080
 ```
 
@@ -293,12 +298,14 @@ Deux genres, que l'application sépare et nomme : un **texte** est du droit ;
 une **publication** est un commentaire officiel — guide, avis, doctrine,
 alerte. Cela compte pour la veille, mais ce n'est pas la loi.
 
-**Où ça tourne.** Chez Netlify, à chaque publication : la commande de
-construction est `node outils/codes.mjs || true; node outils/veille.mjs
---jours 30 || true; node build.mjs`.
-Le `|| true` est délibéré — si une source tombe, le site doit se publier quand
-même. L'environnement de développement, lui, a une politique réseau qui refuse
-ces hôtes : la relève n'y tourne pas.
+**Où ça tourne.** Pas chez Netlify. Netlify ne fait qu'une chose,
+`node build.mjs` : il construit ce qui est commité, rien de plus. La relève
+tourne dans `.github/workflows/releve.yml`, qui commite ce qu'il a trouvé ;
+Netlify voit le commit et republie. C'est voulu — ce que le site affiche est
+exactement ce que git contient, donc relisible et reproductible. (L'ancienne
+note décrivait une relève à la construction : elle n'a plus lieu d'être.)
+L'environnement de développement, lui, a une politique réseau qui refuse les
+hôtes officiels : la relève n'y tourne pas non plus.
 
 **Ce que le robot ne fait jamais.** Inventer. Une source injoignable est
 signalée par son nom et son code d'erreur, dans le fichier et sur la page. Un
