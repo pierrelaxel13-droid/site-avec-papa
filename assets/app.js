@@ -320,11 +320,13 @@
       barres.forEach(function (b, i) { b.className = i < liste.length ? "pleine" : ""; });
       sortie.jauge.classList.add("vu");
 
+      /* La même phrase que celle engendrée dans la page, dans les mêmes mots :
+         si les deux divergent, le texte saute au premier changement de métier. */
       sortie.phrase.innerHTML = "Pour <strong>" + echappe(div.l) + "</strong> (NAF " + echappe(code) +
-        "), le plan retient <strong>" + liste.length + " domaines sur " + totalDomaines + "</strong>" +
+        "), il y a <strong>" + liste.length + " sujets à suivre sur " + totalDomaines + "</strong>" +
         (ajoutes ? ", dont <strong>" + ajoutes + "</strong> ajouté" + (ajoutes > 1 ? "s" : "") +
-                   " par le contexte coché" : "") +
-        ". Le rythme le plus serré est <strong>" +
+                   " par vos réponses" : "") +
+        ". Le plus fréquent est à revoir <strong>" +
         (paquets.length ? paquets[0].l.toLowerCase() : "—") + "</strong>.";
 
       if (sortie.lien) sortie.lien.href = "app/secteur/" + div.u + ".html";

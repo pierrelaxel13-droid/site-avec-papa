@@ -65,11 +65,11 @@ const dateFr = (iso) => new Date(iso + "T12:00:00Z")
    Elle décrit le produit, elle ne le protège pas. */
 const FORMULES = {
   cadrage: { l: "Cadrage", rang: 1, prix: "890 € une fois",
-             ouvre: "Le plan de veille et les 88 fiches de secteur." },
+             ouvre: "Ce qui s'applique chez vous, et les 88 fiches de métier." },
   veille:  { l: "Veille tenue", rang: 2, prix: "180 € par mois",
-             ouvre: "Le cadrage, plus le tableau de bord et le relevé des textes." },
+             ouvre: "En plus : le tableau de bord et les textes qui paraissent." },
   preuves: { l: "Veille et preuves", rang: 3, prix: "290 € par mois",
-             ouvre: "Tout, registre de preuves compris." }
+             ouvre: "Tout, le registre de preuves compris." }
 };
 
 /* --- Le manifeste : ce qui rend l'application installable ------------------- */
@@ -161,9 +161,8 @@ function bandeInstallation(a) {
     <div class="deux-colonnes">
       <div>
         <h2>Installer l'application</h2>
-        <p class="intro">Posée sur l'écran d'accueil, elle s'ouvre comme une application :
-        sans barre d'adresse, et le plan de veille reste consultable hors ligne — sur un
-        chantier, dans un entrepôt, là où le réseau tombe.</p>
+        <p class="intro">Posée sur l'écran d'accueil du téléphone, elle s'ouvre comme une
+        application, et marche sans réseau — sur un chantier, dans un entrepôt.</p>
         <p class="rangee" style="margin-top:var(--t4)">
           <button type="button" class="bouton bouton-accent" id="installer-appli" hidden>
             Installer maintenant
@@ -1675,7 +1674,7 @@ function appSecteur(V, PIEGES, METIERS, TEXTES, NAF, C, LIENS, d) {
     <dl class="faits" style="margin-top:var(--t5)">
       <div><dt class="etiq">Textes de référence</dt><dd><span class="grand">${textes.length}</span></dd></div>
       <div><dt class="etiq">Domaines de base</dt><dd><span class="grand" id="compte-domaines">${base.length}</span></dd></div>
-      <div><dt class="etiq">Rythme le plus serré</dt><dd>${esc(rythme)}</dd></div>
+      <div><dt class="etiq">À revoir le plus souvent</dt><dd>${esc(rythme)}</dd></div>
       <div><dt class="etiq">Questions de contexte</dt><dd><span class="grand">${declencheurs.length}</span></dd></div>
       ${apes.length ? `<div><dt class="etiq">Codes APE</dt><dd><span class="grand">${apes.length}</span></dd></div>` : ""}
     </dl>
@@ -1837,7 +1836,7 @@ function appReglages(V, D, NAF, METIERS) {
           <input type="text" id="e-responsable" name="responsable" placeholder="${esc(D.entreprise.responsable)}" autocomplete="name">
         </div>
         <div class="reglage">
-          <span class="etiq">Votre contexte</span>
+          <span class="etiq">Ce qui est vrai chez vous</span>
           <div class="cases" id="e-contexte"></div>
         </div>
         <p class="rangee">
@@ -1854,15 +1853,15 @@ function appReglages(V, D, NAF, METIERS) {
         <ul class="coup-d-oeil">
           <li>
             <span class="pastille"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h14v16l-7-3-7 3Z"/></svg></span>
-            <span><span class="etiq">Domaines retenus</span><span class="valeur" id="e-total">—</span></span>
+            <span><span class="etiq">Sujets à suivre</span><span class="valeur" id="e-total">—</span></span>
           </li>
           <li>
             <span class="pastille ambre"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span>
-            <span><span class="etiq">Rythme le plus serré</span><span class="valeur" id="e-rythme">—</span></span>
+            <span><span class="etiq">À revoir le plus souvent</span><span class="valeur" id="e-rythme">—</span></span>
           </li>
           <li>
             <span class="pastille verte"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></span>
-            <span><span class="etiq">Ajoutés par le contexte</span><span class="valeur" id="e-ajouts">—</span></span>
+            <span><span class="etiq">Ajoutés par vos réponses</span><span class="valeur" id="e-ajouts">—</span></span>
           </li>
         </ul>
         <div class="jauge" id="e-jauge" aria-hidden="true"></div>
@@ -2033,21 +2032,20 @@ function pageAccueil(V, D, METIERS, ECRANS) {
 <section class="heros">
   <div class="enveloppe">
     <div class="heros-texte">
-      <h1>La veille réglementaire de votre métier, tenue et prouvable</h1>
+      <h1>La veille réglementaire de votre métier</h1>
     </div>
     <p class="heros-sous">
-      Les textes qui vous concernent — et seulement ceux-là — relevés et analysés
-      chaque semaine. Un plan de veille écrit, un relevé daté, un registre de preuves
-      prêt pour l'audit.
+      Dites ce que vous faites : vous voyez tout de suite ce qui s'applique chez vous,
+      à quel rythme le revoir, et quoi faire quand un texte paraît.
     </p>
     <p class="rangee rangee-centre">
-      <a class="bouton bouton-accent" href="#installer">Installer l'application</a>
-      <a class="bouton bouton-sobre" href="abonnement.html">Démarrer un abonnement</a>
+      <a class="bouton bouton-accent" href="#simulateur">Voir ce qui me concerne</a>
+      <a class="bouton bouton-sobre" href="abonnement.html">Les tarifs</a>
     </p>
     <p class="gage">
       ${sigle}
-      <span>${V.divisions.length} divisions d'activité couvertes</span>
-      <span class="doux">— aucun compte à créer pour regarder</span>
+      <span>${V.divisions.length} familles de métiers couvertes</span>
+      <span class="doux">— rien à créer, rien à payer pour regarder</span>
     </p>
 
     <div class="heros-visuel">
@@ -2057,135 +2055,16 @@ function pageAccueil(V, D, METIERS, ECRANS) {
   </div>
 </section>
 
-<section class="section">
-  <div class="enveloppe">
-    <div class="rail">
-      <span class="rail-fil" data-fil></span>
-      <div class="rail-item" data-paraitre data-compte="${V.divisions.length}">
-        <span class="chiffre">${V.divisions.length}</span>
-        <p class="legende">divisions d'activité couvertes, de la boulangerie au transport routier</p>
-      </div>
-      <div class="rail-item" data-paraitre data-compte="${nbDomaines}">
-        <span class="chiffre">${nbDomaines}</span>
-        <p class="legende">domaines de veille, chacun avec ses obligations, ses textes et ses sources</p>
-      </div>
-      <div class="rail-item" data-paraitre data-compte="${V.declencheurs.length}">
-        <span class="chiffre">${V.declencheurs.length}</span>
-        <p class="legende">questions de contexte qui ajoutent ou retirent un domaine du périmètre</p>
-      </div>
-      <div class="rail-item" data-paraitre>
-        <span class="chiffre">ISO</span>
-        <p class="legende">les référentiels où la veille est exigée : ISO 14001, ISO 45001, MASE, Qualiopi</p>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section class="section section-tein">
-  <div class="enveloppe">
-    <h2 class="titre-section">Un outil pour chaque façon de travailler</h2>
-
-    <div class="bascule" role="tablist" aria-label="Profil" data-bascule>
-      <span class="bascule-curseur" aria-hidden="true"></span>
-      <button type="button" role="tab" id="onglet-dirigeant" aria-selected="true" aria-controls="profil-dirigeant">Dirigeant</button>
-      <button type="button" role="tab" id="onglet-qhse" aria-selected="false" aria-controls="profil-qhse">Responsable QHSE</button>
-    </div>
-
-    <ul class="traits" id="profil-dirigeant" role="tabpanel" aria-labelledby="onglet-dirigeant">
-      <li class="trait">
-        <svg class="icone" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 7v5l3 2"/><circle cx="12" cy="12" r="9"/></svg>
-        <div><h3>Ce qui est en retard, tout de suite</h3>
-        <p>Le tableau de bord s'ouvre sur les revues en retard, les textes qui attendent
-        une décision et les actions ouvertes. Pas de fil d'actualité à éplucher.</p></div>
-      </li>
-      <li class="trait">
-        <svg class="icone" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h14v16l-7-3-7 3Z"/><path d="M9 9h6"/></svg>
-        <div><h3>Un périmètre écrit, pas une intuition</h3>
-        <p>Votre plan dit quels domaines s'appliquent, à quel rythme les revoir et qui
-        en répond. C'est un document, pas une conversation.</p></div>
-      </li>
-      <li class="trait">
-        <svg class="icone" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 20V9l9-5 9 5v11"/><path d="M9 20v-6h6v6"/></svg>
-        <div><h3>De quoi répondre à un donneur d'ordre</h3>
-        <p>Les fiches de secteur situent un client ou un sous-traitant en deux minutes :
-        ce qui s'applique chez lui, et ce qu'il devrait pouvoir montrer.</p></div>
-      </li>
-      <li class="trait">
-        <svg class="icone" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 18V6m5 12V10m5 8V4m5 14v-7"/></svg>
-        <div><h3>Un prix affiché</h3>
-        <p>Les offres comparables sont presque toutes « sur devis ». La grille est sur
-        la page des tarifs, sans formulaire à remplir d'abord.</p></div>
-      </li>
-    </ul>
-
-    <ul class="traits" id="profil-qhse" role="tabpanel" aria-labelledby="onglet-qhse" hidden>
-      <li class="trait">
-        <svg class="icone" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16M7 12h10m-7 7h4"/></svg>
-        <div><h3>Le tri est fait en amont</h3>
-        <p>Seuls les textes qui touchent votre périmètre arrivent, chacun avec ce qu'il
-        change pour vous. Les textes écartés sont tracés, avec leur motif.</p></div>
-      </li>
-      <li class="trait">
-        <svg class="icone" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 12l2 2 4-5"/><rect x="4" y="3" width="16" height="18" rx="2"/></svg>
-        <div><h3>Le registre que l'auditeur demande</h3>
-        <p>Chaque revue, chaque décision, chaque action est datée et conservée.
-        Une ligne ne se réécrit pas : une correction s'ajoute. Il s'imprime tel quel.</p></div>
-      </li>
-      <li class="trait">
-        <svg class="icone" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M12 3v3m0 12v3M3 12h3m12 0h3M5.6 5.6l2.1 2.1m8.6 8.6 2.1 2.1m0-12.8-2.1 2.1M7.7 16.3l-2.1 2.1"/></svg>
-        <div><h3>Le contexte change le périmètre</h3>
-        <p>${V.declencheurs.length} questions — installation classée, amiante, appareils de levage,
-        transport de marchandises — ajoutent les domaines qui vont avec.</p></div>
-      </li>
-      <li class="trait">
-        <svg class="icone" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 3 7v5c0 5 3.8 8.3 9 9 5.2-.7 9-4 9-9V7Z"/></svg>
-        <div><h3>Les sources sont citées</h3>
-        <p>Chaque domaine porte ses textes de référence et les sources officielles
-        où les vérifier. Rien ne vous est demandé sur parole.</p></div>
-      </li>
-    </ul>
-  </div>
-</section>
-
-<section class="section">
-  <div class="enveloppe">
-    <h2 class="titre-section">Les écrans, avant de vous engager</h2>
-    <p class="intro titre-section">De vraies captures de l'application, prises automatiquement à
-    chaque publication. Le plan de veille et les fiches de secteur s'ouvrent depuis la
-    démonstration.</p>
-
-    ${vitrine(ECRANS, {
-      image: "releve.png",
-      alt: "Le relevé des textes : chaque texte daté, rattaché à un domaine, avec l'état de la décision.",
-      titre: "Ce qui vous concerne, et rien d'autre",
-      texte: `Le reproche fait à toutes les plateformes de veille est le même : elles remontent
-        tout, donc on ne lit plus rien, et le texte qui comptait se perd. Ici le tri est fait en
-        amont, sur votre périmètre, et chaque texte arrive avec ce qu'il change pour vous.`,
-      lien: "connexion.html", libelle: "Voir le relevé"
-    })}
-
-    ${vitrine(ECRANS, {
-      image: "registre.png",
-      alt: "Le registre de preuves : revues, décisions et actions, chronologiques et datées.",
-      titre: "Ce qu'un auditeur demande vraiment",
-      texte: `L'écart le plus souvent relevé en audit n'est pas l'absence de veille : c'est la
-        veille faite et jamais tracée. Le registre enregistre chaque revue, chaque décision,
-        chaque action, avec sa date. Il s'imprime tel quel.`,
-      lien: "connexion.html", libelle: "Voir le registre"
-    })}
-  </div>
-</section>
-
 <section class="section section-tein" id="simulateur">
   <div class="enveloppe">
-    <h2 class="titre-section">Le plan de veille de votre métier</h2>
-    <p class="intro titre-section">Choisissez votre activité, cochez ce qui est vrai chez vous :
-    le périmètre se recalcule. C'est le même calcul que dans l'application.</p>
+    <h2 class="titre-section">Ce qui s'applique chez vous</h2>
+    <p class="intro titre-section">Choisissez votre métier, cochez ce qui est vrai chez vous.
+    La liste se met à jour toute seule, et c'est le même calcul que dans l'application.</p>
 
     <div class="simulateur">
       <div class="reglages">
         <div class="reglage">
-          <label class="etiq" for="choix-division">Votre activité</label>
+          <label class="etiq" for="choix-division">Votre métier</label>
           <select id="choix-division">
             ${parSection.map((g) => `<optgroup label="${esc(g.s.c)} — ${esc(g.s.l)}">
               ${g.divisions.map((d) => `<option value="${esc(d.c)}"${d.c === divDefaut.c ? " selected" : ""}>${esc(d.c)} — ${esc(d.l)}</option>`).join("")}
@@ -2193,7 +2072,7 @@ function pageAccueil(V, D, METIERS, ECRANS) {
           </select>
         </div>
         <div class="reglage">
-          <span class="etiq">Votre contexte</span>
+          <span class="etiq">Ce qui est vrai chez vous</span>
           <div class="cases" id="sim-questions">
             ${questionsSimulateur(vuDefaut.declencheurs)}
           </div>
@@ -2202,21 +2081,21 @@ function pageAccueil(V, D, METIERS, ECRANS) {
 
       <div class="resultat">
         <h3 id="sim-titre">${esc(divDefaut.l)}</h3>
-        <p>Valeur de votre périmètre, comparée au référentiel complet.</p>
+        <p>Ce que ça représente, sur l'ensemble des sujets suivis.</p>
         <hr class="filet">
 
         <ul class="coup-d-oeil">
           <li>
             <span class="pastille"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h14v16l-7-3-7 3Z"/></svg></span>
-            <span><span class="etiq">Domaines retenus</span><span class="valeur" id="sim-total">${vuDefaut.base.length}</span></span>
+            <span><span class="etiq">Sujets à suivre</span><span class="valeur" id="sim-total">${vuDefaut.base.length}</span></span>
           </li>
           <li>
             <span class="pastille ambre"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span>
-            <span><span class="etiq">Rythme le plus serré</span><span class="valeur" id="sim-rythme">${esc(vuDefaut.groupes.length ? vuDefaut.groupes[0].f.l : "—")}</span></span>
+            <span><span class="etiq">À revoir le plus souvent</span><span class="valeur" id="sim-rythme">${esc(vuDefaut.groupes.length ? vuDefaut.groupes[0].f.l : "—")}</span></span>
           </li>
           <li>
             <span class="pastille verte"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></span>
-            <span><span class="etiq">Ajoutés par le contexte</span><span class="valeur" id="sim-contexte">0</span></span>
+            <span><span class="etiq">Ajoutés par vos réponses</span><span class="valeur" id="sim-contexte">0</span></span>
           </li>
         </ul>
 
@@ -2237,17 +2116,16 @@ function pageAccueil(V, D, METIERS, ECRANS) {
         </ul>
 
         <p class="note-source" id="sim-phrase">
-          Pour <strong>${esc(divDefaut.l)}</strong> (NAF ${esc(divDefaut.c)}), le plan retient
-          <strong>${vuDefaut.base.length} domaines sur ${nbDomaines}</strong>. Le rythme le plus
-          serré est <strong>${esc(vuDefaut.groupes.length ? vuDefaut.groupes[0].f.l.toLowerCase() : "—")}</strong>.
+          Pour <strong>${esc(divDefaut.l)}</strong> (NAF ${esc(divDefaut.c)}), il y a
+          <strong>${vuDefaut.base.length} sujets à suivre sur ${nbDomaines}</strong>. Le plus
+          fréquent est à revoir <strong>${esc(vuDefaut.groupes.length ? vuDefaut.groupes[0].f.l.toLowerCase() : "—")}</strong>.
         </p>
         <p class="note-source">
-          Le périmètre affiché est un cadre de départ, pas un avis juridique sur votre situation.
-          Source : le référentiel de ce site, construit à partir de Légifrance et des portails
-          publics cités sur chaque domaine.
+          C'est un point de départ, pas un avis juridique sur votre situation. Les textes
+          viennent de Légifrance et des sites publics cités sur chaque sujet.
         </p>
         <p style="margin-top:var(--t4)">
-          <a class="lien-fleche" id="sim-lien" href="app/secteur/${esc(divDefaut.c)}-${slug(divDefaut.l)}.html">Ouvrir la fiche complète ${fleche}</a>
+          <a class="lien-fleche" id="sim-lien" href="app/secteur/${esc(divDefaut.c)}-${slug(divDefaut.l)}.html">Voir le détail de mon métier ${fleche}</a>
         </p>
       </div>
     </div>
@@ -2256,10 +2134,60 @@ function pageAccueil(V, D, METIERS, ECRANS) {
 
 <section class="section">
   <div class="enveloppe">
+    <div class="rail">
+      <span class="rail-fil" data-fil></span>
+      <div class="rail-item" data-paraitre data-compte="${V.divisions.length}">
+        <span class="chiffre">${V.divisions.length}</span>
+        <p class="legende">divisions d'activité couvertes, de la boulangerie au transport routier</p>
+      </div>
+      <div class="rail-item" data-paraitre data-compte="${nbDomaines}">
+        <span class="chiffre">${nbDomaines}</span>
+        <p class="legende">sujets à suivre, chacun avec ses obligations, ses textes et ses sources</p>
+      </div>
+      <div class="rail-item" data-paraitre data-compte="${V.declencheurs.length}">
+        <span class="chiffre">${V.declencheurs.length}</span>
+        <p class="legende">questions sur votre situation, qui ajoutent ou retirent un sujet</p>
+      </div>
+      <div class="rail-item" data-paraitre>
+        <span class="chiffre">ISO</span>
+        <p class="legende">les certifications qui exigent une veille : ISO 14001, ISO 45001, MASE, Qualiopi</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="enveloppe">
+    <h2 class="titre-section">À quoi ça ressemble</h2>
+    <p class="intro titre-section">De vraies captures, pas des dessins. Tout s'ouvre depuis la
+    démonstration, sans rien créer.</p>
+
+    ${vitrine(ECRANS, {
+      image: "releve.png",
+      alt: "Le relevé des textes : chaque texte daté, rattaché à un domaine, avec l'état de la décision.",
+      titre: "Ce qui vous concerne, et rien d'autre",
+      texte: `Une veille qui remonte tout ne se lit plus, et le texte qui comptait se perd.
+        Ici le tri est fait avant, sur votre métier : chaque texte arrive avec ce qu'il change
+        chez vous et ce qu'il faut faire.`,
+      lien: "connexion.html", libelle: "Voir le relevé"
+    })}
+
+    ${vitrine(ECRANS, {
+      image: "registre.png",
+      alt: "Le registre de preuves : revues, décisions et actions, chronologiques et datées.",
+      titre: "Ce qu'un auditeur demande vraiment",
+      texte: `L'écart le plus souvent relevé en audit n'est pas l'absence de veille : c'est la
+        veille faite et jamais écrite. Tout est daté et conservé, et s'imprime tel quel.`,
+      lien: "connexion.html", libelle: "Voir le registre"
+    })}
+  </div>
+</section>
+
+<section class="section">
+  <div class="enveloppe">
     <h2 class="titre-section">Votre métier y est</h2>
-    <p class="intro titre-section">Les ${V.divisions.length} divisions de la nomenclature d'activités
-    française ont chacune leur fiche. En voici quelques-unes ; l'index complet est dans
-    l'application.</p>
+    <p class="intro titre-section">${V.divisions.length} familles de métiers, chacune avec sa fiche.
+    En voici quelques-unes.</p>
     <div class="panneau-puces">
       <ul class="puces">
         ${VITRINE_SECTEURS.map((c) => {
@@ -2279,24 +2207,30 @@ function pageAccueil(V, D, METIERS, ECRANS) {
 
 <section class="section section-tein">
   <div class="enveloppe">
-    <h2 class="titre-section">Trois raisons de travailler avec nous</h2>
+    <h2 class="titre-section">Pourquoi nous</h2>
     <ul class="raisons">
       <li class="raison" data-paraitre>
         <span class="numero" aria-hidden="true">1</span>
-        <h3>Le tri avant la masse</h3>
-        <p>Une veille qui remonte tout ne se lit plus. Le périmètre est écrit d'abord,
-        et seul ce qui le touche vous arrive — avec, pour chaque texte, ce qu'il change
-        concrètement chez vous.</p>
+        <h3>On trie avant de vous envoyer</h3>
+        <p>Une veille qui remonte tout ne se lit plus. Seuls les textes qui vous
+        concernent arrivent, chacun avec ce qu'il change chez vous et ce qu'il faut
+        faire. Les autres sont écartés, et on vous dit pourquoi.</p>
       </li>
       <li class="raison" data-paraitre>
         <span class="numero" aria-hidden="true">2</span>
-        <h3>La preuve autant que la veille</h3>
-        <p>Faire la veille ne suffit pas : il faut pouvoir la montrer. Le registre garde
-        les revues, les décisions et les actions avec leurs dates, et s'imprime pour
-        l'audit sans retraitement.</p>
+        <h3>Vous pouvez le prouver</h3>
+        <p>Ce qu'on reproche le plus souvent en audit, ce n'est pas l'absence de veille :
+        c'est la veille faite et jamais écrite. Chaque revue, chaque décision est datée
+        et conservée. Ça s'imprime tel quel.</p>
       </li>
       <li class="raison" data-paraitre>
         <span class="numero" aria-hidden="true">3</span>
+        <h3>Le prix est affiché</h3>
+        <p>Presque toutes les offres comparables sont « sur devis ». La nôtre est sur la
+        page des tarifs, sans formulaire à remplir d'abord.</p>
+      </li>
+      <li class="raison" data-paraitre>
+        <span class="numero" aria-hidden="true">4</span>
         <h3>Quelqu'un en face</h3>
         <p>Pierrel &amp; Co est un cabinet de conseil à ${esc(SITE.ville)}, pas un abonnement
         anonyme. Un interlocuteur unique, qui connaît le site et qui vient dessus.</p>
@@ -2308,18 +2242,18 @@ function pageAccueil(V, D, METIERS, ECRANS) {
 <section class="section">
   <div class="enveloppe">
     <h2 class="titre-section">D'où viennent les textes</h2>
-    <p class="intro titre-section">Les sources suivies sont publiques et citées. Vous pouvez
-    vérifier chaque ligne à sa source.</p>
+    <p class="intro titre-section">Toutes publiques, toutes citées : vous pouvez vérifier
+    chaque ligne vous-même.</p>
     <ul class="sources-bande">
       ${V.sourcesGenerales.map((s) => `<li><a href="${esc(s.url)}" target="_blank" rel="noopener">${esc(s.nom)} ${sortant}</a></li>`).join("\n")}
     </ul>
     <div class="deux-colonnes" style="margin-top:var(--t6)">
       <p class="reserve">
         <strong>Ce que le service ne fait pas.</strong>
-        Il fournit un cadre méthodologique, pas un conseil juridique, et ne garantit pas
-        l'exhaustivité des textes applicables à une entreprise donnée. Chaque texte doit être
-        vérifié sur <a href="https://www.legifrance.gouv.fr" target="_blank" rel="noopener">Légifrance</a>
-        et l'analyse d'applicabilité validée par une personne compétente.
+        Ce n'est pas un conseil juridique, et la liste des textes qui vous concernent n'est
+        pas garantie complète. Chaque texte reste à vérifier sur
+        <a href="https://www.legifrance.gouv.fr" target="_blank" rel="noopener">Légifrance</a>,
+        et ce qu'il implique chez vous, à valider par quelqu'un de compétent.
       </p>
       <p class="reserve">
         <strong>Et ce site, aujourd'hui.</strong>
@@ -2337,7 +2271,7 @@ function pageAccueil(V, D, METIERS, ECRANS) {
     <h2>Conseil en organisation et conformité, à ${esc(SITE.ville)}</h2>
     <p class="mentions">
       Clément Pierrel accompagne les entreprises de ${esc(SITE.zone)} sur leur organisation et
-      leur conformité réglementaire : cadrage du périmètre, veille tenue, registre de preuves,
+      leur conformité réglementaire : définir ce qui les concerne, tenir la veille, garder les preuves,
       préparation d'audit (ISO 14001, ISO 45001, MASE, Qualiopi). Le premier échange d'une heure
       est sans engagement.
     </p>
@@ -2377,29 +2311,37 @@ function pageAbonnement(V) {
       encore en place.
     </p>
 
+    <p class="lecture" style="margin-top:var(--t5)">
+      <strong>Laquelle prendre ?</strong> Vous ne savez pas ce qui vous concerne : le
+      <strong>cadrage</strong>. Vous le savez, mais vous n'avez pas le temps de suivre :
+      la <strong>veille tenue</strong>. Vous passez un audit : la
+      <strong>veille et preuves</strong>.
+    </p>
+
     <div class="formules">
       <article class="formule" data-paraitre>
         <span class="etiq">01 — Cadrage</span>
         <p class="prix"><span class="grand">890 €</span> <span class="etiq">une fois</span></p>
-        <p>Une demi-journée sur site, puis votre plan de veille écrit : les domaines qui
-        s'appliquent, le rythme de revue de chacun, les sources à suivre, le responsable
-        désigné. Vous repartez avec le document, que vous preniez la suite ou non.</p>
+        <p class="pour">Vous ne savez pas ce qui vous concerne.</p>
+        <p>Une demi-journée chez vous, puis le document écrit : ce qui s'applique, à quel
+        rythme le revoir, et qui s'en occupe. Vous le gardez, que vous continuiez ou non.</p>
         <a class="bouton bouton-sobre" href="mailto:${esc(SITE.courriel)}?subject=Cadrage">Demander un cadrage</a>
       </article>
       <article class="formule" data-paraitre>
         <span class="etiq">02 — Veille tenue</span>
         <p class="prix"><span class="grand">180 €</span> <span class="etiq">par mois</span></p>
-        <p>Le cadrage, puis le relevé : les textes qui touchent votre périmètre, analysés et
-        datés, avec ce que chacun change pour vous. Accès à l'application et aux fiches de
-        secteur. Un établissement, un interlocuteur.</p>
+        <p class="pour">Vous savez, mais vous n'avez pas le temps de suivre.</p>
+        <p>Le cadrage, puis on vous prévient dès qu'un texte vous concerne, avec ce qu'il
+        change chez vous et ce qu'il faut faire. Accès à l'application. Un établissement,
+        un interlocuteur.</p>
         <a class="bouton bouton-sobre" href="mailto:${esc(SITE.courriel)}?subject=Démarrer un abonnement — Veille tenue">Démarrer un abonnement</a>
       </article>
       <article class="formule mise-en-avant" data-paraitre>
         <span class="etiq">03 — Veille et preuves</span>
         <p class="prix"><span class="grand">290 €</span> <span class="etiq">par mois</span></p>
-        <p>La veille tenue, plus le registre de preuves alimenté à chaque revue et une revue
-        annuelle de conformité sur site. C'est la formule pour qui passe un audit — ISO 14001,
-        ISO 45001, MASE, Qualiopi.</p>
+        <p class="pour">Vous passez un audit.</p>
+        <p>La veille tenue, plus le registre qui garde chaque revue et chaque décision avec sa
+        date, et une revue annuelle sur place. ISO 14001, ISO 45001, MASE, Qualiopi.</p>
         <a class="bouton bouton-accent" href="mailto:${esc(SITE.courriel)}?subject=Démarrer un abonnement — Veille et preuves">Démarrer un abonnement</a>
       </article>
     </div>

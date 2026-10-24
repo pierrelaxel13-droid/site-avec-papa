@@ -1554,6 +1554,13 @@ details[open] > summary .chevron { transform: rotate(180deg); }
 }
 .formule > p:nth-of-type(2) { margin-bottom: auto; }
 .formule.mise-en-avant { border-color: var(--accent); box-shadow: var(--ombre-2); }
+/* La phrase qui dit à qui la formule s'adresse : elle vient avant le détail,
+   parce que le client se reconnaît avant de comparer. */
+.formule .pour {
+  margin: 0 0 var(--t3);
+  font-weight: 600; color: var(--encre);
+}
+
 .formule .prix { margin: 0; display: flex; flex-wrap: wrap; align-items: baseline; gap: .5rem; }
 .formule .prix .grand {
   font-size: clamp(2rem, 1.4rem + 2vw, 2.75rem);

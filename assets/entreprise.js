@@ -138,8 +138,8 @@
 
     var tete = document.querySelector(".tete-app .chapeau");
     if (tete) {
-      tete.textContent = "Le périmètre retenu pour " + (garde.nom || vue.div.l) + " : " +
-        vue.liste.length + " domaines, groupés par rythme de revue.";
+      tete.textContent = "Ce qui s'applique chez " + (garde.nom || vue.div.l) + " : " +
+        vue.liste.length + " sujets à suivre, groupés par rythme de revue.";
     }
   }
 
@@ -255,7 +255,7 @@
       var div = P.div[division(champs.naf.value)];
       ligne.textContent = div
         ? "Division " + division(champs.naf.value) + " — " + div.l +
-          ". C'est à ce niveau que se calcule votre périmètre de veille."
+          ". C'est à ce niveau que se calcule ce qui vous concerne."
         : "Il figure sur votre avis de situation INSEE et sur vos bulletins de paie.";
     }
 
@@ -380,7 +380,7 @@
         "</div>" +
         '<div class="courriel-corps">' +
           "<p>Bonjour,</p>" +
-          "<p>Depuis le dernier envoi, deux textes touchent votre périmètre.</p>" +
+          "<p>Depuis le dernier envoi, deux textes vous concernent.</p>" +
           '<ul class="courriel-textes">' +
             "<li><strong>Arrêté modifiant les règles de vérification des échafaudages roulants</strong>" +
             "<span>Ajoute une vérification à la remise en service après déplacement. " +
