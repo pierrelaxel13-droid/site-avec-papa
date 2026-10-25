@@ -145,6 +145,32 @@ function lisFlux(xml) {
   }).filter((x) => x.titre);
 }
 
+/* --- Lecture d'une API de données ouvertes (Opendatasoft) ------------------ */
+/* Certaines administrations n'ont pas de flux mais publient leurs données :
+   RappelConso, par exemple, sur data.economie.gouv.fr. La source dit quels
+   champs donnent le titre, la date, le lien et le corps ; rien d'autre n'est lu. */
+const propre = (v) => (v == null ? "" : (Array.isArray(v) ? v.join(", ") : String(v)))
+  .split("|").map((x) => x.trim()).filter(Boolean).join(", ");
+const majuscule = (x) => x.charAt(0).toUpperCase() + x.slice(1);
+
+function lisOds(json, champs) {
+  let d;
+  try { d = JSON.parse(json); } catch { return []; }
+  const vus = new Set();
+  return (d.results || []).map((r) => ({
+    titre: champs.titre.map((c) => majuscule(propre(r[c]))).filter(Boolean).join(" — "),
+    lien: propre(r[champs.lien]),
+    date: dateIso(r[champs.date]),
+    corps: Object.entries(champs.corps)
+      .map(([etiquette, c]) => (propre(r[c]) ? `${etiquette} : ${majuscule(propre(r[c]))}.` : ""))
+      .filter(Boolean).join("\n\n")
+  /* Une fiche corrigée reparaît avec un nouveau numéro de version et le même
+     lien : on n'en garde qu'une, la plus récente, qui vient en premier. */
+  })).filter((x) => x.titre && !(x.lien && vus.has(x.lien)) && (vus.add(x.lien), true));
+}
+
+const lisSource = (s, corps) => (s.type === "ods" ? lisOds(corps, s.champs) : lisFlux(corps));
+
 /* --- Lecture d'un texte du Journal officiel (format DILA) ------------------ */
 function lisTexteDila(xml) {
   const titre = texteBrut(entre(xml, "TITREFULL")) || texteBrut(entre(xml, "TITRE_TXT")) ||
@@ -286,9 +312,12 @@ async function chargeDejaVus() {
 
 async function relevéFlux(V, s, depuis) {
   const xml = await (await recupere(s.url)).text();
-  const entrees = lisFlux(xml);
+  const entrees = lisSource(s, xml);
   if (!entrees.length) {
-    return { entrees: 0, retenus: [], souci: "format inattendu — aucune entrée lue" };
+    /* Un flux bien formé mais vide — l'ANSM ne garde que ceux du jour — n'est
+       pas un souci : la source a répondu, elle n'avait rien. */
+    const vide = s.type === "ods" ? /"results"\s*:\s*\[\s*\]/.test(xml) : /<(channel|feed)[\s>]/i.test(xml);
+    return { entrees: 0, retenus: [], souci: vide ? null : "format inattendu — aucune entrée lue" };
   }
   const retenus = [];
   for (const e of entrees) {
@@ -578,7 +607,7 @@ async function main() {
         const corps = await r.text();
         const n = s.type === "dila"
           ? archivesDuListing(corps, "2000-01-01").length
-          : lisFlux(corps).length;
+          : lisSource(s, corps).length;
         console.log(`répond — ${n} ${s.type === "dila" ? "archives" : "entrées"}` +
                     (n ? "" : "  ← format à revoir"));
         /* Une source qui répond sans rien donner mérite qu'on regarde ce

@@ -10,6 +10,8 @@
              intégral. C'est la source primaire du Journal officiel.
      rss   — un flux RSS. Titre, date, résumé, lien.
      atom  — un flux Atom. Même chose, autre balisage.
+     ods   — une API de données ouvertes (Opendatasoft) ; « champs » dit
+             quel champ donne le titre, la date, le lien et le corps.
 
    « genre » dit ce qu'on reçoit, et il ne faut pas confondre les deux :
      texte      — du droit : une loi, un décret, un arrêté, un règlement.
@@ -22,12 +24,15 @@
    la recherche de flux (node outils/veille.mjs --decouvrir) a demandé à
    chaque site où est son flux ; le bilan est dans contenu/sources-decouverte.txt.
 
-     19 répondent — elles portent « confirme: true ». Leur note « vu » dit
-        ce qu'elles ont donné, et d'où vient l'adresse.
-      6 ne répondent pas, et la note dit pourquoi :
+     20 répondent — elles portent « confirme: true ». Leur note « vu » dit
+        ce qu'elles ont donné, et d'où vient l'adresse. RappelConso, qui a
+        fermé son flux, est lu dans les données ouvertes de Bercy (type « ods »).
+      5 ne répondent pas, et la note dit pourquoi :
         BOSS et URSSAF ferment la porte aux machines de GitHub ;
-        l'ACPR répond 403 ; l'INRS et le BOAMP n'ont pas de flux ;
-        RappelConso a changé d'adresse le 23 octobre.
+        l'ACPR répond 403 ; l'INRS et le BOAMP n'ont pas de flux.
+
+   « pourquoi » est la raison dite au client, en trois mots, sur la page du
+   relevé.
 
    Une source qu'on ne sait pas joindre garde « confirme: false » : elle doit
    se voir, pas se maquiller avec une adresse inventée.
@@ -51,7 +56,8 @@ window.SOURCES = [
   { id: "inrs", nom: "INRS — actualités",
     type: "rss", genre: "actualite", confirme: false,
     url: "https://www.inrs.fr/rss/?feed=actualites",
-    vu: "25 octobre 2026 : l'INRS ne publie pas de flux RSS ; ni sa page d'accueil ni sa page « Suivez-nous » n'en déclarent" },
+    vu: "25 octobre 2026 : l'INRS ne publie pas de flux RSS ; ni sa page d'accueil ni sa page « Suivez-nous » n'en déclarent",
+    pourquoi: "pas de flux publié" },
 
   { id: "travail", nom: "Ministère du Travail — actualités",
     type: "rss", genre: "actualite", confirme: true,
@@ -67,12 +73,14 @@ window.SOURCES = [
   { id: "boss", nom: "BOSS — Bulletin officiel de la Sécurité sociale",
     type: "rss", genre: "actualite", confirme: false,
     url: "https://boss.gouv.fr/rss.xml",
-    vu: "25 octobre 2026 : le serveur ne répond pas aux machines de GitHub (délai de connexion dépassé), ni sur son adresse, ni sur sa page d'accueil" },
+    vu: "25 octobre 2026 : le serveur ne répond pas aux machines de GitHub (délai de connexion dépassé), ni sur son adresse, ni sur sa page d'accueil",
+    pourquoi: "refuse notre robot" },
 
   { id: "urssaf", nom: "URSSAF — actualités employeurs",
     type: "rss", genre: "actualite", confirme: false,
     url: "https://www.urssaf.fr/accueil/outils-documentation/actualites.rss",
-    vu: "25 octobre 2026 : le serveur coupe la connexion aux machines de GitHub (ECONNRESET), sur toutes ses pages" },
+    vu: "25 octobre 2026 : le serveur coupe la connexion aux machines de GitHub (ECONNRESET), sur toutes ses pages",
+    pourquoi: "refuse notre robot" },
 
   { id: "bofip", nom: "BOFiP — doctrine fiscale",
     type: "rss", genre: "actualite", confirme: true,
@@ -110,9 +118,16 @@ window.SOURCES = [
 
   /* --- Produits, consommation, alimentaire --------------------------------- */
   { id: "rappelconso", nom: "RappelConso — rappels de produits",
-    type: "rss", genre: "actualite", confirme: false,
-    url: "https://rappel.conso.gouv.fr/rss",
-    vu: "23 octobre 2026 (après-midi) : rappel.conso.gouv.fr/rss répond maintenant 404, alors qu'il donnait 20 entrées le matin — nouvelle adresse en recherche" },
+    type: "ods", genre: "actualite", confirme: true,
+    url: "https://data.economie.gouv.fr/api/explore/v2.1/catalog/datasets/rappelconso-v2-gtin-espaces/records?order_by=date_publication%20desc&limit=100",
+    champs: {
+      titre: ["libelle", "marque_produit"],
+      date: "date_publication",
+      lien: "lien_vers_la_fiche_rappel",
+      corps: { "Produit": "sous_categorie_produit", "Motif du rappel": "motif_rappel",
+               "Risques": "risques_encourus", "Ce qu'il faut faire": "conduites_a_tenir_par_le_consommateur" }
+    },
+    vu: "25 octobre 2026 : le flux rappel.conso.gouv.fr/rss répond 404 depuis le 23 octobre. Les mêmes fiches sont lues dans les données ouvertes de Bercy (RappelConso V2, 19 111 fiches), avec le lien vers chaque fiche officielle" },
 
   { id: "dgccrf", nom: "DGCCRF — actualités",
     type: "rss", genre: "actualite", confirme: true,
@@ -133,7 +148,8 @@ window.SOURCES = [
   { id: "acpr", nom: "ACPR — Banque de France",
     type: "rss", genre: "actualite", confirme: false,
     url: "https://acpr.banque-france.fr/rss.xml",
-    vu: "25 octobre 2026 : HTTP 403, l'hôte refuse le robot ; sa page d'accueil ne déclare aucun flux" },
+    vu: "25 octobre 2026 : HTTP 403, l'hôte refuse le robot ; sa page d'accueil ne déclare aucun flux",
+    pourquoi: "refuse notre robot" },
 
   { id: "amf", nom: "AMF — Autorité des marchés financiers",
     type: "rss", genre: "actualite", confirme: true,
@@ -162,5 +178,6 @@ window.SOURCES = [
   { id: "boamp", nom: "BOAMP — marchés publics",
     type: "rss", genre: "actualite", confirme: false,
     url: "https://www.boamp.fr/rss",
-    vu: "25 octobre 2026 : le BOAMP n'a pas de flux RSS ; ses données ouvertes sont des avis de marchés publics, pas des textes à appliquer" }
+    vu: "25 octobre 2026 : le BOAMP n'a pas de flux RSS ; ses données ouvertes sont des avis de marchés publics, pas des textes à appliquer",
+    pourquoi: "pas de flux publié" }
 ];

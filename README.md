@@ -321,11 +321,10 @@ documentation, les chemins courants. Bilan dans `contenu/sources-decouverte.txt`
 
 | | |
 | --- | --- |
-| **19 répondent** | Journal officiel, EUR-Lex série L, ministère du Travail, OPPBTP, BOFiP, CNIL, CERT-FR avis et alertes, Transition écologique, Ineris-AIDA, ADEME (nouvelles publications), DGCCRF, ANSES, Entreprendre, AMF, ARCEP, HAS, ANSM, Douane |
+| **20 répondent** | Journal officiel, EUR-Lex série L, ministère du Travail, OPPBTP, BOFiP, CNIL, CERT-FR avis et alertes, Transition écologique, Ineris-AIDA, ADEME (nouvelles publications), RappelConso, DGCCRF, ANSES, Entreprendre, AMF, ARCEP, HAS, ANSM, Douane |
 | BOSS, URSSAF | ferment la porte aux machines de GitHub (délai dépassé, connexion coupée) |
 | ACPR | répond 403 et ne déclare aucun flux |
 | INRS, BOAMP | n'ont pas de flux RSS |
-| RappelConso | a changé d'adresse le 23 octobre ; la nouvelle est en recherche |
 
 Celles qui répondent portent `confirme: true`. **Les autres gardent
 `confirme: false` et une note datée disant ce qu'elles ont répondu** — on ne
@@ -338,6 +337,9 @@ Deux cas méritaient un réglage, pas un contournement :
   autorité reconnue. La relève va le chercher à l'adresse que le certificat
   indique, et ne le garde que s'il se vérifie contre les autorités racines du
   système. La vérification n'est jamais coupée.
+- **RappelConso** a fermé son flux le 23 octobre. Les mêmes fiches sont lues
+  dans les données ouvertes de Bercy (type `ods` dans `contenu/sources.js`),
+  avec le lien vers chaque fiche officielle.
 - **Le BOFiP** ne date pas ses entrées. La relève leur donne le jour où elle
   les voit pour la première fois, et le garde d'une relève à l'autre.
 

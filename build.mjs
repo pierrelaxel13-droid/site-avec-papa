@@ -1245,6 +1245,10 @@ function appReleve(V, D, JO, C, LIENS, SOURCES = []) {
      rangés par nature, on voit d'un coup d'œil où il y a du travail. */
   const domaineJO = (t) => (t.domaines && t.domaines[0] ? t.domaines[0].id : "");
   const groupesJO = officiel ? groupesParClassement(V, JO.textes, domaineJO) : [];
+  /* Une source vérifiée qui n'a pas répondu cette fois-ci. Celles qu'on ne sait
+     pas encore relever sont dites à part, avec leur raison. */
+  const muettes = officiel
+    ? JO.rapport.filter((r) => r.souci && confirmees.some((c) => c.id === r.id)) : [];
   const neufsJO = officiel
     ? JO.textes.filter((t) => (t.vuLe || t.date) === JO.releve_le).length : 0;
 
@@ -1256,7 +1260,7 @@ ${officiel ? rubrique({ etiq: "Relevé officiel", contenu: `
   <dl class="compteurs">
     <div><dt class="etiq">Textes de droit</dt><dd><span class="grand">${JO.textes.filter((x) => x.genre === "texte").length}</span></dd></div>
     <div><dt class="etiq">Publications officielles</dt><dd><span class="grand">${JO.textes.filter((x) => x.genre !== "texte").length}</span></dd></div>
-    <div><dt class="etiq">Sources qui ont répondu</dt><dd><span class="grand">${JO.rapport.filter((r) => r.retenus).length}</span>
+    <div><dt class="etiq">Sources qui ont répondu</dt><dd><span class="grand">${JO.rapport.filter((r) => !r.souci).length}</span>
       <span class="precision">sur ${JO.rapport.length} interrogées</span></dd></div>
     <div><dt class="etiq">Dernière relève</dt><dd>${esc(dateFr(JO.releve_le))}</dd></div>
   </dl>
@@ -1269,16 +1273,13 @@ ${officiel ? rubrique({ etiq: "Relevé officiel", contenu: `
     mais n'en est pas.
   </p>
   ${SOURCES.length > confirmees.length ? `<p class="note-source" style="margin-top:var(--t4)">
-    ${SOURCES.length - confirmees.length} autres sources sont déclarées mais pas encore
-    exploitables : leur adresse n'existe plus, refuse le robot, ou répond dans un format
-    que nous ne savons pas lire. Chacune porte dans <code>contenu/sources.js</code> ce
-    qu'elle a répondu, et à quelle date. Nous ne les comptons pas tant qu'elles ne
-    donnent rien.</p>` : ""}
-  ${JO.rapport.some((r) => r.souci) ? `<p class="reserve" style="margin-top:var(--t4)">
-    <strong>Sources muettes à la dernière relève.</strong>
-    ${esc(JO.rapport.filter((r) => r.souci).map((r) => r.nom).join(" · "))}.
-    Elles sont signalées plutôt que remplacées : ce qui n'a pas été relevé ne figure
-    pas ici, et ne doit pas être pris pour une absence de texte.</p>` : ""}
+    <strong>Pas encore relevées :</strong>
+    ${esc(SOURCES.filter((x) => !x.confirme).map((x) => `${x.nom.split(" — ")[0]} (${x.pourquoi || "ne répond pas"})`).join(" · "))}.
+    Ce qui vient de là ne figure pas ici : ce n'est pas une absence de texte.</p>` : ""}
+  ${muettes.length ? `<p class="reserve" style="margin-top:var(--t4)">
+    <strong>Muettes à la dernière relève :</strong> ${esc(muettes.map((r) => r.nom).join(" · "))}.
+    Ce qu'elles auraient publié depuis ne figure pas ici ; elles seront relues à la
+    prochaine relève.</p>` : ""}
   <p class="lecture" style="margin-top:var(--t4)">
     <strong>Rangés par famille.</strong> La colonne « le plus récent » dit où ça a bougé
     en dernier, et « ce qu'il faut faire en premier » ce que vous avez à faire de ce
