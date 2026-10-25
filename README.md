@@ -313,25 +313,37 @@ flux au format inattendu remonte « 0 entrée ». Et si la relève entière ne
 ramène rien, rien n'est écrit : l'application continue d'afficher « aucune
 relève » et son jeu d'essai, nommé comme tel.
 
-**Les adresses ont été vérifiées le 23 octobre 2026**, depuis une machine qui
-joint ces hôtes. Résultat, dans `contenu/sources-rapport.txt` :
+**Les adresses ont été vérifiées le 23 octobre 2026, puis cherchées le 25**,
+depuis une machine qui joint ces hôtes. Le 23, seules 6 répondaient. Le 25,
+la recherche de flux (`node outils/veille.mjs --decouvrir`) a demandé à chaque
+site muet où est son flux : les liens que ses pages déclarent, les pistes de sa
+documentation, les chemins courants. Bilan dans `contenu/sources-decouverte.txt` :
 
 | | |
 | --- | --- |
-| **6 répondent et donnent des entrées** | Journal officiel (863 archives), CNIL, CERT-FR avis, CERT-FR alertes, RappelConso, Douane |
-| 4 répondent sans rien donner | adresses périmées : EUR-Lex dit « ce flux n'existe plus », l'INRS et le ministère du Travail renvoient une page HTML, l'ADEME sert le flux des commentaires de sa page presse, vide |
-| 9 renvoient 404 | l'adresse n'existe pas |
-| 6 refusent la connexion ou répondent 403 | |
+| **19 répondent** | Journal officiel, EUR-Lex série L, ministère du Travail, OPPBTP, BOFiP, CNIL, CERT-FR avis et alertes, Transition écologique, Ineris-AIDA, ADEME (nouvelles publications), DGCCRF, ANSES, Entreprendre, AMF, ARCEP, HAS, ANSM, Douane |
+| BOSS, URSSAF | ferment la porte aux machines de GitHub (délai dépassé, connexion coupée) |
+| ACPR | répond 403 et ne déclare aucun flux |
+| INRS, BOAMP | n'ont pas de flux RSS |
+| RappelConso | a changé d'adresse le 23 octobre ; la nouvelle est en recherche |
 
-Les six qui marchent portent `confirme: true`. **Les dix-neuf autres gardent
+Celles qui répondent portent `confirme: true`. **Les autres gardent
 `confirme: false` et une note datée disant ce qu'elles ont répondu** — on ne
-leur invente pas une adresse de remplacement. Le site, lui, annonce le nombre
-de sources qui répondent, pas le nombre de sources déclarées.
+leur invente pas une adresse de remplacement. Le site annonce le nombre de
+sources qui répondent, pas le nombre de sources déclarées.
 
-Au passage, cette vérification a répondu à la seule question qui portait sur
-notre code : **notre lecteur de flux n'a aucun défaut.** L'ADEME nous envoyait
-un flux vide ; les trois autres, du HTML. Pour relancer la vérification :
-l'étape « Vérifier les sources » de l'action, qui ne tourne qu'à la demande.
+Deux cas méritaient un réglage, pas un contournement :
+
+- **La HAS** envoie son certificat sans l'intermédiaire qui le relie à une
+  autorité reconnue. La relève va le chercher à l'adresse que le certificat
+  indique, et ne le garde que s'il se vérifie contre les autorités racines du
+  système. La vérification n'est jamais coupée.
+- **Le BOFiP** ne date pas ses entrées. La relève leur donne le jour où elle
+  les voit pour la première fois, et le garde d'une relève à l'autre.
+
+Le robot se présente sous son nom et ne se déguise pas en navigateur : un site
+qui le refuse est noté comme tel. Pour relancer : l'onglet Actions, « Relève »,
+« Run workflow » — la vérification et la recherche ne tournent qu'à la demande.
 
 ## Les textes, sur le site
 

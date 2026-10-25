@@ -272,6 +272,18 @@ function dateDuTitre(titre) {
 }
 
 /* --- Relève d'une source par flux ------------------------------------------ */
+/* Une entrée sans date — le BOFiP n'en met pas — n'en reçoit pas une
+   inventée : elle prend le jour où la relève l'a vue pour la première fois, et
+   le garde d'une relève à l'autre. */
+const AUJOURDHUI = new Date().toISOString().slice(0, 10);
+let DEJA_VUS = new Map();
+async function chargeDejaVus() {
+  try {
+    const avant = JSON.parse(await readFile(SORTIE, "utf8"));
+    DEJA_VUS = new Map((avant.textes || []).map((t) => [t.id, t.vuLe || t.date]));
+  } catch { /* première relève : rien à reprendre */ }
+}
+
 async function relevéFlux(V, s, depuis) {
   const xml = await (await recupere(s.url)).text();
   const entrees = lisFlux(xml);
@@ -287,7 +299,8 @@ async function relevéFlux(V, s, depuis) {
       source: s.id, sourceNom: s.nom, genre: s.genre,
       id: e.lien || `${s.id}:${e.titre}`,
       titre: e.titre, nature: s.genre === "texte" ? "Texte officiel" : "Publication officielle",
-      date: e.date || depuis, corps: e.corps, lien: e.lien, domaines
+      date: e.date || DEJA_VUS.get(e.lien || `${s.id}:${e.titre}`) || AUJOURDHUI,
+      corps: e.corps, lien: e.lien, domaines
     });
   }
   return { entrees: entrees.length, retenus };
@@ -371,7 +384,7 @@ const PISTES = {
   "eurlex-l":    { pages: ["https://eur-lex.europa.eu/oj/direct-access.html"],
                    flux: ["https://eur-lex.europa.eu/FR/display-feed.rss?rssId=165",
                           "https://eur-lex.europa.eu/EN/display-feed.rss?rssId=165"] },
-  inrs:          { pages: ["https://www.inrs.fr/", "https://www.inrs.fr/footer/suivez-nous.html"], flux: [] },
+  inrs:          { pages: ["https://www.inrs.fr/actualites.html", "https://www.inrs.fr/"], flux: [] },
   travail:       { pages: ["https://travail-emploi.gouv.fr/"],
                    flux: ["https://travail-emploi.gouv.fr/rss.xml"] },
   oppbtp:        { pages: ["https://www.oppbtp.com/actualites/", "https://www.preventionbtp.fr/"],
@@ -405,7 +418,13 @@ const PISTES = {
                           "https://www.has-sante.fr/feed/Rss2.jsp?id=p_3081452"] },
   ansm:          { pages: ["https://ansm.sante.fr/page/flux-rss"],
                    flux: ["https://ansm.sante.fr/rss/actualites", "https://ansm.sante.fr/rss/informations_securite"] },
-  boamp:         { pages: ["https://www.boamp.fr/"], flux: [] }
+  rappelconso:   { pages: ["https://rappel.conso.gouv.fr/"],
+                   flux: ["https://rappel.conso.gouv.fr/rss?categorie=0",
+                          "https://data.economie.gouv.fr/api/explore/v2.1/catalog/datasets/rappelconso-v2-gtin-espaces/exports/rss?order_by=date_publication%20desc&limit=50",
+                          "https://data.economie.gouv.fr/api/explore/v2.1/catalog/datasets/rappelconso-v2-gtin-trie/exports/rss?order_by=date_publication%20desc&limit=50",
+                          "https://data.economie.gouv.fr/api/explore/v2.1/catalog/datasets/rappelconso0/exports/rss?order_by=date_de_publication%20desc&limit=50"] },
+  boamp:         { pages: ["https://www.boamp.fr/"],
+                   flux: ["https://boamp-datadila.opendatasoft.com/api/explore/v2.1/catalog/datasets/boamp/exports/rss?order_by=dateparution%20desc&limit=50"] }
 };
 const CHEMINS_COURANTS = ["/feed/", "/rss", "/rss.xml", "/fr/rss.xml", "/feed.xml", "/atom.xml",
                           "/index.xml", "/spip.php?page=backend"];
@@ -505,6 +524,16 @@ async function decouvre(SOURCES) {
       for (const o of origines) for (const c of CHEMINS_COURANTS) await essaie(o + c, "chemin courant");
     }
 
+    /* Pas de flux du tout : on montre les liens d'actualité que la page
+       publie, pour juger si on peut la lire telle quelle. */
+    if (!resultats.some((r) => r.ok && r.entrees)) {
+      for (const r of resultats.filter((x) => x.ok && /html/i.test(x.type)).slice(0, 2)) {
+        const liens = [...r.corps.matchAll(/<a\b[^>]*href=["']([^"']*actualit[^"']*)["'][^>]*>([\s\S]*?)<\/a>/gi)]
+          .map((m) => `${m[1]} « ${texteBrut(m[2]).slice(0, 80)} »`).slice(0, 12);
+        if (liens.length) console.log(`      liens d'actualité sur ${r.url} :\n        ` + liens.join("\n        "));
+      }
+    }
+
     /* La meilleure : des entrées datées, la plus récente d'abord. */
     const bonnes = resultats.filter((r) => r.ok && r.entrees && r.datees)
       .sort((a, b) => (a.derniere < b.derniere ? 1 : a.derniere > b.derniere ? -1 : b.entrees - a.entrees));
@@ -573,6 +602,7 @@ async function main() {
   }
 
   console.log(`Relève depuis le ${depuis}, sur ${SOURCES.length} sources.\n`);
+  await chargeDejaVus();
   await rm(TRAVAIL, { recursive: true, force: true });
 
   const tout = [];

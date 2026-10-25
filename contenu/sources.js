@@ -16,25 +16,21 @@
      actualite  — un commentaire officiel : guide, avis, doctrine, alerte.
                   Cela compte pour la veille, mais ce n'est pas le droit.
 
-   CE QUE LA VÉRIFICATION DU 23 OCTOBRE 2026 A DONNÉ
-   Les adresses ont enfin été interrogées depuis une machine qui joint ces
-   hôtes (.github/workflows/releve.yml, étape « Vérifier les sources »). Le
-   rapport complet est dans contenu/sources-rapport.txt. Résultat :
+   OÙ EN SONT LES SOURCES — 25 OCTOBRE 2026
+   Le 23 octobre, la vérification depuis une machine qui joint ces hôtes
+   (.github/workflows/releve.yml) n'en trouvait que 6 qui répondaient. Le 25,
+   la recherche de flux (node outils/veille.mjs --decouvrir) a demandé à
+   chaque site où est son flux ; le bilan est dans contenu/sources-decouverte.txt.
 
-     6 répondent et donnent des entrées — elles portent « confirme: true » :
-       jorf, cnil, certfr-avis, certfr-alerte, rappelconso, douane.
-     4 répondent mais ne donnent rien, et on sait maintenant pourquoi :
-       EUR-Lex dit « ce flux n'existe plus », l'INRS et le ministère du Travail
-       renvoient une page HTML, l'ADEME sert le flux des commentaires de sa
-       page presse, qui est vide. Quatre mauvaises adresses — et aucun défaut
-       de notre lecteur, ce qui était la vraie question.
-     9 renvoient 404 : l'adresse n'existe pas.
-     6 refusent la connexion ou répondent 403.
+     19 répondent — elles portent « confirme: true ». Leur note « vu » dit
+        ce qu'elles ont donné, et d'où vient l'adresse.
+      6 ne répondent pas, et la note dit pourquoi :
+        BOSS et URSSAF ferment la porte aux machines de GitHub ;
+        l'ACPR répond 403 ; l'INRS et le BOAMP n'ont pas de flux ;
+        RappelConso a changé d'adresse le 23 octobre.
 
-   Les dix-neuf qui ne marchent pas gardent « confirme: false » et leur note
-   dit ce qu'elles ont répondu, avec la date. On ne les remplace pas par une
-   adresse inventée : une source qu'on ne sait pas joindre doit se voir, pas
-   se maquiller.
+   Une source qu'on ne sait pas joindre garde « confirme: false » : elle doit
+   se voir, pas se maquiller avec une adresse inventée.
    ========================================================================== */
 
 window.SOURCES = [
@@ -55,7 +51,7 @@ window.SOURCES = [
   { id: "inrs", nom: "INRS — actualités",
     type: "rss", genre: "actualite", confirme: false,
     url: "https://www.inrs.fr/rss/?feed=actualites",
-    vu: "23 octobre 2026 : renvoie une page HTML, pas un flux — adresse périmée" },
+    vu: "25 octobre 2026 : l'INRS ne publie pas de flux RSS ; ni sa page d'accueil ni sa page « Suivez-nous » n'en déclarent" },
 
   { id: "travail", nom: "Ministère du Travail — actualités",
     type: "rss", genre: "actualite", confirme: true,
@@ -71,17 +67,17 @@ window.SOURCES = [
   { id: "boss", nom: "BOSS — Bulletin officiel de la Sécurité sociale",
     type: "rss", genre: "actualite", confirme: false,
     url: "https://boss.gouv.fr/rss.xml",
-    vu: "23 octobre 2026 : connexion impossible" },
+    vu: "25 octobre 2026 : le serveur ne répond pas aux machines de GitHub (délai de connexion dépassé), ni sur son adresse, ni sur sa page d'accueil" },
 
   { id: "urssaf", nom: "URSSAF — actualités employeurs",
     type: "rss", genre: "actualite", confirme: false,
     url: "https://www.urssaf.fr/accueil/outils-documentation/actualites.rss",
-    vu: "23 octobre 2026 : connexion impossible" },
+    vu: "25 octobre 2026 : le serveur coupe la connexion aux machines de GitHub (ECONNRESET), sur toutes ses pages" },
 
   { id: "bofip", nom: "BOFiP — doctrine fiscale",
-    type: "rss", genre: "actualite", confirme: false,
-    url: "https://bofip.impots.gouv.fr/rss",
-    vu: "23 octobre 2026 : connexion impossible" },
+    type: "rss", genre: "actualite", confirme: true,
+    url: "https://bofip.impots.gouv.fr/bofip/ext/rss.xml?actualites=1&maxR=50&maxJ=30",
+    vu: "25 octobre 2026 : trouvé par la recherche de flux, répond — 7 actualités sur 30 jours. Le flux ne date pas ses entrées : la relève note le jour où elle les voit pour la première fois, sans en inventer" },
 
   /* --- Données personnelles et cybersécurité ------------------------------- */
   { id: "cnil", nom: "CNIL — actualités",
@@ -102,20 +98,21 @@ window.SOURCES = [
     url: "https://ecologie.gouv.fr/rss-actualites.xml",
     vu: "25 octobre 2026 : trouvé par la recherche de flux, répond avec des entrées datées — 10 entrées, la plus récente du 23 octobre" },
 
-  { id: "ineris-aida", nom: "AIDA — réglementation des installations classées",
-    type: "rss", genre: "texte", confirme: false,
-    url: "https://aida.ineris.fr/rss",
-    vu: "23 octobre 2026 : HTTP 404 — l'adresse n'existe pas" },
+  { id: "ineris-aida", nom: "Ineris et AIDA — nouveautés",
+    type: "rss", genre: "texte", confirme: true,
+    url: "https://www.ineris.fr/fr/flux-rss",
+    vu: "25 octobre 2026 : trouvé par la recherche de flux, répond avec des entrées datées — le lien « Flux RSS » d'AIDA mène au flux de l'Ineris, 10 entrées, la plus récente du 21 octobre" },
 
-  { id: "ademe", nom: "ADEME — actualités",
-    type: "rss", genre: "actualite", confirme: false,
-    url: "https://presse.ademe.fr/feed",
-    vu: "23 octobre 2026 : sert le flux des COMMENTAIRES de la page presse, et il est vide — mauvaise adresse, pas un défaut de notre lecteur" },
+  { id: "ademe", nom: "ADEME — nouvelles publications",
+    type: "rss", genre: "actualite", confirme: true,
+    url: "https://librairie.ademe.fr/rss/nouveautes.xml",
+    vu: "25 octobre 2026 : trouvé par la recherche de flux, répond avec des entrées datées — les nouveautés de la Librairie ADEME (guides, études), 93 entrées, la plus récente du 22 octobre ; ademe.fr refuse le robot (403)" },
 
   /* --- Produits, consommation, alimentaire --------------------------------- */
   { id: "rappelconso", nom: "RappelConso — rappels de produits",
-    type: "rss", genre: "actualite", confirme: true,
-    url: "https://rappel.conso.gouv.fr/rss" },
+    type: "rss", genre: "actualite", confirme: false,
+    url: "https://rappel.conso.gouv.fr/rss",
+    vu: "23 octobre 2026 (après-midi) : rappel.conso.gouv.fr/rss répond maintenant 404, alors qu'il donnait 20 entrées le matin — nouvelle adresse en recherche" },
 
   { id: "dgccrf", nom: "DGCCRF — actualités",
     type: "rss", genre: "actualite", confirme: true,
@@ -136,12 +133,12 @@ window.SOURCES = [
   { id: "acpr", nom: "ACPR — Banque de France",
     type: "rss", genre: "actualite", confirme: false,
     url: "https://acpr.banque-france.fr/rss.xml",
-    vu: "23 octobre 2026 : HTTP 403 — l'hôte refuse le robot" },
+    vu: "25 octobre 2026 : HTTP 403, l'hôte refuse le robot ; sa page d'accueil ne déclare aucun flux" },
 
   { id: "amf", nom: "AMF — Autorité des marchés financiers",
-    type: "rss", genre: "actualite", confirme: false,
-    url: "https://www.amf-france.org/fr/rss.xml",
-    vu: "23 octobre 2026 : HTTP 404 — l'adresse n'existe pas" },
+    type: "rss", genre: "actualite", confirme: true,
+    url: "https://www.amf-france.org/fr/flux-rss/display/21",
+    vu: "25 octobre 2026 : trouvé par la recherche de flux, répond avec des entrées datées — « Toutes les actualités et publications », 200 entrées, la plus récente du 22 octobre" },
 
   { id: "arcep", nom: "ARCEP",
     type: "rss", genre: "actualite", confirme: true,
@@ -149,14 +146,14 @@ window.SOURCES = [
     vu: "25 octobre 2026 : trouvé par la recherche de flux, répond avec des entrées datées — 10 entrées, la plus récente du 22 octobre" },
 
   { id: "has", nom: "Haute Autorité de santé",
-    type: "rss", genre: "actualite", confirme: false,
-    url: "https://www.has-sante.fr/jcms/rss.xml",
-    vu: "23 octobre 2026 : connexion impossible" },
+    type: "rss", genre: "actualite", confirme: true,
+    url: "https://www.has-sante.fr/feed/Rss2.jsp?id=p_3081656",
+    vu: "25 octobre 2026 : trouvé par la recherche de flux, répond avec des entrées datées — 50 entrées, la plus récente du 21 octobre. Le site envoie une chaîne de certificats incomplète : la relève la complète (voir releve.yml)" },
 
-  { id: "ansm", nom: "ANSM — sécurité du médicament",
-    type: "rss", genre: "actualite", confirme: false,
-    url: "https://ansm.sante.fr/rss",
-    vu: "23 octobre 2026 : HTTP 404 — l'adresse n'existe pas" },
+  { id: "ansm", nom: "ANSM — actualités",
+    type: "rss", genre: "actualite", confirme: true,
+    url: "https://ansm.sante.fr/rss/actualites",
+    vu: "25 octobre 2026 : flux officiel trouvé sur ansm.sante.fr/page/flux-rss. C'est un flux « du jour » : il est vide les jours sans publication (vide ce dimanche), et se remplit les autres" },
 
   { id: "douane", nom: "Douane française",
     type: "rss", genre: "actualite", confirme: true,
@@ -165,5 +162,5 @@ window.SOURCES = [
   { id: "boamp", nom: "BOAMP — marchés publics",
     type: "rss", genre: "actualite", confirme: false,
     url: "https://www.boamp.fr/rss",
-    vu: "23 octobre 2026 : HTTP 404 — l'adresse n'existe pas" }
+    vu: "25 octobre 2026 : le BOAMP n'a pas de flux RSS ; ses données ouvertes sont des avis de marchés publics, pas des textes à appliquer" }
 ];
