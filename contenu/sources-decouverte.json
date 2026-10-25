@@ -1,0 +1,349 @@
+{
+ "le": "2026-10-25T11:50:19.862Z",
+ "bilan": [
+  {
+   "id": "eurlex-l",
+   "nom": "Journal officiel de l'Union européenne — série L",
+   "retenue": "https://eur-lex.europa.eu/FR/display-feed.rss?rssId=165",
+   "derniere": "2026-10-22",
+   "flux": [
+    {
+     "url": "https://eur-lex.europa.eu/FR/display-feed.rss?rssId=165",
+     "entrees": 100,
+     "derniere": "2026-10-22",
+     "titre": "7 - Actes du Journal officiel L",
+     "d_ou": "piste connue"
+    },
+    {
+     "url": "https://eur-lex.europa.eu/EN/display-feed.rss?rssId=165",
+     "entrees": 100,
+     "derniere": "2026-10-22",
+     "titre": "7 - Acts of the Official Journal L",
+     "d_ou": "piste connue"
+    }
+   ],
+   "essais": 4,
+   "refus": []
+  },
+  {
+   "id": "inrs",
+   "nom": "INRS — actualités",
+   "retenue": null,
+   "derniere": null,
+   "flux": [],
+   "essais": 11,
+   "refus": [
+    "HTTP 404"
+   ]
+  },
+  {
+   "id": "travail",
+   "nom": "Ministère du Travail — actualités",
+   "retenue": "https://travail-emploi.gouv.fr/rss.xml",
+   "derniere": "2026-10-23",
+   "flux": [
+    {
+     "url": "https://travail-emploi.gouv.fr/rss.xml",
+     "entrees": 50,
+     "derniere": "2026-10-23",
+     "titre": "Flux RSS personnalisés",
+     "d_ou": "piste connue"
+    }
+   ],
+   "essais": 3,
+   "refus": []
+  },
+  {
+   "id": "oppbtp",
+   "nom": "OPPBTP — prévention BTP",
+   "retenue": "https://www.oppbtp.com/feed/",
+   "derniere": "2026-10-08",
+   "flux": [
+    {
+     "url": "https://www.oppbtp.com/feed/",
+     "entrees": 10,
+     "derniere": "2026-10-08",
+     "titre": "OPPBTP – L'Organisme professionnel de prévention du bâtiment et des travaux publics",
+     "d_ou": "piste connue"
+    },
+    {
+     "url": "https://www.oppbtp.com/actualites/feed/",
+     "entrees": 10,
+     "derniere": "2026-10-08",
+     "titre": "Actualités – OPPBTP – L'Organisme professionnel de prévention du bâtiment et des travaux p",
+     "d_ou": "piste connue"
+    }
+   ],
+   "essais": 5,
+   "refus": [
+    "HTTP 404"
+   ]
+  },
+  {
+   "id": "boss",
+   "nom": "BOSS — Bulletin officiel de la Sécurité sociale",
+   "retenue": null,
+   "derniere": null,
+   "flux": [],
+   "essais": 9,
+   "refus": [
+    "injoignable (fetch failed : UND_ERR_CONNECT_TIMEOUT) — l'hôte refuse le robot, ou le réseau d'ici le bloque"
+   ]
+  },
+  {
+   "id": "urssaf",
+   "nom": "URSSAF — actualités employeurs",
+   "retenue": null,
+   "derniere": null,
+   "flux": [],
+   "essais": 10,
+   "refus": [
+    "injoignable (fetch failed : ECONNRESET) — l'hôte refuse le robot, ou le réseau d'ici le bloque",
+    "injoignable (fetch failed : UND_ERR_SOCKET) — l'hôte refuse le robot, ou le réseau d'ici le bloque"
+   ]
+  },
+  {
+   "id": "bofip",
+   "nom": "BOFiP — doctrine fiscale",
+   "retenue": null,
+   "derniere": null,
+   "flux": [
+    {
+     "url": "https://bofip.impots.gouv.fr/bofip/ext/rss.xml?actualites=1&maxR=50&maxJ=30",
+     "entrees": 7,
+     "derniere": "",
+     "titre": "BOFiP-Impôts - Actualités",
+     "d_ou": "piste connue"
+    }
+   ],
+   "essais": 3,
+   "refus": [
+    "HTTP 404"
+   ]
+  },
+  {
+   "id": "ecologie",
+   "nom": "Ministère de la Transition écologique",
+   "retenue": "https://ecologie.gouv.fr/rss-actualites.xml",
+   "derniere": "2026-10-23",
+   "flux": [
+    {
+     "url": "https://ecologie.gouv.fr/rss-actualites.xml",
+     "entrees": 10,
+     "derniere": "2026-10-23",
+     "titre": "Ministères Transition écologique, Aménagement du Territoire, Transports, Ville et Logement",
+     "d_ou": "déclaré par la page"
+    },
+    {
+     "url": "https://ecologie.gouv.fr/rss-presse.xml",
+     "entrees": 10,
+     "derniere": "2026-10-23",
+     "titre": "Ministères Transition écologique, Aménagement du Territoire, Transports, Ville et Logement",
+     "d_ou": "déclaré par la page"
+    }
+   ],
+   "essais": 4,
+   "refus": [
+    "HTTP 404"
+   ]
+  },
+  {
+   "id": "ineris-aida",
+   "nom": "AIDA — réglementation des installations classées",
+   "retenue": "https://www.ineris.fr/fr/flux-rss",
+   "derniere": "2026-10-21",
+   "flux": [
+    {
+     "url": "https://www.ineris.fr/fr/flux-rss",
+     "entrees": 10,
+     "derniere": "2026-10-21",
+     "titre": "Nouveautés Ineris.fr",
+     "d_ou": "déclaré par la page"
+    }
+   ],
+   "essais": 4,
+   "refus": [
+    "HTTP 404"
+   ]
+  },
+  {
+   "id": "ademe",
+   "nom": "ADEME — actualités",
+   "retenue": null,
+   "derniere": null,
+   "flux": [],
+   "essais": 21,
+   "refus": [
+    "HTTP 404",
+    "injoignable (HTTP 403) — l'hôte refuse le robot, ou le réseau d'ici le bloque"
+   ]
+  },
+  {
+   "id": "dgccrf",
+   "nom": "DGCCRF — actualités",
+   "retenue": "https://www.economie.gouv.fr/dgccrf/rss",
+   "derniere": "2026-10-23",
+   "flux": [
+    {
+     "url": "https://www.economie.gouv.fr/dgccrf/rss",
+     "entrees": 20,
+     "derniere": "2026-10-23",
+     "titre": "Flux RSS DGCCRF",
+     "d_ou": "piste connue"
+    },
+    {
+     "url": "https://www.economie.gouv.fr/rss/toutesactualites",
+     "entrees": 10,
+     "derniere": "2026-10-22",
+     "titre": "Flux RSS Toutes les actualités",
+     "d_ou": "piste connue"
+    }
+   ],
+   "essais": 4,
+   "refus": [
+    "injoignable (HTTP 403) — l'hôte refuse le robot, ou le réseau d'ici le bloque"
+   ]
+  },
+  {
+   "id": "anses",
+   "nom": "ANSES — avis et actualités",
+   "retenue": "https://www.anses.fr/rss.xml",
+   "derniere": "2026-10-22",
+   "flux": [
+    {
+     "url": "https://www.anses.fr/rss.xml",
+     "entrees": 10,
+     "derniere": "2026-10-22",
+     "titre": "Agence nationale de sécurité sanitaire de l’alimentation, de l’environnement et du travail",
+     "d_ou": "chemin courant"
+    },
+    {
+     "url": "https://www.anses.fr/fr/rss.xml",
+     "entrees": 10,
+     "derniere": "2026-10-22",
+     "titre": "Agence nationale de sécurité sanitaire de l’alimentation, de l’environnement et du travail",
+     "d_ou": "chemin courant"
+    }
+   ],
+   "essais": 20,
+   "refus": [
+    "HTTP 404"
+   ]
+  },
+  {
+   "id": "entreprendre",
+   "nom": "Entreprendre — service-public.fr",
+   "retenue": "https://www.service-public.gouv.fr/abonnements/rss/actu-actu-pro.rss",
+   "derniere": "2026-10-21",
+   "flux": [
+    {
+     "url": "https://www.service-public.gouv.fr/abonnements/rss/actu-actu-pro.rss",
+     "entrees": 235,
+     "derniere": "2026-10-21",
+     "titre": "Les actualités de Service Public Entreprendre pour les professionnels et les entreprises",
+     "d_ou": "piste connue"
+    }
+   ],
+   "essais": 4,
+   "refus": [
+    "HTTP 404"
+   ]
+  },
+  {
+   "id": "acpr",
+   "nom": "ACPR — Banque de France",
+   "retenue": null,
+   "derniere": null,
+   "flux": [],
+   "essais": 9,
+   "refus": [
+    "injoignable (HTTP 403) — l'hôte refuse le robot, ou le réseau d'ici le bloque",
+    "HTTP 404"
+   ]
+  },
+  {
+   "id": "amf",
+   "nom": "AMF — Autorité des marchés financiers",
+   "retenue": null,
+   "derniere": null,
+   "flux": [],
+   "essais": 11,
+   "refus": [
+    "HTTP 404"
+   ]
+  },
+  {
+   "id": "arcep",
+   "nom": "ARCEP",
+   "retenue": "https://en.arcep.fr/news/follow-regulatory-news/press-releases/rss.xml",
+   "derniere": "2026-10-22",
+   "flux": [
+    {
+     "url": "https://www.arcep.fr/actualites/suivre-actualite-regulation-arcep/fil-dinfos/rss.xml",
+     "entrees": 10,
+     "derniere": "2026-10-22",
+     "titre": "Arcep - Fil d'infos",
+     "d_ou": "piste connue"
+    },
+    {
+     "url": "https://en.arcep.fr/news/follow-regulatory-news/arcep-speaks/rss.xml",
+     "entrees": 51,
+     "derniere": "2026-06-23",
+     "titre": "Arcep - Speaks",
+     "d_ou": "déclaré par la page"
+    },
+    {
+     "url": "https://en.arcep.fr/news/follow-regulatory-news/press-releases/rss.xml",
+     "entrees": 100,
+     "derniere": "2026-10-22",
+     "titre": "Arcep - Press releases",
+     "d_ou": "déclaré par la page"
+    },
+    {
+     "url": "https://en.arcep.fr/news/follow-regulatory-news/newswire/rss.xml",
+     "entrees": 100,
+     "derniere": "2026-10-22",
+     "titre": "Arcep - Newswire",
+     "d_ou": "déclaré par la page"
+    }
+   ],
+   "essais": 6,
+   "refus": [
+    "HTTP 404"
+   ]
+  },
+  {
+   "id": "has",
+   "nom": "Haute Autorité de santé",
+   "retenue": null,
+   "derniere": null,
+   "flux": [],
+   "essais": 12,
+   "refus": [
+    "injoignable (fetch failed : UNABLE_TO_VERIFY_LEAF_SIGNATURE) — l'hôte refuse le robot, ou le réseau d'ici le bloque"
+   ]
+  },
+  {
+   "id": "ansm",
+   "nom": "ANSM — sécurité du médicament",
+   "retenue": null,
+   "derniere": null,
+   "flux": [],
+   "essais": 34,
+   "refus": [
+    "HTTP 404"
+   ]
+  },
+  {
+   "id": "boamp",
+   "nom": "BOAMP — marchés publics",
+   "retenue": null,
+   "derniere": null,
+   "flux": [],
+   "essais": 9,
+   "refus": [
+    "HTTP 404"
+   ]
+  }
+ ]
+}

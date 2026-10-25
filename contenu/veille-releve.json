@@ -43,14 +43,14 @@
    "nom": "BOSS — Bulletin officiel de la Sécurité sociale",
    "entrees": 0,
    "retenus": 0,
-   "souci": "injoignable (fetch failed) — hôte probablement refusé par la politique réseau"
+   "souci": "injoignable (fetch failed : UND_ERR_CONNECT_TIMEOUT) — l'hôte refuse le robot, ou le réseau d'ici le bloque"
   },
   {
    "id": "urssaf",
    "nom": "URSSAF — actualités employeurs",
    "entrees": 0,
    "retenus": 0,
-   "souci": "injoignable (fetch failed) — hôte probablement refusé par la politique réseau"
+   "souci": "injoignable (fetch failed : ECONNRESET) — l'hôte refuse le robot, ou le réseau d'ici le bloque"
   },
   {
    "id": "bofip",
@@ -113,7 +113,7 @@
    "nom": "DGCCRF — actualités",
    "entrees": 0,
    "retenus": 0,
-   "souci": "injoignable (HTTP 403) — hôte probablement refusé par la politique réseau"
+   "souci": "injoignable (HTTP 403) — l'hôte refuse le robot, ou le réseau d'ici le bloque"
   },
   {
    "id": "anses",
@@ -134,7 +134,7 @@
    "nom": "ACPR — Banque de France",
    "entrees": 0,
    "retenus": 0,
-   "souci": "injoignable (HTTP 403) — hôte probablement refusé par la politique réseau"
+   "souci": "injoignable (HTTP 403) — l'hôte refuse le robot, ou le réseau d'ici le bloque"
   },
   {
    "id": "amf",
@@ -155,7 +155,7 @@
    "nom": "Haute Autorité de santé",
    "entrees": 0,
    "retenus": 0,
-   "souci": "injoignable (fetch failed) — hôte probablement refusé par la politique réseau"
+   "souci": "injoignable (fetch failed : UNABLE_TO_VERIFY_LEAF_SIGNATURE) — l'hôte refuse le robot, ou le réseau d'ici le bloque"
   },
   {
    "id": "ansm",
