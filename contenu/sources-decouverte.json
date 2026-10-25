@@ -1,30 +1,6 @@
 {
- "le": "2026-10-25T11:50:19.862Z",
+ "le": "2026-10-25T11:59:50.357Z",
  "bilan": [
-  {
-   "id": "eurlex-l",
-   "nom": "Journal officiel de l'Union européenne — série L",
-   "retenue": "https://eur-lex.europa.eu/FR/display-feed.rss?rssId=165",
-   "derniere": "2026-10-22",
-   "flux": [
-    {
-     "url": "https://eur-lex.europa.eu/FR/display-feed.rss?rssId=165",
-     "entrees": 100,
-     "derniere": "2026-10-22",
-     "titre": "7 - Actes du Journal officiel L",
-     "d_ou": "piste connue"
-    },
-    {
-     "url": "https://eur-lex.europa.eu/EN/display-feed.rss?rssId=165",
-     "entrees": 100,
-     "derniere": "2026-10-22",
-     "titre": "7 - Acts of the Official Journal L",
-     "d_ou": "piste connue"
-    }
-   ],
-   "essais": 4,
-   "refus": []
-  },
   {
    "id": "inrs",
    "nom": "INRS — actualités",
@@ -32,49 +8,6 @@
    "derniere": null,
    "flux": [],
    "essais": 11,
-   "refus": [
-    "HTTP 404"
-   ]
-  },
-  {
-   "id": "travail",
-   "nom": "Ministère du Travail — actualités",
-   "retenue": "https://travail-emploi.gouv.fr/rss.xml",
-   "derniere": "2026-10-23",
-   "flux": [
-    {
-     "url": "https://travail-emploi.gouv.fr/rss.xml",
-     "entrees": 50,
-     "derniere": "2026-10-23",
-     "titre": "Flux RSS personnalisés",
-     "d_ou": "piste connue"
-    }
-   ],
-   "essais": 3,
-   "refus": []
-  },
-  {
-   "id": "oppbtp",
-   "nom": "OPPBTP — prévention BTP",
-   "retenue": "https://www.oppbtp.com/feed/",
-   "derniere": "2026-10-08",
-   "flux": [
-    {
-     "url": "https://www.oppbtp.com/feed/",
-     "entrees": 10,
-     "derniere": "2026-10-08",
-     "titre": "OPPBTP – L'Organisme professionnel de prévention du bâtiment et des travaux publics",
-     "d_ou": "piste connue"
-    },
-    {
-     "url": "https://www.oppbtp.com/actualites/feed/",
-     "entrees": 10,
-     "derniere": "2026-10-08",
-     "titre": "Actualités – OPPBTP – L'Organisme professionnel de prévention du bâtiment et des travaux p",
-     "d_ou": "piste connue"
-    }
-   ],
-   "essais": 5,
    "refus": [
     "HTTP 404"
    ]
@@ -122,32 +55,6 @@
    ]
   },
   {
-   "id": "ecologie",
-   "nom": "Ministère de la Transition écologique",
-   "retenue": "https://ecologie.gouv.fr/rss-actualites.xml",
-   "derniere": "2026-10-23",
-   "flux": [
-    {
-     "url": "https://ecologie.gouv.fr/rss-actualites.xml",
-     "entrees": 10,
-     "derniere": "2026-10-23",
-     "titre": "Ministères Transition écologique, Aménagement du Territoire, Transports, Ville et Logement",
-     "d_ou": "déclaré par la page"
-    },
-    {
-     "url": "https://ecologie.gouv.fr/rss-presse.xml",
-     "entrees": 10,
-     "derniere": "2026-10-23",
-     "titre": "Ministères Transition écologique, Aménagement du Territoire, Transports, Ville et Logement",
-     "d_ou": "déclaré par la page"
-    }
-   ],
-   "essais": 4,
-   "refus": [
-    "HTTP 404"
-   ]
-  },
-  {
    "id": "ineris-aida",
    "nom": "AIDA — réglementation des installations classées",
    "retenue": "https://www.ineris.fr/fr/flux-rss",
@@ -161,7 +68,7 @@
      "d_ou": "déclaré par la page"
     }
    ],
-   "essais": 4,
+   "essais": 6,
    "refus": [
     "HTTP 404"
    ]
@@ -169,84 +76,112 @@
   {
    "id": "ademe",
    "nom": "ADEME — actualités",
-   "retenue": null,
-   "derniere": null,
-   "flux": [],
-   "essais": 21,
-   "refus": [
-    "HTTP 404",
-    "injoignable (HTTP 403) — l'hôte refuse le robot, ou le réseau d'ici le bloque"
-   ]
-  },
-  {
-   "id": "dgccrf",
-   "nom": "DGCCRF — actualités",
-   "retenue": "https://www.economie.gouv.fr/dgccrf/rss",
-   "derniere": "2026-10-23",
-   "flux": [
-    {
-     "url": "https://www.economie.gouv.fr/dgccrf/rss",
-     "entrees": 20,
-     "derniere": "2026-10-23",
-     "titre": "Flux RSS DGCCRF",
-     "d_ou": "piste connue"
-    },
-    {
-     "url": "https://www.economie.gouv.fr/rss/toutesactualites",
-     "entrees": 10,
-     "derniere": "2026-10-22",
-     "titre": "Flux RSS Toutes les actualités",
-     "d_ou": "piste connue"
-    }
-   ],
-   "essais": 4,
-   "refus": [
-    "injoignable (HTTP 403) — l'hôte refuse le robot, ou le réseau d'ici le bloque"
-   ]
-  },
-  {
-   "id": "anses",
-   "nom": "ANSES — avis et actualités",
-   "retenue": "https://www.anses.fr/rss.xml",
+   "retenue": "https://librairie.ademe.fr/rss/3426-thematique-economie-circulaire-et-dechets.xml",
    "derniere": "2026-10-22",
    "flux": [
     {
-     "url": "https://www.anses.fr/rss.xml",
-     "entrees": 10,
-     "derniere": "2026-10-22",
-     "titre": "Agence nationale de sécurité sanitaire de l’alimentation, de l’environnement et du travail",
-     "d_ou": "chemin courant"
+     "url": "https://librairie.ademe.fr/rss/actualites.xml",
+     "entrees": 12,
+     "derniere": "2026-03-31",
+     "titre": "Actualités - La Librairie",
+     "d_ou": "déclaré par la page"
     },
     {
-     "url": "https://www.anses.fr/fr/rss.xml",
-     "entrees": 10,
+     "url": "https://librairie.ademe.fr/rss/nouveautes.xml",
+     "entrees": 93,
      "derniere": "2026-10-22",
-     "titre": "Agence nationale de sécurité sanitaire de l’alimentation, de l’environnement et du travail",
-     "d_ou": "chemin courant"
-    }
-   ],
-   "essais": 20,
-   "refus": [
-    "HTTP 404"
-   ]
-  },
-  {
-   "id": "entreprendre",
-   "nom": "Entreprendre — service-public.fr",
-   "retenue": "https://www.service-public.gouv.fr/abonnements/rss/actu-actu-pro.rss",
-   "derniere": "2026-10-21",
-   "flux": [
+     "titre": "Nouveautés - La Librairie",
+     "d_ou": "déclaré par la page"
+    },
     {
-     "url": "https://www.service-public.gouv.fr/abonnements/rss/actu-actu-pro.rss",
-     "entrees": 235,
+     "url": "https://librairie.ademe.fr/rss/3516-thematique-agriculture-alimentation-foret-bioeconomie.xml",
+     "entrees": 82,
+     "derniere": "2026-10-15",
+     "titre": "Agriculture, alimentation, forêt, bioéconomie - La Librairie",
+     "d_ou": "déclaré par la page"
+    },
+    {
+     "url": "https://librairie.ademe.fr/rss/3145-thematique-air.xml",
+     "entrees": 31,
+     "derniere": "2026-10-14",
+     "titre": "Air - La Librairie",
+     "d_ou": "déclaré par la page"
+    },
+    {
+     "url": "https://librairie.ademe.fr/rss/3153-thematique-batiment.xml",
+     "entrees": 108,
+     "derniere": "2026-10-20",
+     "titre": "Bâtiment - La Librairie",
+     "d_ou": "déclaré par la page"
+    },
+    {
+     "url": "https://librairie.ademe.fr/rss/3147-thematique-changement-climatique.xml",
+     "entrees": 98,
+     "derniere": "2026-10-15",
+     "titre": "Changement climatique - La Librairie",
+     "d_ou": "déclaré par la page"
+    },
+    {
+     "url": "https://librairie.ademe.fr/rss/2906-thematique-consommer-autrement.xml",
+     "entrees": 4,
      "derniere": "2026-10-21",
-     "titre": "Les actualités de Service Public Entreprendre pour les professionnels et les entreprises",
-     "d_ou": "piste connue"
+     "titre": "Consommer autrement - La Librairie",
+     "d_ou": "déclaré par la page"
+    },
+    {
+     "url": "https://librairie.ademe.fr/rss/3426-thematique-economie-circulaire-et-dechets.xml",
+     "entrees": 274,
+     "derniere": "2026-10-22",
+     "titre": "Economie circulaire et Déchets - La Librairie",
+     "d_ou": "déclaré par la page"
+    },
+    {
+     "url": "https://librairie.ademe.fr/rss/3149-thematique-energies.xml",
+     "entrees": 147,
+     "derniere": "2026-10-20",
+     "titre": "Energies - La Librairie",
+     "d_ou": "déclaré par la page"
+    },
+    {
+     "url": "https://librairie.ademe.fr/rss/3503-thematique-industrie-et-production-durable.xml",
+     "entrees": 163,
+     "derniere": "2026-10-14",
+     "titre": "Industrie et production durable - La Librairie",
+     "d_ou": "déclaré par la page"
+    },
+    {
+     "url": "https://librairie.ademe.fr/rss/2901-thematique-mobilite-et-transports.xml",
+     "entrees": 120,
+     "derniere": "2026-10-21",
+     "titre": "Mobilité et transports - La Librairie",
+     "d_ou": "déclaré par la page"
+    },
+    {
+     "url": "https://librairie.ademe.fr/rss/2930-thematique-recherche-et-innovation.xml",
+     "entrees": 22,
+     "derniere": "2026-10-21",
+     "titre": "Recherche et Innovation - La Librairie",
+     "d_ou": "déclaré par la page"
+    },
+    {
+     "url": "https://librairie.ademe.fr/rss/3544-thematique-societe-et-politiques-publiques.xml",
+     "entrees": 214,
+     "derniere": "2026-10-21",
+     "titre": "Société et politiques publiques - La Librairie",
+     "d_ou": "déclaré par la page"
+    },
+    {
+     "url": "https://librairie.ademe.fr/rss/3509-thematique-urbanisme-territoires-et-sols.xml",
+     "entrees": 78,
+     "derniere": "2026-10-21",
+     "titre": "Urbanisme, territoires et sols - La Librairie",
+     "d_ou": "déclaré par la page"
     }
    ],
-   "essais": 4,
+   "essais": 24,
    "refus": [
-    "HTTP 404"
+    "HTTP 404",
+    "injoignable (HTTP 403) — l'hôte refuse le robot, ou le réseau d'ici le bloque"
    ]
   },
   {
@@ -264,50 +199,151 @@
   {
    "id": "amf",
    "nom": "AMF — Autorité des marchés financiers",
-   "retenue": null,
-   "derniere": null,
-   "flux": [],
-   "essais": 11,
-   "refus": [
-    "HTTP 404"
-   ]
-  },
-  {
-   "id": "arcep",
-   "nom": "ARCEP",
-   "retenue": "https://en.arcep.fr/news/follow-regulatory-news/press-releases/rss.xml",
+   "retenue": "https://www.amf-france.org/en/flux-rss/display/21",
    "derniere": "2026-10-22",
    "flux": [
     {
-     "url": "https://www.arcep.fr/actualites/suivre-actualite-regulation-arcep/fil-dinfos/rss.xml",
-     "entrees": 10,
-     "derniere": "2026-10-22",
-     "titre": "Arcep - Fil d'infos",
+     "url": "https://www.amf-france.org/fr/flux-rss/display/30",
+     "entrees": 200,
+     "derniere": "2026-10-14",
+     "titre": "Actualités",
      "d_ou": "piste connue"
     },
     {
-     "url": "https://en.arcep.fr/news/follow-regulatory-news/arcep-speaks/rss.xml",
-     "entrees": 51,
-     "derniere": "2026-06-23",
-     "titre": "Arcep - Speaks",
+     "url": "https://www.amf-france.org/en/flux-rss/display/21",
+     "entrees": 200,
+     "derniere": "2026-10-22",
+     "titre": "Toutes les actualités et publications",
      "d_ou": "déclaré par la page"
     },
     {
-     "url": "https://en.arcep.fr/news/follow-regulatory-news/press-releases/rss.xml",
-     "entrees": 100,
-     "derniere": "2026-10-22",
-     "titre": "Arcep - Press releases",
+     "url": "https://www.amf-france.org/en/flux-rss/display/30",
+     "entrees": 200,
+     "derniere": "2026-10-14",
+     "titre": "Actualités",
      "d_ou": "déclaré par la page"
     },
     {
-     "url": "https://en.arcep.fr/news/follow-regulatory-news/newswire/rss.xml",
-     "entrees": 100,
+     "url": "https://www.amf-france.org/en/flux-rss/display/23",
+     "entrees": 200,
+     "derniere": "2026-10-21",
+     "titre": "Communiqués de presse (AMF, sanctions)",
+     "d_ou": "déclaré par la page"
+    },
+    {
+     "url": "https://www.amf-france.org/en/flux-rss/display/31",
+     "entrees": 107,
+     "derniere": "2026-05-20",
+     "titre": "Réglementation de l'AMF (RG, doctrine, etc.)",
+     "d_ou": "déclaré par la page"
+    },
+    {
+     "url": "https://www.amf-france.org/en/flux-rss/display/25",
+     "entrees": 200,
      "derniere": "2026-10-22",
-     "titre": "Arcep - Newswire",
+     "titre": "Publications de l'AMF (rapports, lettres, etc.)",
+     "d_ou": "déclaré par la page"
+    },
+    {
+     "url": "https://www.amf-france.org/en/flux-rss/display/28",
+     "entrees": 200,
+     "derniere": "2026-10-22",
+     "titre": "Alertes et mises en garde",
+     "d_ou": "déclaré par la page"
+    },
+    {
+     "url": "https://www.amf-france.org/en/flux-rss/display/27",
+     "entrees": 117,
+     "derniere": "2026-10-22",
+     "titre": "Dossiers du médiateur",
+     "d_ou": "déclaré par la page"
+    },
+    {
+     "url": "https://www.amf-france.org/en/flux-rss/display/26",
+     "entrees": 17,
+     "derniere": "2025-09-08",
+     "titre": "Agenda de l'AMF (colloques, etc.)",
+     "d_ou": "déclaré par la page"
+    },
+    {
+     "url": "https://www.amf-france.org/en/flux-rss/display/29",
+     "entrees": 1,
+     "derniere": "2026-10-16",
+     "titre": "Liste des sociétés concernées par une offre",
+     "d_ou": "déclaré par la page"
+    },
+    {
+     "url": "https://www.amf-france.org/fr/flux-rss/display/21",
+     "entrees": 200,
+     "derniere": "2026-10-22",
+     "titre": "Toutes les actualités et publications",
+     "d_ou": "déclaré par la page"
+    },
+    {
+     "url": "https://www.amf-france.org/fr/flux-rss/display/23",
+     "entrees": 200,
+     "derniere": "2026-10-21",
+     "titre": "Communiqués de presse (AMF, sanctions)",
+     "d_ou": "déclaré par la page"
+    },
+    {
+     "url": "https://www.amf-france.org/fr/flux-rss/display/31",
+     "entrees": 200,
+     "derniere": "2026-10-12",
+     "titre": "Réglementation de l'AMF (RG, doctrine, etc.)",
+     "d_ou": "déclaré par la page"
+    },
+    {
+     "url": "https://www.amf-france.org/fr/flux-rss/display/25",
+     "entrees": 200,
+     "derniere": "2026-10-22",
+     "titre": "Publications de l'AMF (rapports, lettres, etc.)",
+     "d_ou": "déclaré par la page"
+    },
+    {
+     "url": "https://www.amf-france.org/fr/flux-rss/display/22",
+     "entrees": 200,
+     "derniere": "2026-10-22",
+     "titre": "Epargnants (actualités, newsletter...)",
+     "d_ou": "déclaré par la page"
+    },
+    {
+     "url": "https://www.amf-france.org/fr/flux-rss/display/28",
+     "entrees": 200,
+     "derniere": "2026-10-22",
+     "titre": "Alertes et mises en garde",
+     "d_ou": "déclaré par la page"
+    },
+    {
+     "url": "https://www.amf-france.org/fr/flux-rss/display/27",
+     "entrees": 137,
+     "derniere": "2026-10-09",
+     "titre": "Dossiers du médiateur",
+     "d_ou": "déclaré par la page"
+    },
+    {
+     "url": "https://www.amf-france.org/fr/flux-rss/display/24",
+     "entrees": 200,
+     "derniere": "2026-07-23",
+     "titre": "Décisions de sanctions et transactions homologuées",
+     "d_ou": "déclaré par la page"
+    },
+    {
+     "url": "https://www.amf-france.org/fr/flux-rss/display/26",
+     "entrees": 200,
+     "derniere": "2026-10-07",
+     "titre": "Agenda de l'AMF (colloques, etc.)",
+     "d_ou": "déclaré par la page"
+    },
+    {
+     "url": "https://www.amf-france.org/fr/flux-rss/display/29",
+     "entrees": 1,
+     "derniere": "2026-10-16",
+     "titre": "Liste des sociétés concernées par une offre",
      "d_ou": "déclaré par la page"
     }
    ],
-   "essais": 6,
+   "essais": 23,
    "refus": [
     "HTTP 404"
    ]
@@ -315,13 +351,26 @@
   {
    "id": "has",
    "nom": "Haute Autorité de santé",
-   "retenue": null,
-   "derniere": null,
-   "flux": [],
-   "essais": 12,
-   "refus": [
-    "injoignable (fetch failed : UNABLE_TO_VERIFY_LEAF_SIGNATURE) — l'hôte refuse le robot, ou le réseau d'ici le bloque"
-   ]
+   "retenue": "https://www.has-sante.fr/feed/Rss2.jsp?id=p_3081656",
+   "derniere": "2026-10-21",
+   "flux": [
+    {
+     "url": "https://www.has-sante.fr/feed/Rss2.jsp?id=p_3081656",
+     "entrees": 50,
+     "derniere": "2026-10-21",
+     "titre": "HAS - Actualité",
+     "d_ou": "piste connue"
+    },
+    {
+     "url": "https://www.has-sante.fr/feed/Rss2.jsp?id=p_3081452",
+     "entrees": 50,
+     "derniere": "2026-10-12",
+     "titre": "HAS - Recommandations et guides",
+     "d_ou": "piste connue"
+    }
+   ],
+   "essais": 28,
+   "refus": []
   },
   {
    "id": "ansm",

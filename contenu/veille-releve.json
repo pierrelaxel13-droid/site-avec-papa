@@ -13,9 +13,9 @@
   {
    "id": "eurlex-l",
    "nom": "Journal officiel de l'Union européenne — série L",
-   "entrees": 0,
-   "retenus": 0,
-   "souci": "format inattendu — aucune entrée lue"
+   "entrees": 100,
+   "retenus": 15,
+   "souci": null
   },
   {
    "id": "inrs",
@@ -27,16 +27,16 @@
   {
    "id": "travail",
    "nom": "Ministère du Travail — actualités",
-   "entrees": 0,
-   "retenus": 0,
-   "souci": "format inattendu — aucune entrée lue"
+   "entrees": 50,
+   "retenus": 1,
+   "souci": null
   },
   {
    "id": "oppbtp",
    "nom": "OPPBTP — prévention BTP",
-   "entrees": 0,
+   "entrees": 10,
    "retenus": 0,
-   "souci": "HTTP 404"
+   "souci": null
   },
   {
    "id": "boss",
@@ -83,9 +83,9 @@
   {
    "id": "ecologie",
    "nom": "Ministère de la Transition écologique",
-   "entrees": 0,
+   "entrees": 10,
    "retenus": 0,
-   "souci": "HTTP 404"
+   "souci": null
   },
   {
    "id": "ineris-aida",
@@ -111,23 +111,23 @@
   {
    "id": "dgccrf",
    "nom": "DGCCRF — actualités",
-   "entrees": 0,
-   "retenus": 0,
-   "souci": "injoignable (HTTP 403) — l'hôte refuse le robot, ou le réseau d'ici le bloque"
+   "entrees": 20,
+   "retenus": 2,
+   "souci": null
   },
   {
    "id": "anses",
    "nom": "ANSES — avis et actualités",
-   "entrees": 0,
-   "retenus": 0,
-   "souci": "HTTP 404"
+   "entrees": 10,
+   "retenus": 3,
+   "souci": null
   },
   {
    "id": "entreprendre",
    "nom": "Entreprendre — service-public.fr",
-   "entrees": 0,
-   "retenus": 0,
-   "souci": "HTTP 404"
+   "entrees": 235,
+   "retenus": 1,
+   "souci": null
   },
   {
    "id": "acpr",
@@ -146,16 +146,16 @@
   {
    "id": "arcep",
    "nom": "ARCEP",
-   "entrees": 0,
+   "entrees": 10,
    "retenus": 0,
-   "souci": "HTTP 404"
+   "souci": null
   },
   {
    "id": "has",
    "nom": "Haute Autorité de santé",
    "entrees": 0,
    "retenus": 0,
-   "souci": "injoignable (fetch failed : UNABLE_TO_VERIFY_LEAF_SIGNATURE) — l'hôte refuse le robot, ou le réseau d'ici le bloque"
+   "souci": "format inattendu — aucune entrée lue"
   },
   {
    "id": "ansm",
@@ -949,6 +949,29 @@
    "vuLe": "2026-10-23"
   },
   {
+   "source": "dgccrf",
+   "sourceNom": "DGCCRF — actualités",
+   "genre": "actualite",
+   "id": "https://www.economie.gouv.fr/dgccrf/laction-de-la-dgccrf/injonctions-et-sanctions/influenceurs-injonction-de-cesser-des-pratiques-commerciales-trompeuses-et-dutiliser-des",
+   "titre": "Influenceurs : injonction de cesser des pratiques commerciales trompeuses et d’utiliser des allégations de santé interdites sur le compte Instagram de DIVA REBECCA « @divarebeccaofficiel »",
+   "nature": "Publication officielle",
+   "date": "2026-10-23",
+   "corps": "",
+   "lien": "https://www.economie.gouv.fr/dgccrf/laction-de-la-dgccrf/injonctions-et-sanctions/influenceurs-injonction-de-cesser-des-pratiques-commerciales-trompeuses-et-dutiliser-des",
+   "domaines": [
+    {
+     "id": "consommation",
+     "nom": "Droit de la consommation et pratiques commerciales",
+     "mots": [
+      "pratiques commerciales"
+     ]
+    }
+   ],
+   "morceaux": 0,
+   "dateTexte": "",
+   "vuLe": "2026-10-23"
+  },
+  {
    "source": "jorf",
    "sourceNom": "Journal officiel de la République française",
    "genre": "texte",
@@ -1019,6 +1042,142 @@
    ],
    "morceaux": 16,
    "dateTexte": "2012-08-14",
+   "vuLe": "2026-10-22"
+  },
+  {
+   "source": "anses",
+   "sourceNom": "ANSES — avis et actualités",
+   "genre": "actualite",
+   "id": "https://www.anses.fr/fr/document/mesures-de-luttes-pour-assainissement-foyers-brucellose-autres-que-abattage-total-troupeau",
+   "titre": "Avis et rapport relatifs à « la mise en œuvre de mesures de lutte pour l’assainissement de foyer de brucellose autres que l’abattage total du troupeau »",
+   "nature": "Publication officielle",
+   "date": "2026-10-22",
+   "corps": "<span>Avis et rapport relatifs à « la mise en œuvre de mesures de lutte pour l’assainissement de foyer de brucellose autres que l’abattage total du troupeau »</span>\n\n \n <div class=\"document__file-wrap\">\n <p class=\"field-label\">Fichier</p>\n <div class=\"document__file field--file\"><a href=\"https://www.anses.fr/system/files/SABA-2024-SA-0132-RA.pdf\" target=\"_blank\" rel=\"noreferrer noopener\" title=\"SABA-2024-SA-0132-RA.pdf PDF 4.71 Mo (nouvelle fenêtre)\">\n <span>SABA-2024-SA-0132-RA.pdf <span class=\"file-info\">(4.71 Mo PDF)</span></span>\n</a>\n</div> </div>\n\n \n\n<span><span>jeremy.bodon@a…</span></span>\n\n<span><time datetime=\"2026-10-22T09:37:29+02:00\" title=\"Jeudi, 22 octobre, 2026 - 09:37\">jeu, 22/10/2026 - 09:37</time>\n</span>\n\n \n <div class=\"document__document_subtitle-wrap\">\n <p class=\"field-label\">Sous-titre</p>\n <div class=\"document__document_subtitle field--string-long\">Avis et rapport du 18 septembre 2026</div> </div>\n\n \n\n \n <div class=\"document__type_document-wrap\">\n <p class=\"field-label\">Type</p>\n <div class=\"document__type_document field--entity-reference\">Rapport</div> </div>\n\n \n\n \n <div class=\"document__referral-wrap\">\n <p class=\"field-label\">Numéro de saisine</p>\n <div class=\"document__referral field--string\">2024-SA-0132</div> </div>\n\n \n\n \n <div class=\"document__document_keywords-wrap\">\n <p class=\"field-label\">Mots clés document</p>\n <div class=\"document__document_keywords field--string-long\">Brucellose bovine, brucellose ovine et caprine, assainissement d’un foyer de brucellose,<br>\nmesures de lutte, abattage total, abattage partiel</div> </div>\n\n \n\n \n <div class=\"document__key_belong-wrap\">\n <p class=\"field-label\">Clé(s) d'appartenance</p>\n <div>\n <div class=\"document__key_belong-item\">BRU</div> </div>\n </div>\n\n \n\n \n <div class=\"document__expert_committee-wrap\">\n <p class=\"field-label\">Comité d'experts</p>\n <div class=\"document__expert_committee field--entity-reference\">Santé et bien-être des animaux</div> </div>\n\n \n\n \n <div class=\"document__signature_date-wrap\">\n <p class=\"field-label\">Date signature</p>\n <div class=\"document__signature_date field--datetime\"><time datetime=\"2026-09-18T12:00:00Z\">Vendredi, 18 septembre, 2026</time>\n</div> </div>\n\n \n\n \n <div class=\"document__ceo_stamp_date-wrap\">\n <p class=\"field-label\">Date visa DG</p>\n <div class=\"document__ceo_stamp_date field--datetime\"><time datetime=\"2026-10-05T12:00:00Z\">Lundi, 5 octobre, 2026</time>\n</div> </div>\n\n \n\n \n <div class=\"document__online_date-wrap\">\n <p class=\"field-label\">Date de mise en ligne</p>\n <div class=\"document__online_date field--datetime\"><time datetime=\"2026-10-22T12:00:00Z\">Jeudi, 22 octobre, 2026</time>\n</div> </div>\n\n \n\n <div class=\"document__thematique field--entity-reference infobar__item infobar__item--thematique\">\n <div class=\"document__thematique-item\"><a href=\"https://www.anses.fr/fr/thematique/sante-et-bien-etre-des-animaux\" hreflang=\"fr\">Santé et bien-être des animaux</a></div></div>",
+   "lien": "https://www.anses.fr/fr/document/mesures-de-luttes-pour-assainissement-foyers-brucellose-autres-que-abattage-total-troupeau",
+   "domaines": [
+    {
+     "id": "eau",
+     "nom": "Eau, rejets et milieux aquatiques",
+     "mots": [
+      "assainissement"
+     ]
+    }
+   ],
+   "morceaux": 1,
+   "dateTexte": "",
+   "vuLe": "2026-10-22"
+  },
+  {
+   "source": "eurlex-l",
+   "sourceNom": "Journal officiel de l'Union européenne — série L",
+   "genre": "texte",
+   "id": "https://eur-lex.europa.eu/./legal-content/AUTO/?uri=CELEX:32026H2329",
+   "titre": "CELEX:32026H2329: Recommandation (UE) 2026/2329 de la Commission du 21 octobre 2026 sur le contrôle de la présence de N-nitrosamines dans les denrées alimentaires",
+   "nature": "Texte officiel",
+   "date": "2026-10-22",
+   "corps": "",
+   "lien": "https://eur-lex.europa.eu/./legal-content/AUTO/?uri=CELEX:32026H2329",
+   "domaines": [
+    {
+     "id": "alimentaire",
+     "nom": "Hygiène et sécurité des aliments",
+     "mots": [
+      "denrees alimentaires"
+     ]
+    }
+   ],
+   "morceaux": 0,
+   "dateTexte": "2026-10-21",
+   "vuLe": "2026-10-22"
+  },
+  {
+   "source": "eurlex-l",
+   "sourceNom": "Journal officiel de l'Union européenne — série L",
+   "genre": "texte",
+   "id": "https://eur-lex.europa.eu/./legal-content/AUTO/?uri=CELEX:32026R2340",
+   "titre": "CELEX:32026R2340: Règlement d’exécution (UE) 2026/2340 de la Commission du 22 octobre 2026 relative à la non-approbation de l’extension de l’utilisation de la substance de base Urtica spp. conformément au règlement (CE) no 1107/2009 du Parlement européen et du Conseil concernant la mise sur le marché des produits phytopharmaceutiques",
+   "nature": "Texte officiel",
+   "date": "2026-10-22",
+   "corps": "",
+   "lien": "https://eur-lex.europa.eu/./legal-content/AUTO/?uri=CELEX:32026R2340",
+   "domaines": [
+    {
+     "id": "produits_ce",
+     "nom": "Conformité des produits et marquage CE",
+     "mots": [
+      "mise sur le marche"
+     ]
+    },
+    {
+     "id": "agri",
+     "nom": "Agriculture, pêche et santé des végétaux et animaux",
+     "mots": [
+      "produits phytopharmaceutiques"
+     ]
+    }
+   ],
+   "morceaux": 0,
+   "dateTexte": "2026-10-22",
+   "vuLe": "2026-10-22"
+  },
+  {
+   "source": "anses",
+   "sourceNom": "ANSES — avis et actualités",
+   "genre": "actualite",
+   "id": "https://www.anses.fr/fr/evaluations/phytosanitaire/conclusions-devaluation-autorisation-mise-marche-reconnaissance-76",
+   "titre": "Conclusions d'évaluation: Autorisation de mise sur le marché par reconnaissance mutuelle d'un produit phytopharmaceutique - AMMARI",
+   "nature": "Publication officielle",
+   "date": "2026-10-22",
+   "corps": "<span>Conclusions d'évaluation: Autorisation de mise sur le marché par reconnaissance mutuelle d'un produit phytopharmaceutique - AMMARI</span>\n\n<span><span>Anonyme (non vérifié)</span></span>\n\n<span><time datetime=\"2026-10-22T06:05:37+02:00\" title=\"Jeudi, 22 octobre, 2026 - 06:05\">jeu, 22/10/2026 - 06:05</time>\n</span>\n\n \n <div class=\"evaluation__product_type-wrap\">\n <p class=\"field-label\">Type de produit</p>\n <div class=\"evaluation__product_type field--entity-reference\"><a href=\"https://www.anses.fr/fr/type-de-produit/ppp\" hreflang=\"fr\">PPP</a></div> </div>\n\n \n\n \n <div class=\"evaluation__product_name-wrap\">\n <p class=\"field-label\">Nom du produit</p>\n <div class=\"evaluation__product_name field--string\">AMMARI</div> </div>\n\n \n\n \n <div class=\"evaluation__type_of_request-wrap\">\n <p class=\"field-label\">Type de la demande</p>\n <div class=\"evaluation__type_of_request field--string\">Autorisation de mise sur le marché par reconnaissance mutuelle d'un produit phytopharmaceutique</div> </div>\n\n \n\n \n <div class=\"evaluation__file_number-wrap\">\n <p class=\"field-label\">Numéro de dossier</p>\n <div class=\"evaluation__file_number field--string\">2026-1219</div> </div>\n\n \n\n \n <div class=\"evaluation__signature_date-wrap\">\n <p class=\"field-label\">Date signature</p>\n <div class=\"evaluation__signature_date field--datetime\"><time datetime=\"2026-09-25T12:00:00Z\">ven, 25/09/2026 - 12:00</time>\n</div> </div>\n\n \n\n \n <div class=\"evaluation__publication_date-wrap\">\n <p class=\"field-label\">Date de publication</p>\n <div class=\"evaluation__publication_date field--datetime\"><time datetime=\"2026-10-21T12:00:00Z\">mer, 21/10/2026 - 12:00</time>\n</div> </div>\n\n \n\n \n <div class=\"evaluation__document_list-wrap\">\n <p class=\"field-label\">Document(s)</p>\n <div>\n <div class=\"evaluation__document_list-item\"> <div class=\"paragraph paragraph--type--document-list paragraph--view-mode--default\">\n \n\n \n <div class=\"document-list__file field--file\"><span class=\"file file--mime-application-pdf file--application-pdf\"><a href=\"https://www.anses.fr/sites/default/files/phyto/evaluations/AMMARI_PMUT_2026-1219_Ans.pdf\" type=\"application/pdf\">AMMARI_PMUT_2026-1219_Ans.pdf</a></span>\n <span>(306.08 Ko)</span>\n</div>\n \n \n\n \n <div class=\"document-list__document_type_ad field--list-string\">Conclusions d'évaluation</div>\n \n \n\n </div>\n</div> </div>\n </div>\n\n \n\n \n <div class=\"evaluation__display_in_register-wrap\">\n <p class=\"field-label\">Apparait dans le registre</p>\n <div class=\"evaluation__display_in_register field--boolean\">Non</div> </div>",
+   "lien": "https://www.anses.fr/fr/evaluations/phytosanitaire/conclusions-devaluation-autorisation-mise-marche-reconnaissance-76",
+   "domaines": [
+    {
+     "id": "produits_ce",
+     "nom": "Conformité des produits et marquage CE",
+     "mots": [
+      "mise sur le marche"
+     ]
+    },
+    {
+     "id": "pharma",
+     "nom": "Produits de santé et dispositifs médicaux",
+     "mots": [
+      "autorisation de mise sur le marche"
+     ]
+    }
+   ],
+   "morceaux": 1,
+   "dateTexte": "",
+   "vuLe": "2026-10-22"
+  },
+  {
+   "source": "anses",
+   "sourceNom": "ANSES — avis et actualités",
+   "genre": "actualite",
+   "id": "https://www.anses.fr/fr/evaluations/phytosanitaire/conclusions-devaluation-autorisation-mise-marche-reconnaissance-75",
+   "titre": "Conclusions d'évaluation: Autorisation de mise sur le marché par reconnaissance mutuelle d'un produit phytopharmaceutique - TOTSEC",
+   "nature": "Publication officielle",
+   "date": "2026-10-22",
+   "corps": "<span>Conclusions d'évaluation: Autorisation de mise sur le marché par reconnaissance mutuelle d'un produit phytopharmaceutique - TOTSEC</span>\n\n<span><span>Anonyme (non vérifié)</span></span>\n\n<span><time datetime=\"2026-10-22T06:05:37+02:00\" title=\"Jeudi, 22 octobre, 2026 - 06:05\">jeu, 22/10/2026 - 06:05</time>\n</span>\n\n \n <div class=\"evaluation__product_type-wrap\">\n <p class=\"field-label\">Type de produit</p>\n <div class=\"evaluation__product_type field--entity-reference\"><a href=\"https://www.anses.fr/fr/type-de-produit/ppp\" hreflang=\"fr\">PPP</a></div> </div>\n\n \n\n \n <div class=\"evaluation__product_name-wrap\">\n <p class=\"field-label\">Nom du produit</p>\n <div class=\"evaluation__product_name field--string\">TOTSEC</div> </div>\n\n \n\n \n <div class=\"evaluation__type_of_request-wrap\">\n <p class=\"field-label\">Type de la demande</p>\n <div class=\"evaluation__type_of_request field--string\">Autorisation de mise sur le marché par reconnaissance mutuelle d'un produit phytopharmaceutique</div> </div>\n\n \n\n \n <div class=\"evaluation__file_number-wrap\">\n <p class=\"field-label\">Numéro de dossier</p>\n <div class=\"evaluation__file_number field--string\">2025-3008</div> </div>\n\n \n\n \n <div class=\"evaluation__signature_date-wrap\">\n <p class=\"field-label\">Date signature</p>\n <div class=\"evaluation__signature_date field--datetime\"><time datetime=\"2026-08-19T12:00:00Z\">mer, 19/08/2026 - 12:00</time>\n</div> </div>\n\n \n\n \n <div class=\"evaluation__publication_date-wrap\">\n <p class=\"field-label\">Date de publication</p>\n <div class=\"evaluation__publication_date field--datetime\"><time datetime=\"2026-10-21T12:00:00Z\">mer, 21/10/2026 - 12:00</time>\n</div> </div>\n\n \n\n \n <div class=\"evaluation__document_list-wrap\">\n <p class=\"field-label\">Document(s)</p>\n <div>\n <div class=\"evaluation__document_list-item\"> <div class=\"paragraph paragraph--type--document-list paragraph--view-mode--default\">\n \n\n \n <div class=\"document-list__file field--file\"><span class=\"file file--mime-application-pdf file--application-pdf\"><a href=\"https://www.anses.fr/sites/default/files/phyto/evaluations/TOTSEC_PMUT_2025-3008_Ans.pdf\" type=\"application/pdf\">TOTSEC_PMUT_2025-3008_Ans.pdf</a></span>\n <span>(384.08 Ko)</span>\n</div>\n \n \n\n \n <div class=\"document-list__document_type_ad field--list-string\">Conclusions d'évaluation</div>\n \n \n\n </div>\n</div> </div>\n </div>\n\n \n\n \n <div class=\"evaluation__display_in_register-wrap\">\n <p class=\"field-label\">Apparait dans le registre</p>\n <div class=\"evaluation__display_in_register field--boolean\">Non</div> </div>",
+   "lien": "https://www.anses.fr/fr/evaluations/phytosanitaire/conclusions-devaluation-autorisation-mise-marche-reconnaissance-75",
+   "domaines": [
+    {
+     "id": "produits_ce",
+     "nom": "Conformité des produits et marquage CE",
+     "mots": [
+      "mise sur le marche"
+     ]
+    },
+    {
+     "id": "pharma",
+     "nom": "Produits de santé et dispositifs médicaux",
+     "mots": [
+      "autorisation de mise sur le marche"
+     ]
+    }
+   ],
+   "morceaux": 1,
+   "dateTexte": "",
    "vuLe": "2026-10-22"
   },
   {
@@ -1211,6 +1370,98 @@
    ],
    "morceaux": 14,
    "dateTexte": "2017-07-06",
+   "vuLe": "2026-10-21"
+  },
+  {
+   "source": "eurlex-l",
+   "sourceNom": "Journal officiel de l'Union européenne — série L",
+   "genre": "texte",
+   "id": "https://eur-lex.europa.eu/./legal-content/AUTO/?uri=CELEX:32021R2117R(12)",
+   "titre": "CELEX:32021R2117R(12): Rectificatif au règlement (UE) 2021/2117 du Parlement européen et du Conseil du 2 décembre 2021 modifiant les règlements (UE) n° 1308/2013 portant organisation commune des marchés dans le secteur des produits agricoles, (UE) n° 1151/2012 relatif aux systèmes de qualité applicables aux produits agricoles et aux denrées alimentaires, (UE) n° 251/2014 concernant la définition, la description, la présentation, l’étiquetage et la protection des indications géographiques des produits vinicoles aromatisés et (UE) n° 228/2013 portant mesures spécifiques dans le domaine de l’agriculture en faveur des régions ultrapériphériques de l’Union (JO L 435 du 6.12.2021)",
+   "nature": "Texte officiel",
+   "date": "2026-10-21",
+   "corps": "",
+   "lien": "https://eur-lex.europa.eu/./legal-content/AUTO/?uri=CELEX:32021R2117R(12)",
+   "domaines": [
+    {
+     "id": "alimentaire",
+     "nom": "Hygiène et sécurité des aliments",
+     "mots": [
+      "denrees alimentaires"
+     ]
+    }
+   ],
+   "morceaux": 0,
+   "dateTexte": "2021-12-02",
+   "vuLe": "2026-10-21"
+  },
+  {
+   "source": "eurlex-l",
+   "sourceNom": "Journal officiel de l'Union européenne — série L",
+   "genre": "texte",
+   "id": "https://eur-lex.europa.eu/./legal-content/AUTO/?uri=CELEX:32026H2335",
+   "titre": "CELEX:32026H2335: Recommandation (UE) 2026/2335 de la Commission du 21 octobre 2026 sur le contrôle de la présence de paraffines chlorées dans les denrées alimentaires",
+   "nature": "Texte officiel",
+   "date": "2026-10-21",
+   "corps": "",
+   "lien": "https://eur-lex.europa.eu/./legal-content/AUTO/?uri=CELEX:32026H2335",
+   "domaines": [
+    {
+     "id": "alimentaire",
+     "nom": "Hygiène et sécurité des aliments",
+     "mots": [
+      "denrees alimentaires"
+     ]
+    }
+   ],
+   "morceaux": 0,
+   "dateTexte": "2026-10-21",
+   "vuLe": "2026-10-21"
+  },
+  {
+   "source": "eurlex-l",
+   "sourceNom": "Journal officiel de l'Union européenne — série L",
+   "genre": "texte",
+   "id": "https://eur-lex.europa.eu/./legal-content/AUTO/?uri=CELEX:32026R2327",
+   "titre": "CELEX:32026R2327: Règlement d’exécution (UE) 2026/2327 de la Commission du 21 octobre 2026 instituant un droit antidumping définitif sur les importations de certains agrumes préparés ou conservés (mandarines, etc.) originaires de la République populaire de Chine à la suite d’un réexamen au titre de l’expiration des mesures mené conformément à l’article 11, paragraphe 2, du règlement (UE) 2016/1036 du Parlement européen et du Conseil",
+   "nature": "Texte officiel",
+   "date": "2026-10-21",
+   "corps": "",
+   "lien": "https://eur-lex.europa.eu/./legal-content/AUTO/?uri=CELEX:32026R2327",
+   "domaines": [
+    {
+     "id": "douane",
+     "nom": "Douane et échanges internationaux",
+     "mots": [
+      "importation"
+     ]
+    }
+   ],
+   "morceaux": 0,
+   "dateTexte": "2026-10-21",
+   "vuLe": "2026-10-21"
+  },
+  {
+   "source": "eurlex-l",
+   "sourceNom": "Journal officiel de l'Union européenne — série L",
+   "genre": "texte",
+   "id": "https://eur-lex.europa.eu/./legal-content/AUTO/?uri=CELEX:32026R2384",
+   "titre": "CELEX:32026R2384: Règlement d’exécution (UE) 2026/2384 de la Commission du 21 octobre 2026 modifiant pour la 363e fois le règlement (CE) no 881/2002 du Conseil instituant certaines mesures restrictives spécifiques à l’encontre de certaines personnes et entités liées aux organisations EIIL (Daech) et Al-Qaida",
+   "nature": "Texte officiel",
+   "date": "2026-10-21",
+   "corps": "",
+   "lien": "https://eur-lex.europa.eu/./legal-content/AUTO/?uri=CELEX:32026R2384",
+   "domaines": [
+    {
+     "id": "douane",
+     "nom": "Douane et échanges internationaux",
+     "mots": [
+      "mesures restrictives"
+     ]
+    }
+   ],
+   "morceaux": 0,
+   "dateTexte": "2026-10-21",
    "vuLe": "2026-10-21"
   },
   {
@@ -1516,6 +1767,99 @@
    "vuLe": "2026-10-20"
   },
   {
+   "source": "eurlex-l",
+   "sourceNom": "Journal officiel de l'Union européenne — série L",
+   "genre": "texte",
+   "id": "https://eur-lex.europa.eu/./legal-content/AUTO/?uri=CELEX:32026D2355",
+   "titre": "CELEX:32026D2355: Décision (UE) 2026/2355 du Conseil du 13 octobre 2026 relative à la signature du protocole additionnel à la convention du Conseil de l’Europe relative au blanchiment, au dépistage, à la saisie et à la confiscation des produits du crime et au financement du terrorisme, en ce qui concerne la coopération judiciaire en matière pénale et la coopération policière",
+   "nature": "Texte officiel",
+   "date": "2026-10-20",
+   "corps": "",
+   "lien": "https://eur-lex.europa.eu/./legal-content/AUTO/?uri=CELEX:32026D2355",
+   "domaines": [
+    {
+     "id": "finance",
+     "nom": "Services financiers, assurance et LCB-FT",
+     "mots": [
+      "financement du terrorisme"
+     ]
+    }
+   ],
+   "morceaux": 0,
+   "dateTexte": "2026-10-13",
+   "vuLe": "2026-10-20"
+  },
+  {
+   "source": "eurlex-l",
+   "sourceNom": "Journal officiel de l'Union européenne — série L",
+   "genre": "texte",
+   "id": "https://eur-lex.europa.eu/./legal-content/AUTO/?uri=CELEX:32026D2356",
+   "titre": "CELEX:32026D2356: Décision (UE) 2026/2356 du Conseil du 13 octobre 2026 relative à la signature du protocole additionnel à la convention du Conseil de l’Europe relative au blanchiment, au dépistage, à la saisie et à la confiscation des produits du crime et au financement du terrorisme, en ce qui concerne les mesures de lutte contre le blanchiment des capitaux",
+   "nature": "Texte officiel",
+   "date": "2026-10-20",
+   "corps": "",
+   "lien": "https://eur-lex.europa.eu/./legal-content/AUTO/?uri=CELEX:32026D2356",
+   "domaines": [
+    {
+     "id": "finance",
+     "nom": "Services financiers, assurance et LCB-FT",
+     "mots": [
+      "lutte contre le blanchiment",
+      "financement du terrorisme"
+     ]
+    }
+   ],
+   "morceaux": 0,
+   "dateTexte": "2026-10-13",
+   "vuLe": "2026-10-20"
+  },
+  {
+   "source": "eurlex-l",
+   "sourceNom": "Journal officiel de l'Union européenne — série L",
+   "genre": "texte",
+   "id": "https://eur-lex.europa.eu/./legal-content/AUTO/?uri=CELEX:32026R2310",
+   "titre": "CELEX:32026R2310: Règlement d’exécution (UE) 2026/2310 de la Commission du 19 octobre 2026 portant abrogation du droit compensateur définitif sur les importations de vitrage solaire originaire de la République populaire de Chine à l’issue d’un réexamen au titre de l’expiration des mesures effectué en vertu de l’article 18 du règlement (UE) 2016/1037 du Parlement européen et du Conseil",
+   "nature": "Texte officiel",
+   "date": "2026-10-20",
+   "corps": "",
+   "lien": "https://eur-lex.europa.eu/./legal-content/AUTO/?uri=CELEX:32026R2310",
+   "domaines": [
+    {
+     "id": "douane",
+     "nom": "Douane et échanges internationaux",
+     "mots": [
+      "importation"
+     ]
+    }
+   ],
+   "morceaux": 0,
+   "dateTexte": "2026-10-19",
+   "vuLe": "2026-10-20"
+  },
+  {
+   "source": "eurlex-l",
+   "sourceNom": "Journal officiel de l'Union européenne — série L",
+   "genre": "texte",
+   "id": "https://eur-lex.europa.eu/./legal-content/AUTO/?uri=CELEX:32026R2314",
+   "titre": "CELEX:32026R2314: Règlement d’exécution (UE) 2026/2314 de la Commission du 19 octobre 2026 portant abrogation d’un droit antidumping définitif sur les importations de vitrage solaire originaire de la République populaire de Chine à l’issue d’un réexamen au titre de l’expiration des mesures effectué en vertu de l’article 11, paragraphe 2, du règlement (UE) 2016/1036 du Parlement européen et du Conseil",
+   "nature": "Texte officiel",
+   "date": "2026-10-20",
+   "corps": "",
+   "lien": "https://eur-lex.europa.eu/./legal-content/AUTO/?uri=CELEX:32026R2314",
+   "domaines": [
+    {
+     "id": "douane",
+     "nom": "Douane et échanges internationaux",
+     "mots": [
+      "importation"
+     ]
+    }
+   ],
+   "morceaux": 0,
+   "dateTexte": "2026-10-19",
+   "vuLe": "2026-10-20"
+  },
+  {
    "source": "jorf",
    "sourceNom": "Journal officiel de la République française",
    "genre": "texte",
@@ -1744,6 +2088,29 @@
    "vuLe": "2026-10-20"
   },
   {
+   "source": "dgccrf",
+   "sourceNom": "DGCCRF — actualités",
+   "genre": "actualite",
+   "id": "https://www.economie.gouv.fr/dgccrf/laction-de-la-dgccrf/injonctions-et-sanctions/la-societe-international-enjointe-de-cesser-les-manquements-relatifs-au-defaut-dinformation",
+   "titre": "La société BUT INTERNATIONAL enjointe de cesser les manquements relatifs au défaut d’information précontractuelle dans le cadre de la location longue durée",
+   "nature": "Publication officielle",
+   "date": "2026-10-20",
+   "corps": "",
+   "lien": "https://www.economie.gouv.fr/dgccrf/laction-de-la-dgccrf/injonctions-et-sanctions/la-societe-international-enjointe-de-cesser-les-manquements-relatifs-au-defaut-dinformation",
+   "domaines": [
+    {
+     "id": "consommation",
+     "nom": "Droit de la consommation et pratiques commerciales",
+     "mots": [
+      "information precontractuelle"
+     ]
+    }
+   ],
+   "morceaux": 0,
+   "dateTexte": "",
+   "vuLe": "2026-10-20"
+  },
+  {
    "source": "jorf",
    "sourceNom": "Journal officiel de la République française",
    "genre": "texte",
@@ -1936,6 +2303,52 @@
    "vuLe": "2026-10-19"
   },
   {
+   "source": "eurlex-l",
+   "sourceNom": "Journal officiel de l'Union européenne — série L",
+   "genre": "texte",
+   "id": "https://eur-lex.europa.eu/./legal-content/AUTO/?uri=CELEX:32026R2311",
+   "titre": "CELEX:32026R2311: Règlement d’exécution (UE) 2026/2311 de la Commission du 19 octobre 2026 instituant un droit antidumping définitif sur les importations de certains papiers thermosensibles lourds originaires de la République de Corée à l’issue d’un réexamen au titre de l’expiration des mesures conformément à l’article 11, paragraphe 2, du règlement (UE) 2016/1036 du Parlement européen et du Conseil",
+   "nature": "Texte officiel",
+   "date": "2026-10-19",
+   "corps": "",
+   "lien": "https://eur-lex.europa.eu/./legal-content/AUTO/?uri=CELEX:32026R2311",
+   "domaines": [
+    {
+     "id": "douane",
+     "nom": "Douane et échanges internationaux",
+     "mots": [
+      "importation"
+     ]
+    }
+   ],
+   "morceaux": 0,
+   "dateTexte": "2026-10-19",
+   "vuLe": "2026-10-19"
+  },
+  {
+   "source": "eurlex-l",
+   "sourceNom": "Journal officiel de l'Union européenne — série L",
+   "genre": "texte",
+   "id": "https://eur-lex.europa.eu/./legal-content/AUTO/?uri=CELEX:32026R2319",
+   "titre": "CELEX:32026R2319: Règlement d’exécution (UE) 2026/2319 de la Commission du 19 octobre 2026 modifiant le règlement d’exécution (UE) 2023/265 instituant un droit antidumping définitif sur les importations de carreaux en céramique originaires de l’Inde et de Turquie",
+   "nature": "Texte officiel",
+   "date": "2026-10-19",
+   "corps": "",
+   "lien": "https://eur-lex.europa.eu/./legal-content/AUTO/?uri=CELEX:32026R2319",
+   "domaines": [
+    {
+     "id": "douane",
+     "nom": "Douane et échanges internationaux",
+     "mots": [
+      "importation"
+     ]
+    }
+   ],
+   "morceaux": 0,
+   "dateTexte": "2026-10-19",
+   "vuLe": "2026-10-19"
+  },
+  {
    "source": "jorf",
    "sourceNom": "Journal officiel de la République française",
    "genre": "texte",
@@ -2111,6 +2524,29 @@
    "vuLe": "2026-10-18"
   },
   {
+   "source": "eurlex-l",
+   "sourceNom": "Journal officiel de l'Union européenne — série L",
+   "genre": "texte",
+   "id": "https://eur-lex.europa.eu/./legal-content/AUTO/?uri=CELEX:32026R2309",
+   "titre": "CELEX:32026R2309: Règlement (UE) 2026/2309 de la Commission du 16 octobre 2026 modifiant l’annexe du règlement (UE) no 231/2012 établissant les spécifications des additifs alimentaires énumérés aux annexes II et III du règlement (CE) no 1333/2008 du Parlement européen et du Conseil en ce qui concerne les spécifications des glycosides de stéviol produits par voie enzymatique de façon à inclure le rébaudioside M produit par conversion enzymatique de rébaudioside A issu d’extraits hautement purifiés de feuilles de Stevia [E 960c (ii)] à l’aide de la levure génétiquement modifiée K. phafﬁi CGMCC 7539",
+   "nature": "Texte officiel",
+   "date": "2026-10-18",
+   "corps": "",
+   "lien": "https://eur-lex.europa.eu/./legal-content/AUTO/?uri=CELEX:32026R2309",
+   "domaines": [
+    {
+     "id": "alimentaire",
+     "nom": "Hygiène et sécurité des aliments",
+     "mots": [
+      "additifs alimentaires"
+     ]
+    }
+   ],
+   "morceaux": 0,
+   "dateTexte": "2026-10-16",
+   "vuLe": "2026-10-18"
+  },
+  {
    "source": "jorf",
    "sourceNom": "Journal officiel de la République française",
    "genre": "texte",
@@ -2156,6 +2592,29 @@
    ],
    "morceaux": 130,
    "dateTexte": "2006-12-21",
+   "vuLe": "2026-10-18"
+  },
+  {
+   "source": "entreprendre",
+   "sourceNom": "Entreprendre — service-public.fr",
+   "genre": "actualite",
+   "id": "https://www.service-public.gouv.fr/particuliers/actualites/A15386?xtor=RSS-112",
+   "titre": "Sécurité sociale : quel sera le plafond annuel en 2027 ?",
+   "nature": "Publication officielle",
+   "date": "2026-10-18",
+   "corps": "<p>Le plafond de la Sécurité sociale sert de base pour calculer le montant maximal des indemnités journalières pour maladie, accident du travail ou maternité, les pensions d'invalidité, les retraites, etc. Il est réévalué chaque année au 1<sup>er</sup> janvier. Le niveau du plafond annuel pour 2027 vient d’être publié sur le site du Bulletin officiel de la Sécurité sociale. <em>Service Public</em> vous informe.</p>",
+   "lien": "https://www.service-public.gouv.fr/particuliers/actualites/A15386?xtor=RSS-112",
+   "domaines": [
+    {
+     "id": "paie",
+     "nom": "Paie, cotisations et protection sociale",
+     "mots": [
+      "securite sociale"
+     ]
+    }
+   ],
+   "morceaux": 1,
+   "dateTexte": "",
    "vuLe": "2026-10-18"
   },
   {
@@ -2735,6 +3194,52 @@
    "vuLe": "2026-10-15"
   },
   {
+   "source": "eurlex-l",
+   "sourceNom": "Journal officiel de l'Union européenne — série L",
+   "genre": "texte",
+   "id": "https://eur-lex.europa.eu/./legal-content/AUTO/?uri=CELEX:32026R2270",
+   "titre": "CELEX:32026R2270: Règlement d’exécution (UE) 2026/2270 de la Commission du 15 octobre 2026 modifiant le règlement d’exécution (UE) 2025/2351 instituant une mesure de sauvegarde définitive à l’égard des importations de certains éléments de ferro-alliages",
+   "nature": "Texte officiel",
+   "date": "2026-10-15",
+   "corps": "",
+   "lien": "https://eur-lex.europa.eu/./legal-content/AUTO/?uri=CELEX:32026R2270",
+   "domaines": [
+    {
+     "id": "douane",
+     "nom": "Douane et échanges internationaux",
+     "mots": [
+      "importation"
+     ]
+    }
+   ],
+   "morceaux": 0,
+   "dateTexte": "2026-10-15",
+   "vuLe": "2026-10-15"
+  },
+  {
+   "source": "travail",
+   "sourceNom": "Ministère du Travail — actualités",
+   "genre": "actualite",
+   "id": "https://travail-emploi.gouv.fr/documents-opposables-travail-emploi-formation-professionnelle",
+   "titre": "Documents opposables | Travail - Emploi - Formation professionnelle",
+   "nature": "Publication officielle",
+   "date": "2026-10-15",
+   "corps": "",
+   "lien": "https://travail-emploi.gouv.fr/documents-opposables-travail-emploi-formation-professionnelle",
+   "domaines": [
+    {
+     "id": "enseignement",
+     "nom": "Enseignement, formation et certification qualité",
+     "mots": [
+      "formation professionnelle"
+     ]
+    }
+   ],
+   "morceaux": 0,
+   "dateTexte": "",
+   "vuLe": "2026-10-15"
+  },
+  {
    "source": "jorf",
    "sourceNom": "Journal officiel de la République française",
    "genre": "texte",
@@ -2902,6 +3407,29 @@
    ],
    "morceaux": 3,
    "dateTexte": "2026-10-07",
+   "vuLe": "2026-10-14"
+  },
+  {
+   "source": "eurlex-l",
+   "sourceNom": "Journal officiel de l'Union européenne — série L",
+   "genre": "texte",
+   "id": "https://eur-lex.europa.eu/./legal-content/AUTO/?uri=CELEX:32026D2332",
+   "titre": "CELEX:32026D2332: Décision (PESC) 2026/2332 du Conseil du 15 octobre 2026 modifiant la décision 2014/145/PESC concernant des mesures restrictives eu égard aux actions compromettant ou menaçant l’intégrité territoriale, la souveraineté et l’indépendance de l’Ukraine",
+   "nature": "Texte officiel",
+   "date": "2026-10-14",
+   "corps": "",
+   "lien": "https://eur-lex.europa.eu/./legal-content/AUTO/?uri=CELEX:32026D2332",
+   "domaines": [
+    {
+     "id": "douane",
+     "nom": "Douane et échanges internationaux",
+     "mots": [
+      "mesures restrictives"
+     ]
+    }
+   ],
+   "morceaux": 0,
+   "dateTexte": "2026-10-15",
    "vuLe": "2026-10-14"
   },
   {
