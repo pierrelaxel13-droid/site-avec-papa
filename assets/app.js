@@ -192,6 +192,80 @@
     }, true);
   }
 
+  /* --- Ne montrer que ce qu'on a cliqué -------------------------------------
+     Cliquer une famille dans un tableau amenait à elle, mais toutes les autres
+     restaient affichées dessous, avec leurs fiches : le client ne savait plus
+     ce qu'il regardait. On n'affiche plus que la famille choisie, avec une
+     barre qui dit laquelle et de quoi revenir à toutes. Une fiche qu'on ouvre
+     referme les autres : une chose à la fois.
+     Sans JavaScript, les ancres marchent comme avant et tout reste lisible. */
+  var LISTES_DE_FICHES = ".liste-releve, .liste-registre, .textes, .textes-depliants";
+
+  function seulementCeQuOnClique() {
+    $$(".tableau-familles").forEach(function (tableau) {
+      var liens = $$('a.lien-carte[href^="#"]', tableau);
+      var sections = liens.map(function (a) {
+        return document.getElementById(a.getAttribute("href").slice(1));
+      }).filter(Boolean);
+      if (!sections.length) return;
+
+      var barre = document.createElement("div");
+      barre.className = "barre-filtre";
+      barre.hidden = true;
+      var dit = document.createElement("p");
+      dit.setAttribute("role", "status");
+      var tout = document.createElement("button");
+      tout.type = "button";
+      tout.className = "bouton bouton-sobre";
+      tout.textContent = "Voir toutes les familles";
+      barre.appendChild(dit);
+      barre.appendChild(tout);
+      sections[0].parentNode.insertBefore(barre, sections[0]);
+
+      function montrer(cible) {
+        sections.forEach(function (sec) { sec.hidden = cible ? sec !== cible : false; });
+        barre.hidden = !cible;
+        if (cible) {
+          var h = cible.querySelector("h3");
+          dit.textContent = "Vous voyez : " + (h && h.firstChild ? h.firstChild.textContent.trim() : "une famille");
+        }
+      }
+
+      liens.forEach(function (a) {
+        a.addEventListener("click", function (e) {
+          var cible = document.getElementById(a.getAttribute("href").slice(1));
+          if (!cible) return;
+          e.preventDefault();
+          montrer(cible);
+          try { history.replaceState(null, "", "#" + cible.id); } catch (x) { /* sans effet */ }
+          barre.scrollIntoView({ block: "start", behavior: SOBRE ? "auto" : "smooth" });
+        });
+      });
+      tout.addEventListener("click", function () {
+        montrer(null);
+        try { history.replaceState(null, "", location.pathname + location.search); } catch (x) { /* sans effet */ }
+        tableau.scrollIntoView({ block: "start", behavior: SOBRE ? "auto" : "smooth" });
+      });
+
+      /* Arrivée directe sur une famille, depuis une notification ou un lien. */
+      var ici = location.hash && document.getElementById(location.hash.slice(1));
+      if (ici && sections.indexOf(ici) !== -1) montrer(ici);
+    });
+
+    /* Une fiche à la fois. Ce gestionnaire doit passer avant celui qui remonte
+       la fiche en haut de l'écran : refermer les autres fait bouger la page, et
+       la position se calcule après. */
+    document.addEventListener("toggle", function (e) {
+      var d = e.target;
+      if (!d || d.tagName !== "DETAILS" || !d.open || !d.closest(LISTES_DE_FICHES)) return;
+      $$("details[open]").forEach(function (autre) {
+        if (autre !== d && autre.closest(LISTES_DE_FICHES) && !autre.contains(d) && !d.contains(autre)) {
+          autre.open = false;
+        }
+      });
+    }, true);
+  }
+
   function bascules() {
     $$("[data-bascule]").forEach(function (groupe) {
       var boutons = $$("button", groupe);
@@ -541,6 +615,7 @@
   codeChoisi();
   bandeau();
   menu();
+  seulementCeQuOnClique();
   remonterLesFiches();
   bascules();
   simulateur();

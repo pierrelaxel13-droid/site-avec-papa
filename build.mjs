@@ -167,7 +167,7 @@ function bandeInstallation(a) {
           <button type="button" class="bouton bouton-accent" id="installer-appli" hidden>
             Installer maintenant
           </button>
-          <a class="bouton bouton-sobre" href="${a("connexion.html")}">Ouvrir dans le navigateur</a>
+          <a class="bouton bouton-sobre" href="${a("connexion.html")}">Connexion</a>
         </p>
         <p class="etiq" id="etat-installation" role="status" style="margin-top:var(--t3)"></p>
       </div>
@@ -327,7 +327,7 @@ ${zone === "public" ? bandeInstallation(a) : ""}
           <li><a href="${a("connexion.html")}">Connexion</a></li>
         </ul>
       </div>
-      <div>
+      ${zone === "app" ? `<div>
         <h2>L'application</h2>
         <ul>
           <li><a href="${a("app/index.html")}">Tableau de bord</a></li>
@@ -337,7 +337,19 @@ ${zone === "public" ? bandeInstallation(a) : ""}
           <li><a href="${a("app/secteurs.html")}">Fiches par secteur</a></li>
           <li><a href="${a("app/reglages.html")}">Mon entreprise et mes alertes</a></li>
         </ul>
-      </div>
+      </div>` : `<div>
+        <h2>Le cabinet</h2>
+        <!-- Les pages publiques servent à nous connaître, pas à entrer : on n'y
+             entre que par « Connexion » ou « Démarrer un abonnement ». La
+             colonne qui menait droit dans l'application dit donc qui nous
+             sommes, et garde le pied symétrique, en quatre colonnes. -->
+        <ul class="pied-faits">
+          <li>Conseil en organisation et conformité</li>
+          <li>${esc(SITE.zone)}</li>
+          <li>Un interlocuteur, qui vient sur place</li>
+          <li>Prix affichés, sans devis</li>
+        </ul>
+      </div>`}
       <div>
         <h2>Sources officielles</h2>
         <ul>
@@ -1002,7 +1014,7 @@ function ligneJO(V, t, i, releveLe = "") {
   const neuf = Boolean(releveLe) && vu === releveLe;
 
   return `<li class="ligne-releve statut-${droit ? "attente" : "neutre"}${neuf ? " est-neuf" : ""}">
-  <details${i === 0 ? " open" : ""}>
+  <details>
     <summary>
       <span class="mono date">${esc(dateFr(quand))}</span>
       <span class="corps">
@@ -1584,7 +1596,7 @@ ${rubrique({ etiq: T ? "Vérifier à la source" : "Lire le texte officiel", cont
     : `Cette référence couvre plusieurs textes : le lien mène au recueil officiel qui les
        publie — ${esc(L.quoi)}, sur ${esc(L.ou)}.`}</p>
   <p class="etiq" style="margin-top:var(--t5)">Les sources qui suivent ce domaine</p>
-  <ul class="sources-bande" style="justify-content:flex-start;margin-top:var(--t3)">
+  <ul class="sources-bande sources-bande-gauche" style="margin-top:var(--t3)">
     ${[...new Set(domaines.flatMap((id) => V.domaines[id].sources.map((s) => JSON.stringify(s))))]
       .map((s) => JSON.parse(s))
       .map((s) => `<li><a href="${esc(s.url)}" target="_blank" rel="noopener">${esc(s.nom)} ${sortant}</a></li>`)
@@ -2006,13 +2018,16 @@ function mobile(ECRANS, nom, alt) {
        </figure>`;
 }
 
-function vitrine(ECRANS, { image, alt, titre, texte, lien, libelle }) {
+/* À côté d'une capture : ce que le client doit savoir, pas un lien. L'accueil
+   sert à nous connaître et à connaître le site ; on n'entre dans l'application
+   que par « Connexion » ou « Démarrer un abonnement ». */
+function vitrine(ECRANS, { image, alt, titre, texte, faits = [] }) {
   return `<article class="vitrine" data-paraitre>
   ${portable(ECRANS, image, alt)}
   <div class="vitrine-texte">
     <h2>${titre}</h2>
     <p>${texte}</p>
-    <a class="lien-fleche" href="${esc(lien)}">${esc(libelle)} ${fleche}</a>
+    ${faits.length ? `<ul class="faits-vitrine">${faits.map((f) => `<li><span>${f}</span></li>`).join("")}</ul>` : ""}
   </div>
 </article>`;
 }
@@ -2134,8 +2149,8 @@ function pageAccueil(V, D, METIERS, ECRANS) {
           C'est un point de départ, pas un avis juridique sur votre situation. Les textes
           viennent de Légifrance et des sites publics cités sur chaque sujet.
         </p>
-        <p style="margin-top:var(--t4)">
-          <a class="lien-fleche" id="sim-lien" href="app/secteur/${esc(divDefaut.c)}-${slug(divDefaut.l)}.html">Voir le détail de mon métier ${fleche}</a>
+        <p class="rangee" style="margin-top:var(--t4)">
+          <a class="bouton bouton-accent" href="abonnement.html">Démarrer un abonnement</a>
         </p>
       </div>
     </div>
@@ -2245,16 +2260,25 @@ function pageAccueil(V, D, METIERS, ECRANS) {
       texte: `Une veille qui remonte tout ne se lit plus, et le texte qui comptait se perd.
         Ici le tri est fait avant, sur votre métier : chaque texte arrive avec ce qu'il change
         chez vous et ce qu'il faut faire.`,
-      lien: "connexion.html", libelle: "Voir le relevé"
+      faits: [
+        "Relevé <strong>toutes les heures</strong> sur les sources officielles, Journal officiel en tête",
+        "Le <strong>texte entier</strong> dans la page, à côté de sa source — rien à aller chercher",
+        "Pour chaque texte, <strong>ce que vous devez faire</strong>, en une liste"
+      ]
     })}
 
     ${vitrine(ECRANS, {
       image: "registre.png",
       alt: "Le registre de preuves : revues, décisions et actions, chronologiques et datées.",
-      titre: "Ce qu'un auditeur demande vraiment",
-      texte: `L'écart le plus souvent relevé en audit n'est pas l'absence de veille : c'est la
-        veille faite et jamais écrite. Tout est daté et conservé, et s'imprime tel quel.`,
-      lien: "connexion.html", libelle: "Voir le registre"
+      titre: "Qui vous accompagne",
+      texte: `Pierrel &amp; Co est un cabinet de conseil en organisation et conformité, à
+        ${esc(SITE.ville)}. On met votre veille en place, on la tient avec vous, et on en garde
+        la preuve — ce registre, daté, qui s'imprime tel quel pour l'audit.`,
+      faits: [
+        "<strong>Clément Pierrel</strong>, un seul interlocuteur, qui connaît votre site et vient dessus",
+        `${esc(SITE.zone)}`,
+        "Préparation d'audit : <strong>ISO 14001, ISO 45001, MASE, Qualiopi</strong>"
+      ]
     })}
   </div>
 </section>
@@ -2269,14 +2293,14 @@ function pageAccueil(V, D, METIERS, ECRANS) {
         ${VITRINE_SECTEURS.map((c) => {
           const d = V.divisions.filter((x) => x.c === c)[0];
           if (!d) throw new Error(`Vitrine de secteurs : division ${c} inconnue.`);
-          return `<li><a href="app/secteur/${esc(d.c)}-${slug(d.l)}.html" title="${esc(d.l)}">
-          <span class="code">${esc(d.c)}</span><span class="nom">${esc(d.l)}</span></a></li>`;
+          return `<li><span class="puce-fixe" title="${esc(d.l)}">
+          <span class="code">${esc(d.c)}</span><span class="nom">${esc(d.l)}</span></span></li>`;
         }).join("\n")}
       </ul>
     </div>
     <p class="rangee rangee-centre" style="margin-top:var(--t5)">
-      <a class="bouton bouton-accent" href="app/secteurs.html">Voir les ${V.divisions.length} secteurs</a>
-      <a class="bouton bouton-sobre" href="connexion.html">Ouvrir la démonstration</a>
+      <a class="bouton bouton-accent" href="abonnement.html">Démarrer un abonnement</a>
+      <a class="bouton bouton-sobre" href="connexion.html">Connexion</a>
     </p>
   </div>
 </section>

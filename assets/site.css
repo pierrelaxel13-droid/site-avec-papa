@@ -876,6 +876,26 @@ img { height: auto; display: block; }
 .vitrine-texte h2 { font-size: clamp(1.5rem, 1.1rem + 1.6vw, 2.2rem); }
 .vitrine-texte p { margin-top: var(--t4); }
 .vitrine-texte .lien-fleche { margin-top: var(--t4); }
+/* Les faits à côté d'une capture : trois lignes courtes, chacune avec sa coche,
+   à la place du lien qui menait dans l'application. « faits-vitrine » et pas
+   « faits » : .faits existe déjà plus bas, pour les chiffres des fiches de
+   métier, et cette règle les aurait déréglés. */
+.faits-vitrine { list-style: none; padding: 0; margin: var(--t4) 0 0; display: grid; gap: .65rem; }
+/* La coche, puis UN bloc de texte : sans l'enveloppe, le texte qui suit un
+   mot en gras devenait une case à lui seul et tombait dans la colonne de la
+   coche, un mot par ligne. */
+.faits-vitrine li {
+  display: grid; grid-template-columns: 1.4rem minmax(0, 1fr); gap: .6rem; align-items: start;
+  color: var(--encre-douce); line-height: 1.5;
+}
+.faits-vitrine li::before {
+  content: ""; width: 1.4rem; height: 1.4rem; margin-top: .05rem;
+  border-radius: 50%;
+  background: var(--accent-clair)
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%234A2BE8' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 12 4 4 8-8'/%3E%3C/svg%3E")
+    center / .85rem no-repeat;
+}
+.faits-vitrine strong { color: var(--encre); }
 
 /* --- 12. Simulateur ---------------------------------------------------- */
 .simulateur { display: grid; gap: var(--t4); margin-top: var(--t5); }
@@ -906,6 +926,7 @@ img { height: auto; display: block; }
 .cases.cases-ouvertes { max-height: none; overflow: visible; mask-image: none; }
 @media (min-width: 40rem) {
   .cases.cases-ouvertes { grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: var(--t4); }
+  .cases.cases-ouvertes > :last-child:nth-child(odd) { grid-column: 1 / -1; }
 }
 .reglage {
   background: var(--carte);
@@ -1064,13 +1085,25 @@ img { height: auto; display: block; }
   border: 1px solid var(--filet);
   border-radius: var(--r4);
 }
+/* Des listes de longueur variable — 4, 7, 13, 59 codes : aucun nombre de
+   colonnes ne les tombe toutes juste. Elles passent donc en rangées souples
+   dont la dernière s'étire jusqu'au bout : la ligne est toujours finie. */
 .puces {
-  display: grid; gap: .6rem;
-  grid-template-columns: repeat(auto-fill, minmax(min(100%, 15rem), 1fr));
+  display: flex; flex-wrap: wrap; gap: .6rem;
   list-style: none; padding: 0; margin: 0;
 }
-.puces li { margin: 0; min-width: 0; }
-.puces a {
+.puces li { margin: 0; min-width: min(100%, 15rem); flex: 1 1 15rem; }
+/* Les douze métiers de l'accueil, eux, ont un nombre fixe : une vraie grille,
+   dont chaque palier divise douze — six, quatre, trois, deux, un. */
+.panneau-puces .puces { display: grid; grid-template-columns: minmax(0, 1fr); }
+@media (min-width: 30rem) { .panneau-puces .puces { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (min-width: 46rem) { .panneau-puces .puces { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (min-width: 64rem) { .panneau-puces .puces { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+@media (min-width: 96rem) { .panneau-puces .puces { grid-template-columns: repeat(6, minmax(0, 1fr)); } }
+/* Sur l'accueil, la puce n'est plus un lien : on dit que le métier est couvert,
+   on n'ouvre pas sa fiche — l'application ne s'ouvre que par la connexion.
+   Même boîte, sans l'effet de survol qui promettrait un clic. */
+.puces a, .puces .puce-fixe {
   display: grid; grid-template-columns: 2rem minmax(0, 1fr); gap: .7rem;
   align-items: center;
   padding: .8rem 1rem;
@@ -1093,19 +1126,31 @@ img { height: auto; display: block; }
   color: var(--encre);
   font-family: var(--mono); font-size: .82rem; font-weight: 700;
 }
+.puces .puce-fixe { height: 100%; }
 /* Les libellés NAF vont de deux mots à douze : sans cette coupe, une rangée
-   sur deux fait le triple de hauteur de l'autre. Le libellé entier est sur la
-   fiche, à un clic, et dans l'attribut title. */
+   sur deux fait le triple de hauteur de l'autre. Le libellé entier est dans
+   l'attribut title. */
 .puces .nom {
   overflow-wrap: anywhere;
   display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
   overflow: hidden;
 }
-.puces { grid-auto-rows: 1fr; }
+.panneau-puces .puces { grid-auto-rows: 1fr; }
 
 /* --- 14. Raisons numérotées -------------------------------------------- */
 .raisons { display: grid; gap: var(--t4); margin-top: var(--t5); list-style: none; padding: 0; }
-@media (min-width: 58rem) { .raisons { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+/* Quatre raisons : quatre de front, ou deux et deux — jamais trois et une seule
+   en dessous. */
+@media (min-width: 40rem) {
+  .raisons { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .raisons > :last-child:nth-child(odd) { grid-column: 1 / -1; }
+}
+/* En grand, autant de colonnes que de raisons — trois ou quatre selon la page :
+   une seule ligne, pleine, jamais une colonne vide au bout. */
+@media (min-width: 64rem) {
+  .raisons { grid-template-columns: none; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); }
+  .raisons > :last-child:nth-child(odd) { grid-column: auto; }
+}
 .raison {
   margin: 0;
   background: var(--carte);
@@ -1132,6 +1177,11 @@ img { height: auto; display: block; }
   justify-content: center;
 }
 .sources-bande li { margin: 0; }
+/* Sous un intitulé aligné à gauche, la bande ne peut pas se centrer : ses
+   liens s'étirent donc pour finir chaque ligne. */
+.sources-bande-gauche { justify-content: flex-start; max-width: 60rem; }
+.sources-bande-gauche li { flex: 1 1 auto; }
+.sources-bande-gauche a { width: 100%; justify-content: center; }
 .sources-bande a {
   display: inline-flex; align-items: center; gap: .5rem;
   padding: .55rem 1.1rem;
@@ -1201,6 +1251,7 @@ img { height: auto; display: block; }
 .pied h2 { font-size: 1.1rem; letter-spacing: -.01em; margin-bottom: var(--t3); }
 .pied ul { list-style: none; padding: 0; margin: var(--t3) 0 0; }
 .pied li { margin-bottom: .55rem; }
+.pied-faits li { color: var(--encre-douce); }
 .pied a { color: var(--encre-douce); text-decoration: none; }
 .pied a:hover { color: var(--accent); text-decoration: underline; }
 .pied .marque { margin-bottom: var(--t3); }
@@ -1241,9 +1292,18 @@ body.verrouille main > *:not(#verrou) { display: none; }
 .tete-app h1 { font-size: clamp(1.9rem, 1.2rem + 2.8vw, 3rem); }
 .tete-app .chapeau { margin-top: var(--t4); max-width: 62ch; }
 
+/* Les étiquettes sous le titre : sur une ligne quand elles tiennent ; sinon
+   deux par deux, et la dernière, si elle est seule, prend la ligne — plus
+   d'étiquette perdue sous les autres. */
 .jalons {
-  display: flex; flex-wrap: wrap; gap: .5rem;
+  display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .5rem;
   list-style: none; padding: 0; margin: 0 0 var(--t4);
+}
+.jalons > :last-child:nth-child(odd) { grid-column: 1 / -1; }
+.jalons li > * { display: block; text-align: center; }
+@media (min-width: 52rem) {
+  .jalons { display: flex; flex-wrap: wrap; }
+  .jalons li > * { display: inline-block; }
 }
 .jalons li { margin: 0; }
 .jalons span, .jalons a {
@@ -1270,9 +1330,20 @@ body.verrouille main > *:not(#verrou) { display: none; }
 .rubrique { padding-block: clamp(2rem, 1.2rem + 2.4vw, 3.25rem); }
 .rubrique > .enveloppe > h2 { margin-bottom: var(--t4); font-size: clamp(1.5rem, 1.1rem + 1.6vw, 2.1rem); }
 
+/* Les chiffres d'un écran : jamais une ligne de quatre et un cinquième seul.
+   Tous de front dès qu'il y a la place (cinq au plus, sur tout le site) ;
+   en dessous, deux par deux, et le dernier, s'il est seul, prend la ligne. */
 .compteurs, .faits {
   display: grid; gap: var(--t3); margin: 0;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr));
+  grid-template-columns: minmax(0, 1fr);
+}
+@media (min-width: 30rem) {
+  .compteurs, .faits { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .compteurs > :last-child:nth-child(odd), .faits > :last-child:nth-child(odd) { grid-column: 1 / -1; }
+}
+@media (min-width: 64rem) {
+  .compteurs, .faits { grid-template-columns: none; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); }
+  .compteurs > :last-child:nth-child(odd), .faits > :last-child:nth-child(odd) { grid-column: auto; }
 }
 .compteurs > div, .faits > div {
   min-width: 0;
@@ -1397,6 +1468,17 @@ details[open] > summary .chevron { transform: rotate(180deg); }
   white-space: normal; overflow-wrap: anywhere;
   scrollbar-width: thin;
 }
+
+/* La barre qui dit quelle famille on regarde, et comment revenir à toutes. */
+.barre-filtre {
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between;
+  gap: var(--t3);
+  margin-top: var(--t5); padding: var(--t3) var(--t4);
+  border: 1px solid var(--accent-filet); border-radius: var(--r2);
+  background: var(--accent-clair);
+}
+.barre-filtre[hidden] { display: none; }
+.barre-filtre p { margin: 0; font-weight: 700; color: var(--encre); }
 
 /* --- Les cases d'une fiche ouverte -------------------------------------------
    Une fiche ouverte empilait tout à la suite : ce qu'il faut faire, le texte,
@@ -1574,7 +1656,12 @@ details[open] > summary .chevron { transform: rotate(180deg); }
 .question .aide { display: block; font-size: .92rem; color: var(--encre-tenue); }
 
 .pieges { display: grid; gap: var(--t3); }
-@media (min-width: 52rem) { .pieges { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (min-width: 52rem) {
+  .pieges { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  /* Un nombre impair : le dernier piège prend toute la ligne, pour qu'elle
+     soit finie. */
+  .pieges > :last-child:nth-child(odd) { grid-column: 1 / -1; }
+}
 .piege {
   min-width: 0;
   padding: var(--t4);
