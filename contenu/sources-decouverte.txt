@@ -3,14 +3,15 @@ Recherche du flux de 6 sources muettes.
 ■ inrs — INRS — actualités
     · https://www.inrs.fr/rss/?feed=actualites  — 0 entrées  (text/html)  [adresse actuelle]
       la page déclare 0 lien(s) de flux
-    ✘ https://www.inrs.fr/actualites.html  — injoignable (fetch failed : UND_ERR_SOCKET) — l'hôte refuse le robot, ou le réseau d'ici le bloque  [page du site]
+    · https://www.inrs.fr/actualites.html  — 0 entrées  (text/html)  [page du site]
+      la page déclare 0 lien(s) de flux
     · https://www.inrs.fr/  — 0 entrées  (text/html)  [page du site]
       la page déclare 0 lien(s) de flux
     ✘ https://www.inrs.fr/feed/  — HTTP 404  [chemin courant]
     · https://www.inrs.fr/rss  — 0 entrées  (text/html)  [chemin courant]
-    ✘ https://www.inrs.fr/rss.xml  — HTTP 404  [chemin courant]
+    ✘ https://www.inrs.fr/rss.xml  — injoignable (fetch failed : UND_ERR_SOCKET) — l'hôte refuse le robot, ou le réseau d'ici le bloque  [chemin courant]
     ✘ https://www.inrs.fr/fr/rss.xml  — HTTP 404  [chemin courant]
-    ✘ https://www.inrs.fr/feed.xml  — HTTP 404  [chemin courant]
+    ✘ https://www.inrs.fr/feed.xml  — injoignable (fetch failed : UND_ERR_SOCKET) — l'hôte refuse le robot, ou le réseau d'ici le bloque  [chemin courant]
     ✘ https://www.inrs.fr/atom.xml  — HTTP 404  [chemin courant]
     ✘ https://www.inrs.fr/index.xml  — HTTP 404  [chemin courant]
     ✘ https://www.inrs.fr/spip.php?page=backend  — HTTP 404  [chemin courant]
@@ -18,8 +19,41 @@ Recherche du flux de 6 sources muettes.
         /carrefour-actualites.html « ACTUALITÉS »
         /actualites.html « Actualités »
         /carrefour-actualites.html « Actualités »
-      liens d'actualité sur https://www.inrs.fr/ :
+      liens d'actualité sur https://www.inrs.fr/actualites.html :
         /carrefour-actualites.html « ACTUALITÉS »
+        /carrefour-actualites.html « Toute l'actualité »
+        /actualites/apprentissage-apprendre-son-metier-en-toute-securite.html « 21/10/2026 
+ 
+ Apprentissage : apprendre son métier en toute sécurité 
+ 
+ 
+ »
+        /actualites/bulletin-juridique-septembre-INRS-2026.html « 20/10/2026 
+ 
+ Présentation du bulletin d’actualité juridique de septembre 202 »
+        /actualites/prevention-des-risques-lies-au-radon.html « 20/10/2026 
+ 
+ Prévention des risques liés au radon : la campagne hivernale de »
+        /actualites/exosquelettes-travail-comment-les-integrer.html « 19/10/2026 
+ 
+ Exosquelettes au travail : comment les intégrer dans une démarc »
+        /actualites/hst-284.html « 13/10/2026 
+ 
+ Revue Hygiène et sécurité du travail : numéro 284 
+ 
+ 
+ Le n »
+        /actualites/TS-885-octobre-2026.html « 08/10/2026 
+ 
+ Travail et Sécurité : numéro d’octobre 2026 
+ 
+ 
+ Le numéro  »
+        /actualites/RST-187.html « 28/09/2026 
+ 
+ Références en santé au travail : parution du numéro 187 
+ 
+  »
         /actualites.html « Actualités »
         /carrefour-actualites.html « Actualités »
   → aucun flux trouvé
@@ -40,7 +74,7 @@ Recherche du flux de 6 sources muettes.
     ✘ https://www.urssaf.fr/accueil/outils-documentation/actualites.rss  — injoignable (fetch failed : ECONNRESET) — l'hôte refuse le robot, ou le réseau d'ici le bloque  [adresse actuelle]
     ✘ https://www.urssaf.fr/accueil.html  — injoignable (fetch failed : ECONNRESET) — l'hôte refuse le robot, ou le réseau d'ici le bloque  [page du site]
     ✘ https://www.urssaf.fr/feed/  — injoignable (fetch failed : ECONNRESET) — l'hôte refuse le robot, ou le réseau d'ici le bloque  [chemin courant]
-    ✘ https://www.urssaf.fr/rss  — injoignable (fetch failed : ECONNRESET) — l'hôte refuse le robot, ou le réseau d'ici le bloque  [chemin courant]
+    ✘ https://www.urssaf.fr/rss  — injoignable (fetch failed : UND_ERR_SOCKET) — l'hôte refuse le robot, ou le réseau d'ici le bloque  [chemin courant]
     ✘ https://www.urssaf.fr/rss.xml  — injoignable (fetch failed : ECONNRESET) — l'hôte refuse le robot, ou le réseau d'ici le bloque  [chemin courant]
     ✘ https://www.urssaf.fr/fr/rss.xml  — injoignable (fetch failed : ECONNRESET) — l'hôte refuse le robot, ou le réseau d'ici le bloque  [chemin courant]
     ✘ https://www.urssaf.fr/feed.xml  — injoignable (fetch failed : ECONNRESET) — l'hôte refuse le robot, ou le réseau d'ici le bloque  [chemin courant]
@@ -52,9 +86,10 @@ Recherche du flux de 6 sources muettes.
 ■ rappelconso — RappelConso — rappels de produits
     ✘ https://rappel.conso.gouv.fr/rss  — HTTP 404  [adresse actuelle]
     ✘ https://rappel.conso.gouv.fr/rss?categorie=0  — HTTP 404  [piste connue]
-    ✘ https://data.economie.gouv.fr/api/explore/v2.1/catalog/datasets/rappelconso-v2-gtin-espaces/exports/rss?order_by=date_publication%20desc&limit=50  — HTTP 400  [piste connue]
-    ✘ https://data.economie.gouv.fr/api/explore/v2.1/catalog/datasets/rappelconso-v2-gtin-trie/exports/rss?order_by=date_publication%20desc&limit=50  — HTTP 400  [piste connue]
-    ✘ https://data.economie.gouv.fr/api/explore/v2.1/catalog/datasets/rappelconso0/exports/rss?order_by=date_de_publication%20desc&limit=50  — HTTP 404  [piste connue]
+    · https://data.economie.gouv.fr/api/explore/v2.1/catalog/datasets/rappelconso-v2-gtin-espaces/records?limit=1  — 0 entrées  (application/json)  [piste connue]
+        contenu : {"total_count": 19111, "results": [{"date_publication": "2026-07-08T06:35:28+00:00", "numero_fiche": "sr/04224/25", "numero_version": 0, "nature_juridique_rappel": null, "categorie_produit": "automobiles et moyens de d\u00e9placement", "sous_categorie_produit": "automobiles, motos, scooters", "marque_produit": "mini", "modeles_ou_references": "mini countryman voiture de tourisme.", "identification_produits": ["05.08.2025-23.09.2025"], "conditionnements": null, "date_debut_commercialisation": null, "date_date_fin_commercialisation": null, "temperature_conservation": null, "marque_salubrite": null, "informations_complementaires": "e1*2018/858*00370* (umx)", "zone_geographique_de_vente": null, "distributeurs": null, "motif_rappel": "les ceintures de s\u00e9curit\u00e9 de la deuxi\u00e8me rang\u00e9e peuvent ne pas avoir \u00e9t\u00e9 fabriqu\u00e9es correctement et pourraient provoquer la d\u00e9faillance des capteurs de sensibilit\u00e9 de la voiture. cela pourrait r\u00e9duire l'effet protecteur des ceintures de s\u00e9curit\u00e9 et entra\u00eener des blessures.", "risques_encourus": "blessures", "preconisations_sanitaires": null, "description_complementaire_risque": null, "conduites_a_tenir_par_le_consommateur": null, "numero_contact": null, "modalites_de_compensation": null, "date_de_fin_de_la_procedure_de_rappel": null, "informations_complementaires_publiques": null, "liens_vers_les_images": null, "lien_vers_la_liste_des_produits": null, "lien_vers_la_liste_des_distributeurs": null, "lien_vers_affichette_pdf": "https://rappel.conso.gouv.fr/affichettepdf/47676/rapex", "lien_vers_la_fiche_rappel": "https://rappel.conso.gouv.fr/fiche-rappel/47676/rapex", "rappel_guid": "08b28369f9bb69f7504eef84fe2a157300af1fd8", "libelle": "mini countryman voiture particuli\u00e8re", "id": 47676}]}
+    · https://data.economie.gouv.fr/api/explore/v2.1/catalog/datasets/rappelconso-v2-gtin-trie/records?limit=1  — 0 entrées  (application/json)  [piste connue]
+        contenu : {"total_count": 18775, "results": [{"gtin": 361240382116, "numero_fiche": "2021-03-0028", "numero_version": 1, "nature_juridique_rappel": "impos\u00e9 par arr\u00eat\u00e9 pr\u00e9fectoral", "categorie_produit": "maison-habitat", "sous_categorie_produit": "appareils \u00e0 pression", "marque_produit": "b\u00e4cken", "modeles_ou_references": "design dsw 22-7l", "identification_produits": "361240382116$tous les lots$non concern\u00e9$$", "conditionnements": null, "date_debut_commercialisation": null, "date_date_fin_commercialisation": null, "temperature_conservation": null, "marque_salubrite": null, "informations_complementaires": null, "zone_geographique_de_vente": "france enti\u00e8re", "distributeurs": "tous distributeurs", "motif_rappel": "d\u00e9faillance de s\u00e9curit\u00e9 : il est possible d'ouvrir cet autocuiseur pendant qu'il est sous pression", "risques_encourus": "blessures|incendie", "preconisations_sanitaires": null, "description_complementaire_risque": null, "conduites_a_tenir_par_le_consommateur": "ne plus utiliser le produit|rapporter le produit au point de vente", "numero_contact": null, "modalites_de_compensation": "remboursement", "date_de_fin_de_la_procedure_de_rappel": null, "informations_complementaires_publiques": null, "liens_vers_les_images": "https://rappel.conso.gouv.fr/image/1870d76f-beaa-4c25-a05e-60d14ff1f1fa.jpg|https://rappel.conso.gouv.fr/image/df8d700a-2340-4f69-8641-9ca85a8b8978.jpg|https://rappel.conso.gouv.fr/image/d667423c-91b2-4a19-8c66-f40ca0a9e90c.jpg|https://rappel.conso.gouv.fr/image/9887b788-7e5e-4325-9e67-e229f044cf59.jpg", "lien_vers_la_liste_des_produits": null, "lien_vers_la_liste_des_distributeurs": null, "lien_vers_affichette_pdf": "https://rappel.conso.gouv.fr/affichettepdf/37/interne", "lien_vers_la_fiche_rappel": "https://rappel.conso.gouv.fr/fiche-rappel/37/interne", "rappel_guid": "c0eb7cc0-998b-4bf3-96de-468a97a7fa56", "date_publication": "2021-03-31T16:22:53+00:00", "libelle": "autocuiseur kool'or 7 l", "id": 37}]}
     · https://rappel.conso.gouv.fr/  — 0 entrées  (text/html)  [page du site]
       la page déclare 0 lien(s) de flux
     ✘ https://rappel.conso.gouv.fr/feed/  — HTTP 404  [chemin courant]

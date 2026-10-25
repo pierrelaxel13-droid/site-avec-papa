@@ -9,7 +9,7 @@ Vérification de 25 sources.
   travail          répond — 50 entrées
   oppbtp           répond — 10 entrées
   boss             injoignable (fetch failed : UND_ERR_CONNECT_TIMEOUT) — l'hôte refuse le robot, ou le réseau d'ici le bloque
-  urssaf           injoignable (fetch failed : UND_ERR_SOCKET) — l'hôte refuse le robot, ou le réseau d'ici le bloque
+  urssaf           injoignable (fetch failed : ECONNRESET) — l'hôte refuse le robot, ou le réseau d'ici le bloque
   bofip            répond — 7 entrées
   cnil             répond — 10 entrées
   certfr-avis      répond — 40 entrées

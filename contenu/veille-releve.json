@@ -50,7 +50,7 @@
    "nom": "URSSAF — actualités employeurs",
    "entrees": 0,
    "retenus": 0,
-   "souci": "injoignable (fetch failed : UND_ERR_SOCKET) — l'hôte refuse le robot, ou le réseau d'ici le bloque"
+   "souci": "injoignable (fetch failed : ECONNRESET) — l'hôte refuse le robot, ou le réseau d'ici le bloque"
   },
   {
    "id": "bofip",

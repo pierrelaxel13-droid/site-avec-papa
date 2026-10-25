@@ -1,5 +1,5 @@
 {
- "le": "2026-10-25T12:10:58.426Z",
+ "le": "2026-10-25T12:18:43.095Z",
  "bilan": [
   {
    "id": "inrs",
@@ -9,8 +9,8 @@
    "flux": [],
    "essais": 11,
    "refus": [
-    "injoignable (fetch failed : UND_ERR_SOCKET) — l'hôte refuse le robot, ou le réseau d'ici le bloque",
-    "HTTP 404"
+    "HTTP 404",
+    "injoignable (fetch failed : UND_ERR_SOCKET) — l'hôte refuse le robot, ou le réseau d'ici le bloque"
    ]
   },
   {
@@ -32,7 +32,8 @@
    "flux": [],
    "essais": 10,
    "refus": [
-    "injoignable (fetch failed : ECONNRESET) — l'hôte refuse le robot, ou le réseau d'ici le bloque"
+    "injoignable (fetch failed : ECONNRESET) — l'hôte refuse le robot, ou le réseau d'ici le bloque",
+    "injoignable (fetch failed : UND_ERR_SOCKET) — l'hôte refuse le robot, ou le réseau d'ici le bloque"
    ]
   },
   {
@@ -41,10 +42,9 @@
    "retenue": null,
    "derniere": null,
    "flux": [],
-   "essais": 13,
+   "essais": 12,
    "refus": [
-    "HTTP 404",
-    "HTTP 400"
+    "HTTP 404"
    ]
   },
   {
