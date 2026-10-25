@@ -67,7 +67,7 @@
     window.addEventListener("scroll", pose, { passive: true });
   }
 
-  /* --- Menu repliable sous 62rem -------------------------------------------- */
+  /* --- Menu repliable quand il ne tient plus sur une ligne ------------------ */
   /* Le menu n'est replié que si ce fichier s'exécute : sans lui il reste
      déployé, ce qui est moins joli mais toujours utilisable. */
   function menu() {
@@ -75,7 +75,10 @@
     var nav = $(".bandeau .menu");
     if (!bouton || !nav) return;
 
-    var etroit = window.matchMedia("(max-width: 62rem)");
+    /* Le seuil est celui de la feuille de style : 76 rem dans l'application,
+       dont le menu a sept liens ; 62 rem sur les pages publiques. */
+    var etroit = window.matchMedia(document.body.classList.contains("zone-app")
+      ? "(max-width: 76rem)" : "(max-width: 62rem)");
     var ouvrir = function (v) {
       nav.hidden = !v;
       bouton.setAttribute("aria-expanded", v ? "true" : "false");

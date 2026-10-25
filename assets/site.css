@@ -151,7 +151,13 @@
 /* --- 2. Socle ---------------------------------------------------------- */
 *, *::before, *::after { box-sizing: border-box; }
 
+/* La taille de base grandit avec l'écran : 16 px sur un téléphone, 18 px à
+   partir de 1440. Le site prend maintenant toute la largeur ; garder un texte
+   de téléphone sur un écran de bureau tassait les informations dans des
+   lignes trop fines. Tout est en rem : tout suit. Les paliers des @media,
+   eux, restent calculés sur 16 px — ils ne bougent pas. */
 html {
+  font-size: clamp(100%, 95.4% + .19vw, 112.5%);
   -webkit-text-size-adjust: 100%;
   scroll-behavior: smooth;
   scroll-padding-top: 6rem;
@@ -260,7 +266,7 @@ img { height: auto; display: block; }
 
 .etiq {
   display: block;
-  font-size: .78rem; font-weight: 600;
+  font-size: .84rem; font-weight: 600;
   letter-spacing: .06em; text-transform: uppercase;
   color: var(--encre-tenue);
 }
@@ -479,6 +485,27 @@ img { height: auto; display: block; }
 .theme button:hover { color: var(--encre); }
 .theme button[aria-pressed="true"] { background: var(--accent-clair); color: var(--accent); }
 
+/* Le menu se replie dans son bouton quand il ne tient plus sur une ligne. Le
+   menu public a trois liens et tient jusqu'à 62 rem ; celui de l'application
+   en a sept, et depuis que le texte grandit avec l'écran il passait sur deux
+   ou trois lignes entre 1 000 et 1 200 px. Il se replie donc plus tôt, sous
+   76 rem — mesuré : il tient d'une ligne à partir de 1 200 px. Le même seuil
+   est dans assets/app.js. */
+@media (max-width: 76rem) {
+  .zone-app .menu-bascule { display: inline-flex; }
+  .zone-app .bandeau .menu {
+    position: absolute; left: 0; right: 0; top: 100%;
+    flex-direction: column; align-items: stretch; gap: .2rem;
+    padding: var(--t3) clamp(1rem, .4rem + 2.4vw, 2.5rem) var(--t4);
+    background: var(--papier);
+    border-bottom: 1px solid var(--filet);
+    box-shadow: var(--ombre-1);
+  }
+  .zone-app .bandeau .menu[hidden] { display: none; }
+  .zone-app .bandeau .menu a { padding: .7rem .9rem; font-size: 1.05rem; }
+  .zone-app .menu .bouton { margin: var(--t2) 0 0; }
+  .zone-app .theme { margin: var(--t3) 0 0; align-self: flex-start; }
+}
 @media (max-width: 62rem) {
   .menu-bascule { display: inline-flex; }
   .bandeau .menu {
@@ -534,17 +561,23 @@ img { height: auto; display: block; }
 /* Le visuel : deux écrans réels de l'application, pas une illustration.
    L'ordinateur porte le tableau de bord, le téléphone le relevé — c'est le
    même produit vu des deux côtés, pas deux fois la même image. */
+/* Le téléphone se cale sur le bord droit de ce cadre. Le cadre a donc la
+   largeur de la composition — l'ordinateur au centre, le téléphone qui le
+   chevauche — et non celle de la page : quand la page s'est élargie à tout
+   l'écran, le téléphone était parti à 194 px de l'ordinateur. Les
+   proportions sont celles d'origine (56 / 72), agrandies d'un sixième. */
 .heros-visuel {
   position: relative;
+  width: 100%; max-width: 84rem; margin-inline: auto;
   margin-top: clamp(2.5rem, 1rem + 5vw, 4.5rem);
   display: grid;
   grid-template-columns: minmax(0, 1fr);
   justify-items: center;
 }
-.heros-visuel .portable { width: min(100%, 56rem); }
+.heros-visuel .portable { width: min(100%, 66rem); }
 .heros-visuel .mobile {
   position: absolute; right: 0; bottom: 0; z-index: 2;
-  width: min(13rem, 23%);
+  width: min(15.5rem, 23%);
   /* Incliné ici seulement, là où il chevauche le portable : c'est ce
      décalage qui donne la profondeur. Posé seul, droit, il est plus lisible.
      L'origine en bas à droite garde le coin contre le bord, pour que la
@@ -876,6 +909,33 @@ img { height: auto; display: block; }
 .vitrine-texte h2 { font-size: clamp(1.5rem, 1.1rem + 1.6vw, 2.2rem); }
 .vitrine-texte p { margin-top: var(--t4); }
 .vitrine-texte .lien-fleche { margin-top: var(--t4); }
+/* « En savoir plus » : un bouton à côté de la capture, qui déplie quatre
+   encarts sur place — deux et deux, jamais trois et un. */
+.en-savoir-plus { margin-top: var(--t4); }
+.en-savoir-plus > summary { list-style: none; display: inline-flex; cursor: pointer; }
+.en-savoir-plus > summary::-webkit-details-marker { display: none; }
+.en-savoir-plus > summary::after {
+  content: ""; width: .75rem; height: .75rem; margin-left: .6rem;
+  border-right: 2px solid currentColor; border-bottom: 2px solid currentColor;
+  transform: translateY(-.15rem) rotate(45deg);
+  transition: transform .2s ease;
+}
+.en-savoir-plus[open] > summary::after { transform: translateY(.15rem) rotate(-135deg); }
+.infos-encarts {
+  display: grid; gap: var(--t3); margin-top: var(--t4);
+  grid-template-columns: minmax(0, 1fr);
+}
+@media (min-width: 36rem) { .infos-encarts { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.info-encart {
+  min-width: 0;
+  padding: var(--t4);
+  border: 1px solid var(--filet); border-radius: var(--r2);
+  background: var(--carte);
+}
+.info-encart h3 { font-size: 1.02rem; margin: 0 0 var(--t2); }
+.info-encart ul { margin: 0; padding-left: 1.1rem; display: grid; gap: .35rem; }
+.info-encart li { color: var(--encre-douce); line-height: 1.5; }
+.info-encart strong { color: var(--encre); }
 /* Les faits à côté d'une capture : trois lignes courtes, chacune avec sa coche,
    à la place du lien qui menait dans l'application. « faits-vitrine » et pas
    « faits » : .faits existe déjà plus bas, pour les chiffres des fiches de
@@ -974,7 +1034,7 @@ img { height: auto; display: block; }
   accent-color: var(--accent); cursor: pointer;
 }
 .case .intitule { display: block; color: var(--encre); font-weight: 600; font-size: .98rem; line-height: 1.4; }
-.case .aide { display: block; font-size: .9rem; color: var(--encre-tenue); }
+.case .aide { display: block; font-size: .95rem; color: var(--encre-tenue); }
 
 .resultat {
   background: var(--carte);
@@ -1040,7 +1100,7 @@ img { height: auto; display: block; }
 }
 .jauge span.pleine { background: var(--accent); }
 
-.note-source { margin-top: var(--t4); font-size: .92rem; color: var(--encre-tenue); }
+.note-source { margin-top: var(--t4); font-size: .97rem; color: var(--encre-tenue); }
 
 /* --- 12 bis. L'aperçu du courriel --------------------------------------- */
 .apercu-courriel {
@@ -1104,7 +1164,7 @@ img { height: auto; display: block; }
    on n'ouvre pas sa fiche — l'application ne s'ouvre que par la connexion.
    Même boîte, sans l'effet de survol qui promettrait un clic. */
 .puces a, .puces .puce-fixe {
-  display: grid; grid-template-columns: 2rem minmax(0, 1fr); gap: .7rem;
+  display: grid; grid-template-columns: 2.3rem minmax(0, 1fr); gap: .7rem;
   align-items: center;
   padding: .8rem 1rem;
   background: var(--carte);
@@ -1120,11 +1180,11 @@ img { height: auto; display: block; }
 }
 .puces .code {
   display: grid; place-items: center;
-  width: 2rem; height: 2rem;
+  width: 2.3rem; height: 2.3rem;
   border-radius: var(--rp);
   background: var(--degrade-puce);
   color: var(--encre);
-  font-family: var(--mono); font-size: .82rem; font-weight: 700;
+  font-family: var(--mono); font-size: .88rem; font-weight: 700;
 }
 .puces .puce-fixe { height: 100%; }
 /* Les libellés NAF vont de deux mots à douze : sans cette coupe, une rangée
@@ -1306,7 +1366,10 @@ body.verrouille main > *:not(#verrou) { display: none; }
   .jalons li > * { display: inline-block; }
 }
 .jalons li { margin: 0; }
-.jalons span, .jalons a {
+/* Seulement l'étiquette elle-même : « .jalons span » habillait aussi les
+   chiffres glissés dedans (NAF 43.99C, 14 salariés) — une bulle dans la
+   bulle. */
+.jalons li > span, .jalons li > a {
   display: inline-block;
   padding: .3rem .75rem;
   border: 1px solid var(--filet);
@@ -1371,7 +1434,7 @@ body.verrouille main > *:not(#verrou) { display: none; }
 }
 .compteurs .alerte { border-color: var(--ambre); background: var(--ambre-fond); }
 .compteurs .alerte .grand { color: var(--ambre); }
-.compteurs .precision { display: block; font-size: .9rem; color: var(--encre-tenue); }
+.compteurs .precision { display: block; font-size: .97rem; color: var(--encre-tenue); }
 
 .liste-echeances, .liste-releve, .liste-registre { list-style: none; padding: 0; margin: 0; display: grid; gap: .5rem; }
 .liste-echeances li, .ligne-releve, .ligne-registre {
@@ -1613,10 +1676,10 @@ details[open] > summary .chevron { transform: rotate(180deg); }
 /* `.ou` était déjà pris par le séparateur de l'écran de connexion — en grille,
    en capitales, avec deux filets en pseudo-éléments. Les lignes de texte en
    héritaient. D'où `.rattache`. */
-.textes .rattache { font-size: .9rem; overflow-wrap: anywhere; }
+.textes .rattache { font-size: .97rem; overflow-wrap: anywhere; }
 .textes .rattache a { color: var(--encre-tenue); text-decoration: none; }
 .textes .rattache a:hover { color: var(--accent); text-decoration: underline; }
-.textes .source { font-size: .88rem; white-space: nowrap; }
+.textes .source { font-size: .95rem; white-space: nowrap; }
 .textes .source svg { width: .75rem; height: .75rem; }
 
 /* Ce qu'un texte exige : la liste qu'on vient lire. */
@@ -1841,14 +1904,14 @@ details[open] > summary .chevron { transform: rotate(180deg); }
    chasse fixe parce que c'est un identifiant, pas un mot. */
 .grappe-naf .puces a,
 .codes-ape li {
-  grid-template-columns: 4.3rem minmax(0, 1fr);
+  grid-template-columns: 4.9rem minmax(0, 1fr);
 }
 .grappe-naf .puces .code,
 .codes-ape .code {
   width: auto; height: auto; min-height: 1.7rem;
   padding: .2rem .35rem;
   border-radius: var(--r1);
-  font-size: .78rem; letter-spacing: -.02em;
+  font-size: .88rem; letter-spacing: -.02em;
 }
 /* Sur la fiche de secteur, les codes ne sont pas des liens : on y est déjà.
    Ils gardent la carte, sans l'effet de survol qui promettrait un clic. */
@@ -1869,10 +1932,19 @@ details[open] > summary .chevron { transform: rotate(180deg); }
 
 /* L'en-tête d'une division dans l'index : la lettre, le nom cliquable, le
    compte. Il reste une étiquette, donc discret. */
+/* Le nom de chaque secteur est un vrai titre, pas une petite étiquette en
+   capitales : c'est lui que le client cherche des yeux en faisant défiler les
+   88 secteurs. La classe « etiq » qu'il porte reste pour le code et le compte,
+   pas pour le nom. */
 .grappe-naf h2 {
-  display: flex; flex-wrap: wrap; align-items: center; gap: .5rem .7rem;
+  display: flex; flex-wrap: wrap; align-items: center; gap: .5rem .8rem;
   margin-bottom: var(--t3);
+  font-size: clamp(1.15rem, 1.05rem + .4vw, 1.4rem);
+  text-transform: none; letter-spacing: -.015em;
+  color: var(--encre); font-weight: 700;
 }
+.grappe-naf h2 .precision { font-size: .95rem; }
+.grappe-naf h2 .lettre { font-size: .95rem; }
 .grappe-naf h2 a { color: var(--encre); text-decoration: none; }
 .grappe-naf h2 a:hover { color: var(--accent); text-decoration: underline; }
 .grappe-naf h2 .precision { color: var(--encre-tenue); font-weight: 400; letter-spacing: .02em; }
@@ -1967,7 +2039,7 @@ details[open] > summary .chevron { transform: rotate(180deg); }
 /* Ce qu'il faut faire : une liste d'actions, pas un paragraphe. */
 .a-faire { margin: .4rem 0 0; padding-left: 1.1rem; }
 .a-faire li { margin-bottom: .3rem; }
-.lien-officiel { font-size: .9rem; }
+.lien-officiel { font-size: .97rem; }
 
 /* --- 18 quinquies. Le code choisi, et le reste replié -------------------- */
 /* Le client arrive avec son code : il le voit en haut, nommé. Les autres

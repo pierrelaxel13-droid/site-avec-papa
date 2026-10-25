@@ -695,10 +695,10 @@ function appPlan(V, D, C, LIENS) {
     .filter((g) => g.ids.length);
 
   const corps = enTeteApp(D, "Mon plan de veille",
-    `Le périmètre retenu pour ${esc(D.entreprise.nom)} : ${total} domaines, groupés par rythme de revue.`,
+    `Ce qui s'applique chez ${esc(D.entreprise.nom)} : ${total} sujets à suivre, groupés par rythme de revue.`,
     ficheDeLEntreprise(V, D)) + `
 
-${rubrique({ etiq: "Le périmètre", id: "plan-perimetre", contenu: `
+${rubrique({ etiq: "Ce qui s'applique chez vous", id: "plan-perimetre", contenu: `
   <dl class="faits">
     <div><dt class="etiq">Domaines suivis</dt><dd><span class="grand" id="plan-total">${total}</span></dd></div>
     <div><dt class="etiq">Code de l'entreprise</dt><dd><span class="grand" id="plan-naf">${esc(D.entreprise.nafComplet || D.entreprise.naf)}</span></dd></div>
@@ -727,7 +727,7 @@ ${parFrequence.map((g) => {
 
   return page({
     titre: `Mon plan de veille | ${SITE.nom}`,
-    description: "Le périmètre de veille retenu.",
+    description: "Ce qui s'applique chez vous, et à quel rythme le revoir.",
     racine: "../", zone: "app", actif: "plan", corps, verrou: true, formule: "cadrage",
     donneesPlan: true
   });
@@ -849,7 +849,7 @@ function articleDeLoi(a) {
 /* Ce que le dernier passage du robot a vu bouger. Pas une annonce : une
    comparaison de deux relevés, mot à mot, avec l'avant et l'après. */
 function ligneChangement(c, vers = "code/") {
-  const quoi = { modifie: "Texte modifié", nouveau: "Entre au périmètre", sorti: "Sort du périmètre" };
+  const quoi = { modifie: "Texte modifié", nouveau: "Vous concerne désormais", sorti: "Ne vous concerne plus" };
   return `<li class="changement change-${esc(c.quoi)}">
   <p class="article-tete">
     <span class="article-num">Article ${esc(c.num)}</span>
@@ -1249,7 +1249,7 @@ function appReleve(V, D, JO, C, LIENS, SOURCES = []) {
     ? JO.textes.filter((t) => (t.vuLe || t.date) === JO.releve_le).length : 0;
 
   const corps = enTeteApp(D, "Relevé des textes",
-    "Les textes parus qui touchent votre périmètre, et seulement ceux-là. Ce que chacun change, et où en est la décision.",
+    "Les textes parus qui vous concernent, et seulement ceux-là. Ce que chacun change, et où en est la décision.",
     ficheDeLEntreprise(V, D)) + `
 
 ${officiel ? rubrique({ etiq: "Relevé officiel", contenu: `
@@ -1349,7 +1349,7 @@ ${rubrique({ etiq: officiel ? "Jeu d'essai" : "Le relevé", aplat: true, contenu
 
   return page({
     titre: `Relevé des textes | ${SITE.nom}`,
-    description: "Les textes parus qui touchent le périmètre.",
+    description: "Les textes parus qui vous concernent.",
     racine: "../", zone: "app", actif: "releve", corps, verrou: true, formule: "veille"
   });
 }
@@ -1412,9 +1412,9 @@ function appSecteurs(V, METIERS, NAF) {
     <h1>Trouvez votre code</h1>
     <p class="chapeau">
       ${NAF ? `La nomenclature d'activités française en entier : ses ${codes.length} codes APE,
-      ceux que porte votre entreprise — 4322B, 5610A, 8690F. Chacun mène au périmètre
-      de veille de sa division, parce que c'est à ce niveau que les obligations se
-      ressemblent.`
+      ceux que porte votre entreprise — 4322B, 5610A, 8690F. Chacun mène à ce qui
+      s'applique à sa famille de métier, parce que c'est à ce niveau que les obligations
+      se ressemblent.`
       : `La nomenclature d'activités française, division par division. Ouvrez un secteur
       pour voir ses textes, ses obligations et les pièges du métier.`}
     </p>
@@ -1464,7 +1464,7 @@ function appSecteurs(V, METIERS, NAF) {
   return page({
     titre: `Trouvez votre code | ${SITE.nom}`,
     description: NAF
-      ? `Les ${codes.length} codes APE de la nomenclature NAF, et le périmètre de veille de chacun.`
+      ? `Les ${codes.length} codes APE, et ce qui s'applique à chacun.`
       : "Les 88 divisions de la nomenclature NAF et leurs obligations.",
     racine: "../", zone: "app", actif: "secteurs", corps, verrou: true, formule: "cadrage"
   });
@@ -1713,7 +1713,7 @@ function appSecteur(V, PIEGES, METIERS, TEXTES, NAF, C, LIENS, d) {
 ${rubrique({ etiq: "Les textes qui s'appliquent", contenu: `
   <p class="lecture">${propres.length
     ? `${propres.length} texte${propres.length > 1 ? "s" : ""} propre${propres.length > 1 ? "s" : ""} à ce métier, et ${socle.length} du socle commun à toute entreprise. Les premiers d'abord : ce sont eux qui vous distinguent.`
-    : `Ce secteur n'a pas de texte qui lui soit propre : son périmètre est celui du socle commun à toute entreprise, ${socle.length} textes.`}
+    : `Ce secteur n'a pas de texte qui lui soit propre : ce qui s'y applique, c'est le socle commun à toute entreprise, ${socle.length} textes.`}
   Pour chacun, ce qu'il exige et où le lire — sans quitter la page.</p>
 
   ${propres.length ? `<p class="etiq" style="margin-top:var(--t5)">Propres à ce métier</p>
@@ -1739,8 +1739,8 @@ ${rubrique({ etiq: "Ce qu'il faut tenir, domaine par domaine", aplat: true, cont
   </div>`).join("\n")}` })}
 
 ${declencheurs.length ? rubrique({ etiq: "Contexte", aplat: true, contenu: `
-  <p class="lecture">Cochez ce qui est vrai pour l'entreprise : les domaines correspondants
-  s'ajoutent au périmètre ci-dessus.</p>
+  <p class="lecture">Cochez ce qui est vrai pour l'entreprise : les sujets qui vont avec
+  s'ajoutent à la liste ci-dessus.</p>
   <ul class="questions" id="declencheurs" style="margin-top:var(--t4)">
     ${declencheurs.map((q) => `<li><label class="question">
       <input type="checkbox" data-domaines="${esc(q.domaines.join(" "))}">
@@ -1753,7 +1753,7 @@ ${apes.length ? rubrique({ etiq: "Les codes APE de cette division", aplat: true,
   <details class="pliant" id="pliant-ape">
     <summary>
       <span class="titre">Voir les ${apes.length} codes APE de la division ${esc(d.c)}</span>
-      <span class="precision">Tous relèvent du même périmètre de veille : c'est à ce niveau que les obligations se ressemblent.</span>
+      <span class="precision">Les mêmes textes s'appliquent à tous : c'est à ce niveau que les obligations se ressemblent.</span>
       ${chevron}
     </summary>
     <ul class="puces codes-ape" style="margin-top:var(--t4)">
@@ -2018,16 +2018,26 @@ function mobile(ECRANS, nom, alt) {
        </figure>`;
 }
 
-/* À côté d'une capture : ce que le client doit savoir, pas un lien. L'accueil
-   sert à nous connaître et à connaître le site ; on n'entre dans l'application
-   que par « Connexion » ou « Démarrer un abonnement ». */
-function vitrine(ECRANS, { image, alt, titre, texte, faits = [] }) {
+/* À côté d'une capture : le texte, puis un bouton qui déplie de quoi en savoir
+   plus, sur place. L'accueil sert à nous connaître et à connaître le site ; on
+   n'entre dans l'application que par « Connexion » ou « Démarrer un
+   abonnement ». Le panneau est un <details> : sans JavaScript, il s'ouvre et
+   se ferme pareil. Ses encarts vont par quatre, en deux et deux. */
+function vitrine(ECRANS, { image, alt, titre, texte, bouton = "", encarts = [] }) {
   return `<article class="vitrine" data-paraitre>
   ${portable(ECRANS, image, alt)}
   <div class="vitrine-texte">
     <h2>${titre}</h2>
     <p>${texte}</p>
-    ${faits.length ? `<ul class="faits-vitrine">${faits.map((f) => `<li><span>${f}</span></li>`).join("")}</ul>` : ""}
+    ${encarts.length ? `<details class="en-savoir-plus">
+      <summary class="bouton bouton-accent">${esc(bouton)}</summary>
+      <div class="infos-encarts">
+        ${encarts.map((e) => `<section class="info-encart">
+          <h3>${esc(e.titre)}</h3>
+          <ul>${e.lignes.map((l) => `<li>${l}</li>`).join("")}</ul>
+        </section>`).join("")}
+      </div>
+    </details>` : ""}
   </div>
 </article>`;
 }
@@ -2043,7 +2053,7 @@ function questionsSimulateur(declencheurs) {
    rencontre le plus. L'index des 88 est dans l'application. */
 const VITRINE_SECTEURS = ["43", "41", "10", "56", "47", "49", "52", "20", "25", "81", "86", "85"];
 
-function pageAccueil(V, D, METIERS, ECRANS) {
+function pageAccueil(V, D, METIERS, ECRANS, C = null, NAF = null, SOURCES = []) {
   const nbDomaines = Object.keys(V.domaines).length;
   const defaut = "43";                      // Travaux de construction spécialisés
   const divDefaut = V.divisions.filter((d) => d.c === defaut)[0] || V.divisions[0];
@@ -2260,24 +2270,59 @@ function pageAccueil(V, D, METIERS, ECRANS) {
       texte: `Une veille qui remonte tout ne se lit plus, et le texte qui comptait se perd.
         Ici le tri est fait avant, sur votre métier : chaque texte arrive avec ce qu'il change
         chez vous et ce qu'il faut faire.`,
-      faits: [
-        "Relevé <strong>toutes les heures</strong> sur les sources officielles, Journal officiel en tête",
-        "Le <strong>texte entier</strong> dans la page, à côté de sa source — rien à aller chercher",
-        "Pour chaque texte, <strong>ce que vous devez faire</strong>, en une liste"
+      bouton: "En savoir plus sur le site",
+      encarts: [
+        { titre: "D'où viennent les textes", lignes: [
+          `Relevés <strong>toutes les heures</strong>, automatiquement`,
+          `Sur ${SOURCES.filter((x) => x.confirme).length} sources officielles vérifiées, Journal officiel en tête`,
+          C ? `${C.codes.length} codes relus chaque jour, article par article — ${C.morceaux.reduce((n, m) => n + m.articles.length, 0).toLocaleString("fr-FR")} articles` : `Les codes consolidés, relus chaque jour`
+        ] },
+        { titre: "Ce que vous voyez pour chaque texte", lignes: [
+          `Le <strong>texte entier</strong>, tel que publié, à côté de sa source`,
+          `<strong>Ce que vous devez faire</strong>, en liste`,
+          `Sa date, et la marque « Nouveau » s'il vient d'arriver`
+        ] },
+        { titre: "Seulement ce qui vous concerne", lignes: [
+          `${V.divisions.length} familles de métiers, ${NAF ? NAF.codes.length + " codes APE" : "chacune avec sa fiche"}`,
+          `${Object.keys(V.domaines).length} sujets à suivre, rangés en cinq familles`,
+          `Santé & sécurité, hygiène, social, environnement, métier & gestion`
+        ] },
+        { titre: "Ce que vous gardez", lignes: [
+          `Un registre daté de chaque revue, décision et action`,
+          `Chaque fiche s'enregistre en PDF`,
+          `L'application s'installe sur le téléphone et marche sans réseau`
+        ] }
       ]
     })}
 
     ${vitrine(ECRANS, {
       image: "registre.png",
       alt: "Le registre de preuves : revues, décisions et actions, chronologiques et datées.",
-      titre: "Qui vous accompagne",
-      texte: `Pierrel &amp; Co est un cabinet de conseil en organisation et conformité, à
-        ${esc(SITE.ville)}. On met votre veille en place, on la tient avec vous, et on en garde
-        la preuve — ce registre, daté, qui s'imprime tel quel pour l'audit.`,
-      faits: [
-        "<strong>Clément Pierrel</strong>, un seul interlocuteur, qui connaît votre site et vient dessus",
-        `${esc(SITE.zone)}`,
-        "Préparation d'audit : <strong>ISO 14001, ISO 45001, MASE, Qualiopi</strong>"
+      titre: "Ce qu'un auditeur demande vraiment",
+      texte: `L'écart le plus souvent relevé en audit n'est pas l'absence de veille : c'est la
+        veille faite et jamais écrite. Tout est daté et conservé, et s'imprime tel quel.`,
+      bouton: "En savoir plus sur nous",
+      encarts: [
+        { titre: "Le cabinet", lignes: [
+          `<strong>${esc(SITE.nom)}</strong>, conseil en organisation et conformité`,
+          `Installé à ${esc(SITE.ville)}`,
+          `Zone d'intervention : ${esc(SITE.zone)}`
+        ] },
+        { titre: "Votre interlocuteur", lignes: [
+          `<strong>Clément Pierrel</strong>`,
+          `Un interlocuteur unique, pas un abonnement anonyme`,
+          `Il connaît votre site, et il vient dessus`
+        ] },
+        { titre: "Ce qu'on fait pour vous", lignes: [
+          `<strong>Le cadrage</strong> : une demi-journée chez vous, puis le document écrit`,
+          `<strong>La veille tenue</strong> : on vous prévient dès qu'un texte vous concerne`,
+          `<strong>Les preuves</strong> : le registre, et une revue annuelle sur place`
+        ] },
+        { titre: "Les audits qu'on prépare", lignes: [
+          `ISO 14001 et ISO 45001`,
+          `MASE et Qualiopi`,
+          `Prix affichés sur la <a href="abonnement.html">page des tarifs</a>, sans devis`
+        ] }
       ]
     })}
   </div>
@@ -2494,8 +2539,8 @@ function pageAbonnement(V) {
         <span class="numero" aria-hidden="true">—</span>
         <h3>Les démarches à votre place</h3>
         <p>Les déclarations auprès de l'administration restent les vôtres. Plusieurs
-        établissements, groupes, secteurs très réglementés : sur devis, le périmètre
-        change tout.</p>
+        établissements, groupes, secteurs très réglementés : sur devis, parce que ce qui
+        s'applique change tout.</p>
       </li>
     </ul>
   </div>
@@ -2630,7 +2675,7 @@ function donneesAvis(V, D, C) {
     t: `Article ${c.num} — ${c.codeTitre || "code suivi"}`,
     q: (c.quoi === "modifie"
       ? `Le texte a changé : « … ${String(c.apres || "").slice(0, 110)} … »`
-      : c.quoi === "nouveau" ? "Entre dans votre périmètre." : "Sort de votre périmètre.") +
+      : c.quoi === "nouveau" ? "Vous concerne désormais." : "Ne vous concerne plus.") +
       (c.depuis ? ` En vigueur depuis le ${dateFr(c.depuis)}.` : ""),
     dom: c.codeTitre || "Codes suivis",
     u: ficheDuMorceau(c.morceau),
@@ -2904,7 +2949,7 @@ async function main() {
     `${process.env.COMMIT_REF || "local"}\n${new Date().toISOString()}\n`);
   console.log(`  cache du worker     pco-${version}`);
 
-  await writeFile(join(SORTIE, "index.html"), pageAccueil(V, D, METIERS, ECRANS));
+  await writeFile(join(SORTIE, "index.html"), pageAccueil(V, D, METIERS, ECRANS, C, NAF, SOURCES));
   await writeFile(join(SORTIE, "abonnement.html"), pageAbonnement(V));
   await writeFile(join(SORTIE, "connexion.html"), pageConnexion());
 

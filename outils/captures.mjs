@@ -16,9 +16,24 @@
    chemin de Chromium est passé par la variable CHROMIUM si besoin.
    ========================================================================== */
 
-import { chromium } from "/tmp/claude-0/-home-user-site-avec-papa/029eaf86-024b-5d15-a09c-b072079f1bba/scratchpad/node_modules/playwright/index.mjs";
-import { dirname, resolve } from "node:path";
+import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { createRequire } from "node:module";
+import { execFileSync } from "node:child_process";
+
+/* Playwright n'est pas une dépendance du site. On le prend là où il est : à
+   côté du projet s'il y a été installé, sinon dans l'installation globale de
+   npm, ou au chemin donné par la variable PLAYWRIGHT. Un « import » nu ne va
+   pas chercher les paquets globaux — d'où ce détour. Ce fichier portait
+   auparavant le chemin d'un dossier temporaire de session, écrit en dur : il
+   ne marchait que là. */
+async function chargePlaywright() {
+  try { return await import("playwright"); } catch { /* on cherche ailleurs */ }
+  const chemin = process.env.PLAYWRIGHT ||
+    join(execFileSync("npm", ["root", "-g"], { encoding: "utf8" }).trim(), "playwright");
+  return createRequire(import.meta.url)(chemin);
+}
+const { chromium } = await chargePlaywright();
 
 const RACINE = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const BASE = process.env.BASE || "http://127.0.0.1:8080";
