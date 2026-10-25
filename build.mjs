@@ -581,27 +581,34 @@ function ligneReleve(V, C, LIENS, t, racine = "") {
       ${chevron}
     </summary>
     <div class="detail">
-      ${d ? `<p class="lecture">${esc(d.resume)}</p>
-      <div class="detail-grille">
-        <div>
-          <span class="etiq">Ce qu'il faut faire</span>
+      ${d ? `<div class="encarts-fiche">
+        <section class="encart encart-faire">
+          <h4 class="encart-titre"><span class="numero-encart" aria-hidden="true">1</span>Ce que vous devez faire</h4>
           <ul class="a-faire">${(d.actions || []).map((a) => `<li>${esc(a)}</li>`).join("")}</ul>
-        </div>
-        <div>
-          <span class="etiq">Les textes, à la source</span>
+          <p class="rangee">
+            <button type="button" class="bouton bouton-sobre imprimer-fiche">${imprimante} Enregistrer en PDF</button>
+          </p>
+        </section>
+        <section class="encart encart-texte">
+          <h4 class="encart-titre"><span class="numero-encart" aria-hidden="true">2</span>Ce que ça change</h4>
+          <p class="lecture" style="margin:0">${esc(d.resume)}</p>
+        </section>
+        <section class="encart encart-source encart-large">
+          <h4 class="encart-titre">Les textes, à la source</h4>
           <ul>${d.textes.map((ref) => {
             const L = lienDuTexte(C, LIENS, ref);
-            return `<li><a href="${racine}texte/${slug(ref)}.html">${esc(ref)}</a><br>
+            return `<li><a href="${racine}texte/${slug(ref)}.html">${esc(ref)}</a> —
               <a class="lien-officiel" href="${esc(L.url)}" target="_blank" rel="noopener"
                  title="${esc(L.quoi)}">${esc(intituleDuLien(L))} ${sortant}</a></li>`;
           }).join("")}</ul>
-        </div>
-      </div>` : ""}
-      <p class="rangee" style="margin-top:var(--t4)">
+          <p class="rangee" style="margin-top:var(--t3)">
+            <a class="lien-fleche" href="${racine}plan.html">Voir ce sujet dans mon plan ${fleche}</a>
+            ${division ? `<a class="lien-fleche" href="${racine}secteur/${esc(division)}.html">Voir la fiche de mon métier ${fleche}</a>` : ""}
+          </p>
+        </section>
+      </div>` : `<p class="rangee" style="margin-top:var(--t4)">
         <button type="button" class="bouton bouton-sobre imprimer-fiche">${imprimante} Enregistrer en PDF</button>
-        <a class="lien-fleche" href="${racine}plan.html">Voir ce domaine dans le plan ${fleche}</a>
-        ${division ? `<a class="lien-fleche" href="${racine}secteur/${esc(division)}.html">Ouvrir la fiche de secteur ${fleche}</a>` : ""}
-      </p>
+      </p>`}
     </div>
   </details>
 </li>`;
@@ -1008,25 +1015,35 @@ function ligneJO(V, t, i, releveLe = "") {
       ${chevron}
     </summary>
     <div class="detail">
-      ${actions.length ? `<p class="etiq">Ce qu'il faut faire</p>
-      <ul class="a-faire">${actions.map((a) => `<li>${esc(a)}</li>`).join("")}</ul>` : ""}
-      <p class="etiq" style="margin-top:var(--t4)">${droit ? "Texte intégral, tel que publié" : "Ce qu'en dit la source"}</p>
-      <div class="texte-officiel">${esc(String(t.corps || "")).replace(/\n/g, "<br>")}</div>
-      ${t.nota ? `<p class="note-source"><strong>Nota.</strong> ${esc(t.nota)}</p>` : ""}
-      <p class="note-source">
-        Source : ${esc(t.sourceNom)}. ${droit
-          ? "Texte officiel de la République française, sous Licence Ouverte."
-          : "Publication officielle, reproduite avec sa source et sa date — ce n'est pas du droit, c'est un commentaire officiel."}
-        ${quand !== vu ? `Texte du ${esc(dateFr(quand))}, relevé le ${esc(dateFr(vu))}`
-                       : `Publié le ${esc(dateFr(quand))}`}${
-          t.id && !/^http/.test(t.id) ? ` — identifiant ${esc(t.id)}` : ""}.
-        ${t.morceaux > 1 ? `Recollé à partir de ${t.morceaux} fichiers de l'archive.` : ""}
-        ${t.lien ? `<a href="${esc(t.lien)}" target="_blank" rel="noopener">Voir chez la source ${sortant}</a>` : ""}
-        En cas de doute, c'est la source qui fait foi.
-      </p>
-      <p class="rangee" style="margin-top:var(--t4)">
-        <button type="button" class="bouton bouton-sobre imprimer-fiche">${imprimante} Enregistrer en PDF</button>
-      </p>
+      <div class="encarts-fiche">
+        <section class="encart encart-faire">
+          <h4 class="encart-titre"><span class="numero-encart" aria-hidden="true">1</span>Ce que vous devez faire</h4>
+          ${actions.length
+            ? `<ul class="a-faire">${actions.map((a) => `<li>${esc(a)}</li>`).join("")}</ul>`
+            : `<p>Rien à faire de votre côté : ce texte est à connaître, pas à appliquer.</p>`}
+          <p class="rangee">
+            <button type="button" class="bouton bouton-sobre imprimer-fiche">${imprimante} Enregistrer en PDF</button>
+          </p>
+        </section>
+        <section class="encart encart-texte">
+          <h4 class="encart-titre"><span class="numero-encart" aria-hidden="true">2</span>${droit ? "Le texte, tel que publié" : "Ce qu'en dit la source"}</h4>
+          <div class="texte-officiel">${esc(String(t.corps || "")).replace(/\n/g, "<br>")}</div>
+          ${t.nota ? `<p class="note-source"><strong>Nota.</strong> ${esc(t.nota)}</p>` : ""}
+        </section>
+        <section class="encart encart-source encart-large">
+          <h4 class="encart-titre">D'où vient ce texte</h4>
+          <p>
+            ${esc(t.sourceNom)} — ${droit
+              ? "texte officiel de la République française, sous Licence Ouverte."
+              : "publication officielle, reproduite avec sa source et sa date. Ce n'est pas du droit, c'est un commentaire officiel."}
+            ${quand !== vu ? `Texte du ${esc(dateFr(quand))}, relevé le ${esc(dateFr(vu))}`
+                           : `Publié le ${esc(dateFr(quand))}`}${
+              t.id && !/^http/.test(t.id) ? ` — identifiant ${esc(t.id)}` : ""}.
+            ${t.lien ? `<a href="${esc(t.lien)}" target="_blank" rel="noopener">Voir chez la source ${sortant}</a>` : ""}
+            En cas de doute, c'est la source qui fait foi.
+          </p>
+        </section>
+      </div>
     </div>
   </details>
 </li>`;
@@ -1767,9 +1784,8 @@ function appReglages(V, D, NAF, METIERS) {
     </ul>
     <h1>Mon entreprise et mes alertes</h1>
     <p class="chapeau">
-      Décrivez votre entreprise une fois : le périmètre de veille se recalcule dessus,
-      et les textes visent juste. Réglez ensuite ce que vous voulez recevoir, et à quel
-      rythme.
+      Dites qui vous êtes : on en déduit ce qui vous concerne. Puis choisissez ce que
+      vous voulez recevoir.
     </p>
 
     <div class="bascule" role="tablist" aria-label="Réglages" data-bascule style="margin-inline:0">
@@ -1784,27 +1800,28 @@ function appReglages(V, D, NAF, METIERS) {
   <div class="enveloppe">
     <h2 class="cache-visuellement">Mon entreprise</h2>
     <p class="reserve">
-      <strong>Rien de ceci ne quitte votre navigateur.</strong>
-      Il n'y a pas encore de serveur : ces informations sont gardées sur cet appareil
-      seulement, ne sont transmises à personne, et disparaissent si vous videz les
-      données du site. N'y mettez rien que vous ne voudriez pas y retrouver.
+      <strong>Tout reste sur cet appareil.</strong> Rien n'est envoyé à personne ; si vous
+      videz les données du navigateur, il faudra tout ressaisir.
     </p>
 
-    <div class="simulateur" style="margin-top:var(--t5)">
-      <form class="reglages" id="form-entreprise" novalidate>
+    <div class="simulateur simulateur-reglages" style="margin-top:var(--t5)">
+      <form class="reglages reglages-entreprise" id="form-entreprise" novalidate>
         <div class="reglage">
-          <label class="etiq" for="e-nom">Raison sociale</label>
+          <label class="etiq" for="e-nom">Nom de l'entreprise</label>
           <input type="text" id="e-nom" name="nom" placeholder="${esc(D.entreprise.nom)}" autocomplete="organization">
         </div>
-        ${NAF ? `<div class="reglage">
-          <label class="etiq" for="e-activite">Votre activité, en vos mots</label>
+        <div class="reglage">
+          <label class="etiq" for="e-ville">Commune</label>
+          <input type="text" id="e-ville" name="ville" placeholder="${esc(D.entreprise.ville)}" autocomplete="address-level2">
+        </div>
+        ${NAF ? `<div class="reglage reglage-large">
+          <label class="etiq" for="e-activite">Ce que vous faites, en vos mots</label>
           <input type="text" id="e-activite" name="activite" autocomplete="off" spellcheck="false"
                  placeholder="plomberie chauffage, boulangerie, transport de marchandises…">
-          <p class="precision">Écrivez ce que vous faites : le site cherche votre code APE
-          parmi les ${NAF.codes.length} de la nomenclature.</p>
+          <p class="precision">Écrivez-le comme vous le diriez : on trouve votre code APE.</p>
           <div class="propositions" id="e-propositions" hidden></div>
         </div>` : ""}
-        <div class="reglage">
+        <div class="reglage reglage-large">
           <label class="etiq" for="e-naf">${NAF ? "Votre code APE" : "Activité principale (NAF)"}</label>
           <select id="e-naf" name="naf">
             ${NAF
@@ -1819,12 +1836,8 @@ function appReglages(V, D, NAF, METIERS) {
               ${g.divisions.map((d) => `<option value="${esc(d.c)}"${d.c === D.entreprise.naf ? " selected" : ""}>${esc(d.c)} — ${esc(d.l)}</option>`).join("")}
             </optgroup>`).join("")}
           </select>
-          ${NAF ? `<p class="precision" id="e-division">Il figure sur votre avis de situation
-          INSEE et sur vos bulletins de paie. Le périmètre se calcule sur sa division.</p>` : ""}
-        </div>
-        <div class="reglage">
-          <label class="etiq" for="e-ville">Commune de l'établissement</label>
-          <input type="text" id="e-ville" name="ville" placeholder="${esc(D.entreprise.ville)}" autocomplete="address-level2">
+          ${NAF ? `<p class="precision" id="e-division">Il est sur votre avis de situation INSEE
+          et sur vos bulletins de paie.</p>` : ""}
         </div>
         <div class="reglage">
           <label class="etiq" for="e-effectif">Effectif</label>
@@ -1832,23 +1845,23 @@ function appReglages(V, D, NAF, METIERS) {
                  placeholder="${esc(D.entreprise.effectif)}" inputmode="numeric">
         </div>
         <div class="reglage">
-          <label class="etiq" for="e-responsable">Responsable de la veille</label>
+          <label class="etiq" for="e-responsable">Qui s'en occupe chez vous</label>
           <input type="text" id="e-responsable" name="responsable" placeholder="${esc(D.entreprise.responsable)}" autocomplete="name">
         </div>
-        <div class="reglage">
-          <span class="etiq">Ce qui est vrai chez vous</span>
-          <div class="cases" id="e-contexte"></div>
+        <div class="reglage reglage-large">
+          <span class="etiq">Cochez ce qui est vrai chez vous</span>
+          <div class="cases cases-ouvertes" id="e-contexte"></div>
         </div>
-        <p class="rangee">
+        <p class="rangee reglage-large">
           <button type="submit" class="bouton bouton-accent">Enregistrer</button>
-          <button type="button" class="bouton bouton-sobre" id="e-reinit">Revenir au jeu d'essai</button>
+          <button type="button" class="bouton bouton-sobre" id="e-reinit">Tout effacer et revenir à l'exemple</button>
         </p>
-        <p class="etiq" id="e-etat" role="status"></p>
+        <p class="etiq reglage-large" id="e-etat" role="status"></p>
       </form>
 
       <div class="resultat">
         <h3 id="e-titre">${esc(D.entreprise.nom)}</h3>
-        <p>Le périmètre que ces informations donnent, calculé comme dans le plan de veille.</p>
+        <p>Ce qui vous concerne, d'après ces informations.</p>
         <hr class="filet">
         <ul class="coup-d-oeil">
           <li>
@@ -1878,21 +1891,19 @@ function appReglages(V, D, NAF, METIERS) {
   <div class="enveloppe">
     <h2 class="cache-visuellement">Mes alertes</h2>
     <p class="reserve">
-      <strong>Aucun courriel ne part aujourd'hui.</strong>
-      L'envoi suppose un serveur, qui n'est pas en place. Ce que vous réglez ici est
-      gardé dans votre navigateur et servira de réglage le jour où l'envoi sera branché.
-      En attendant, l'aperçu ci-contre montre exactement ce que vous recevriez.
+      <strong>Aucun courriel ne part encore.</strong> Vos réglages sont gardés pour le jour
+      où l'envoi sera branché ; l'aperçu montre ce que vous recevrez.
     </p>
 
-    <div class="simulateur" style="margin-top:var(--t5)">
+    <div class="simulateur simulateur-reglages" style="margin-top:var(--t5)">
       <form class="reglages" id="form-alertes" novalidate>
         <div class="reglage">
-          <label class="etiq" for="a-courriel">Adresse de réception</label>
+          <label class="etiq" for="a-courriel">Votre adresse e-mail</label>
           <input type="email" id="a-courriel" name="courriel" placeholder="prenom@entreprise.fr"
                  inputmode="email" spellcheck="false" autocomplete="email">
         </div>
         <div class="reglage">
-          <label class="etiq" for="a-rythme">Rythme d'envoi</label>
+          <label class="etiq" for="a-rythme">Quand recevoir</label>
           <select id="a-rythme" name="rythme">
             <option value="immediat">À chaque texte relevé</option>
             <option value="quotidien">Un résumé par jour</option>
@@ -1901,16 +1912,16 @@ function appReglages(V, D, NAF, METIERS) {
           </select>
         </div>
         <div class="reglage">
-          <label class="etiq" for="a-seuil">Ce qui déclenche un envoi</label>
+          <label class="etiq" for="a-seuil">Quels textes</label>
           <select id="a-seuil" name="seuil">
-            <option value="tout" selected>Tout texte qui touche mon périmètre</option>
-            <option value="prioritaire">Seulement les textes prioritaires</option>
+            <option value="tout" selected>Tous ceux qui me concernent</option>
+            <option value="prioritaire">Seulement les plus importants</option>
             <option value="action">Seulement ceux qui demandent une action</option>
           </select>
         </div>
         <div class="reglage">
-          <span class="etiq">Aussi</span>
-          <div class="cases">
+          <span class="etiq">En plus</span>
+          <div class="cases cases-ouvertes">
             <label class="case">
               <input type="checkbox" id="a-revues" checked>
               <span><span class="intitule">Me rappeler les revues à faire</span>
@@ -1919,7 +1930,7 @@ function appReglages(V, D, NAF, METIERS) {
             <label class="case">
               <input type="checkbox" id="a-pdf" checked>
               <span><span class="intitule">Joindre la fiche de chaque texte</span>
-              <span class="aide">En PDF, prête à classer dans le dossier d'audit.</span></span>
+              <span class="aide">En PDF, prête à ranger dans votre dossier.</span></span>
             </label>
           </div>
         </div>
@@ -1931,12 +1942,11 @@ function appReglages(V, D, NAF, METIERS) {
 
       <div class="resultat">
         <h3>Aperçu du courriel</h3>
-        <p>Ce que vous recevriez, avec vos réglages et le relevé de la démonstration.</p>
+        <p>Ce que vous recevrez, avec ces réglages.</p>
         <hr class="filet">
         <div class="apercu-courriel" id="a-apercu"></div>
         <p class="note-source">
-          Maquette rendue dans la page. Rien n'est envoyé, et l'adresse saisie ne quitte
-          pas ce navigateur.
+          Un aperçu : rien n'est envoyé, et votre adresse reste sur cet appareil.
         </p>
       </div>
     </div>
@@ -2153,6 +2163,72 @@ function pageAccueil(V, D, METIERS, ECRANS) {
         <p class="legende">les certifications qui exigent une veille : ISO 14001, ISO 45001, MASE, Qualiopi</p>
       </div>
     </div>
+  </div>
+</section>
+
+<section class="section section-tein">
+  <div class="enveloppe">
+    <h2 class="titre-section">Un outil pour chaque façon de travailler</h2>
+
+    <div class="bascule" role="tablist" aria-label="Profil" data-bascule>
+      <span class="bascule-curseur" aria-hidden="true"></span>
+      <button type="button" role="tab" id="onglet-dirigeant" aria-selected="true" aria-controls="profil-dirigeant">Dirigeant</button>
+      <button type="button" role="tab" id="onglet-qhse" aria-selected="false" aria-controls="profil-qhse">Responsable QHSE</button>
+    </div>
+
+    <ul class="traits" id="profil-dirigeant" role="tabpanel" aria-labelledby="onglet-dirigeant">
+      <li class="trait">
+        <svg class="icone" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 7v5l3 2"/><circle cx="12" cy="12" r="9"/></svg>
+        <div><h3>Ce qui est en retard, tout de suite</h3>
+        <p>Le tableau de bord s'ouvre sur les revues en retard, les textes qui attendent
+        une décision et les actions ouvertes. Pas de fil d'actualité à éplucher.</p></div>
+      </li>
+      <li class="trait">
+        <svg class="icone" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h14v16l-7-3-7 3Z"/><path d="M9 9h6"/></svg>
+        <div><h3>Ce qui vous concerne, écrit noir sur blanc</h3>
+        <p>Votre plan dit quels sujets s'appliquent, à quel rythme les revoir et qui
+        s'en occupe. C'est un document, pas une conversation.</p></div>
+      </li>
+      <li class="trait">
+        <svg class="icone" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 20V9l9-5 9 5v11"/><path d="M9 20v-6h6v6"/></svg>
+        <div><h3>De quoi répondre à un donneur d'ordre</h3>
+        <p>Les fiches de secteur situent un client ou un sous-traitant en deux minutes :
+        ce qui s'applique chez lui, et ce qu'il devrait pouvoir montrer.</p></div>
+      </li>
+      <li class="trait">
+        <svg class="icone" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 18V6m5 12V10m5 8V4m5 14v-7"/></svg>
+        <div><h3>Un prix affiché</h3>
+        <p>Les offres comparables sont presque toutes « sur devis ». La grille est sur
+        la page des tarifs, sans formulaire à remplir d'abord.</p></div>
+      </li>
+    </ul>
+
+    <ul class="traits" id="profil-qhse" role="tabpanel" aria-labelledby="onglet-qhse" hidden>
+      <li class="trait">
+        <svg class="icone" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16M7 12h10m-7 7h4"/></svg>
+        <div><h3>Le tri est fait en amont</h3>
+        <p>Seuls les textes qui vous concernent arrivent, chacun avec ce qu'il change
+        chez vous. Ceux qu'on écarte sont notés, avec la raison.</p></div>
+      </li>
+      <li class="trait">
+        <svg class="icone" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 12l2 2 4-5"/><rect x="4" y="3" width="16" height="18" rx="2"/></svg>
+        <div><h3>Le registre que l'auditeur demande</h3>
+        <p>Chaque revue, chaque décision, chaque action est datée et conservée.
+        Une ligne ne se réécrit pas : une correction s'ajoute. Il s'imprime tel quel.</p></div>
+      </li>
+      <li class="trait">
+        <svg class="icone" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M12 3v3m0 12v3M3 12h3m12 0h3M5.6 5.6l2.1 2.1m8.6 8.6 2.1 2.1m0-12.8-2.1 2.1M7.7 16.3l-2.1 2.1"/></svg>
+        <div><h3>Votre situation change la liste</h3>
+        <p>${V.declencheurs.length} questions — installation classée, amiante, appareils de levage,
+        transport de marchandises — ajoutent les sujets qui vont avec.</p></div>
+      </li>
+      <li class="trait">
+        <svg class="icone" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 3 7v5c0 5 3.8 8.3 9 9 5.2-.7 9-4 9-9V7Z"/></svg>
+        <div><h3>Les sources sont citées</h3>
+        <p>Chaque sujet porte ses textes et les sources officielles où les vérifier.
+        Rien ne vous est demandé sur parole.</p></div>
+      </li>
+    </ul>
   </div>
 </section>
 

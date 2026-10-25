@@ -226,7 +226,11 @@ img { height: auto; display: block; }
 /* --- 3. Trame ---------------------------------------------------------- */
 .enveloppe {
   width: 100%;
-  max-width: 76rem;
+  /* Large : sur un écran de 1920 px, 76 rem en laissaient 37 % vides et
+     serraient les tableaux et les fiches. La lecture reste bornée en
+     caractères, plus bas — c'est la place des cases qui grandit, pas la
+     longueur des lignes. */
+  max-width: 114rem;
   margin-inline: auto;
   padding-inline: clamp(1rem, .4rem + 2.4vw, 2.5rem);
 }
@@ -881,6 +885,28 @@ img { height: auto; display: block; }
 }
 
 .reglages { display: grid; gap: var(--t3); }
+
+/* --- Réglages : un formulaire qui a de la place ------------------------------
+   Le simulateur de l'accueil garde sa colonne étroite : on y choisit une chose.
+   Dans Réglages on remplit une fiche entière, et 21 rem coupaient le code APE
+   au milieu d'un mot (« Travaux de démolitic ») et enfermaient les cases à
+   cocher dans une boîte qui défile. Le formulaire prend donc la moitié de la
+   largeur, ses champs courts vont deux par deux, et tout se lit sans faire
+   défiler quoi que ce soit à l'intérieur. */
+@media (min-width: 64rem) {
+  .simulateur-reglages { grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); }
+  .simulateur-reglages .reglages { position: static; }
+}
+@media (min-width: 40rem) {
+  .reglages-entreprise { grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: start; }
+  .reglages-entreprise > .reglage-large { grid-column: 1 / -1; }
+}
+/* Deux classes : la règle « .cases » vient plus bas dans le fichier, et à
+   force égale c'est elle qui l'emportait — la liste restait coupée. */
+.cases.cases-ouvertes { max-height: none; overflow: visible; mask-image: none; }
+@media (min-width: 40rem) {
+  .cases.cases-ouvertes { grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: var(--t4); }
+}
 .reglage {
   background: var(--carte);
   border: 1px solid var(--filet);
@@ -1371,6 +1397,58 @@ details[open] > summary .chevron { transform: rotate(180deg); }
   white-space: normal; overflow-wrap: anywhere;
   scrollbar-width: thin;
 }
+
+/* --- Les cases d'une fiche ouverte -------------------------------------------
+   Une fiche ouverte empilait tout à la suite : ce qu'il faut faire, le texte,
+   la source, le bouton — et rien ne séparait l'un de l'autre. Chaque chose a
+   maintenant sa case, avec son titre : on ne confond plus « ce que je dois
+   faire » avec « ce que dit le texte ». Sur grand écran, ce qu'il faut faire
+   est à gauche, le texte à droite ; sur téléphone, l'un sous l'autre, dans
+   le même ordre — l'action d'abord. */
+.encarts-fiche {
+  display: grid; gap: var(--t4); margin-top: var(--t4);
+  grid-template-columns: minmax(0, 1fr);
+}
+@media (min-width: 62rem) {
+  .encarts-fiche { grid-template-columns: minmax(18rem, 2fr) minmax(0, 3fr); align-items: start; }
+  .encarts-fiche > .encart-large { grid-column: 1 / -1; }
+}
+.encart {
+  min-width: 0;
+  padding: var(--t4);
+  border: 1px solid var(--filet);
+  border-radius: var(--r2);
+  background: var(--carte);
+}
+.encart-titre {
+  display: flex; align-items: center; gap: .55rem;
+  margin: 0 0 var(--t3);
+  font-size: 1.02rem; font-weight: 700; line-height: 1.3;
+  color: var(--encre);
+}
+.encart-titre .numero-encart {
+  display: inline-grid; place-items: center;
+  width: 1.55rem; height: 1.55rem; flex: none;
+  border-radius: 50%;
+  font-size: .82rem; font-weight: 700;
+  background: var(--accent); color: #fff;
+}
+/* La case de l'action se voit la première. */
+.encart-faire { background: var(--accent-clair); border-color: var(--accent-filet); }
+.encart-faire .a-faire { margin-top: 0; }
+.encart-faire .a-faire li { margin-bottom: .45rem; }
+.encart-faire .rangee { margin-top: var(--t4); }
+/* La source : en retrait, c'est une référence, pas une consigne. */
+.encart-source { background: var(--papier-pale); }
+.encart-source p { margin: 0; font-size: .92rem; color: var(--encre-douce); }
+/* Dans son encart, le texte officiel n'a plus besoin de sa propre boîte. */
+.encart .texte-officiel {
+  margin-top: 0; padding: 0;
+  background: none; border: 0; border-radius: 0;
+  max-height: 34rem;
+  max-width: 88ch;
+}
+.encart ul { margin-bottom: 0; }
 
 .detail-grille { display: grid; gap: var(--t4); margin-top: var(--t4); }
 @media (min-width: 52rem) { .detail-grille { grid-template-columns: repeat(2, minmax(0, 1fr)); } }

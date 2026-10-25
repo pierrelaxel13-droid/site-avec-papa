@@ -254,9 +254,8 @@
       if (!ligne) return;
       var div = P.div[division(champs.naf.value)];
       ligne.textContent = div
-        ? "Division " + division(champs.naf.value) + " — " + div.l +
-          ". C'est à ce niveau que se calcule ce qui vous concerne."
-        : "Il figure sur votre avis de situation INSEE et sur vos bulletins de paie.";
+        ? "Votre famille de métier : " + div.l + " (" + division(champs.naf.value) + ")."
+        : "Il est sur votre avis de situation INSEE et sur vos bulletins de paie.";
     }
 
     function contexteCoche() {
@@ -331,7 +330,7 @@
       };
       var ok = ecrire(CLE_E, o);
       etat.textContent = ok
-        ? "Enregistré dans ce navigateur. Le plan de veille suit désormais ces informations."
+        ? "Enregistré. Votre plan suit maintenant ces informations."
         : "Impossible d'enregistrer : le stockage du navigateur est refusé ou plein.";
     });
 
