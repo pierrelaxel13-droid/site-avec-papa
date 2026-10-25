@@ -17,7 +17,7 @@ Vérification de 25 sources.
   ecologie         répond — 10 entrées
   ineris-aida      répond — 10 entrées
   ademe            répond — 93 entrées
-  rappelconso      HTTP 404
+  rappelconso      répond — 100 entrées
   dgccrf           répond — 20 entrées
   anses            répond — 10 entrées
   entreprendre     répond — 235 entrées
@@ -32,5 +32,5 @@ Vérification de 25 sources.
   douane           répond — 10 entrées
   boamp            HTTP 404
 
-18 source(s) sur 25 exploitables.
+19 source(s) sur 25 exploitables.
 Passer « confirme: true » dans contenu/sources.js pour celles-là, et seulement celles-là.

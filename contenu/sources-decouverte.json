@@ -1,5 +1,5 @@
 {
- "le": "2026-10-25T12:18:43.095Z",
+ "le": "2026-10-25T12:29:38.911Z",
  "bilan": [
   {
    "id": "inrs",
@@ -9,8 +9,7 @@
    "flux": [],
    "essais": 11,
    "refus": [
-    "HTTP 404",
-    "injoignable (fetch failed : UND_ERR_SOCKET) — l'hôte refuse le robot, ou le réseau d'ici le bloque"
+    "HTTP 404"
    ]
   },
   {
@@ -32,19 +31,7 @@
    "flux": [],
    "essais": 10,
    "refus": [
-    "injoignable (fetch failed : ECONNRESET) — l'hôte refuse le robot, ou le réseau d'ici le bloque",
-    "injoignable (fetch failed : UND_ERR_SOCKET) — l'hôte refuse le robot, ou le réseau d'ici le bloque"
-   ]
-  },
-  {
-   "id": "rappelconso",
-   "nom": "RappelConso — rappels de produits",
-   "retenue": null,
-   "derniere": null,
-   "flux": [],
-   "essais": 12,
-   "refus": [
-    "HTTP 404"
+    "injoignable (fetch failed : ECONNRESET) — l'hôte refuse le robot, ou le réseau d'ici le bloque"
    ]
   },
   {

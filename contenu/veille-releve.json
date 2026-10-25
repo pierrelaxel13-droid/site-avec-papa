@@ -104,9 +104,9 @@
   {
    "id": "rappelconso",
    "nom": "RappelConso — rappels de produits",
-   "entrees": 0,
-   "retenus": 0,
-   "souci": "HTTP 404"
+   "entrees": 100,
+   "retenus": 3,
+   "souci": null
   },
   {
    "id": "dgccrf",
@@ -162,7 +162,7 @@
    "nom": "ANSM — actualités",
    "entrees": 0,
    "retenus": 0,
-   "souci": "format inattendu — aucune entrée lue"
+   "souci": null
   },
   {
    "id": "douane",
@@ -1462,6 +1462,52 @@
    ],
    "morceaux": 0,
    "dateTexte": "2026-10-21",
+   "vuLe": "2026-10-21"
+  },
+  {
+   "source": "rappelconso",
+   "sourceNom": "RappelConso — rappels de produits",
+   "genre": "actualite",
+   "id": "https://rappel.conso.gouv.fr/fiche-rappel/23833/interne",
+   "titre": "Cookies born to be high — Boomz",
+   "nature": "Publication officielle",
+   "date": "2026-10-21",
+   "corps": "Produit : Divers.\n\nMotif du rappel : Dose d'exposition delta9-thc dépasse la dose de référence.\n\nRisques : Autre risque.\n\nCe qu'il faut faire : Ne plus consommer, détruire le produit.",
+   "lien": "https://rappel.conso.gouv.fr/fiche-rappel/23833/interne",
+   "domaines": [
+    {
+     "id": "rgpd",
+     "nom": "Données personnelles (RGPD)",
+     "mots": [
+      "cookies"
+     ]
+    }
+   ],
+   "morceaux": 1,
+   "dateTexte": "",
+   "vuLe": "2026-10-21"
+  },
+  {
+   "source": "rappelconso",
+   "sourceNom": "RappelConso — rappels de produits",
+   "genre": "actualite",
+   "id": "https://rappel.conso.gouv.fr/fiche-rappel/23835/interne",
+   "titre": "Delta 9 gummies infused 10mg — Cookies",
+   "nature": "Publication officielle",
+   "date": "2026-10-21",
+   "corps": "Produit : Divers.\n\nMotif du rappel : Dose d'exposition delta9-thc dépasse la dose de référence.\n\nRisques : Autre risque.\n\nCe qu'il faut faire : Ne plus consommer, détruire le produit.",
+   "lien": "https://rappel.conso.gouv.fr/fiche-rappel/23835/interne",
+   "domaines": [
+    {
+     "id": "rgpd",
+     "nom": "Données personnelles (RGPD)",
+     "mots": [
+      "cookies"
+     ]
+    }
+   ],
+   "morceaux": 1,
+   "dateTexte": "",
    "vuLe": "2026-10-21"
   },
   {
