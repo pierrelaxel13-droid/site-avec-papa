@@ -59,6 +59,38 @@ jobs:
         with:
           node-version: "22"
 
+      # La Haute Autorité de santé envoie son certificat sans le certificat
+      # intermédiaire qui le relie à une autorité reconnue. Un navigateur va le
+      # chercher tout seul ; Node, non, et refuse la connexion. On fait ce que
+      # fait le navigateur : on télécharge l'intermédiaire à l'adresse que le
+      # certificat indique lui-même, et on ne le garde que si une autorité
+      # racine du système l'a signé ET qu'il signe bien le certificat du site.
+      # La vérification n'est jamais coupée : on lui donne la pièce qui manque.
+      - name: Compléter les chaînes de certificats incomplètes
+        run: |
+          ca="$RUNNER_TEMP/ca"; mkdir -p "$ca"; : > "$ca/intermediaires.pem"
+          racines=/etc/ssl/certs/ca-certificates.crt
+          for hote in www.has-sante.fr; do
+            echo | openssl s_client -connect "$hote:443" -servername "$hote" 2>/dev/null \
+              | openssl x509 > "$ca/feuille.pem" 2>/dev/null || { echo "$hote : pas de certificat lu"; continue; }
+            aia=$(openssl x509 -in "$ca/feuille.pem" -noout -text | grep -m1 'CA Issuers - URI:' | sed 's/.*URI://')
+            [ -n "$aia" ] || { echo "$hote : le certificat n'indique pas son intermédiaire"; continue; }
+            curl -fsS --max-time 20 "$aia" -o "$ca/inter.brut" || { echo "$hote : intermédiaire introuvable"; continue; }
+            openssl x509 -inform DER -in "$ca/inter.brut" -out "$ca/inter.pem" 2>/dev/null \
+              || openssl x509 -in "$ca/inter.brut" -out "$ca/inter.pem" 2>/dev/null \
+              || { echo "$hote : intermédiaire illisible"; continue; }
+            if openssl verify -CAfile "$racines" "$ca/inter.pem" > /dev/null \
+               && openssl verify -CAfile "$racines" -untrusted "$ca/inter.pem" "$ca/feuille.pem" > /dev/null; then
+              cat "$ca/inter.pem" >> "$ca/intermediaires.pem"
+              echo "$hote : chaîne complétée — $(openssl x509 -in "$ca/inter.pem" -noout -subject)"
+            else
+              echo "::warning::$hote : l'intermédiaire téléchargé ne se vérifie pas, il n'est pas utilisé."
+            fi
+          done
+          if [ -s "$ca/intermediaires.pem" ]; then
+            echo "NODE_EXTRA_CA_CERTS=$ca/intermediaires.pem" >> "$GITHUB_ENV"
+          fi
+
       # À la demande seulement : interroger les 25 sources une par une et écrire
       # qui répond. Dix-neuf d'entre elles sont déclarées « confirme: false »
       # parce que leur adresse n'a jamais été vérifiée contre le vrai serveur ;

@@ -46,9 +46,9 @@ window.SOURCES = [
     note: "Données ouvertes de la DILA, sans compte. Contenu intégral de chaque texte." },
 
   { id: "eurlex-l", nom: "Journal officiel de l'Union européenne — série L",
-    type: "rss", genre: "texte", confirme: false,
-    url: "https://eur-lex.europa.eu/EN/display-feed.rss?myRssId=oj-l",
-    vu: "23 octobre 2026 : répond « The RSS feed doesn't exist or is no longer valid » — adresse périmée",
+    type: "rss", genre: "texte", confirme: true,
+    url: "https://eur-lex.europa.eu/FR/display-feed.rss?rssId=165",
+    vu: "25 octobre 2026 : trouvé par la recherche de flux, répond avec des entrées datées — 100 entrées, la plus récente du 22 octobre",
     note: "Règlements et directives, souvent en amont du droit national." },
 
   /* --- Santé et sécurité au travail ---------------------------------------- */
@@ -58,14 +58,14 @@ window.SOURCES = [
     vu: "23 octobre 2026 : renvoie une page HTML, pas un flux — adresse périmée" },
 
   { id: "travail", nom: "Ministère du Travail — actualités",
-    type: "rss", genre: "actualite", confirme: false,
-    url: "https://travail-emploi.gouv.fr/spip.php?page=backend",
-    vu: "23 octobre 2026 : renvoie une page HTML, pas un flux — adresse périmée" },
+    type: "rss", genre: "actualite", confirme: true,
+    url: "https://travail-emploi.gouv.fr/rss.xml",
+    vu: "25 octobre 2026 : trouvé par la recherche de flux, répond avec des entrées datées — 50 entrées, la plus récente du 23 octobre" },
 
   { id: "oppbtp", nom: "OPPBTP — prévention BTP",
-    type: "rss", genre: "actualite", confirme: false,
-    url: "https://www.preventionbtp.fr/rss",
-    vu: "23 octobre 2026 : HTTP 404 — l'adresse n'existe pas" },
+    type: "rss", genre: "actualite", confirme: true,
+    url: "https://www.oppbtp.com/actualites/feed/",
+    vu: "25 octobre 2026 : trouvé par la recherche de flux, répond avec des entrées datées — 10 entrées, la plus récente du 8 octobre ; l'OPPBTP a quitté preventionbtp.fr pour oppbtp.com" },
 
   /* --- Social, paie, fiscal ------------------------------------------------ */
   { id: "boss", nom: "BOSS — Bulletin officiel de la Sécurité sociale",
@@ -98,9 +98,9 @@ window.SOURCES = [
 
   /* --- Environnement ------------------------------------------------------- */
   { id: "ecologie", nom: "Ministère de la Transition écologique",
-    type: "rss", genre: "actualite", confirme: false,
-    url: "https://www.ecologie.gouv.fr/rss.xml",
-    vu: "23 octobre 2026 : HTTP 404 — l'adresse n'existe pas" },
+    type: "rss", genre: "actualite", confirme: true,
+    url: "https://ecologie.gouv.fr/rss-actualites.xml",
+    vu: "25 octobre 2026 : trouvé par la recherche de flux, répond avec des entrées datées — 10 entrées, la plus récente du 23 octobre" },
 
   { id: "ineris-aida", nom: "AIDA — réglementation des installations classées",
     type: "rss", genre: "texte", confirme: false,
@@ -118,20 +118,20 @@ window.SOURCES = [
     url: "https://rappel.conso.gouv.fr/rss" },
 
   { id: "dgccrf", nom: "DGCCRF — actualités",
-    type: "rss", genre: "actualite", confirme: false,
-    url: "https://www.economie.gouv.fr/dgccrf/rss.xml",
-    vu: "23 octobre 2026 : HTTP 403 — l'hôte refuse le robot" },
+    type: "rss", genre: "actualite", confirme: true,
+    url: "https://www.economie.gouv.fr/dgccrf/rss",
+    vu: "25 octobre 2026 : trouvé par la recherche de flux, répond avec des entrées datées — 20 entrées, la plus récente du 23 octobre" },
 
   { id: "anses", nom: "ANSES — avis et actualités",
-    type: "rss", genre: "actualite", confirme: false,
-    url: "https://www.anses.fr/fr/flux-rss.xml",
-    vu: "23 octobre 2026 : HTTP 404 — l'adresse n'existe pas" },
+    type: "rss", genre: "actualite", confirme: true,
+    url: "https://www.anses.fr/rss.xml",
+    vu: "25 octobre 2026 : trouvé par la recherche de flux, répond avec des entrées datées — 10 entrées, la plus récente du 22 octobre" },
 
   /* --- Entreprise, secteurs réglementés ------------------------------------ */
   { id: "entreprendre", nom: "Entreprendre — service-public.fr",
-    type: "rss", genre: "actualite", confirme: false,
-    url: "https://entreprendre.service-public.fr/rss/actualites.rss",
-    vu: "23 octobre 2026 : HTTP 404 — l'adresse n'existe pas" },
+    type: "rss", genre: "actualite", confirme: true,
+    url: "https://www.service-public.gouv.fr/abonnements/rss/actu-actu-pro.rss",
+    vu: "25 octobre 2026 : trouvé par la recherche de flux, répond avec des entrées datées — 235 entrées, la plus récente du 21 octobre" },
 
   { id: "acpr", nom: "ACPR — Banque de France",
     type: "rss", genre: "actualite", confirme: false,
@@ -144,9 +144,9 @@ window.SOURCES = [
     vu: "23 octobre 2026 : HTTP 404 — l'adresse n'existe pas" },
 
   { id: "arcep", nom: "ARCEP",
-    type: "rss", genre: "actualite", confirme: false,
-    url: "https://www.arcep.fr/?eID=rss",
-    vu: "23 octobre 2026 : HTTP 404 — l'adresse n'existe pas" },
+    type: "rss", genre: "actualite", confirme: true,
+    url: "https://www.arcep.fr/actualites/suivre-actualite-regulation-arcep/fil-dinfos/rss.xml",
+    vu: "25 octobre 2026 : trouvé par la recherche de flux, répond avec des entrées datées — 10 entrées, la plus récente du 22 octobre" },
 
   { id: "has", nom: "Haute Autorité de santé",
     type: "rss", genre: "actualite", confirme: false,

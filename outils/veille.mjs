@@ -119,6 +119,9 @@ const texteBrut = (x) => String(x)
 
 function dateIso(s) {
   if (!s) return "";
+  /* Certains sites publics datent à la française : 24/10/2026. */
+  const fr = String(s).match(/^\s*(\d{1,2})\/(\d{1,2})\/(\d{4})/);
+  if (fr) return `${fr[3]}-${fr[2].padStart(2, "0")}-${fr[1].padStart(2, "0")}`;
   const d = new Date(s);
   return isNaN(d) ? "" : d.toISOString().slice(0, 10);
 }
@@ -378,8 +381,10 @@ const PISTES = {
   bofip:         { pages: ["https://bofip.impots.gouv.fr/flux-rss"],
                    flux: ["https://bofip.impots.gouv.fr/bofip/ext/rss.xml?actualites=1&maxR=50&maxJ=30"] },
   ecologie:      { pages: ["https://www.ecologie.gouv.fr/flux-rss"], flux: [] },
-  "ineris-aida": { pages: ["https://aida.ineris.fr/", "https://aida.ineris.fr/classement-thematique"], flux: [] },
-  ademe:         { pages: ["https://www.ademe.fr/presse/", "https://www.ademe.fr/"],
+  "ineris-aida": { pages: ["https://aida.ineris.fr/thematiques/prevention-risques",
+                           "https://aida.ineris.fr/user/thematic-subscription", "https://aida.ineris.fr/"],
+                   flux: ["https://aida.ineris.fr/rss.xml"] },
+  ademe:         { pages: ["https://librairie.ademe.fr/", "https://www.ademe.fr/presse/", "https://www.ademe.fr/"],
                    flux: ["https://www.ademe.fr/feed/", "https://www.ademe.fr/actualites/feed/",
                           "https://www.ademe.fr/presse/communiques-de-presse/feed/"] },
   dgccrf:        { pages: ["https://www.economie.gouv.fr/dgccrf"],
@@ -390,7 +395,9 @@ const PISTES = {
                    flux: ["https://www.service-public.gouv.fr/abonnements/rss/actu-actu-pro.rss",
                           "https://entreprendre.service-public.gouv.fr/abonnements/rss/actu-actu-pro.rss"] },
   acpr:          { pages: ["https://acpr.banque-france.fr/fr"], flux: [] },
-  amf:           { pages: ["https://www.amf-france.org/fr", "https://www.amf-france.org/fr/actualites-publications"], flux: [] },
+  amf:           { pages: ["https://www.amf-france.org/fr/abonnements-flux-rss",
+                           "https://www.amf-france.org/fr/flux-rss/display/30"],
+                   flux: ["https://www.amf-france.org/fr/flux-rss/display/30"] },
   arcep:         { pages: ["https://en.arcep.fr/news/arcep-rss-news-feeds.html"],
                    flux: ["https://www.arcep.fr/actualites/suivre-actualite-regulation-arcep/fil-dinfos/rss.xml"] },
   has:           { pages: ["https://www.has-sante.fr/jcms/c_1771214/fr/nos-flux-d-information-rss"],
@@ -439,7 +446,8 @@ async function essaieFlux(url) {
     const dates = entrees.map((x) => x.date).filter(Boolean).sort();
     return { url, ok: true, entrees: entrees.length, datees: dates.length,
              derniere: dates[dates.length - 1] || "", type: r.headers.get("content-type") || "",
-             titre: texteBrut(entre(corps, "title")).slice(0, 90), corps };
+             titre: texteBrut(entre(corps, "title")).slice(0, 90), corps,
+             apercu: corps.replace(/\s+/g, " ").trim().slice(0, 900) };
   } catch (e) {
     return { url, ok: false, souci: diagnostic(e) };
   }
@@ -455,7 +463,7 @@ async function decouvre(SOURCES) {
     const essayees = new Set();
     const resultats = [];
     const essaie = async (url, d_ou) => {
-      if (essayees.has(url) || essayees.size >= 40) return;
+      if (essayees.has(url) || essayees.size >= 60) return;
       essayees.add(url);
       await pause(400);
       const r = await essaieFlux(url);
@@ -465,15 +473,25 @@ async function decouvre(SOURCES) {
         (r.ok ? `  — ${r.entrees} entrées${r.derniere ? `, la plus récente du ${r.derniere}` : ""}` +
                 (r.entrees ? `  « ${r.titre} »` : `  (${r.type.split(";")[0]})`)
               : `  — ${r.souci}`) + `  [${d_ou}]`);
+      /* Du XML qui ne donne rien, ou rien de daté : on montre ce qu'il contient,
+         pour savoir si c'est le flux qui est vide ou notre lecteur qui le rate. */
+      if (r.ok && /xml|rss|atom/i.test(r.type) && (!r.entrees || !r.datees)) {
+        console.log(`        contenu : ${r.apercu}`);
+      }
       return r;
     };
 
     /* Une page qui répond sans être un flux peut en annoncer un. */
-    const fouille = async (r, page) => {
-      if (!r || !r.ok || r.entrees) return;
+    const fouille = async (r, page, profondeur = 0) => {
+      if (!r || !r.ok || r.entrees || !/html/i.test(r.type)) return;
       const liens = liensDeFlux(r.corps, page);
       console.log(`      la page déclare ${liens.length} lien(s) de flux`);
-      for (const u of liens) await essaie(u, "déclaré par la page");
+      for (const u of liens) {
+        const r2 = await essaie(u, "déclaré par la page");
+        /* Une page « Nos flux RSS » renvoie souvent vers d'autres pages, pas
+           directement vers le flux : on descend d'un cran, pas plus. */
+        if (profondeur < 1) await fouille(r2, u, profondeur + 1);
+      }
     };
     await fouille(await essaie(s.url, "adresse actuelle"), s.url);
     for (const u of p.flux) await essaie(u, "piste connue");
