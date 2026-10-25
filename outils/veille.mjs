@@ -420,9 +420,11 @@ const PISTES = {
                    flux: ["https://ansm.sante.fr/rss/actualites", "https://ansm.sante.fr/rss/informations_securite"] },
   rappelconso:   { pages: ["https://rappel.conso.gouv.fr/"],
                    flux: ["https://rappel.conso.gouv.fr/rss?categorie=0",
-                          "https://data.economie.gouv.fr/api/explore/v2.1/catalog/datasets/rappelconso-v2-gtin-espaces/exports/rss?order_by=date_publication%20desc&limit=50",
-                          "https://data.economie.gouv.fr/api/explore/v2.1/catalog/datasets/rappelconso-v2-gtin-trie/exports/rss?order_by=date_publication%20desc&limit=50",
-                          "https://data.economie.gouv.fr/api/explore/v2.1/catalog/datasets/rappelconso0/exports/rss?order_by=date_de_publication%20desc&limit=50"] },
+                          /* Les données ouvertes de Bercy : pas de flux, mais une API.
+                             On en lit la description et un enregistrement, pour savoir
+                             comment la lire. */
+                          "https://data.economie.gouv.fr/api/explore/v2.1/catalog/datasets/rappelconso-v2-gtin-espaces/records?limit=1",
+                          "https://data.economie.gouv.fr/api/explore/v2.1/catalog/datasets/rappelconso-v2-gtin-trie/records?limit=1"] },
   boamp:         { pages: ["https://www.boamp.fr/"],
                    flux: ["https://boamp-datadila.opendatasoft.com/api/explore/v2.1/catalog/datasets/boamp/exports/rss?order_by=dateparution%20desc&limit=50"] }
 };
@@ -466,7 +468,7 @@ async function essaieFlux(url) {
     return { url, ok: true, entrees: entrees.length, datees: dates.length,
              derniere: dates[dates.length - 1] || "", type: r.headers.get("content-type") || "",
              titre: texteBrut(entre(corps, "title")).slice(0, 90), corps,
-             apercu: corps.replace(/\s+/g, " ").trim().slice(0, 900) };
+             apercu: corps.replace(/\s+/g, " ").trim().slice(0, 2500) };
   } catch (e) {
     return { url, ok: false, souci: diagnostic(e) };
   }
@@ -494,7 +496,7 @@ async function decouvre(SOURCES) {
               : `  — ${r.souci}`) + `  [${d_ou}]`);
       /* Du XML qui ne donne rien, ou rien de daté : on montre ce qu'il contient,
          pour savoir si c'est le flux qui est vide ou notre lecteur qui le rate. */
-      if (r.ok && /xml|rss|atom/i.test(r.type) && (!r.entrees || !r.datees)) {
+      if (r.ok && /xml|rss|atom|json/i.test(r.type) && (!r.entrees || !r.datees)) {
         console.log(`        contenu : ${r.apercu}`);
       }
       return r;
