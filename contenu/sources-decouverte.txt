@@ -1,11 +1,10 @@
-Recherche du flux de 11 sources muettes.
+Recherche du flux de 6 sources muettes.
 
 ■ inrs — INRS — actualités
     · https://www.inrs.fr/rss/?feed=actualites  — 0 entrées  (text/html)  [adresse actuelle]
       la page déclare 0 lien(s) de flux
+    ✘ https://www.inrs.fr/actualites.html  — injoignable (fetch failed : UND_ERR_SOCKET) — l'hôte refuse le robot, ou le réseau d'ici le bloque  [page du site]
     · https://www.inrs.fr/  — 0 entrées  (text/html)  [page du site]
-      la page déclare 0 lien(s) de flux
-    · https://www.inrs.fr/footer/suivez-nous.html  — 0 entrées  (text/html)  [page du site]
       la page déclare 0 lien(s) de flux
     ✘ https://www.inrs.fr/feed/  — HTTP 404  [chemin courant]
     · https://www.inrs.fr/rss  — 0 entrées  (text/html)  [chemin courant]
@@ -15,6 +14,14 @@ Recherche du flux de 11 sources muettes.
     ✘ https://www.inrs.fr/atom.xml  — HTTP 404  [chemin courant]
     ✘ https://www.inrs.fr/index.xml  — HTTP 404  [chemin courant]
     ✘ https://www.inrs.fr/spip.php?page=backend  — HTTP 404  [chemin courant]
+      liens d'actualité sur https://www.inrs.fr/rss/?feed=actualites :
+        /carrefour-actualites.html « ACTUALITÉS »
+        /actualites.html « Actualités »
+        /carrefour-actualites.html « Actualités »
+      liens d'actualité sur https://www.inrs.fr/ :
+        /carrefour-actualites.html « ACTUALITÉS »
+        /actualites.html « Actualités »
+        /carrefour-actualites.html « Actualités »
   → aucun flux trouvé
 
 ■ boss — BOSS — Bulletin officiel de la Sécurité sociale
@@ -39,60 +46,25 @@ Recherche du flux de 11 sources muettes.
     ✘ https://www.urssaf.fr/feed.xml  — injoignable (fetch failed : ECONNRESET) — l'hôte refuse le robot, ou le réseau d'ici le bloque  [chemin courant]
     ✘ https://www.urssaf.fr/atom.xml  — injoignable (fetch failed : ECONNRESET) — l'hôte refuse le robot, ou le réseau d'ici le bloque  [chemin courant]
     ✘ https://www.urssaf.fr/index.xml  — injoignable (fetch failed : ECONNRESET) — l'hôte refuse le robot, ou le réseau d'ici le bloque  [chemin courant]
-    ✘ https://www.urssaf.fr/spip.php?page=backend  — injoignable (fetch failed : UND_ERR_SOCKET) — l'hôte refuse le robot, ou le réseau d'ici le bloque  [chemin courant]
+    ✘ https://www.urssaf.fr/spip.php?page=backend  — injoignable (fetch failed : ECONNRESET) — l'hôte refuse le robot, ou le réseau d'ici le bloque  [chemin courant]
   → aucun flux trouvé
 
-■ bofip — BOFiP — doctrine fiscale
-    ✘ https://bofip.impots.gouv.fr/rss  — HTTP 404  [adresse actuelle]
-    ✔ https://bofip.impots.gouv.fr/bofip/ext/rss.xml?actualites=1&maxR=50&maxJ=30  — 7 entrées  « BOFiP-Impôts - Actualités »  [piste connue]
-        contenu : <?xml version="1.0" encoding="UTF-8"?> <rss version="2.0"> <channel> <title>BOFiP-Impôts - Actualités</title> <link>http://bofip.impots.gouv.fr/bofip</link> <description>Bulletin Officiel des Finances Publiques-Impôts (BOFIP-Impôts) - Actualités</description> <item> <title>TVA - Mise à jour des commentaires relatifs aux livraisons et livraisons à soi-même de locaux directement destinés ou mis à la disposition de certaines structures du secteur social et médico-social</title> <link>https://bofip.impots.gouv.fr/bofip/14712-PGP.html/ACTU-2025-00108</link> <description>TVA - Mise à jour des commentaires relatifs aux livraisons et livraisons à soi-même de locaux directement destinés ou mis à la disposition de certaines structures du secteur social et médico-social (identifiant juridique ACTU-2025-00108; publié le 21/10/2026)</description> <category>Actualité</category> </item> <item> <title>T
-    · https://bofip.impots.gouv.fr/flux-rss  — 0 entrées  (text/html)  [page du site]
-      la page déclare 1 lien(s) de flux
+■ rappelconso — RappelConso — rappels de produits
+    ✘ https://rappel.conso.gouv.fr/rss  — HTTP 404  [adresse actuelle]
+    ✘ https://rappel.conso.gouv.fr/rss?categorie=0  — HTTP 404  [piste connue]
+    ✘ https://data.economie.gouv.fr/api/explore/v2.1/catalog/datasets/rappelconso-v2-gtin-espaces/exports/rss?order_by=date_publication%20desc&limit=50  — HTTP 400  [piste connue]
+    ✘ https://data.economie.gouv.fr/api/explore/v2.1/catalog/datasets/rappelconso-v2-gtin-trie/exports/rss?order_by=date_publication%20desc&limit=50  — HTTP 400  [piste connue]
+    ✘ https://data.economie.gouv.fr/api/explore/v2.1/catalog/datasets/rappelconso0/exports/rss?order_by=date_de_publication%20desc&limit=50  — HTTP 404  [piste connue]
+    · https://rappel.conso.gouv.fr/  — 0 entrées  (text/html)  [page du site]
+      la page déclare 0 lien(s) de flux
+    ✘ https://rappel.conso.gouv.fr/feed/  — HTTP 404  [chemin courant]
+    ✘ https://rappel.conso.gouv.fr/rss.xml  — HTTP 404  [chemin courant]
+    ✘ https://rappel.conso.gouv.fr/fr/rss.xml  — HTTP 404  [chemin courant]
+    ✘ https://rappel.conso.gouv.fr/feed.xml  — HTTP 404  [chemin courant]
+    ✘ https://rappel.conso.gouv.fr/atom.xml  — HTTP 404  [chemin courant]
+    ✘ https://rappel.conso.gouv.fr/index.xml  — HTTP 404  [chemin courant]
+    ✘ https://rappel.conso.gouv.fr/spip.php?page=backend  — HTTP 404  [chemin courant]
   → aucun flux trouvé
-
-■ ineris-aida — AIDA — réglementation des installations classées
-    ✘ https://aida.ineris.fr/rss  — HTTP 404  [adresse actuelle]
-    ✘ https://aida.ineris.fr/rss.xml  — HTTP 404  [piste connue]
-    · https://aida.ineris.fr/thematiques/prevention-risques  — 0 entrées  (text/html)  [page du site]
-      la page déclare 1 lien(s) de flux
-    ✔ https://www.ineris.fr/fr/flux-rss  — 10 entrées, la plus récente du 2026-10-21  « Nouveautés Ineris.fr »  [déclaré par la page]
-    · https://aida.ineris.fr/user/thematic-subscription  — 0 entrées  (text/html)  [page du site]
-      la page déclare 1 lien(s) de flux
-    · https://aida.ineris.fr/  — 0 entrées  (text/html)  [page du site]
-      la page déclare 1 lien(s) de flux
-  → RETENUE : https://www.ineris.fr/fr/flux-rss
-
-■ ademe — ADEME — actualités
-    · https://presse.ademe.fr/feed  — 0 entrées  (application/rss+xml)  [adresse actuelle]
-        contenu : <?xml version="1.0" encoding="UTF-8"?><rss version="2.0" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:sy="http://purl.org/rss/1.0/modules/syndication/" > <channel> <title> Commentaires sur : Presse </title> <atom:link href="https://www.ademe.fr/presse/feed/" rel="self" type="application/rss+xml" /> <link>https://www.ademe.fr/presse/</link> <description></description> <lastBuildDate>Sat, 18 Apr 2026 21:09:54 +0000</lastBuildDate> <sy:updatePeriod> hourly </sy:updatePeriod> <sy:updateFrequency> 1 </sy:updateFrequency> </channel> </rss>
-    · https://www.ademe.fr/feed/  — 0 entrées  (application/rss+xml)  [piste connue]
-        contenu : <?xml version="1.0" encoding="UTF-8"?><rss version="2.0" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:wfw="http://wellformedweb.org/CommentAPI/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:sy="http://purl.org/rss/1.0/modules/syndication/" xmlns:slash="http://purl.org/rss/1.0/modules/slash/" > <channel> <title>Agence de la transition écologique</title> <atom:link href="https://www.ademe.fr/feed/" rel="self" type="application/rss+xml" /> <link>https://www.ademe.fr/</link> <description></description> <lastBuildDate>Thu, 22 Oct 2026 10:29:00 +0000</lastBuildDate> <language>fr-FR</language> <sy:updatePeriod> hourly </sy:updatePeriod> <sy:updateFrequency> 1 </sy:updateFrequency> </channel> </rss>
-    ✘ https://www.ademe.fr/actualites/feed/  — HTTP 404  [piste connue]
-    ✘ https://www.ademe.fr/presse/communiques-de-presse/feed/  — HTTP 404  [piste connue]
-    · https://librairie.ademe.fr/  — 0 entrées  (text/html)  [page du site]
-      la page déclare 1 lien(s) de flux
-    · https://librairie.ademe.fr/content/11-flux-rss  — 0 entrées  (text/html)  [déclaré par la page]
-      la page déclare 17 lien(s) de flux
-    · https://librairie.ademe.fr/openid-connection?back=https%3A%2F%2Flibrairie.ademe.fr%2Fcontent%2F11-flux-rss  — 0 entrées  (text/html)  [déclaré par la page]
-    ✔ https://librairie.ademe.fr/rss/actualites.xml  — 12 entrées, la plus récente du 2026-03-31  « Actualités - La Librairie »  [déclaré par la page]
-    ✔ https://librairie.ademe.fr/rss/nouveautes.xml  — 93 entrées, la plus récente du 2026-10-22  « Nouveautés - La Librairie »  [déclaré par la page]
-    ✔ https://librairie.ademe.fr/rss/3516-thematique-agriculture-alimentation-foret-bioeconomie.xml  — 82 entrées, la plus récente du 2026-10-15  « Agriculture, alimentation, forêt, bioéconomie - La Librairie »  [déclaré par la page]
-    ✔ https://librairie.ademe.fr/rss/3145-thematique-air.xml  — 31 entrées, la plus récente du 2026-10-14  « Air - La Librairie »  [déclaré par la page]
-    ✔ https://librairie.ademe.fr/rss/3153-thematique-batiment.xml  — 108 entrées, la plus récente du 2026-10-20  « Bâtiment - La Librairie »  [déclaré par la page]
-    ✔ https://librairie.ademe.fr/rss/3147-thematique-changement-climatique.xml  — 98 entrées, la plus récente du 2026-10-15  « Changement climatique - La Librairie »  [déclaré par la page]
-    ✔ https://librairie.ademe.fr/rss/2906-thematique-consommer-autrement.xml  — 4 entrées, la plus récente du 2026-10-21  « Consommer autrement - La Librairie »  [déclaré par la page]
-    ✔ https://librairie.ademe.fr/rss/3426-thematique-economie-circulaire-et-dechets.xml  — 274 entrées, la plus récente du 2026-10-22  « Economie circulaire et Déchets - La Librairie »  [déclaré par la page]
-    ✔ https://librairie.ademe.fr/rss/3149-thematique-energies.xml  — 147 entrées, la plus récente du 2026-10-20  « Energies - La Librairie »  [déclaré par la page]
-    ✔ https://librairie.ademe.fr/rss/3503-thematique-industrie-et-production-durable.xml  — 163 entrées, la plus récente du 2026-10-14  « Industrie et production durable - La Librairie »  [déclaré par la page]
-    · https://librairie.ademe.fr/rss/3157-thematique-institutionnel.xml  — 0 entrées  (application/rss+xml)  [déclaré par la page]
-        contenu : <?xml version="1.0" encoding="utf-8"?> <rss xmlns:dc="http://purl.org/dc/elements/1.1/" version="2.0" xml:base="https://librairie.ademe.fr/"> <channel> <title><![CDATA[ Institutionnel - La Librairie ]]></title> <link>https://librairie.ademe.fr/3157-institutionnel</link> <description><![CDATA[ Institutionnel - La Librairie, l’espace documentaire de l’ADEME. Citoyens, acteurs économiques, de l’éducation ou de la recherche, territoires, l’ADEME vous propose de découvrir un large panel de publications qui vous donneront les clés pour progresser vers une société plus économe, sobre et juste. ]]></description> <language>fr</language> </channel> </rss>
-    ✔ https://librairie.ademe.fr/rss/2901-thematique-mobilite-et-transports.xml  — 120 entrées, la plus récente du 2026-10-21  « Mobilité et transports - La Librairie »  [déclaré par la page]
-    ✔ https://librairie.ademe.fr/rss/2930-thematique-recherche-et-innovation.xml  — 22 entrées, la plus récente du 2026-10-21  « Recherche et Innovation - La Librairie »  [déclaré par la page]
-    ✔ https://librairie.ademe.fr/rss/3544-thematique-societe-et-politiques-publiques.xml  — 214 entrées, la plus récente du 2026-10-21  « Société et politiques publiques - La Librairie »  [déclaré par la page]
-    ✔ https://librairie.ademe.fr/rss/3509-thematique-urbanisme-territoires-et-sols.xml  — 78 entrées, la plus récente du 2026-10-21  « Urbanisme, territoires et sols - La Librairie »  [déclaré par la page]
-    ✘ https://www.ademe.fr/presse/  — injoignable (HTTP 403) — l'hôte refuse le robot, ou le réseau d'ici le bloque  [page du site]
-    ✘ https://www.ademe.fr/  — injoignable (HTTP 403) — l'hôte refuse le robot, ou le réseau d'ici le bloque  [page du site]
-  → RETENUE : https://librairie.ademe.fr/rss/3426-thematique-economie-circulaire-et-dechets.xml
 
 ■ acpr — ACPR — Banque de France
     ✘ https://acpr.banque-france.fr/rss.xml  — injoignable (HTTP 403) — l'hôte refuse le robot, ou le réseau d'ici le bloque  [adresse actuelle]
@@ -105,136 +77,19 @@ Recherche du flux de 11 sources muettes.
     ✘ https://acpr.banque-france.fr/atom.xml  — HTTP 404  [chemin courant]
     ✘ https://acpr.banque-france.fr/index.xml  — HTTP 404  [chemin courant]
     ✘ https://acpr.banque-france.fr/spip.php?page=backend  — HTTP 404  [chemin courant]
-  → aucun flux trouvé
-
-■ amf — AMF — Autorité des marchés financiers
-    ✘ https://www.amf-france.org/fr/rss.xml  — HTTP 404  [adresse actuelle]
-    ✔ https://www.amf-france.org/fr/flux-rss/display/30  — 200 entrées, la plus récente du 2026-10-14  « Actualités »  [piste connue]
-    · https://www.amf-france.org/fr/abonnements-flux-rss  — 0 entrées  (text/html)  [page du site]
-      la page déclare 13 lien(s) de flux
-    · https://www.amf-france.org/en/subscriptions-rss-feeds  — 0 entrées  (text/html)  [déclaré par la page]
-      la page déclare 11 lien(s) de flux
-    ✔ https://www.amf-france.org/en/flux-rss/display/21  — 200 entrées, la plus récente du 2026-10-22  « Toutes les actualités et publications »  [déclaré par la page]
-    ✔ https://www.amf-france.org/en/flux-rss/display/30  — 200 entrées, la plus récente du 2026-10-14  « Actualités »  [déclaré par la page]
-    ✔ https://www.amf-france.org/en/flux-rss/display/23  — 200 entrées, la plus récente du 2026-10-21  « Communiqués de presse (AMF, sanctions) »  [déclaré par la page]
-    ✔ https://www.amf-france.org/en/flux-rss/display/31  — 107 entrées, la plus récente du 2026-05-20  « Réglementation de l'AMF (RG, doctrine, etc.) »  [déclaré par la page]
-    ✔ https://www.amf-france.org/en/flux-rss/display/25  — 200 entrées, la plus récente du 2026-10-22  « Publications de l'AMF (rapports, lettres, etc.) »  [déclaré par la page]
-    ✔ https://www.amf-france.org/en/flux-rss/display/28  — 200 entrées, la plus récente du 2026-10-22  « Alertes et mises en garde »  [déclaré par la page]
-    ✔ https://www.amf-france.org/en/flux-rss/display/27  — 117 entrées, la plus récente du 2026-10-22  « Dossiers du médiateur »  [déclaré par la page]
-    ✔ https://www.amf-france.org/en/flux-rss/display/26  — 17 entrées, la plus récente du 2025-09-08  « Agenda de l'AMF (colloques, etc.) »  [déclaré par la page]
-    ✔ https://www.amf-france.org/en/flux-rss/display/29  — 1 entrées, la plus récente du 2026-10-16  « Liste des sociétés concernées par une offre »  [déclaré par la page]
-    ✔ https://www.amf-france.org/fr/flux-rss/display/21  — 200 entrées, la plus récente du 2026-10-22  « Toutes les actualités et publications »  [déclaré par la page]
-    ✔ https://www.amf-france.org/fr/flux-rss/display/23  — 200 entrées, la plus récente du 2026-10-21  « Communiqués de presse (AMF, sanctions) »  [déclaré par la page]
-    ✔ https://www.amf-france.org/fr/flux-rss/display/31  — 200 entrées, la plus récente du 2026-10-12  « Réglementation de l'AMF (RG, doctrine, etc.) »  [déclaré par la page]
-    ✔ https://www.amf-france.org/fr/flux-rss/display/25  — 200 entrées, la plus récente du 2026-10-22  « Publications de l'AMF (rapports, lettres, etc.) »  [déclaré par la page]
-    ✔ https://www.amf-france.org/fr/flux-rss/display/22  — 200 entrées, la plus récente du 2026-10-22  « Epargnants (actualités, newsletter...) »  [déclaré par la page]
-    ✔ https://www.amf-france.org/fr/flux-rss/display/28  — 200 entrées, la plus récente du 2026-10-22  « Alertes et mises en garde »  [déclaré par la page]
-    ✔ https://www.amf-france.org/fr/flux-rss/display/27  — 137 entrées, la plus récente du 2026-10-09  « Dossiers du médiateur »  [déclaré par la page]
-    ✔ https://www.amf-france.org/fr/flux-rss/display/24  — 200 entrées, la plus récente du 2026-07-23  « Décisions de sanctions et transactions homologuées »  [déclaré par la page]
-    ✔ https://www.amf-france.org/fr/flux-rss/display/26  — 200 entrées, la plus récente du 2026-10-07  « Agenda de l'AMF (colloques, etc.) »  [déclaré par la page]
-    ✔ https://www.amf-france.org/fr/flux-rss/display/29  — 1 entrées, la plus récente du 2026-10-16  « Liste des sociétés concernées par une offre »  [déclaré par la page]
-  → RETENUE : https://www.amf-france.org/en/flux-rss/display/21
-
-■ has — Haute Autorité de santé
-    · https://www.has-sante.fr/jcms/rss.xml  — 0 entrées  (text/html)  [adresse actuelle]
-      la page déclare 4 lien(s) de flux
-    · https://www.has-sante.fr/jcms/rss.xml#autoCompInput  — 0 entrées  (text/html)  [déclaré par la page]
-      la page déclare 4 lien(s) de flux
-    · https://www.has-sante.fr/jcms/rss.xml#menu  — 0 entrées  (text/html)  [déclaré par la page]
-    · https://www.has-sante.fr/jcms/rss.xml#maincontent  — 0 entrées  (text/html)  [déclaré par la page]
-    · https://www.has-sante.fr/jcms/jcms/c_1771214/fr/nos-flux-d-information-rss  — 0 entrées  (text/html)  [déclaré par la page]
-    ✔ https://www.has-sante.fr/feed/Rss2.jsp?id=p_3081656  — 50 entrées, la plus récente du 2026-10-21  « HAS - Actualité »  [piste connue]
-    ✔ https://www.has-sante.fr/feed/Rss2.jsp?id=p_3081452  — 50 entrées, la plus récente du 2026-10-12  « HAS - Recommandations et guides »  [piste connue]
-    · https://www.has-sante.fr/jcms/c_1771214/fr/nos-flux-d-information-rss  — 0 entrées  (text/html)  [page du site]
-      la page déclare 20 lien(s) de flux
-    · https://www.has-sante.fr/jcms/c_1771214/fr/nos-flux-d-information-rss#autoCompInput2  — 0 entrées  (text/html)  [déclaré par la page]
-      la page déclare 20 lien(s) de flux
-    · https://www.has-sante.fr/jcms/c_1771214/fr/nos-flux-d-information-rss#menu  — 0 entrées  (text/html)  [déclaré par la page]
-    · https://www.has-sante.fr/jcms/c_1771214/fr/nos-flux-d-information-rss#maincontent  — 0 entrées  (text/html)  [déclaré par la page]
-    · https://www.has-sante.fr/jcms/c_1771214/fr/jcms/c_1771214/fr/nos-flux-d-information-rss  — 0 entrées  (text/html)  [déclaré par la page]
-    · https://www.has-sante.fr/jcms/c_1771214/fr/jcms/c_1771214/fr/nos-flux-d-information-rss#toc_1_1  — 0 entrées  (text/html)  [déclaré par la page]
-    · https://www.has-sante.fr/jcms/c_1771214/fr/nos-flux-d-information-rss?portal=p_3058934  — 0 entrées  (text/html)  [déclaré par la page]
-    · https://feedly.com/  — 0 entrées  (text/html)  [déclaré par la page]
-    · https://feeder.co/  — 0 entrées  (text/html)  [déclaré par la page]
-    · https://feedreader.com/online  — 0 entrées  (text/html)  [déclaré par la page]
-    · https://chrome.google.com/webstore/search/RSS%20reader?hl=fr&_feature=4stars  — 0 entrées  (text/html)  [déclaré par la page]
-    · https://www.has-sante.fr/jcms/c_1771214/fr/feed/Rss2.jsp?id=p_3081452  — 0 entrées  (text/html)  [déclaré par la page]
-    · https://www.has-sante.fr/jcms/c_1771214/fr/feed/Rss2.jsp?id=p_3299556  — 0 entrées  (text/html)  [déclaré par la page]
-    · https://www.has-sante.fr/jcms/c_1771214/fr/feed/Rss2.jsp?id=p_3081446  — 0 entrées  (text/html)  [déclaré par la page]
-    · https://www.has-sante.fr/jcms/c_1771214/fr/feed/Rss2.jsp?id=p_3081449  — 0 entrées  (text/html)  [déclaré par la page]
-    · https://www.has-sante.fr/jcms/c_1771214/fr/feed/Rss2.jsp?id=p_3298842  — 0 entrées  (text/html)  [déclaré par la page]
-    · https://www.has-sante.fr/jcms/c_1771214/fr/feed/Rss2.jsp?id=p_3081454  — 0 entrées  (text/html)  [déclaré par la page]
-    · https://www.has-sante.fr/jcms/c_1771214/fr/feed/Rss2.jsp?id=p_3081656  — 0 entrées  (text/html)  [déclaré par la page]
-    · https://www.has-sante.fr/jcms/c_1771214/fr/feed/Rss2.jsp?id=p_3082237  — 0 entrées  (text/html)  [déclaré par la page]
-    · https://www.has-sante.fr/jcms/c_1771214/fr/feed/Rss2.jsp?id=p_3113093  — 0 entrées  (text/html)  [déclaré par la page]
-    · https://www.has-sante.fr/jcms/c_1771214/fr/feed/Rss2.jsp?id=p_3375329  — 0 entrées  (text/html)  [déclaré par la page]
-  → RETENUE : https://www.has-sante.fr/feed/Rss2.jsp?id=p_3081656
-
-■ ansm — ANSM — sécurité du médicament
-    ✘ https://ansm.sante.fr/rss  — HTTP 404  [adresse actuelle]
-    · https://ansm.sante.fr/rss/actualites  — 0 entrées  (application/xml)  [piste connue]
-        contenu : <?xml version="1.0" encoding="UTF-8"?> <rss version="2.0"> <channel> <title>Actualités - Ansm.sante.fr</title> <link>https://ansm.sante.fr/actualites/</link> <description>Actualités du jour de l'ANSM</description> </channel> </rss>
-    · https://ansm.sante.fr/rss/informations_securite  — 0 entrées  (application/xml)  [piste connue]
-        contenu : <?xml version="1.0" encoding="UTF-8"?> <rss version="2.0"> <channel> <title>Informations de sécurité - Ansm.sante.fr</title> <link>https://ansm.sante.fr/informations-de-securite/</link> <description>Informations de sécurité du jour de l'ANSM</description> </channel> </rss>
-    · https://ansm.sante.fr/page/flux-rss  — 0 entrées  (text/html)  [page du site]
-      la page déclare 25 lien(s) de flux
-    · https://ansm.sante.fr/rss/actualites?produitsSante=medicaments  — 0 entrées  (application/xml)  [déclaré par la page]
-        contenu : <?xml version="1.0" encoding="UTF-8"?> <rss version="2.0"> <channel> <title>Actualités - Ansm.sante.fr</title> <link>https://ansm.sante.fr/actualites/</link> <description>Actualités du jour de l'ANSM</description> </channel> </rss>
-    · https://ansm.sante.fr/rss/actualites?produitsSante=dispositifs_medicaux  — 0 entrées  (application/xml)  [déclaré par la page]
-        contenu : <?xml version="1.0" encoding="UTF-8"?> <rss version="2.0"> <channel> <title>Actualités - Ansm.sante.fr</title> <link>https://ansm.sante.fr/actualites/</link> <description>Actualités du jour de l'ANSM</description> </channel> </rss>
-    · https://ansm.sante.fr/rss/informations_securite?produitsSante=medicaments  — 0 entrées  (application/xml)  [déclaré par la page]
-        contenu : <?xml version="1.0" encoding="UTF-8"?> <rss version="2.0"> <channel> <title>Informations de sécurité - Ansm.sante.fr</title> <link>https://ansm.sante.fr/informations-de-securite/</link> <description>Informations de sécurité du jour de l'ANSM</description> </channel> </rss>
-    · https://ansm.sante.fr/rss/informations_securite?produitsSante=dispositifs_medicaux  — 0 entrées  (application/xml)  [déclaré par la page]
-        contenu : <?xml version="1.0" encoding="UTF-8"?> <rss version="2.0"> <channel> <title>Informations de sécurité - Ansm.sante.fr</title> <link>https://ansm.sante.fr/informations-de-securite/</link> <description>Informations de sécurité du jour de l'ANSM</description> </channel> </rss>
-    · https://ansm.sante.fr/rss/informations_securite?produitsSante=dispositifs_medicaux_de_diagnostic_in_vitro  — 0 entrées  (application/xml)  [déclaré par la page]
-        contenu : <?xml version="1.0" encoding="UTF-8"?> <rss version="2.0"> <channel> <title>Informations de sécurité - Ansm.sante.fr</title> <link>https://ansm.sante.fr/informations-de-securite/</link> <description>Informations de sécurité du jour de l'ANSM</description> </channel> </rss>
-    · https://ansm.sante.fr/rss/disponibilite_produits_sante  — 0 entrées  (application/xml)  [déclaré par la page]
-        contenu : <?xml version="1.0" encoding="UTF-8"?> <rss version="2.0"> <channel> <title>Disponibilité des produits de santé - Ansm.sante.fr</title> <link>https://ansm.sante.fr/disponibilites-des-produits-de-sante</link> <description>Informations du jour de l'ANSM sur les tensions d'approvisionnement des produits de santé (médicaments MITM, vaccins, dispositifs médicaux et dispositifs médicaux de diagnostic in vitro)</description> </channel> </rss>
-    · https://ansm.sante.fr/rss/disponibilite_produits_sante?produitsSante=medicaments  — 0 entrées  (application/xml)  [déclaré par la page]
-        contenu : <?xml version="1.0" encoding="UTF-8"?> <rss version="2.0"> <channel> <title>Disponibilité des produits de santé - Ansm.sante.fr</title> <link>https://ansm.sante.fr/disponibilites-des-produits-de-sante</link> <description>Informations du jour de l'ANSM sur les tensions d'approvisionnement des produits de santé (médicaments MITM, vaccins, dispositifs médicaux et dispositifs médicaux de diagnostic in vitro)</description> </channel> </rss>
-    · https://ansm.sante.fr/rss/disponibilite_produits_sante?produitsSante=vaccins  — 0 entrées  (application/xml)  [déclaré par la page]
-        contenu : <?xml version="1.0" encoding="UTF-8"?> <rss version="2.0"> <channel> <title>Disponibilité des produits de santé - Ansm.sante.fr</title> <link>https://ansm.sante.fr/disponibilites-des-produits-de-sante</link> <description>Informations du jour de l'ANSM sur les tensions d'approvisionnement des produits de santé (médicaments MITM, vaccins, dispositifs médicaux et dispositifs médicaux de diagnostic in vitro)</description> </channel> </rss>
-    · https://ansm.sante.fr/rss/disponibilite_produits_sante?produitsSante=dispositifs_medicaux  — 0 entrées  (application/xml)  [déclaré par la page]
-        contenu : <?xml version="1.0" encoding="UTF-8"?> <rss version="2.0"> <channel> <title>Disponibilité des produits de santé - Ansm.sante.fr</title> <link>https://ansm.sante.fr/disponibilites-des-produits-de-sante</link> <description>Informations du jour de l'ANSM sur les tensions d'approvisionnement des produits de santé (médicaments MITM, vaccins, dispositifs médicaux et dispositifs médicaux de diagnostic in vitro)</description> </channel> </rss>
-    · https://ansm.sante.fr/rss/disponibilite_produits_sante?produitsSante=dispositifs_medicaux_de_diagnostic_in_vitro  — 0 entrées  (application/xml)  [déclaré par la page]
-        contenu : <?xml version="1.0" encoding="UTF-8"?> <rss version="2.0"> <channel> <title>Disponibilité des produits de santé - Ansm.sante.fr</title> <link>https://ansm.sante.fr/disponibilites-des-produits-de-sante</link> <description>Informations du jour de l'ANSM sur les tensions d'approvisionnement des produits de santé (médicaments MITM, vaccins, dispositifs médicaux et dispositifs médicaux de diagnostic in vitro)</description> </channel> </rss>
-    · https://ansm.sante.fr/rss/actualites?domainesMedicaux=addictologie  — 0 entrées  (application/xml)  [déclaré par la page]
-        contenu : <?xml version="1.0" encoding="UTF-8"?> <rss version="2.0"> <channel> <title>Actualités - Ansm.sante.fr</title> <link>https://ansm.sante.fr/actualites/</link> <description>Actualités du jour de l'ANSM</description> </channel> </rss>
-    · https://ansm.sante.fr/rss/actualites?domainesMedicaux=allergologie  — 0 entrées  (application/xml)  [déclaré par la page]
-        contenu : <?xml version="1.0" encoding="UTF-8"?> <rss version="2.0"> <channel> <title>Actualités - Ansm.sante.fr</title> <link>https://ansm.sante.fr/actualites/</link> <description>Actualités du jour de l'ANSM</description> </channel> </rss>
-    · https://ansm.sante.fr/rss/actualites?domainesMedicaux=anesthesie_reanimation_soins_intensifs  — 0 entrées  (application/xml)  [déclaré par la page]
-        contenu : <?xml version="1.0" encoding="UTF-8"?> <rss version="2.0"> <channel> <title>Actualités - Ansm.sante.fr</title> <link>https://ansm.sante.fr/actualites/</link> <description>Actualités du jour de l'ANSM</description> </channel> </rss>
-    · https://ansm.sante.fr/rss/actualites?domainesMedicaux=angiologie  — 0 entrées  (application/xml)  [déclaré par la page]
-        contenu : <?xml version="1.0" encoding="UTF-8"?> <rss version="2.0"> <channel> <title>Actualités - Ansm.sante.fr</title> <link>https://ansm.sante.fr/actualites/</link> <description>Actualités du jour de l'ANSM</description> </channel> </rss>
-    · https://ansm.sante.fr/rss/actualites?domainesMedicaux=biologie_medicale  — 0 entrées  (application/xml)  [déclaré par la page]
-        contenu : <?xml version="1.0" encoding="UTF-8"?> <rss version="2.0"> <channel> <title>Actualités - Ansm.sante.fr</title> <link>https://ansm.sante.fr/actualites/</link> <description>Actualités du jour de l'ANSM</description> </channel> </rss>
-    · https://ansm.sante.fr/rss/actualites?domainesMedicaux=cardiologie  — 0 entrées  (application/xml)  [déclaré par la page]
-        contenu : <?xml version="1.0" encoding="UTF-8"?> <rss version="2.0"> <channel> <title>Actualités - Ansm.sante.fr</title> <link>https://ansm.sante.fr/actualites/</link> <description>Actualités du jour de l'ANSM</description> </channel> </rss>
-    · https://ansm.sante.fr/rss/actualites?domainesMedicaux=chirurgie  — 0 entrées  (application/xml)  [déclaré par la page]
-        contenu : <?xml version="1.0" encoding="UTF-8"?> <rss version="2.0"> <channel> <title>Actualités - Ansm.sante.fr</title> <link>https://ansm.sante.fr/actualites/</link> <description>Actualités du jour de l'ANSM</description> </channel> </rss>
-    · https://ansm.sante.fr/rss/actualites?domainesMedicaux=dermatologie  — 0 entrées  (application/xml)  [déclaré par la page]
-        contenu : <?xml version="1.0" encoding="UTF-8"?> <rss version="2.0"> <channel> <title>Actualités - Ansm.sante.fr</title> <link>https://ansm.sante.fr/actualites/</link> <description>Actualités du jour de l'ANSM</description> </channel> </rss>
-    · https://ansm.sante.fr/rss/actualites?domainesMedicaux=endocrinologie  — 0 entrées  (application/xml)  [déclaré par la page]
-        contenu : <?xml version="1.0" encoding="UTF-8"?> <rss version="2.0"> <channel> <title>Actualités - Ansm.sante.fr</title> <link>https://ansm.sante.fr/actualites/</link> <description>Actualités du jour de l'ANSM</description> </channel> </rss>
-    · https://ansm.sante.fr/rss/actualites?domainesMedicaux=gynecologie  — 0 entrées  (application/xml)  [déclaré par la page]
-        contenu : <?xml version="1.0" encoding="UTF-8"?> <rss version="2.0"> <channel> <title>Actualités - Ansm.sante.fr</title> <link>https://ansm.sante.fr/actualites/</link> <description>Actualités du jour de l'ANSM</description> </channel> </rss>
-    · https://ansm.sante.fr/rss/actualites?domainesMedicaux=hematologie  — 0 entrées  (application/xml)  [déclaré par la page]
-        contenu : <?xml version="1.0" encoding="UTF-8"?> <rss version="2.0"> <channel> <title>Actualités - Ansm.sante.fr</title> <link>https://ansm.sante.fr/actualites/</link> <description>Actualités du jour de l'ANSM</description> </channel> </rss>
-    · https://ansm.sante.fr/rss/actualites?domainesMedicaux=hepato_gastroenterologie  — 0 entrées  (application/xml)  [déclaré par la page]
-        contenu : <?xml version="1.0" encoding="UTF-8"?> <rss version="2.0"> <channel> <title>Actualités - Ansm.sante.fr</title> <link>https://ansm.sante.fr/actualites/</link> <description>Actualités du jour de l'ANSM</description> </channel> </rss>
-    · https://ansm.sante.fr/rss/actualites?domainesMedicaux=imagerie_radiologie  — 0 entrées  (application/xml)  [déclaré par la page]
-        contenu : <?xml version="1.0" encoding="UTF-8"?> <rss version="2.0"> <channel> <title>Actualités - Ansm.sante.fr</title> <link>https://ansm.sante.fr/actualites/</link> <description>Actualités du jour de l'ANSM</description> </channel> </rss>
-    ✘ https://ansm.sante.fr/feed/  — HTTP 404  [chemin courant]
-    ✘ https://ansm.sante.fr/rss.xml  — HTTP 404  [chemin courant]
-    ✘ https://ansm.sante.fr/fr/rss.xml  — HTTP 404  [chemin courant]
-    ✘ https://ansm.sante.fr/feed.xml  — HTTP 404  [chemin courant]
-    ✘ https://ansm.sante.fr/atom.xml  — HTTP 404  [chemin courant]
-    ✘ https://ansm.sante.fr/index.xml  — HTTP 404  [chemin courant]
-    ✘ https://ansm.sante.fr/spip.php?page=backend  — HTTP 404  [chemin courant]
+      liens d'actualité sur https://acpr.banque-france.fr/fr :
+        /fr/actualites-publications « Découvrir la rubrique »
+        https://acpr.banque-france.fr/fr/actualites « Toutes les actualités »
+        /fr/actualites-publications/evenements « Évènements »
+        https://acpr.banque-france.fr/fr/actualites?category%5B5412322%5D=5412322&amp;start-date=&amp;end-date= « Revue de l'ACPR »
+        /fr/actualites-publications/espace-presse « Découvrir la rubrique »
+        /fr/actualites/conference-annuelle-de-lacpr-rendez-vous-le-5-novembre-2026 « Conférence annuelle de l'ACPR : rendez-vous le 5 novembre 2026 ! »
+        /fr/actualites-publications « Actualités & Publications »
   → aucun flux trouvé
 
 ■ boamp — BOAMP — marchés publics
     ✘ https://www.boamp.fr/rss  — HTTP 404  [adresse actuelle]
+    ✘ https://boamp-datadila.opendatasoft.com/api/explore/v2.1/catalog/datasets/boamp/exports/rss?order_by=dateparution%20desc&limit=50  — HTTP 400  [piste connue]
     · https://www.boamp.fr/  — 0 entrées  (text/html)  [page du site]
       la page déclare 0 lien(s) de flux
     ✘ https://www.boamp.fr/feed/  — HTTP 404  [chemin courant]
@@ -244,6 +99,8 @@ Recherche du flux de 11 sources muettes.
     ✘ https://www.boamp.fr/atom.xml  — HTTP 404  [chemin courant]
     ✘ https://www.boamp.fr/index.xml  — HTTP 404  [chemin courant]
     ✘ https://www.boamp.fr/spip.php?page=backend  — HTTP 404  [chemin courant]
+      liens d'actualité sur https://www.boamp.fr/ :
+        /pages/entreprise-actualites « Actualités »
   → aucun flux trouvé
 
-4 source(s) sur 11 ont maintenant un flux qui répond.
+0 source(s) sur 6 ont maintenant un flux qui répond.

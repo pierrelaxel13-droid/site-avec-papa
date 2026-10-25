@@ -9,31 +9,28 @@ Vérification de 25 sources.
   travail          répond — 50 entrées
   oppbtp           répond — 10 entrées
   boss             injoignable (fetch failed : UND_ERR_CONNECT_TIMEOUT) — l'hôte refuse le robot, ou le réseau d'ici le bloque
-  urssaf           injoignable (fetch failed : ECONNRESET) — l'hôte refuse le robot, ou le réseau d'ici le bloque
-  bofip            HTTP 404
+  urssaf           injoignable (fetch failed : UND_ERR_SOCKET) — l'hôte refuse le robot, ou le réseau d'ici le bloque
+  bofip            répond — 7 entrées
   cnil             répond — 10 entrées
   certfr-avis      répond — 40 entrées
   certfr-alerte    répond — 40 entrées
   ecologie         répond — 10 entrées
-  ineris-aida      HTTP 404
-  ademe            répond — 0 entrées  ← format à revoir
-                  type : application/rss+xml; charset=UTF-8
-                  début : <?xml version="1.0" encoding="UTF-8"?><rss version="2.0" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:sy="http://purl.org/rss/1.0/modules/syndication/" > <channel> <title> Commentaires sur : Presse </title> <atom:link href="https://www.ademe.fr/presse/feed/" rel="self" type="application/rss+xml" /> <link>https://www.ademe.fr/presse/</link> <description></description> <lastBuildDate>Sat, 18 Apr 2026 21:09:54 +0000</lastBuildDate> <sy:updatePeriod> hourly </sy:updatePeriod> <sy:updateFrequency> 1 </sy:updateFrequency> </channel> </rss>
-                  balises : 0 <item>, 0 <entry>, 0 <ns:item>
+  ineris-aida      répond — 10 entrées
+  ademe            répond — 93 entrées
   rappelconso      HTTP 404
   dgccrf           répond — 20 entrées
   anses            répond — 10 entrées
   entreprendre     répond — 235 entrées
   acpr             injoignable (HTTP 403) — l'hôte refuse le robot, ou le réseau d'ici le bloque
-  amf              HTTP 404
+  amf              répond — 200 entrées
   arcep            répond — 10 entrées
-  has              répond — 0 entrées  ← format à revoir
-                  type : text/html;charset=UTF-8
-                  début : <!DOCTYPE html> <html lang="fr" xml:lang="fr" dir="ltr" > <head> <base href="https://www.has-sante.fr/" /> <meta charset="UTF-8" /> <meta http-equiv="X-UA-Compatible" content="IE=edge" /> <meta name="Generator" content="Jalios JCMS - Copyright (C) Jalios S.A. 2001 - 2026 - https://www.jalios.com/" /> <meta name="viewport" content="width=device-width, initial-scale=1.0" /> <meta name="keywords" content="recommandations, évaluation, certification établissements, accréditation médecins, pratiques professionnelles, soins médicaux, ALD, service médical rendu, médicaments, santé, has, haute autorité de santé, certification, assurance maladie, patient, qualité soins, commission transparence" /> <me
+  has              répond — 50 entrées
+  ansm             répond — 0 entrées  ← format à revoir
+                  type : application/xml
+                  début : <?xml version="1.0" encoding="UTF-8"?> <rss version="2.0"> <channel> <title>Actualités - Ansm.sante.fr</title> <link>https://ansm.sante.fr/actualites/</link> <description>Actualités du jour de l'ANSM</description> </channel> </rss>
                   balises : 0 <item>, 0 <entry>, 0 <ns:item>
-  ansm             HTTP 404
   douane           répond — 10 entrées
   boamp            HTTP 404
 
-13 source(s) sur 25 exploitables.
+18 source(s) sur 25 exploitables.
 Passer « confirme: true » dans contenu/sources.js pour celles-là, et seulement celles-là.

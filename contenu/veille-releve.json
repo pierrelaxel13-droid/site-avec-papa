@@ -50,14 +50,14 @@
    "nom": "URSSAF — actualités employeurs",
    "entrees": 0,
    "retenus": 0,
-   "souci": "injoignable (fetch failed : ECONNRESET) — l'hôte refuse le robot, ou le réseau d'ici le bloque"
+   "souci": "injoignable (fetch failed : UND_ERR_SOCKET) — l'hôte refuse le robot, ou le réseau d'ici le bloque"
   },
   {
    "id": "bofip",
    "nom": "BOFiP — doctrine fiscale",
-   "entrees": 0,
+   "entrees": 7,
    "retenus": 0,
-   "souci": "HTTP 404"
+   "souci": null
   },
   {
    "id": "cnil",
@@ -89,17 +89,17 @@
   },
   {
    "id": "ineris-aida",
-   "nom": "AIDA — réglementation des installations classées",
-   "entrees": 0,
+   "nom": "Ineris et AIDA — nouveautés",
+   "entrees": 10,
    "retenus": 0,
-   "souci": "HTTP 404"
+   "souci": null
   },
   {
    "id": "ademe",
-   "nom": "ADEME — actualités",
-   "entrees": 0,
-   "retenus": 0,
-   "souci": "format inattendu — aucune entrée lue"
+   "nom": "ADEME — nouvelles publications",
+   "entrees": 93,
+   "retenus": 1,
+   "souci": null
   },
   {
    "id": "rappelconso",
@@ -139,9 +139,9 @@
   {
    "id": "amf",
    "nom": "AMF — Autorité des marchés financiers",
-   "entrees": 0,
-   "retenus": 0,
-   "souci": "HTTP 404"
+   "entrees": 200,
+   "retenus": 1,
+   "souci": null
   },
   {
    "id": "arcep",
@@ -153,16 +153,16 @@
   {
    "id": "has",
    "nom": "Haute Autorité de santé",
-   "entrees": 0,
-   "retenus": 0,
-   "souci": "format inattendu — aucune entrée lue"
+   "entrees": 50,
+   "retenus": 1,
+   "souci": null
   },
   {
    "id": "ansm",
-   "nom": "ANSM — sécurité du médicament",
+   "nom": "ANSM — actualités",
    "entrees": 0,
    "retenus": 0,
-   "souci": "HTTP 404"
+   "souci": "format inattendu — aucune entrée lue"
   },
   {
    "id": "douane",
@@ -1767,6 +1767,29 @@
    "vuLe": "2026-10-20"
   },
   {
+   "source": "ademe",
+   "sourceNom": "ADEME — nouvelles publications",
+   "genre": "actualite",
+   "id": "https://librairie.ademe.fr/batiment/9714-batizoom-barometre-de-la-transition-ecologique-du-batiment-en-2025.html",
+   "titre": "BâtiZoom : Baromètre de la transition écologique du bâtiment en 2025",
+   "nature": "Publication officielle",
+   "date": "2026-10-20",
+   "corps": "<p>Comment a évolué le secteur du bâtiment en 2025 au regard de la transition écologique ? C'est à cette question que répond ce baromètre.</p>\n\n<p>Les principaux enseignements sont les suivants : </p>\n\n<ul>\n<li>La baisse des émissions de Gaz à Effet de Serre se poursuit mais son rythme confirme le ralentissement observé en 2024 tandis que la consommation d'énergie se stabilise.</li>\n<li>En ce qui concerne l'activité économique, le secteur voit son chiffre d'affaires diminuer du fait de la baisse de la construction neuve et de l'activité de rénovation qui est plus stable mais ne parvient pas à compenser.</li>\n<li>Le contexte économique plus général s'est stabilisé en 2025 avec une baisse des prix de l'électricité notamment pour les ménages mais la poursuite de la hausse des prix du gaz.</li>\n<li>Parmi les leviers, les rénovations d'ampleur aidées du secteur résidentiel privé continuent d'augmenter mais l'activité globale de rénovation diminue légèrement. L'effort de décarbonation se poursuit mais à un rythme encore insuffisant pour atteindre les objectifs climatiques. Dans le neuf, de nouveaux seuils s'appliquent depuis le 1er janvier 2025 pour les bâtiments soumis à la RE2020 conformément au calendrier de cette réglementation.</li>\n</ul>",
+   "lien": "https://librairie.ademe.fr/batiment/9714-batizoom-barometre-de-la-transition-ecologique-du-batiment-en-2025.html",
+   "domaines": [
+    {
+     "id": "env_general",
+     "nom": "Environnement — socle commun",
+     "mots": [
+      "transition ecologique"
+     ]
+    }
+   ],
+   "morceaux": 1,
+   "dateTexte": "",
+   "vuLe": "2026-10-20"
+  },
+  {
    "source": "eurlex-l",
    "sourceNom": "Journal officiel de l'Union européenne — série L",
    "genre": "texte",
@@ -2085,6 +2108,29 @@
    ],
    "morceaux": 33,
    "dateTexte": "1993-01-04",
+   "vuLe": "2026-10-20"
+  },
+  {
+   "source": "amf",
+   "sourceNom": "AMF — Autorité des marchés financiers",
+   "genre": "actualite",
+   "id": "https://www.amf-france.org/fr/actualites-publications/communiques/communiques-de-lamf/la-sec-et-lamf-concluent-un-accord-renforcant-la-cooperation-en-matiere-de-supervision-des#xts=607212&xtor=RSS-3&type=RSS",
+   "titre": "La SEC et l'AMF concluent un accord renforçant la coopération en matière de supervision des conseillers en investissement et de prestataires de services d'investissement",
+   "nature": "Publication officielle",
+   "date": "2026-10-20",
+   "corps": "Communiqué AMF Coopération Europe &amp; international Gestion d&#039;actifs Supervision Conseil en investissement La SEC et l&#039;AMF concluent un accord renforçant la coopération en matière de supervision des conseillers en investissement et de prestataires de services...",
+   "lien": "https://www.amf-france.org/fr/actualites-publications/communiques/communiques-de-lamf/la-sec-et-lamf-concluent-un-accord-renforcant-la-cooperation-en-matiere-de-supervision-des#xts=607212&xtor=RSS-3&type=RSS",
+   "domaines": [
+    {
+     "id": "finance",
+     "nom": "Services financiers, assurance et LCB-FT",
+     "mots": [
+      "prestataires de services d'investissement"
+     ]
+    }
+   ],
+   "morceaux": 1,
+   "dateTexte": "",
    "vuLe": "2026-10-20"
   },
   {
@@ -3503,6 +3549,29 @@
    "morceaux": 38,
    "dateTexte": "2023-04-14",
    "vuLe": "2026-10-14"
+  },
+  {
+   "source": "has",
+   "sourceNom": "Haute Autorité de santé",
+   "genre": "actualite",
+   "id": "https://www.has-sante.fr/jcms/p_4584190/fr/certification-des-etablissements-de-sante-la-commission-de-la-has-renouvelee-pour-moitie-au-service-de-l-amelioration-continue-de-la-qualite-et-de-la-securite-des-soins",
+   "titre": "Certification des établissements de santé : la commission de la HAS renouvelée pour moitié, au service de l’amélioration continue de la qualité et de la sécurité des soins",
+   "nature": "Publication officielle",
+   "date": "2026-10-13",
+   "corps": "<html>\n <head></head>\n <body>\n <div class=\"wysiwyg feed\">\n <p>La Haute Autorité de santé (HAS) renouvelle la composition de la commission de certification des établissements de santé (CCES), instance essentielle à la démarche de certification des établissements de santé. Depuis le 20 septembre 2026, neuf nouveaux membres ont rejoint la commission et dix membres ont vu leur mandat renouvelé pour une durée de trois ans. Médecins, pharmaciens, cadres de santé, directeurs d&apos;établissements et représentants des usagers contribueront aux travaux de cette instance au service de l’amélioration continue de la qualité et de la sécurité des soins.</p>\n </div>\n </body>\n</html>",
+   "lien": "https://www.has-sante.fr/jcms/p_4584190/fr/certification-des-etablissements-de-sante-la-commission-de-la-has-renouvelee-pour-moitie-au-service-de-l-amelioration-continue-de-la-qualite-et-de-la-securite-des-soins",
+   "domaines": [
+    {
+     "id": "sanitaire",
+     "nom": "Santé, médico-social et autorisations d'activité",
+     "mots": [
+      "etablissements de sante"
+     ]
+    }
+   ],
+   "morceaux": 1,
+   "dateTexte": "",
+   "vuLe": "2026-10-13"
   },
   {
    "source": "jorf",
