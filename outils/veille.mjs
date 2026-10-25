@@ -22,6 +22,7 @@
      node outils/veille.mjs --jours 30
      node outils/veille.mjs --depuis 2026-10-01
      node outils/veille.mjs --verifier      # interroge chaque source et s'arrête
+     node outils/veille.mjs --decouvrir     # cherche le vrai flux des sources muettes
      node outils/veille.mjs --source cnil   # une seule source
      node outils/veille.mjs --garder        # garde les archives téléchargées
 
@@ -58,6 +59,7 @@ const JOURS = Number(valeur("--jours", 7));
 const DEPUIS = valeur("--depuis", null);
 const UNE = valeur("--source", null);
 const VERIFIER = args.includes("--verifier");
+const DECOUVRIR = args.includes("--decouvrir");
 const GARDER = args.includes("--garder");
 
 /* --- Chargement des fichiers du dépôt -------------------------------------- */
@@ -86,9 +88,12 @@ async function recupere(url, delai = 20000) {
 }
 
 function diagnostic(e) {
-  const m = String((e && e.message) || e);
+  /* « fetch failed » ne dit rien : la vraie raison est dans e.cause — un nom
+     d'hôte inconnu, une connexion coupée, un certificat incomplet. */
+  const cause = e && e.cause && (e.cause.code || e.cause.message);
+  const m = String((e && e.message) || e) + (cause ? ` : ${cause}` : "");
   if (/fetch failed|ECONNREFUSED|ENOTFOUND|CONNECT|403/i.test(m)) {
-    return "injoignable (" + m + ") — hôte probablement refusé par la politique réseau";
+    return "injoignable (" + m + ") — l'hôte refuse le robot, ou le réseau d'ici le bloque";
   }
   if (/timeout|aborted/i.test(m)) return "délai dépassé";
   return m;
@@ -349,6 +354,156 @@ async function relevéDila(V, s, depuis) {
   return { entrees, retenus };
 }
 
+/* --- Trouver le vrai flux d'une source muette ------------------------------ */
+/* Une adresse de flux, ça se périme : un site change d'outil, et /rss devient
+   /feed/. Plutôt que de deviner, on demande au site lui-même :
+     1. les pistes connues (relevées dans la documentation de chaque site) ;
+     2. les liens que ses pages déclarent : <link rel="alternate" type="…rss…">
+        et les liens dont l'adresse parle de rss, feed, atom ou backend ;
+     3. les chemins que les outils courants donnent par défaut.
+   Une adresse n'est retenue que si elle renvoie de vraies entrées, datées.
+   Le robot se présente sous son nom et ne contourne rien : un site qui le
+   refuse est noté comme tel. */
+const PISTES = {
+  "eurlex-l":    { pages: ["https://eur-lex.europa.eu/oj/direct-access.html"],
+                   flux: ["https://eur-lex.europa.eu/FR/display-feed.rss?rssId=165",
+                          "https://eur-lex.europa.eu/EN/display-feed.rss?rssId=165"] },
+  inrs:          { pages: ["https://www.inrs.fr/", "https://www.inrs.fr/footer/suivez-nous.html"], flux: [] },
+  travail:       { pages: ["https://travail-emploi.gouv.fr/"],
+                   flux: ["https://travail-emploi.gouv.fr/rss.xml"] },
+  oppbtp:        { pages: ["https://www.oppbtp.com/actualites/", "https://www.preventionbtp.fr/"],
+                   flux: ["https://www.oppbtp.com/feed/", "https://www.oppbtp.com/actualites/feed/"] },
+  boss:          { pages: ["https://boss.gouv.fr/portail/accueil.html"], flux: [] },
+  urssaf:        { pages: ["https://www.urssaf.fr/accueil.html"], flux: [] },
+  bofip:         { pages: ["https://bofip.impots.gouv.fr/flux-rss"],
+                   flux: ["https://bofip.impots.gouv.fr/bofip/ext/rss.xml?actualites=1&maxR=50&maxJ=30"] },
+  ecologie:      { pages: ["https://www.ecologie.gouv.fr/flux-rss"], flux: [] },
+  "ineris-aida": { pages: ["https://aida.ineris.fr/", "https://aida.ineris.fr/classement-thematique"], flux: [] },
+  ademe:         { pages: ["https://www.ademe.fr/presse/", "https://www.ademe.fr/"],
+                   flux: ["https://www.ademe.fr/feed/", "https://www.ademe.fr/actualites/feed/",
+                          "https://www.ademe.fr/presse/communiques-de-presse/feed/"] },
+  dgccrf:        { pages: ["https://www.economie.gouv.fr/dgccrf"],
+                   flux: ["https://www.economie.gouv.fr/dgccrf/rss",
+                          "https://www.economie.gouv.fr/rss/toutesactualites"] },
+  anses:         { pages: ["https://www.anses.fr/fr/content/flux-rss-de-lanses"], flux: [] },
+  entreprendre:  { pages: ["https://entreprendre.service-public.gouv.fr/actualites"],
+                   flux: ["https://www.service-public.gouv.fr/abonnements/rss/actu-actu-pro.rss",
+                          "https://entreprendre.service-public.gouv.fr/abonnements/rss/actu-actu-pro.rss"] },
+  acpr:          { pages: ["https://acpr.banque-france.fr/fr"], flux: [] },
+  amf:           { pages: ["https://www.amf-france.org/fr", "https://www.amf-france.org/fr/actualites-publications"], flux: [] },
+  arcep:         { pages: ["https://en.arcep.fr/news/arcep-rss-news-feeds.html"],
+                   flux: ["https://www.arcep.fr/actualites/suivre-actualite-regulation-arcep/fil-dinfos/rss.xml"] },
+  has:           { pages: ["https://www.has-sante.fr/jcms/c_1771214/fr/nos-flux-d-information-rss"],
+                   flux: ["https://www.has-sante.fr/feed/Rss2.jsp?id=p_3081656",
+                          "https://www.has-sante.fr/feed/Rss2.jsp?id=p_3081452"] },
+  ansm:          { pages: ["https://ansm.sante.fr/page/flux-rss"],
+                   flux: ["https://ansm.sante.fr/rss/actualites", "https://ansm.sante.fr/rss/informations_securite"] },
+  boamp:         { pages: ["https://www.boamp.fr/"], flux: [] }
+};
+const CHEMINS_COURANTS = ["/feed/", "/rss", "/rss.xml", "/fr/rss.xml", "/feed.xml", "/atom.xml",
+                          "/index.xml", "/spip.php?page=backend"];
+
+const pause = (ms) => new Promise((r) => setTimeout(r, ms));
+const echappe = (x) => x.replace(/&amp;/g, "&").replace(/&#0?38;/g, "&");
+
+/* Les liens qu'une page déclare comme flux, ou qui en ont tout l'air. */
+function liensDeFlux(html, base) {
+  const vus = new Set();
+  const garde = (href) => {
+    try {
+      const u = new URL(echappe(href), base);
+      if (!/^https?:$/.test(u.protocol)) return;
+      vus.add(u.href);
+    } catch { /* lien mal formé : ignoré */ }
+  };
+  for (const m of html.matchAll(/<link\b[^>]*>/gi)) {
+    const l = m[0];
+    if (/rel=["']?alternate/i.test(l) && /type=["']?application\/(rss|atom)\+xml/i.test(l)) {
+      const h = l.match(/href=["']([^"']+)["']/i);
+      if (h) garde(h[1]);
+    }
+  }
+  for (const m of html.matchAll(/<a\b[^>]*href=["']([^"']+)["']/gi)) {
+    if (/rss|feed|atom|backend|\.xml(\?|$)/i.test(m[1]) && !/sitemap|feedback|facebook|twitter|linkedin|x\.com/i.test(m[1])) {
+      garde(m[1]);
+    }
+  }
+  return [...vus].slice(0, 25);
+}
+
+async function essaieFlux(url) {
+  try {
+    const r = await recupere(url, 15000);
+    const corps = await r.text();
+    const entrees = lisFlux(corps);
+    const dates = entrees.map((x) => x.date).filter(Boolean).sort();
+    return { url, ok: true, entrees: entrees.length, datees: dates.length,
+             derniere: dates[dates.length - 1] || "", type: r.headers.get("content-type") || "",
+             titre: texteBrut(entre(corps, "title")).slice(0, 90), corps };
+  } catch (e) {
+    return { url, ok: false, souci: diagnostic(e) };
+  }
+}
+
+async function decouvre(SOURCES) {
+  const muettes = SOURCES.filter((s) => !s.confirme && s.type !== "dila");
+  console.log(`Recherche du flux de ${muettes.length} sources muettes.\n`);
+  const bilan = [];
+  for (const s of muettes) {
+    const p = PISTES[s.id] || { pages: [], flux: [] };
+    console.log(`■ ${s.id} — ${s.nom}`);
+    const essayees = new Set();
+    const resultats = [];
+    const essaie = async (url, d_ou) => {
+      if (essayees.has(url) || essayees.size >= 40) return;
+      essayees.add(url);
+      await pause(400);
+      const r = await essaieFlux(url);
+      r.d_ou = d_ou;
+      resultats.push(r);
+      console.log(`    ${r.ok ? (r.entrees ? "✔" : "·") : "✘"} ${url}` +
+        (r.ok ? `  — ${r.entrees} entrées${r.derniere ? `, la plus récente du ${r.derniere}` : ""}` +
+                (r.entrees ? `  « ${r.titre} »` : `  (${r.type.split(";")[0]})`)
+              : `  — ${r.souci}`) + `  [${d_ou}]`);
+      return r;
+    };
+
+    /* Une page qui répond sans être un flux peut en annoncer un. */
+    const fouille = async (r, page) => {
+      if (!r || !r.ok || r.entrees) return;
+      const liens = liensDeFlux(r.corps, page);
+      console.log(`      la page déclare ${liens.length} lien(s) de flux`);
+      for (const u of liens) await essaie(u, "déclaré par la page");
+    };
+    await fouille(await essaie(s.url, "adresse actuelle"), s.url);
+    for (const u of p.flux) await essaie(u, "piste connue");
+    const origines = new Set();
+    for (const page of p.pages) {
+      origines.add(new URL(page).origin);
+      await fouille(await essaie(page, "page du site"), page);
+    }
+    origines.add(new URL(s.url).origin);
+    if (!resultats.some((r) => r.ok && r.entrees)) {
+      for (const o of origines) for (const c of CHEMINS_COURANTS) await essaie(o + c, "chemin courant");
+    }
+
+    /* La meilleure : des entrées datées, la plus récente d'abord. */
+    const bonnes = resultats.filter((r) => r.ok && r.entrees && r.datees)
+      .sort((a, b) => (a.derniere < b.derniere ? 1 : a.derniere > b.derniere ? -1 : b.entrees - a.entrees));
+    const tous = resultats.filter((r) => r.ok && r.entrees).map((r) =>
+      ({ url: r.url, entrees: r.entrees, derniere: r.derniere, titre: r.titre, d_ou: r.d_ou }));
+    const refus = resultats.filter((r) => !r.ok).map((r) => r.souci);
+    bilan.push({ id: s.id, nom: s.nom, retenue: bonnes[0] ? bonnes[0].url : null,
+                 derniere: bonnes[0] ? bonnes[0].derniere : null, flux: tous,
+                 essais: resultats.length, refus: [...new Set(refus)].slice(0, 4) });
+    console.log(bonnes[0] ? `  → RETENUE : ${bonnes[0].url}\n` : "  → aucun flux trouvé\n");
+  }
+  const trouvees = bilan.filter((b) => b.retenue).length;
+  console.log(`${trouvees} source(s) sur ${muettes.length} ont maintenant un flux qui répond.`);
+  await writeFile(join(RACINE, "contenu", "sources-decouverte.json"),
+    JSON.stringify({ le: new Date().toISOString(), bilan }, null, 1));
+}
+
 /* --- Programme -------------------------------------------------------------- */
 async function main() {
   const V = await charge("assets/referentiel.js", "VEILLE");
@@ -361,6 +516,8 @@ async function main() {
   }
 
   const depuis = DEPUIS || new Date(Date.now() - JOURS * 86400000).toISOString().slice(0, 10);
+
+  if (DECOUVRIR) return decouvre(SOURCES);
 
   if (VERIFIER) {
     console.log(`Vérification de ${SOURCES.length} sources.\n`);

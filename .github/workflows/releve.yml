@@ -69,6 +69,16 @@ jobs:
           node outils/veille.mjs --verifier 2>&1 | tee contenu/sources-rapport.txt
           echo "::notice::$(grep -c 'répond' contenu/sources-rapport.txt) source(s) répondent."
 
+      # À la demande seulement, aussi : pour chaque source muette, demander au
+      # site lui-même où est son flux (liens déclarés par ses pages, chemins
+      # courants). Le bilan reste dans contenu/sources-decouverte.json ; on ne
+      # change contenu/sources.js qu'à la main, après l'avoir lu.
+      - name: Chercher le flux des sources muettes
+        if: github.event_name == 'workflow_dispatch'
+        run: |
+          node outils/veille.mjs --decouvrir 2>&1 | tee contenu/sources-decouverte.txt
+          echo "::notice::$(tail -1 contenu/sources-decouverte.txt)"
+
       # Les flux et le Journal officiel : à chaque passage. Un échec ne doit
       # pas arrêter la relève, mais il doit se voir dans le journal du passage.
       - name: Les textes qui paraissent
