@@ -231,7 +231,8 @@
       var cible = id ? document.getElementById(id) : null;
       if (!cible) return null;
       var sec = cible.hasAttribute("data-categorie") ? cible : cible.closest("[data-categorie]");
-      return sec ? { sec: sec, cible: cible } : null;
+      /* Une catégorie vide (un rythme sans sujet dans Mon plan) ne s'ouvre pas. */
+      return sec && !sec.hidden ? { sec: sec, cible: cible } : null;
     }
 
     function afficher() {
@@ -303,6 +304,145 @@
         }
       });
     }, true);
+  }
+
+  /* --- Fait, ou pas fait -------------------------------------------------
+     Chaque texte qui demande un geste porte un bouton « Marquer comme fait ».
+     L'état est gardé dans ce navigateur, avec sa date. Le titre de la fiche
+     porte alors la marque « Fait », et la carte de la catégorie compte
+     « 3 faits sur 24 ». Une revue du plan se refait à son rythme : passé le
+     délai, elle redevient à faire, et le bouton le dit. */
+  var CLE_FAITS = "pco-faits";
+  function lireFaits() {
+    try { return JSON.parse(localStorage.getItem(CLE_FAITS)) || {}; } catch (e) { return {}; }
+  }
+  function ecrireFaits(f) {
+    try { localStorage.setItem(CLE_FAITS, JSON.stringify(f)); } catch (e) { /* navigation privée */ }
+  }
+  function dateLongue(iso) {
+    try { return new Date(iso + "T12:00:00").toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" }); }
+    catch (e) { return iso; }
+  }
+  function aujourdhui() {
+    var d = new Date();
+    return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
+  }
+  function etatFait(id, periode, faits) {
+    var le = faits[id];
+    if (!le) return { fait: false };
+    if (periode) {
+      var jours = (Date.now() - new Date(le + "T12:00:00").getTime()) / 86400000;
+      if (jours >= periode) return { fait: false, perime: le };
+    }
+    return { fait: true, le: le };
+  }
+
+  function faits() {
+    var blocs = $$("[data-fait]");
+    if (!blocs.length) return;
+
+    function peindre() {
+      var f = lireFaits();
+      blocs.forEach(function (b) {
+        var id = b.getAttribute("data-fait");
+        var e = etatFait(id, Number(b.getAttribute("data-periode") || 0), f);
+        var bouton = $(".bouton-fait", b);
+        bouton.setAttribute("aria-pressed", e.fait ? "true" : "false");
+        $(".fait-texte", b).textContent = e.fait ? "Fait" : b.getAttribute("data-libelle");
+        $(".fait-quand", b).textContent = e.fait ? "le " + dateLongue(e.le) + " — cliquer pour annuler"
+          : (e.perime ? "Dernière fois le " + dateLongue(e.perime) + " : c'est à refaire." : "");
+        b.classList.toggle("est-fait", e.fait);
+      });
+      $$("[data-etat-fait]").forEach(function (m) {
+        var id = m.getAttribute("data-etat-fait");
+        var b = document.querySelector('[data-fait="' + id + '"]');
+        m.hidden = !etatFait(id, b ? Number(b.getAttribute("data-periode") || 0) : 0, f).fait;
+      });
+      /* Les cartes : combien de faits dans la catégorie. Un même texte peut
+         paraître deux fois dans une page ; on le compte une fois. */
+      $$("[data-faits-de]").forEach(function (c) {
+        var sec = document.getElementById(c.getAttribute("data-faits-de"));
+        if (!sec) return;
+        var vus = {}, total = 0, faitsN = 0;
+        $$("[data-fait]", sec).forEach(function (b) {
+          if (b.closest("[hidden]")) return;
+          var id = b.getAttribute("data-fait");
+          if (vus[id]) return;
+          vus[id] = 1; total++;
+          if (etatFait(id, Number(b.getAttribute("data-periode") || 0), f).fait) faitsN++;
+        });
+        c.hidden = !total;
+        c.textContent = faitsN + " fait" + (faitsN > 1 ? "s" : "") + " sur " + total;
+        c.classList.toggle("tout-fait", total > 0 && faitsN === total);
+      });
+    }
+
+    blocs.forEach(function (b) {
+      $(".bouton-fait", b).addEventListener("click", function () {
+        var f = lireFaits();
+        var id = b.getAttribute("data-fait");
+        if (etatFait(id, Number(b.getAttribute("data-periode") || 0), f).fait) delete f[id];
+        else f[id] = aujourdhui();
+        ecrireFaits(f);
+        peindre();
+      });
+    });
+    /* Le plan change de périmètre après les réglages : les comptes suivent. */
+    window.addEventListener("pco-plan", peindre);
+    peindre();
+  }
+
+  /* --- Une capture s'ouvre en grand --------------------------------------
+     Les captures ressemblent à l'application : on cliquait dessus, et rien.
+     Elles s'ouvrent maintenant en plein écran, dans le thème affiché. Échap,
+     un clic sur l'image ou sur « Fermer » referment. */
+  function captures() {
+    var boutons = $$(".agrandir");
+    if (!boutons.length || typeof HTMLDialogElement === "undefined") return;
+    var d = document.createElement("dialog");
+    d.className = "zoom";
+    d.setAttribute("aria-label", "Capture agrandie");
+    var fermer = document.createElement("button");
+    fermer.type = "button";
+    fermer.className = "zoom-fermer";
+    fermer.textContent = "Fermer ✕";
+    var img = document.createElement("img");
+    d.appendChild(fermer);
+    d.appendChild(img);
+    document.body.appendChild(d);
+    var refermer = function () { d.close(); };
+    fermer.addEventListener("click", refermer);
+    img.addEventListener("click", refermer);
+    d.addEventListener("click", function (e) { if (e.target === d) refermer(); });
+    boutons.forEach(function (b) {
+      b.addEventListener("click", function () {
+        var fig = b.closest("figure");
+        /* L'image visible : la claire ou la sombre, selon le thème. */
+        var vue = $$("img", fig).filter(function (i) { return i.getClientRects().length; })[0] || $("img", fig);
+        if (!vue) return;
+        img.src = vue.currentSrc || vue.src;
+        img.alt = vue.alt;
+        d.classList.toggle("zoom-mobile", fig.classList.contains("mobile"));
+        d.showModal();
+        d.scrollTop = 0;
+      });
+    });
+  }
+
+  /* --- Un métier de l'accueil, choisi dans l'outil ------------------------
+     Cliquer « 56 Restauration » sous « Votre métier y est » remonte à l'outil
+     « Ce qui s'applique chez vous », ce métier déjà choisi. */
+  function metiersDeLAccueil() {
+    var choix = $("#choix-division");
+    var outil = $("#simulateur");
+    if (!choix || !outil) return;
+    $$("[data-division]").forEach(function (b) {
+      b.addEventListener("click", function () {
+        choix.value = b.getAttribute("data-division");
+        choix.dispatchEvent(new Event("change", { bubbles: true }));
+        outil.scrollIntoView({ block: "start", behavior: SOBRE ? "auto" : "smooth" });
+      });
+    });
   }
 
   function bascules() {
@@ -660,6 +800,9 @@
   simulateur();
   rechercheSecteurs();
   categories();
+  captures();
+  metiersDeLAccueil();
+  faits();
   affiner();
   paraitre();
 })();

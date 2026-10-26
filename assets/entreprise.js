@@ -99,7 +99,7 @@
      Sans JavaScript, elle affiche le périmètre du jeu d'essai, posé à la
      construction : rien ne disparaît. */
   function suivrePlan() {
-    if (!document.getElementById("plan-perimetre") || !P) return;
+    if (!document.getElementById("plan-total") || !P) return;
     var garde = lire(CLE_E);
     if (!garde || !garde.naf) return;
     var vue = perimetre(garde.naf, garde.contexte || []);
@@ -110,8 +110,22 @@
     $$("[data-domaine]").forEach(function (b) {
       b.hidden = !dedans[b.getAttribute("data-domaine")];
     });
+    $$("[data-sujet-plan]").forEach(function (li) {
+      li.hidden = !dedans[li.getAttribute("data-sujet-plan")];
+    });
     $$("[data-groupe-frequence]").forEach(function (g) {
-      g.hidden = !g.querySelector("[data-domaine]:not([hidden])");
+      var n = g.querySelectorAll("[data-domaine]:not([hidden])").length;
+      g.hidden = !n;
+      /* La carte du rythme dit combien de sujets il y a dedans ; vide, elle ne
+         mène nulle part et le dit. */
+      var compte = document.querySelector('[data-compte-frequence="' + g.getAttribute("data-groupe-frequence") + '"]');
+      if (!compte) return;
+      compte.textContent = n ? n + " sujet" + (n > 1 ? "s" : "") : "Aucun sujet à ce rythme";
+      var carte = compte.closest(".carte-categorie");
+      if (!carte) return;
+      carte.classList.toggle("carte-vide", !n);
+      if (n) { carte.removeAttribute("aria-disabled"); carte.removeAttribute("tabindex"); }
+      else { carte.setAttribute("aria-disabled", "true"); carte.setAttribute("tabindex", "-1"); }
     });
 
     var pose = function (id, texte) {
@@ -136,10 +150,25 @@
         " — " + echappe(vue.div.l) + '. <a href="reglages.html">Les modifier</a>.';
     }
 
+    var fiche = document.getElementById("plan-chiffres");
+    var plus = garde.plus || {};
+    var lignes = [["Chiffre d'affaires", plus.ca], ["Forme juridique", plus.forme],
+                  ["Créée en", plus.creation], ["Sites", plus.sites], ["SIRET", plus.siret],
+                  ["Certifications", (plus.certifs || []).join(" · ")]]
+      .filter(function (l) { return l[1]; });
+    if (fiche) {
+      fiche.innerHTML = lignes.map(function (l) {
+        return "<div><dt class=\"etiq\">" + echappe(l[0]) + "</dt><dd>" + echappe(String(l[1])) + "</dd></div>";
+      }).join("");
+      fiche.hidden = !lignes.length;
+    }
+
+    try { window.dispatchEvent(new Event("pco-plan")); } catch (e) { /* vieux navigateur */ }
+
     var tete = document.querySelector(".tete-app .chapeau");
     if (tete) {
       tete.textContent = "Ce qui s'applique chez " + (garde.nom || vue.div.l) + " : " +
-        vue.liste.length + " sujets à suivre, groupés par rythme de revue.";
+        vue.liste.length + " sujets à suivre. Choisissez un rythme de revue : vous ne verrez que ses sujets.";
     }
   }
 
@@ -153,6 +182,31 @@
       effectif: $("#e-effectif"), responsable: $("#e-responsable")
     };
     var hoteContexte = $("#e-contexte");
+    /* Les chiffres de l'entreprise : chacun porte data-champ, les
+       certifications data-certif. Ils décrivent, ils ne décident pas. */
+    var chiffres = $$("[data-champ]", form);
+    var certifs = $$("[data-certif]", form);
+    var siret = $("#e-siret"), siretAide = $("#e-siret-aide");
+    /* Un SIRET a 14 chiffres, et les neuf premiers (le SIREN) passent la clé
+       de Luhn. On le dit tout de suite, sans bloquer l'enregistrement. */
+    function luhn(n) {
+      var t = 0;
+      for (var i = 0; i < n.length; i++) {
+        var c = Number(n[n.length - 1 - i]);
+        if (i % 2) { c *= 2; if (c > 9) c -= 9; }
+        t += c;
+      }
+      return t % 10 === 0;
+    }
+    function verifierSiret() {
+      if (!siret || !siretAide) return;
+      var n = siret.value.replace(/\s+/g, "");
+      siretAide.textContent = !n ? ""
+        : !/^\d{14}$/.test(n) ? "Un SIRET a 14 chiffres ; il en a " + n.replace(/\D/g, "").length + " ici."
+        : !luhn(n.slice(0, 9)) ? "Ce numéro ne passe pas le contrôle : vérifiez-le sur votre avis de situation INSEE."
+        : "Format correct.";
+    }
+    if (siret) siret.addEventListener("input", verifierSiret);
     var etat = $("#e-etat");
     var coches = {};
 
@@ -308,6 +362,10 @@
         }
       }
       (garde.contexte || []).forEach(function (id) { coches[id] = true; });
+      var plus = garde.plus || {};
+      chiffres.forEach(function (c) { if (plus[c.getAttribute("data-champ")] != null) c.value = plus[c.getAttribute("data-champ")]; });
+      certifs.forEach(function (c) { c.checked = (plus.certifs || []).indexOf(c.getAttribute("data-certif")) !== -1; });
+      verifierSiret();
     }
 
     poserQuestions();
@@ -326,7 +384,14 @@
         ville: champs.ville.value.trim(),
         effectif: champs.effectif.value.trim(),
         responsable: champs.responsable.value.trim(),
-        contexte: contexteCoche()
+        contexte: contexteCoche(),
+        plus: (function () {
+          var p = {};
+          chiffres.forEach(function (c) { var v = String(c.value || "").trim(); if (v) p[c.getAttribute("data-champ")] = v; });
+          p.certifs = certifs.filter(function (c) { return c.checked; })
+                             .map(function (c) { return c.getAttribute("data-certif"); });
+          return p;
+        })()
       };
       var ok = ecrire(CLE_E, o);
       etat.textContent = ok
@@ -339,6 +404,9 @@
       coches = {};
       champs.nom.value = ""; champs.ville.value = "";
       champs.effectif.value = ""; champs.responsable.value = "";
+      chiffres.forEach(function (c) { c.value = ""; });
+      certifs.forEach(function (c) { c.checked = false; });
+      verifierSiret();
       champs.naf.value = champs.naf.querySelector("option[selected]")
         ? champs.naf.querySelector("option[selected]").value : champs.naf.value;
       poserQuestions();

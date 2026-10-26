@@ -44,7 +44,8 @@ const ECRANS = [
   { nom: "plan.png", url: "/app/plan.html" },
   { nom: "releve.png", url: "/app/releve.html" },
   { nom: "registre.png", url: "/app/registre.html" },
-  { nom: "secteurs.png", url: "/app/secteurs.html" }
+  { nom: "secteurs.png", url: "/app/secteurs.html" },
+  { nom: "reglages.png", url: "/app/reglages.html" }
 ];
 
 // Le héros montre un téléphone à côté de l'ordinateur : il lui faut une vraie

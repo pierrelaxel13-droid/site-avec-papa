@@ -13,6 +13,10 @@
 
 window.PCO_THEME.appliquer();
 
+/* Ce qui ne marche qu'avec JavaScript (agrandir une capture) ne se montre
+   que si JavaScript tourne. */
+document.documentElement.classList.add("js");
+
 /* Le document n'est marqué « anime » que si JavaScript tourne et que le
    visiteur n'a pas demandé moins d'animations — sans quoi rien n'est caché. */
 if (!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches)) {

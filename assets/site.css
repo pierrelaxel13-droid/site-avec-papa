@@ -983,7 +983,7 @@ html, body, * { scrollbar-width: none; }
   .simulateur-reglages .reglages { position: static; }
 }
 @media (min-width: 40rem) {
-  .reglages-entreprise { grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: start; }
+  .reglages-entreprise { grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: stretch; }
   .reglages-entreprise > .reglage-large { grid-column: 1 / -1; }
 }
 /* Deux classes : la règle « .cases » vient plus bas dans le fichier, et à
@@ -1154,7 +1154,9 @@ html, body, * { scrollbar-width: none; }
   display: flex; flex-wrap: wrap; gap: .6rem;
   list-style: none; padding: 0; margin: 0;
 }
-.puces li { margin: 0; min-width: min(100%, 15rem); flex: 1 1 15rem; }
+.puces li { margin: 0; min-width: min(100%, 15rem); flex: 1 1 15rem; display: flex; }
+/* Une case par puce, et toutes celles d'une ligne à la même hauteur. */
+.puces li > a, .puces li > .puce-fixe { flex: 1; min-width: 0; }
 /* Les douze métiers de l'accueil, eux, ont un nombre fixe : une vraie grille,
    dont chaque palier divise douze — six, quatre, trois, deux, un. */
 .panneau-puces .puces { display: grid; grid-template-columns: minmax(0, 1fr); }
@@ -1162,9 +1164,9 @@ html, body, * { scrollbar-width: none; }
 @media (min-width: 46rem) { .panneau-puces .puces { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
 @media (min-width: 64rem) { .panneau-puces .puces { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
 @media (min-width: 96rem) { .panneau-puces .puces { grid-template-columns: repeat(6, minmax(0, 1fr)); } }
-/* Sur l'accueil, la puce n'est plus un lien : on dit que le métier est couvert,
-   on n'ouvre pas sa fiche — l'application ne s'ouvre que par la connexion.
-   Même boîte, sans l'effet de survol qui promettrait un clic. */
+/* Sur l'accueil, la puce n'ouvre pas la fiche du métier — l'application ne
+   s'ouvre que par la connexion — mais elle choisit ce métier dans l'outil
+   « Ce qui s'applique chez vous », juste au-dessus. C'est un bouton. */
 .puces a, .puces .puce-fixe {
   display: grid; grid-template-columns: 2.3rem minmax(0, 1fr); gap: .7rem;
   align-items: center;
@@ -1176,7 +1178,8 @@ html, body, * { scrollbar-width: none; }
   text-decoration: none;
   transition: border-color .18s ease, transform .18s ease, box-shadow .18s ease;
 }
-.puces a:hover {
+.puces .puce-fixe { width: 100%; font: inherit; font-weight: 600; font-size: .98rem; text-align: left; cursor: pointer; }
+.puces a:hover, .puces .puce-fixe:hover {
   border-color: var(--accent); color: var(--encre);
   transform: translateY(-2px); box-shadow: var(--ombre-1);
 }
@@ -1313,7 +1316,6 @@ html, body, * { scrollbar-width: none; }
 .pied h2 { font-size: 1.1rem; letter-spacing: -.01em; margin-bottom: var(--t3); }
 .pied ul { list-style: none; padding: 0; margin: var(--t3) 0 0; }
 .pied li { margin-bottom: .55rem; }
-.pied-faits li { color: var(--encre-douce); }
 .pied a { color: var(--encre-douce); text-decoration: none; }
 .pied a:hover { color: var(--accent); text-decoration: underline; }
 .pied .marque { margin-bottom: var(--t3); }
@@ -1387,9 +1389,19 @@ body.verrouille main > *:not(#verrou) { display: none; }
 }
 .jalons a:hover { background: var(--accent-clair); border-color: var(--accent); }
 .jalons .fort { background: var(--accent); border-color: var(--accent); color: #fff; }
+.jalons a.fort:hover { background: var(--accent-fonce); border-color: var(--accent-fonce); }
+/* Une étiquette qui ne mène nulle part n'a pas l'air d'un bouton : du texte,
+   sans bulle. */
+.jalons li > span { border-color: transparent; background: transparent; padding-inline: .1rem; }
+.jalons li > span.fort { background: transparent; border-color: transparent; color: var(--accent); }
+.jalons li + li > span::before { content: "· "; color: var(--filet-controle); }
 :root[data-theme="dark"] .jalons .fort { color: #14142A; }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) .jalons .fort { color: #14142A; }
+}
+:root[data-theme="dark"] .jalons li > span.fort { color: var(--accent); }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .jalons li > span.fort { color: var(--accent); }
 }
 
 .rubrique { padding-block: clamp(2rem, 1.2rem + 2.4vw, 3.25rem); }
@@ -1545,7 +1557,7 @@ details[open] > summary .chevron { transform: rotate(180deg); }
   grid-template-columns: minmax(0, 1fr);
 }
 @media (min-width: 62rem) {
-  .encarts-fiche { grid-template-columns: minmax(18rem, 2fr) minmax(0, 3fr); align-items: start; }
+  .encarts-fiche { grid-template-columns: minmax(18rem, 2fr) minmax(0, 3fr); align-items: stretch; }
   .encarts-fiche > .encart-large { grid-column: 1 / -1; }
 }
 .encart {
@@ -1887,6 +1899,8 @@ details[open] > summary .chevron { transform: rotate(180deg); }
 .deux-colonnes { display: grid; gap: var(--t5); }
 @media (min-width: 58rem) { .deux-colonnes { grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: start; } }
 .deux-colonnes > * { min-width: 0; }
+.deux-colonnes { align-items: stretch; }
+.deux-colonnes > .reserve { margin: 0; }
 
 /* --- 18 bis. Les codes APE ----------------------------------------------- */
 /* Un code APE fait six caractères (43.22B) : la pastille ronde des divisions
@@ -2020,6 +2034,8 @@ a.carte-categorie:focus-visible { outline: 2px solid var(--accent); outline-offs
 .carte-aller { margin-top: auto; align-self: flex-end; display: inline-flex; color: var(--accent); }
 .carte-aller svg { width: 1.4rem; height: 1.4rem; }
 .carte-vide { background: var(--carte-pale); box-shadow: none; }
+a.carte-vide { pointer-events: none; }
+a.carte-vide .carte-aller { display: none; }
 .carte-vide .carte-compte { color: var(--encre-tenue); }
 @media (prefers-reduced-motion: reduce) { a.carte-categorie:hover { transform: none; } }
 
@@ -2480,4 +2496,205 @@ a.carte-categorie:focus-visible { outline: 2px solid var(--accent); outline-offs
   .texte-loi table { display: table; }
   .sommaire-code { display: none !important; }
   a[href^="http"]::after { content: " (" attr(href) ")"; font-size: 9pt; color: #444; }
+}
+
+/* --- 25. Les captures s'agrandissent -------------------------------------- */
+/* On clique une capture : elle s'ouvre en grand, par-dessus la page. Le bouton
+   couvre l'écran dessiné ; il n'existe qu'avec JavaScript (classe « js »). */
+.portable, .mobile { position: relative; }
+.agrandir {
+  display: none;
+  position: absolute; inset: 0; z-index: 3;
+  border: 0; padding: 0; background: transparent; cursor: zoom-in;
+  border-radius: inherit;
+}
+.js .agrandir { display: block; }
+.agrandir:focus-visible { outline: 3px solid var(--accent); outline-offset: 4px; }
+.zoom {
+  width: min(96vw, 110rem); max-width: none; max-height: 94vh;
+  padding: 0; border: 0; border-radius: var(--r2);
+  background: var(--carte); box-shadow: var(--ombre-3);
+  overflow: auto;
+}
+.zoom::backdrop { background: rgba(11, 13, 20, .72); }
+.zoom img { display: block; width: 100%; height: auto; cursor: zoom-out; }
+.zoom.zoom-mobile { width: min(92vw, 26rem); }
+.zoom-fermer {
+  position: sticky; top: .6rem; float: right; margin: .6rem .6rem -3rem 0; z-index: 1;
+  display: inline-flex; align-items: center; gap: .4rem;
+  padding: .5rem .9rem; border: 1px solid var(--filet); border-radius: var(--rp);
+  background: var(--carte); color: var(--encre); font: inherit; font-weight: 600; cursor: pointer;
+  box-shadow: var(--ombre-1);
+}
+
+/* --- 26. Sur l'accueil, les cases se lèvent sous la souris ---------------- */
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .zone-public .raison, .zone-public .info-encart, .zone-public .appareil,
+  .zone-public main .reserve, .zone-public .resultat li, .zone-public .vitrine .portable,
+  .zone-public .heros-visuel .portable, .zone-public .heros-visuel .mobile {
+    transition: transform .22s cubic-bezier(.2, .7, .2, 1), box-shadow .22s ease, border-color .22s ease;
+  }
+  .zone-public .raison:hover, .zone-public .info-encart:hover, .zone-public .appareil:hover,
+  .zone-public main .reserve:hover, .zone-public .resultat li:hover {
+    transform: translateY(-5px); box-shadow: var(--ombre-2);
+  }
+  .zone-public .info-encart:hover, .zone-public .appareil:hover, .zone-public .raison:hover { border-color: var(--accent-filet); }
+}
+
+/* --- 27. Fait, ou pas fait ------------------------------------------------- */
+/* Le bouton : une case à cocher qu'on voit de loin. Fait, il passe au vert et
+   dit quand. Il n'existe qu'avec JavaScript, qui garde l'état. */
+.bloc-fait { display: none; }
+.js .bloc-fait {
+  display: flex; flex-wrap: wrap; align-items: center; gap: .5rem .9rem;
+  margin: var(--t3) 0; position: relative; z-index: 2;
+}
+.bouton-fait {
+  display: inline-flex; align-items: center; gap: .6rem;
+  padding: .6rem 1rem .6rem .8rem;
+  border: 1.5px solid var(--accent); border-radius: var(--rp);
+  background: var(--carte); color: var(--accent);
+  font: inherit; font-weight: 700; cursor: pointer;
+  transition: background-color .18s ease, color .18s ease, border-color .18s ease;
+}
+.bouton-fait:hover { background: var(--accent-clair); }
+.fait-case {
+  width: 1.15rem; height: 1.15rem; flex: none;
+  border: 2px solid currentColor; border-radius: 5px;
+  display: inline-grid; place-items: center;
+}
+.est-fait .bouton-fait { border-color: var(--vert); background: var(--vert-fond); color: var(--vert); }
+.est-fait .fait-case { background: var(--vert); border-color: var(--vert); }
+.est-fait .fait-case::after {
+  content: ""; width: .32rem; height: .62rem; margin-top: -.12rem;
+  border: solid var(--carte); border-width: 0 2.5px 2.5px 0; transform: rotate(45deg);
+}
+.fait-quand { font-size: .92rem; color: var(--encre-tenue); }
+.marque-fait {
+  display: inline-block; margin-right: .45rem; padding: .05rem .55rem;
+  border-radius: var(--rp); background: var(--vert-fond); color: var(--vert);
+  font-size: .78rem; font-weight: 700; letter-spacing: .04em; text-transform: uppercase;
+  vertical-align: .12em;
+}
+.marque-fait::before { content: "✓ "; }
+.bloc-domaine-tete .marque-fait { margin-left: .6rem; }
+.carte-faits { font-weight: 600; color: var(--encre-tenue); }
+.carte-faits.tout-fait { color: var(--vert); }
+.carte-faits.tout-fait::before { content: "✓ "; }
+
+/* --- 28. Réglages : l'entreprise en chiffres -------------------------------- */
+.intertitre { margin-top: var(--t4); padding-top: var(--t4); border-top: 1px solid var(--filet); }
+.intertitre h3 { margin: 0 0 .3rem; font-size: 1.15rem; }
+.intertitre .precision { margin: 0; }
+.reglage select { width: 100%; }
+.certifs { display: flex; flex-wrap: wrap; gap: .5rem; margin-top: .4rem; }
+.certifs .certif { flex: 1 1 9rem; }
+.certif {
+  display: flex; align-items: center; gap: .55rem;
+  padding: .65rem .85rem; border: 1px solid var(--filet); border-radius: var(--r1);
+  background: var(--carte); cursor: pointer; font-weight: 600; color: var(--encre);
+}
+.certif:has(input:checked) { border-color: var(--accent); background: var(--accent-clair); }
+.certif input { width: 1.1rem; height: 1.1rem; accent-color: var(--accent); }
+.fiche-chiffres { display: flex; flex-wrap: wrap; gap: var(--t3); margin: var(--t4) 0 0; }
+.fiche-chiffres > div { flex: 1 1 13rem; }
+.fiche-chiffres > div { padding: var(--t3) var(--t4); border: 1px solid var(--filet); border-radius: var(--r2); background: var(--carte); }
+.fiche-chiffres dd { margin: .2rem 0 0; color: var(--encre); font-weight: 600; }
+
+/* --- 29. Comment ça marche ------------------------------------------------- */
+.heros-court { padding-bottom: clamp(2rem, 1rem + 3vw, 3.5rem); }
+
+/* Les cinq étapes : une colonne au téléphone et à la tablette, flèche vers le
+   bas ; cinq de front sur grand écran, flèche vers la droite. */
+.etapes { list-style: none; margin: var(--t5) 0 0; padding: 0; display: grid; gap: var(--t5); }
+.etape {
+  position: relative; min-width: 0;
+  display: flex; flex-direction: column; gap: .5rem;
+  padding: var(--t4);
+  background: var(--carte); border: 1px solid var(--filet); border-radius: var(--r2);
+  box-shadow: var(--ombre-1);
+}
+.etape h3 { margin: 0; font-size: 1.15rem; }
+.etape p { margin: 0; color: var(--encre-douce); line-height: 1.55; }
+.etape-num {
+  position: absolute; top: var(--t3); right: var(--t3);
+  font-family: var(--mono); font-weight: 700; color: var(--encre-tenue);
+}
+.etape-icone {
+  width: 2.8rem; height: 2.8rem; display: grid; place-items: center;
+  border-radius: var(--r1); background: var(--accent-clair); color: var(--accent);
+}
+.etape-icone svg { width: 1.5rem; height: 1.5rem; }
+.etape:not(:last-child)::after {
+  content: ""; position: absolute; left: 50%; bottom: calc(-1 * var(--t5) + .5rem);
+  width: .9rem; height: .9rem; margin-left: -.45rem;
+  border: solid var(--accent); border-width: 0 2.5px 2.5px 0; transform: rotate(45deg);
+}
+@media (min-width: 64rem) {
+  .etapes { grid-template-columns: repeat(5, minmax(0, 1fr)); gap: var(--t4); }
+  .etape:not(:last-child)::after {
+    left: auto; right: calc(-1 * var(--t4) + .1rem); top: 50%; bottom: auto;
+    margin: -.45rem 0 0; transform: rotate(-45deg); width: .7rem; height: .7rem;
+  }
+}
+
+/* Texte et dessin côte à côte, au même niveau. */
+.deux-temps { display: grid; gap: var(--t5); align-items: center; }
+@media (min-width: 62rem) {
+  .deux-temps { grid-template-columns: minmax(0, 2fr) minmax(0, 3fr); }
+  .deux-temps-inverse { grid-template-columns: minmax(0, 3fr) minmax(0, 2fr); }
+}
+.deux-temps h2 { margin: 0 0 var(--t4); font-size: clamp(1.6rem, 1.2rem + 1.4vw, 2.3rem); }
+.legende { margin: 0; padding-left: 1.4rem; display: grid; gap: .8rem; color: var(--encre-douce); line-height: 1.55; }
+.legende strong { color: var(--encre); }
+.dessin-cadre { margin: 0; }
+.dessin-cadre figcaption { margin-top: .6rem; font-size: .92rem; color: var(--encre-tenue); text-align: center; }
+
+/* Les dessins : rien de codé en dur, tout vient du thème. */
+.dessin { display: block; width: 100%; height: auto; font-family: var(--police); }
+.dessin .d-carte { fill: var(--carte); stroke: var(--filet-fort); stroke-width: 1.5; }
+.dessin .d-encart { fill: var(--carte-pale); stroke: var(--filet); stroke-width: 1.2; }
+.dessin .d-encart-faire { fill: var(--accent-clair); stroke: var(--accent-filet); stroke-width: 1.2; }
+.dessin .d-ligne { fill: var(--filet-fort); opacity: .75; }
+.dessin .d-ligne-forte { fill: var(--encre); opacity: .8; }
+.dessin .d-num { fill: var(--accent); }
+.dessin .d-num-t { fill: var(--carte); font-size: 13px; font-weight: 700; }
+.dessin .d-titre { fill: var(--encre); font-size: 14px; font-weight: 700; }
+.dessin .d-petit { fill: var(--encre-tenue); font-size: 12px; font-family: var(--mono); }
+.dessin .d-accent { fill: var(--accent); font-family: var(--police); font-weight: 700; }
+.dessin .d-pastille { fill: none; stroke: var(--accent-filet); stroke-width: 1.5; }
+.dessin .d-puce { fill: var(--accent); }
+.dessin .d-fait { fill: var(--vert-fond); stroke: var(--vert); stroke-width: 1.5; }
+.dessin .d-case { fill: var(--vert); }
+.dessin .d-coche { fill: none; stroke: var(--carte); stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
+.dessin .d-fait-t { fill: var(--vert); font-size: 15px; font-weight: 700; }
+.dessin .d-repere { stroke: var(--filet); stroke-width: 1; stroke-dasharray: 3 4; }
+.dessin .d-rail { stroke: var(--filet-fort); stroke-width: 2; }
+.dessin .d-point { fill: var(--accent); }
+
+/* Les six écrans : trois de front, deux à la tablette, un au téléphone. */
+.pieces { list-style: none; margin: var(--t5) 0 0; padding: 0; display: grid; gap: var(--t4); grid-template-columns: minmax(0, 1fr); }
+@media (min-width: 40rem) { .pieces { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (min-width: 64rem) { .pieces { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+.piece {
+  display: flex; flex-direction: column; gap: .5rem; min-width: 0;
+  padding: var(--t3) var(--t3) var(--t4);
+  background: var(--carte); border: 1px solid var(--filet); border-radius: var(--r2);
+}
+.piece h3 { margin: .4rem .4rem 0; font-size: 1.15rem; }
+.piece p { margin: 0 .4rem; color: var(--encre-douce); line-height: 1.55; }
+.vignette {
+  position: relative; margin: 0; aspect-ratio: 16 / 10.75; overflow: hidden;
+  border: 1px solid var(--filet); border-radius: var(--r1); background: var(--papier-pale);
+}
+.vignette img { width: 100%; height: 100%; object-fit: cover; object-position: top left; }
+.vignette-vide { display: grid; place-items: center; color: var(--accent); }
+.vignette-vide svg { width: 3rem; height: 3rem; }
+
+/* Au téléphone, les dessins passent en hauteur : même contenu, texte lisible. */
+.dessin-etroit { display: none; }
+@media (max-width: 40rem) {
+  .dessin-large { display: none; }
+  .dessin-etroit { display: block; max-width: 26rem; margin-inline: auto; }
+  .dessin .d-titre-tel { font-size: 16px; }
 }

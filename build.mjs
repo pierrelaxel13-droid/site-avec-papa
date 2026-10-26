@@ -208,6 +208,7 @@ function page({ titre, description, racine = "", zone = "public", actif = "", co
 
   const menuPublic = `
       ${lien("index.html", "Le produit", "produit")}
+      ${lien("decouvrir.html", "Comment ça marche", "decouvrir")}
       ${lien("abonnement.html", "S'abonner", "abonnement")}
       ${selecteurTheme}`;
 
@@ -332,6 +333,7 @@ ${zone === "public" ? bandeInstallation(a) : ""}
         <h2>Le site</h2>
         <ul>
           <li><a href="${a("index.html")}">Le produit</a></li>
+          <li><a href="${a("decouvrir.html")}">Comment ça marche</a></li>
           <li><a href="${a("abonnement.html")}">S'abonner et voir les tarifs</a></li>
           <li><a href="${a("connexion.html")}">Connexion</a></li>
         </ul>
@@ -352,11 +354,11 @@ ${zone === "public" ? bandeInstallation(a) : ""}
              entre que par « Connexion » ou « Démarrer un abonnement ». La
              colonne qui menait droit dans l'application dit donc qui nous
              sommes, et garde le pied symétrique, en quatre colonnes. -->
-        <ul class="pied-faits">
-          <li>Conseil en organisation et conformité</li>
-          <li>${esc(SITE.zone)}</li>
-          <li>Un interlocuteur, qui vient sur place</li>
-          <li>Prix affichés, sans devis</li>
+        <ul>
+          <li><a href="${a("index.html")}#cabinet">Conseil en organisation et conformité</a></li>
+          <li><a href="${a("index.html")}#cabinet">${esc(SITE.zone)}</a></li>
+          <li><a href="${a("index.html")}#cabinet">Un interlocuteur, qui vient sur place</a></li>
+          <li><a href="${a("abonnement.html")}">Prix affichés, sans devis</a></li>
         </ul>
       </div>`}
       <div>
@@ -428,13 +430,32 @@ function perimetre(V, code) {
   return { base, declencheurs, ajoutables, groupes };
 }
 
-function blocDomaine(C, LIENS, id, d, origine, lienSecteur = "", racine = "") {
+/* --- Fait, ou pas fait ------------------------------------------------------
+   Pour chaque texte qui demande un geste, le client dit s'il l'a fait. Le
+   bouton vit dans « Ce que vous devez faire » ; le titre de la fiche porte la
+   marque « Fait » une fois coché, et la carte de la catégorie compte. Pour un
+   sujet du plan, c'est la revue qui est faite, et elle se refait à son rythme
+   (« periode », en jours). C'est gardé dans ce navigateur (app.js). */
+function boutonFait(id, { periode = 0, libelle = "Marquer comme fait" } = {}) {
+  return `<div class="bloc-fait" data-fait="${esc(id)}"${periode ? ` data-periode="${periode}"` : ""} data-libelle="${esc(libelle)}">
+    <button type="button" class="bouton-fait" aria-pressed="false">
+      <span class="fait-case" aria-hidden="true"></span><span class="fait-texte">${esc(libelle)}</span>
+    </button>
+    <span class="fait-quand" role="status"></span>
+  </div>`;
+}
+const marqueFait = (id) => `<span class="marque-fait" data-etat-fait="${esc(id)}" hidden>Fait</span>`;
+const JOURS_DE = { quotidienne: 1, hebdomadaire: 7, mensuelle: 31, trimestrielle: 92 };
+
+function blocDomaine(C, LIENS, id, d, origine, lienSecteur = "", racine = "", fait = false) {
   return `<article class="bloc-domaine" id="domaine-${esc(id)}" data-domaine="${esc(id)}" data-origine="${origine}"${origine === "declencheur" || origine === "hors" ? " hidden" : ""}>
   <div class="bloc-domaine-tete">
     <h3>${esc(d.nom)}</h3>
     ${origine === "declencheur" ? '<span class="marque-ajout">ajouté par votre contexte</span>' : ""}
+    ${fait ? marqueFait(`plan:${id}`) : ""}
   </div>
   <p class="bloc-domaine-resume">${esc(d.resume)}</p>
+  ${fait ? boutonFait(`plan:${id}`, { periode: JOURS_DE[d.frequence] || 31, libelle: "Marquer la revue comme faite" }) : ""}
   <div class="bloc-domaine-corps">
     <div>
       <span class="etiq">Ce qu'il faut faire</span>
@@ -489,13 +510,15 @@ function ficheDeLEntreprise(V, D) {
 function enTeteApp(D, titre, chapeau, lienNaf = "") {
   return `<section class="tete-app">
   <div class="enveloppe">
+    <!-- Chaque pastille mène quelque part : le nom, la ville et l'effectif à
+         Réglages, où on les change ; le code NAF à la fiche du métier ; la
+         date de début de suivi au registre, qui en garde la trace. -->
     <ul class="jalons">
-      <li><span class="fort" id="tete-nom">${esc(D.entreprise.nom)}</span></li>
-      <li>${lienNaf ? `<a href="${lienNaf}">NAF <span id="tete-naf">${esc(D.entreprise.nafComplet)}</span></a>`
-                    : `<span>NAF <span id="tete-naf">${esc(D.entreprise.nafComplet)}</span></span>`}</li>
-      <li><span id="tete-ville">${esc(D.entreprise.ville)}</span></li>
-      <li><span><span id="tete-effectif">${esc(D.entreprise.effectif)}</span> salariés</span></li>
-      <li><span>Suivi depuis ${esc(D.entreprise.depuis)}</span></li>
+      <li><a class="fort" href="reglages.html" title="Modifier dans Réglages"><span id="tete-nom">${esc(D.entreprise.nom)}</span></a></li>
+      <li><a href="${lienNaf || "secteurs.html"}">NAF <span id="tete-naf">${esc(D.entreprise.nafComplet)}</span></a></li>
+      <li><a href="reglages.html" title="Modifier dans Réglages"><span id="tete-ville">${esc(D.entreprise.ville)}</span></a></li>
+      <li><a href="reglages.html" title="Modifier dans Réglages"><span id="tete-effectif">${esc(D.entreprise.effectif)}</span> salariés</a></li>
+      <li><a href="registre.html" title="Voir le registre de preuves">Suivi depuis ${esc(D.entreprise.depuis)}</a></li>
     </ul>
     <h1>${esc(titre)}</h1>
     ${chapeau ? `<p class="chapeau">${chapeau}</p>` : ""}
@@ -546,9 +569,10 @@ ${aAnalyser.length ? rubrique({ etiq: "Ce qu'il faut faire maintenant", contenu:
       const L = lienDuTexte(C, LIENS, ref);
       return `<li>
       ${lienCarte(`texte/${slug(ref)}.html`, `Ouvrir la fiche : ${ref}`)}
-      <p class="titre">${esc(t.titre)}</p>
+      <p class="titre">${marqueFait(`essai:${slug(t.titre)}`)}${esc(t.titre)}</p>
       <p class="meta etiq">${esc(d.nom)}${t.priorite === "haute" ? " · prioritaire" : ""}</p>
       <ul class="a-faire">${(d.actions || []).slice(0, 3).map((a) => `<li>${esc(a)}</li>`).join("")}</ul>
+      ${boutonFait(`essai:${slug(t.titre)}`)}
       <p class="note-source">
         <a href="texte/${slug(ref)}.html">${esc(ref)}</a> ·
         <a class="lien-officiel" href="${esc(L.url)}" target="_blank" rel="noopener"
@@ -597,12 +621,13 @@ function ligneReleve(V, C, LIENS, t, racine = "") {
   const s = STATUTS[t.statut] || STATUTS.analyse;
   const d = V.domaines[t.domaine];
   const division = divisionDuDomaine(V, t.domaine);
+  const idFait = `essai:${slug(t.titre)}`;
   return `<li class="ligne-releve statut-${s.c}">
   <details>
     <summary>
       <span class="mono date">${esc(dateFr(t.date))}</span>
       <span class="corps">
-        <span class="titre">${esc(t.titre)}</span>
+        <span class="titre">${d ? marqueFait(idFait) : ""}${esc(t.titre)}</span>
         <span class="quoi">${esc(t.quoi)}</span>
         <span class="meta etiq">${esc(t.nature)} · ${esc(d ? d.nom : t.domaine)}${t.priorite === "haute" ? " · prioritaire" : ""}</span>
       </span>
@@ -614,6 +639,7 @@ function ligneReleve(V, C, LIENS, t, racine = "") {
         <section class="encart encart-faire">
           <h4 class="encart-titre"><span class="numero-encart" aria-hidden="true">1</span>Ce que vous devez faire</h4>
           <ul class="a-faire">${(d.actions || []).map((a) => `<li>${esc(a)}</li>`).join("")}</ul>
+          ${boutonFait(idFait)}
           <p class="rangee">
             <button type="button" class="bouton bouton-sobre imprimer-fiche">${imprimante} Enregistrer en PDF</button>
           </p>
@@ -712,10 +738,26 @@ function appPlan(V, D, C, LIENS) {
     .filter((g) => g.ids.length);
 
   const corps = enTeteApp(D, "Mon plan de veille",
-    `Ce qui s'applique chez ${esc(D.entreprise.nom)} : ${total} sujets à suivre, groupés par rythme de revue.`,
+    `Ce qui s'applique chez ${esc(D.entreprise.nom)} : ${total} sujets à suivre. Choisissez un rythme de revue : vous ne verrez que ses sujets.`,
     ficheDeLEntreprise(V, D)) + `
 
-${rubrique({ etiq: "Ce qui s'applique chez vous", id: "plan-perimetre", contenu: `
+<section class="rubrique">
+  <div class="enveloppe">
+  ${cartesCategories(parFrequence.map((g) => {
+    const ech = D.echeances.filter((e) => e.frequence === g.id)[0];
+    const n = g.ids.filter((id) => base.includes(id) || ajoutes.has(id)).length;
+    return {
+      id: `frequence-${g.id}`, nom: g.f.l,
+      compte: n ? `${n} sujet${n > 1 ? "s" : ""}` : "Aucun sujet à ce rythme",
+      compteAttr: ` data-compte-frequence="${esc(g.id)}"`,
+      classe: n ? "" : "carte-vide",
+      attrs: n ? "" : ' aria-disabled="true" tabindex="-1"',
+      marque: ech && ech.retard ? "En retard" : "",
+      lignes: [esc(g.f.d),
+               ech ? `Prochaine revue : ${esc(dateFr(ech.prochaine))}` : ""].filter(Boolean)
+    };
+  }))}
+  ${aSavoir("Ce qui a servi à faire ce plan", `
   <dl class="faits">
     <div><dt class="etiq">Domaines suivis</dt><dd><span class="grand" id="plan-total">${total}</span></dd></div>
     <div><dt class="etiq">Code de l'entreprise</dt><dd><span class="grand" id="plan-naf">${esc(D.entreprise.nafComplet || D.entreprise.naf)}</span></dd></div>
@@ -724,22 +766,29 @@ ${rubrique({ etiq: "Ce qui s'applique chez vous", id: "plan-perimetre", contenu:
   <p style="margin-top:var(--t4)">
     <span class="etiq">Contexte retenu</span><span id="plan-contexte">${esc(contexteNoms.join(" · "))}</span>
   </p>
+  <dl class="fiche-chiffres" id="plan-chiffres" hidden></dl>
   <p class="note-source" id="plan-origine">
     Ce plan est celui du jeu d'essai. Renseignez votre entreprise dans
     <a href="reglages.html">Réglages</a> : il se refera dessus, ici même.
-  </p>` })}
+  </p>`)}
+  </div>
+</section>
 
 ${parFrequence.map((g) => {
     const ech = D.echeances.filter((e) => e.frequence === g.id)[0];
     const dedans = g.ids.filter((id) => base.includes(id) || ajoutes.has(id));
     return rubrique({ etiq: g.f.l, id: `frequence-${g.id}`, contenu: `
       <p class="lecture">${esc(g.f.d)}${ech ? ` Prochaine revue : <strong>${esc(dateFr(ech.prochaine))}</strong>${ech.retard ? " — en retard." : "."}` : ""}</p>
+      <nav class="dedans" aria-label="Ce qu'il y a à ce rythme">
+        <p class="etiq">À ce rythme</p>
+        <ul>${g.ids.map((id) => `<li data-sujet-plan="${esc(id)}"${dedans.includes(id) ? "" : " hidden"}><a href="#domaine-${esc(id)}"><span>${esc(V.domaines[id].nom)}</span></a></li>`).join("")}</ul>
+      </nav>
       ${g.ids.map((id) => {
         const division = divisionDuDomaine(V, id);
         const origine = base.includes(id) ? "base" : (ajoutes.has(id) ? "declencheur-retenu" : "hors");
         return blocDomaine(C, LIENS, id, V.domaines[id], origine,
-          division ? `secteur/${division}.html` : "");
-      }).join("\n")}`, attrs: ` data-groupe-frequence="${esc(g.id)}"${dedans.length ? "" : " hidden"}` });
+          division ? `secteur/${division}.html` : "", "", true);
+      }).join("\n")}`, attrs: ` data-categorie data-groupe-frequence="${esc(g.id)}"${dedans.length ? "" : " hidden"}` });
   }).join("\n")}`;
 
   return page({
@@ -1029,13 +1078,14 @@ function ligneJO(V, t, i, releveLe = "") {
      date qu'il porte, et nous marquons ce qui est arrivé depuis la dernière
      relève. */
   const neuf = Boolean(releveLe) && vu === releveLe;
+  const idFait = `jo:${t.id && !/^http/.test(t.id) ? t.id : slug(t.titre).slice(0, 80)}`;
 
   return `<li class="ligne-releve statut-${droit ? "attente" : "neutre"}${neuf ? " est-neuf" : ""}">
   <details>
     <summary>
       <span class="mono date">${esc(dateFr(quand))}</span>
       <span class="corps">
-        <span class="titre">${neuf ? `<span class="marque-neuf">Nouveau</span> ` : ""}${esc(t.titre)}</span>
+        <span class="titre">${actions.length ? marqueFait(idFait) : ""}${neuf ? `<span class="marque-neuf">Nouveau</span> ` : ""}${esc(t.titre)}</span>
         <span class="quoi">${esc(String(t.corps || "").slice(0, 180).replace(/\s+\S*$/, ""))}…</span>
         <span class="meta etiq">${esc(t.sourceNom)} · ${esc(noms.join(" · "))}${
           quand !== vu ? ` · relevé le ${esc(dateFr(vu))}` : ""}</span>
@@ -1048,7 +1098,8 @@ function ligneJO(V, t, i, releveLe = "") {
         <section class="encart encart-faire">
           <h4 class="encart-titre"><span class="numero-encart" aria-hidden="true">1</span>Ce que vous devez faire</h4>
           ${actions.length
-            ? `<ul class="a-faire">${actions.map((a) => `<li>${esc(a)}</li>`).join("")}</ul>`
+            ? `<ul class="a-faire">${actions.map((a) => `<li>${esc(a)}</li>`).join("")}</ul>
+               ${boutonFait(idFait)}`
             : `<p>Rien à faire de votre côté : ce texte est à connaître, pas à appliquer.</p>`}
           <p class="rangee">
             <button type="button" class="bouton bouton-sobre imprimer-fiche">${imprimante} Enregistrer en PDF</button>
@@ -1229,11 +1280,12 @@ function cartesCategories(cartes) {
       const dedans = `
         <span class="carte-tete"><span class="carte-nom">${esc(c.nom)}</span>${
           c.marque ? `<span class="marque-neuf">${esc(c.marque)}</span>` : ""}</span>
-        <span class="carte-compte">${esc(c.compte)}</span>
+        <span class="carte-compte"${c.compteAttr || ""}>${esc(c.compte)}</span>
+        ${c.id ? `<span class="carte-faits" data-faits-de="${esc(c.id)}" hidden></span>` : ""}
         ${(c.lignes || []).map((l) => `<span class="carte-ligne">${l}</span>`).join("")}`;
       return `<li data-large="${large}">${c.vide
         ? `<div class="carte-categorie carte-vide">${dedans}</div>`
-        : `<a class="carte-categorie" href="#${esc(c.id)}">${dedans}<span class="carte-aller">${fleche}</span></a>`}</li>`;
+        : `<a class="carte-categorie${c.classe ? ` ${c.classe}` : ""}" href="#${esc(c.id)}"${c.attrs || ""}>${dedans}<span class="carte-aller">${fleche}</span></a>`}</li>`;
     }).join("")}
   </ul>
 </nav>`;
@@ -1952,6 +2004,54 @@ function appReglages(V, D, NAF, METIERS) {
           <label class="etiq" for="e-responsable">Qui s'en occupe chez vous</label>
           <input type="text" id="e-responsable" name="responsable" placeholder="${esc(D.entreprise.responsable)}" autocomplete="name">
         </div>
+        <!-- Votre entreprise en chiffres. Ces informations la décrivent sur le
+             plan ; elles ne changent pas la liste des sujets : ce sont les
+             cases « vrai chez vous », dessous, qui la font. On le dit. -->
+        <div class="reglage-large intertitre">
+          <h3>Votre entreprise en chiffres <span class="precision">— facultatif</span></h3>
+          <p class="precision">Ces informations s'affichent sur votre plan, pour qu'il soit complet le jour
+          d'un audit. Elles ne changent pas les sujets suivis : ce sont les cases plus bas qui le font.</p>
+        </div>
+        <div class="reglage">
+          <label class="etiq" for="e-ca">Chiffre d'affaires de l'an dernier</label>
+          <select id="e-ca" data-champ="ca">
+            <option value="">Je ne veux pas le dire</option>
+            ${["Moins de 100 000 €", "100 000 à 500 000 €", "500 000 € à 2 M€",
+               "2 à 10 M€", "10 à 50 M€", "Plus de 50 M€"]
+              .map((t) => `<option>${esc(t)}</option>`).join("")}
+          </select>
+        </div>
+        <div class="reglage">
+          <label class="etiq" for="e-forme">Forme juridique</label>
+          <select id="e-forme" data-champ="forme">
+            <option value="">—</option>
+            ${["Entreprise individuelle ou micro-entreprise", "EURL", "SARL", "SASU", "SAS", "SA",
+               "SCOP", "Association", "Autre"].map((t) => `<option>${esc(t)}</option>`).join("")}
+          </select>
+        </div>
+        <div class="reglage">
+          <label class="etiq" for="e-creation">Année de création</label>
+          <input type="number" id="e-creation" data-champ="creation" min="1800" max="2100"
+                 placeholder="2008" inputmode="numeric">
+        </div>
+        <div class="reglage">
+          <label class="etiq" for="e-sites">Nombre de sites ou d'établissements</label>
+          <input type="number" id="e-sites" data-champ="sites" min="1" max="10000"
+                 placeholder="1" inputmode="numeric">
+        </div>
+        <div class="reglage reglage-large">
+          <label class="etiq" for="e-siret">Numéro SIRET</label>
+          <input type="text" id="e-siret" data-champ="siret" inputmode="numeric" autocomplete="off"
+                 placeholder="14 chiffres, sur votre avis de situation INSEE" maxlength="20">
+          <p class="precision" id="e-siret-aide"></p>
+        </div>
+        <div class="reglage reglage-large">
+          <span class="etiq">Certifications que vous avez, ou que vous visez</span>
+          <div class="certifs">
+            ${["ISO 9001", "ISO 14001", "ISO 45001", "MASE", "Qualiopi"].map((c) => `<label class="certif">
+              <input type="checkbox" data-certif="${esc(c)}"><span>${esc(c)}</span></label>`).join("")}
+          </div>
+        </div>
         <div class="reglage reglage-large">
           <span class="etiq">Cochez ce qui est vrai chez vous</span>
           <div class="cases cases-ouvertes" id="e-contexte"></div>
@@ -2073,6 +2173,13 @@ function appReglages(V, D, NAF, METIERS) {
    Deux fichiers quand ils existent : la capture claire et la capture sombre.
    Celle qui ne correspond pas au thème est en display:none, et un navigateur
    ne télécharge pas une image lazy qui n'est pas affichée. */
+/* Une capture ressemble à l'application : on clique dessus, et rien ne se
+   passait. Elle s'agrandit maintenant, en plein écran (app.js). Le bouton
+   couvre tout l'écran dessiné ; sans JavaScript il n'est pas montré. */
+function agrandir(alt) {
+  return `<button type="button" class="agrandir" aria-label="Agrandir la capture : ${esc(alt)}"></button>`;
+}
+
 function portable(ECRANS, nom, alt) {
   if (!ECRANS.includes(nom)) {
     return `<p class="ecran-absent etiq">Capture manquante : ${esc(nom)} — lancer outils/captures.mjs</p>`;
@@ -2086,6 +2193,7 @@ function portable(ECRANS, nom, alt) {
      suffi. Rien n'est une photographie : c'est un boîtier dessiné, qui tient
      l'écran sans lui voler la vedette. */
   return `<figure class="portable" style="margin:0">
+         ${agrandir(alt)}
          <span class="capot"><span class="dalle">
            ${img(nom, "ecran-clair")}
            ${ECRANS.includes(sombre) ? img(sombre, "ecran-sombre") : ""}
@@ -2103,6 +2211,7 @@ function mobile(ECRANS, nom, alt) {
      noir au-dedans. C'est ce qui fait reconnaître un téléphone d'aujourd'hui,
      plus encore que l'arrondi. */
   return `<figure class="mobile" style="margin:0">
+         ${agrandir(alt)}
          <span class="chassis">
            ${img(nom, "ecran-clair")}
            ${ECRANS.includes(sombre) ? img(sombre, "ecran-sombre") : ""}
@@ -2167,6 +2276,7 @@ function pageAccueil(V, D, METIERS, ECRANS, C = null, NAF = null, SOURCES = []) 
     </p>
     <p class="rangee rangee-centre">
       <a class="bouton bouton-accent" href="#simulateur">Voir ce qui me concerne</a>
+      <a class="bouton bouton-sobre" href="decouvrir.html">Comment ça marche</a>
       <a class="bouton bouton-sobre" href="abonnement.html">Les tarifs</a>
     </p>
     <p class="gage">
@@ -2352,8 +2462,9 @@ function pageAccueil(V, D, METIERS, ECRANS, C = null, NAF = null, SOURCES = []) 
 <section class="section">
   <div class="enveloppe">
     <h2 class="titre-section">À quoi ça ressemble</h2>
-    <p class="intro titre-section">De vraies captures, pas des dessins. Tout s'ouvre depuis la
-    démonstration, sans rien créer.</p>
+    <p class="intro titre-section">De vraies captures, pas des dessins : cliquez-en une pour la
+    voir en grand. Le fonctionnement complet, schémas compris, est sur
+    <a href="decouvrir.html">Comment ça marche</a>.</p>
 
     ${vitrine(ECRANS, {
       image: "releve.png",
@@ -2424,14 +2535,15 @@ function pageAccueil(V, D, METIERS, ECRANS, C = null, NAF = null, SOURCES = []) 
   <div class="enveloppe">
     <h2 class="titre-section">Votre métier y est</h2>
     <p class="intro titre-section">${V.divisions.length} familles de métiers, chacune avec sa fiche.
-    En voici quelques-unes.</p>
+    En voici quelques-unes : cliquez la vôtre pour voir ce qui s'applique.</p>
     <div class="panneau-puces">
       <ul class="puces">
         ${VITRINE_SECTEURS.map((c) => {
           const d = V.divisions.filter((x) => x.c === c)[0];
           if (!d) throw new Error(`Vitrine de secteurs : division ${c} inconnue.`);
-          return `<li><span class="puce-fixe" title="${esc(d.l)}">
-          <span class="code">${esc(d.c)}</span><span class="nom">${esc(d.l)}</span></span></li>`;
+          return `<li><button type="button" class="puce-fixe" data-division="${esc(d.c)}"
+            title="Voir ce qui s'applique : ${esc(d.l)}">
+          <span class="code">${esc(d.c)}</span><span class="nom">${esc(d.l)}</span></button></li>`;
         }).join("\n")}
       </ul>
     </div>
@@ -2502,7 +2614,7 @@ function pageAccueil(V, D, METIERS, ECRANS, C = null, NAF = null, SOURCES = []) 
   </div>
 </section>
 
-<section class="bande-finale">
+<section class="bande-finale" id="cabinet">
   <div class="enveloppe">
     <span class="marque">${sigle}<span>Pierrel <span class="co">&amp; Co</span></span></span>
     <h2>Conseil en organisation et conformité, à ${esc(SITE.ville)}</h2>
@@ -2523,6 +2635,238 @@ function pageAccueil(V, D, METIERS, ECRANS, C = null, NAF = null, SOURCES = []) 
     titre: `${SITE.nom} — ${SITE.bareme}`,
     description: "Votre veille réglementaire tenue et prouvable : plan de veille, relevé des textes de votre métier, registre de preuves prêt pour l'audit.",
     zone: "public", actif: "produit", corps, donneesPlan: true
+  });
+}
+
+/* --- Comment ça marche ------------------------------------------------------
+   « Plus d'infos sur le site, avec des dessins, mais pas directement sur
+   l'accueil : on clique sur un bouton. » Cette page explique le site, du
+   Journal officiel à la case « fait », avec des schémas dessinés ici même
+   (SVG, aux couleurs du thème clair ou sombre). Tous les chiffres viennent
+   des données du dépôt ; rien n'est arrondi à la hausse. Comme l'accueil,
+   elle ne mène pas dans l'application : on y entre par « Connexion » ou
+   « Démarrer un abonnement ». */
+function pageDecouvrir(V, ECRANS, C, NAF, SOURCES) {
+  const confirmees = SOURCES.filter((x) => x.confirme);
+  const manquantes = SOURCES.filter((x) => !x.confirme);
+  const nomCourt = (x) => x.nom.split(" — ")[0];
+  const nDomaines = Object.keys(V.domaines).length;
+  const nCodes = NAF ? NAF.codes.length : 0;
+  const nArticles = C ? C.morceaux.reduce((n, m) => n + m.articles.length, 0) : 0;
+
+  const icone = (chemin) => `<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor"
+    stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">${chemin}</svg>`;
+
+  const etapes = [
+    { t: "Les sources officielles", i: '<path d="M6 3h9l3 3v15H6z"/><path d="M15 3v3h3M9 11h6M9 15h6"/>',
+      d: `${confirmees.length} sources publiques interrogées, Journal officiel en tête : ${esc(
+        [["eurlex-l", "EUR-Lex"], ["travail", "ministère du Travail"], ["cnil", "CNIL"], ["anses", "ANSES"], ["has", "HAS"]]
+          .filter(([id]) => confirmees.some((x) => x.id === id)).map(([, l]) => l).join(", "))}…` },
+    { t: "Relues toutes les heures", i: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+      d: `Un robot relit chaque source toutes les heures${C ? `, et le texte des ${C.codes.length} codes suivis une fois par jour` : ""}.` },
+    { t: "Triées pour votre métier", i: '<path d="M4 5h16l-6 8v6l-4-2v-4z"/>',
+      d: `${nDomaines} sujets, rattachés aux ${V.divisions.length} familles de métiers${nCodes ? ` et aux ${nCodes} codes APE` : ""}. Ce qui ne vous concerne pas n'arrive pas.` },
+    { t: "Ce qu'il faut faire", i: '<path d="M9 6h11M9 12h11M9 18h11"/><path d="m3.5 6 1 1 2-2M3.5 12l1 1 2-2M3.5 18l1 1 2-2"/>',
+      d: "Chaque texte arrive avec les gestes à faire, et le texte lui-même, tel que publié." },
+    { t: "Fait, et prouvé", i: '<path d="M12 3 4 6v6c0 4.5 3.4 7.8 8 9 4.6-1.2 8-4.5 8-9V6z"/><path d="m8.5 12 2.5 2.5 4.5-5"/>',
+      d: "Vous cochez « fait » ; la date est gardée, et le registre la montre à l'auditeur." }
+  ];
+
+  /* Le dessin d'une fiche : ce qu'on voit en ouvrant un texte. */
+  const dessinFiche = `<svg class="dessin" viewBox="0 0 640 400" role="img"
+    aria-label="Schéma d'une fiche de texte : en haut le titre ; à gauche, ce que vous devez faire, avec le bouton Fait ; à droite, le texte tel que publié ; en bas, d'où vient le texte.">
+    <rect class="d-carte" x="8" y="8" width="624" height="384" rx="18"/>
+    <text class="d-petit" x="36" y="46">23 octobre 2026</text>
+    <rect class="d-pastille" x="500" y="30" width="96" height="26" rx="13"/>
+    <text class="d-petit d-accent" x="548" y="48" text-anchor="middle">Texte</text>
+    <rect class="d-ligne-forte" x="36" y="64" width="420" height="12" rx="6"/>
+    <rect class="d-ligne" x="36" y="86" width="330" height="10" rx="5"/>
+    <rect class="d-encart-faire" x="36" y="118" width="250" height="186" rx="14"/>
+    <circle class="d-num" cx="62" cy="144" r="12"/><text class="d-num-t" x="62" y="149" text-anchor="middle">1</text>
+    <text class="d-titre" x="84" y="149">Ce que vous devez faire</text>
+    <circle class="d-puce" cx="58" cy="178" r="3.5"/><rect class="d-ligne" x="70" y="173" width="190" height="9" rx="4.5"/>
+    <circle class="d-puce" cx="58" cy="202" r="3.5"/><rect class="d-ligne" x="70" y="197" width="160" height="9" rx="4.5"/>
+    <circle class="d-puce" cx="58" cy="226" r="3.5"/><rect class="d-ligne" x="70" y="221" width="176" height="9" rx="4.5"/>
+    <rect class="d-fait" x="52" y="250" width="104" height="36" rx="18"/>
+    <rect class="d-case" x="66" y="260" width="16" height="16" rx="4"/>
+    <path class="d-coche" d="m70 268 3 3 6-7"/>
+    <text class="d-fait-t" x="92" y="273">Fait</text>
+    <rect class="d-encart" x="302" y="118" width="302" height="186" rx="14"/>
+    <circle class="d-num" cx="328" cy="144" r="12"/><text class="d-num-t" x="328" y="149" text-anchor="middle">2</text>
+    <text class="d-titre" x="350" y="149">Le texte, tel que publié</text>
+    ${[176, 196, 216, 236, 256, 276].map((y, k) => `<rect class="d-ligne" x="322" y="${y}" width="${[262, 250, 258, 230, 254, 170][k]}" height="8" rx="4"/>`).join("")}
+    <rect class="d-encart" x="36" y="320" width="568" height="48" rx="12"/>
+    <text class="d-titre" x="56" y="350">D'où vient ce texte</text>
+    <rect class="d-ligne" x="226" y="340" width="250" height="8" rx="4"/>
+    <text class="d-petit d-accent" x="584" y="350" text-anchor="end">la source ↗</text>
+  </svg>`;
+
+  /* Le même dessin, en hauteur, pour un téléphone : les encadrés l'un sous
+     l'autre, et un texte lisible sans zoomer. */
+  const dessinFicheTel = `<svg class="dessin" viewBox="0 0 360 560" role="img"
+    aria-label="Schéma d'une fiche de texte : le titre, puis ce que vous devez faire avec le bouton Fait, puis le texte tel que publié, puis d'où vient le texte.">
+    <rect class="d-carte" x="4" y="4" width="352" height="552" rx="18"/>
+    <text class="d-petit" x="24" y="38">23 octobre 2026</text>
+    <rect class="d-ligne-forte" x="24" y="54" width="290" height="12" rx="6"/>
+    <rect class="d-ligne" x="24" y="76" width="220" height="10" rx="5"/>
+    <rect class="d-encart-faire" x="20" y="104" width="320" height="196" rx="14"/>
+    <circle class="d-num" cx="46" cy="132" r="13"/><text class="d-num-t" x="46" y="137" text-anchor="middle">1</text>
+    <text class="d-titre d-titre-tel" x="68" y="138">Ce que vous devez faire</text>
+    <circle class="d-puce" cx="44" cy="168" r="4"/><rect class="d-ligne" x="58" y="163" width="250" height="10" rx="5"/>
+    <circle class="d-puce" cx="44" cy="194" r="4"/><rect class="d-ligne" x="58" y="189" width="210" height="10" rx="5"/>
+    <circle class="d-puce" cx="44" cy="220" r="4"/><rect class="d-ligne" x="58" y="215" width="230" height="10" rx="5"/>
+    <rect class="d-fait" x="38" y="244" width="116" height="40" rx="20"/>
+    <rect class="d-case" x="54" y="255" width="18" height="18" rx="4"/>
+    <path class="d-coche" d="m58 264 3.5 3.5 6.5-7.5"/>
+    <text class="d-fait-t d-titre-tel" x="82" y="270">Fait</text>
+    <rect class="d-encart" x="20" y="316" width="320" height="156" rx="14"/>
+    <circle class="d-num" cx="46" cy="344" r="13"/><text class="d-num-t" x="46" y="349" text-anchor="middle">2</text>
+    <text class="d-titre d-titre-tel" x="68" y="350">Le texte, tel que publié</text>
+    ${[374, 394, 414, 434, 454].map((y, k) => `<rect class="d-ligne" x="40" y="${y}" width="${[280, 268, 276, 250, 180][k]}" height="9" rx="4.5"/>`).join("")}
+    <rect class="d-encart" x="20" y="488" width="320" height="52" rx="12"/>
+    <text class="d-titre d-titre-tel" x="38" y="520">D'où vient ce texte</text>
+    <text class="d-petit d-accent d-titre-tel" x="322" y="520" text-anchor="end">↗</text>
+  </svg>`;
+
+  /* Un trimestre de revues : chaque rythme, ses passages. */
+  const semaines = 13;
+  const x0 = 170, larg = 440, pas = larg / semaines;
+  const rangs = [
+    { l: "Quotidienne", y: 70, pts: Array.from({ length: semaines * 5 }, (_, k) => x0 + (k + .5) * (larg / (semaines * 5))) },
+    { l: "Hebdomadaire", y: 130, pts: Array.from({ length: semaines }, (_, k) => x0 + (k + .5) * pas) },
+    { l: "Mensuelle", y: 190, pts: [0, 1, 2].map((k) => x0 + (k * 4.33 + 2) * pas) },
+    { l: "Trimestrielle", y: 250, pts: [x0 + 6.5 * pas] }
+  ];
+  const dessinRythmes = `<svg class="dessin" viewBox="0 0 640 310" role="img"
+    aria-label="Schéma d'un trimestre de revues : une revue chaque jour ouvré pour le rythme quotidien, une par semaine pour l'hebdomadaire, une par mois pour la mensuelle, une par trimestre pour la trimestrielle.">
+    <rect class="d-carte" x="8" y="8" width="624" height="294" rx="18"/>
+    ${[0, 4.33, 8.66, 13].map((k, i) => `<line class="d-repere" x1="${x0 + k * pas}" y1="34" x2="${x0 + k * pas}" y2="272"/>
+    ${i < 3 ? `<text class="d-petit" x="${x0 + (k + 2.16) * pas}" y="290" text-anchor="middle">${["Mois 1", "Mois 2", "Mois 3"][i]}</text>` : ""}`).join("")}
+    ${rangs.map((r) => `<text class="d-titre" x="32" y="${r.y + 5}">${r.l}</text>
+    <line class="d-rail" x1="${x0}" y1="${r.y}" x2="${x0 + larg}" y2="${r.y}"/>
+    ${r.pts.map((x) => `<circle class="d-point" cx="${x.toFixed(1)}" cy="${r.y}" r="${r.pts.length > 20 ? 2.6 : 6}"/>`).join("")}`).join("")}
+  </svg>`;
+
+  const rangsTel = rangs.map((r, k) => ({ ...r, y: 70 + k * 70,
+    pts: r.pts.map((x) => 24 + ((x - x0) / larg) * 312) }));
+  const dessinRythmesTel = `<svg class="dessin" viewBox="0 0 360 340" role="img"
+    aria-label="Schéma d'un trimestre de revues : une revue chaque jour ouvré pour le rythme quotidien, une par semaine pour l'hebdomadaire, une par mois pour la mensuelle, une par trimestre pour la trimestrielle.">
+    <rect class="d-carte" x="4" y="4" width="352" height="332" rx="18"/>
+    ${rangsTel.map((r) => `<text class="d-titre d-titre-tel" x="24" y="${r.y - 14}">${r.l}</text>
+    <line class="d-rail" x1="24" y1="${r.y}" x2="336" y2="${r.y}"/>
+    ${r.pts.map((x) => `<circle class="d-point" cx="${x.toFixed(1)}" cy="${r.y}" r="${r.pts.length > 20 ? 1.9 : 5.5}"/>`).join("")}`).join("")}
+    ${["Mois 1", "Mois 2", "Mois 3"].map((m, i) => `<text class="d-petit d-titre-tel" x="${24 + (i + .5) * 104}" y="318" text-anchor="middle">${m}</text>`).join("")}
+  </svg>`;
+
+  /* L'application, écran par écran : des captures, qu'un clic agrandit. */
+  const pieces = [
+    { img: "bord.png", t: "Tableau de bord", d: "Ce qui est en retard, ce qui attend une décision, ce qu'il faut faire maintenant." },
+    { img: "plan.png", t: "Mon plan", d: "Vos sujets, rangés par rythme de revue : quotidienne, hebdomadaire, mensuelle, trimestrielle." },
+    { img: "releve.png", t: "Relevé", d: "Les textes parus, par famille. Chacun avec ce qu'il faut faire et le texte officiel." },
+    { img: "registre.png", t: "Registre de preuves", d: "Les revues faites et les décisions prises, datées. C'est ce que demande un auditeur." },
+    { img: "secteurs.png", t: "Secteurs", d: `Les ${V.divisions.length} familles de métiers${nCodes ? ` et leurs ${nCodes} codes APE` : ""}, et ce qui s'applique à chacune.` },
+    { img: "reglages.png", t: "Réglages", d: "Votre entreprise, ses chiffres, vos réponses, vos alertes. Le plan se refait dessus, aussitôt." }
+  ];
+  const vignette = (p) => {
+    if (!p.img || !ECRANS.includes(p.img)) return `<div class="vignette vignette-vide">${icone('<circle cx="12" cy="12" r="3"/><path d="M12 3v3m0 12v3M3 12h3m12 0h3M5.6 5.6l2.1 2.1m8.6 8.6 2.1 2.1m0-12.8-2.1 2.1M7.7 16.3l-2.1 2.1"/>')}</div>`;
+    const sombre = p.img.replace(".png", "-sombre.png");
+    const im = (f, cl) => `<img class="${cl}" src="assets/ecrans/${esc(f)}" alt="Capture : ${esc(p.t)}" loading="lazy" decoding="async" width="1280" height="860">`;
+    return `<figure class="vignette">${agrandir(p.t)}${im(p.img, "ecran-clair")}${ECRANS.includes(sombre) ? im(sombre, "ecran-sombre") : ""}</figure>`;
+  };
+
+  const corps = `
+<section class="heros heros-court">
+  <div class="enveloppe">
+    <div class="heros-texte">
+      <h1>Comment ça marche</h1>
+    </div>
+    <p class="heros-sous">
+      Du Journal officiel à la case « fait » : ce que le site va chercher, comment il
+      trie, et ce que vous voyez. En cinq étapes et trois dessins.
+    </p>
+  </div>
+</section>
+
+<section class="section">
+  <div class="enveloppe">
+    <h2 class="titre-section">Du Journal officiel à votre écran</h2>
+    <ol class="etapes">
+      ${etapes.map((e, k) => `<li class="etape">
+        <span class="etape-num">${k + 1}</span>
+        <span class="etape-icone">${icone(e.i)}</span>
+        <h3>${esc(e.t)}</h3>
+        <p>${e.d}</p>
+      </li>`).join("")}
+    </ol>
+  </div>
+</section>
+
+<section class="section section-tein">
+  <div class="enveloppe deux-temps">
+    <div>
+      <h2>Ce que vous voyez pour chaque texte</h2>
+      <ol class="legende">
+        <li><strong>Ce que vous devez faire</strong>, en premier : les gestes, en
+          français courant. Le bouton <strong>Fait</strong> garde la date.</li>
+        <li><strong>Le texte, tel que publié</strong> : pas un résumé, le texte lui-même.</li>
+        <li><strong>D'où vient ce texte</strong> : la source, la date, et le lien direct.
+          C'est la source qui fait foi.</li>
+      </ol>
+    </div>
+    <figure class="dessin-cadre"><div class="dessin-large">${dessinFiche}</div><div class="dessin-etroit">${dessinFicheTel}</div></figure>
+  </div>
+</section>
+
+<section class="section">
+  <div class="enveloppe deux-temps deux-temps-inverse">
+    <figure class="dessin-cadre"><div class="dessin-large">${dessinRythmes}</div><div class="dessin-etroit">${dessinRythmesTel}</div>
+      <figcaption>Exemple sur un trimestre. Votre plan dit quels sujets sont à quel rythme.</figcaption></figure>
+    <div>
+      <h2>Votre plan, à son rythme</h2>
+      <p class="lecture">Tout ne se revoit pas aussi souvent. La sécurité d'un chantier se
+        relit chaque semaine ; la fiscalité, chaque mois ; les normes, chaque trimestre.
+        Votre plan range vos sujets par rythme, et une revue cochée
+        « faite » redevient à faire quand son rythme revient.</p>
+    </div>
+  </div>
+</section>
+
+<section class="section section-tein">
+  <div class="enveloppe">
+    <h2 class="titre-section">Ce que vous trouvez dans l'application</h2>
+    <p class="intro titre-section">Six écrans. Cliquez une capture pour la voir en grand.</p>
+    <ul class="pieces">
+      ${pieces.map((p) => `<li class="piece">
+        ${vignette(p)}
+        <h3>${esc(p.t)}</h3>
+        <p>${esc(p.d)}</p>
+      </li>`).join("")}
+    </ul>
+  </div>
+</section>
+
+<section class="section">
+  <div class="enveloppe">
+    <h2 class="titre-section">Ce que le site ne fait pas</h2>
+    <div class="deux-colonnes" style="margin-top:var(--t5)">
+      <p class="reserve"><strong>Ce n'est pas un conseil juridique.</strong> La liste des textes qui
+        vous concernent n'est pas garantie complète. Chaque texte reste à vérifier à sa source,
+        et ce qu'il implique chez vous, à valider par quelqu'un de compétent.</p>
+      <p class="reserve"><strong>${manquantes.length} sources ne sont pas encore relevées.</strong>
+        ${esc(manquantes.map((x) => `${nomCourt(x)} (${x.pourquoi || "ne répond pas"})`).join(" · "))}.
+        Ce qui vient de là n'apparaît pas dans le relevé.</p>
+    </div>
+    <p class="rangee rangee-centre" style="margin-top:var(--t5)">
+      <a class="bouton bouton-accent" href="abonnement.html">Démarrer un abonnement</a>
+      <a class="bouton bouton-sobre" href="connexion.html">Connexion</a>
+    </p>
+  </div>
+</section>`;
+
+  return page({
+    titre: `Comment ça marche | ${SITE.nom}`,
+    description: "Du Journal officiel à la case « fait » : ce que le site va chercher, comment il trie, et ce que vous voyez.",
+    zone: "public", actif: "decouvrir", corps
   });
 }
 
@@ -2638,7 +2982,7 @@ function pageAbonnement(V) {
   </div>
 </section>
 
-<section class="bande-finale">
+<section class="bande-finale" id="cabinet">
   <div class="enveloppe">
     <span class="marque">${sigle}<span>Pierrel <span class="co">&amp; Co</span></span></span>
     <h2>Un premier échange d'une heure, sans engagement</h2>
@@ -3044,6 +3388,7 @@ async function main() {
 
   await writeFile(join(SORTIE, "index.html"), pageAccueil(V, D, METIERS, ECRANS, C, NAF, SOURCES));
   await writeFile(join(SORTIE, "abonnement.html"), pageAbonnement(V));
+  await writeFile(join(SORTIE, "decouvrir.html"), pageDecouvrir(V, ECRANS, C, NAF, SOURCES));
   await writeFile(join(SORTIE, "connexion.html"), pageConnexion());
 
   await writeFile(join(SORTIE, "app", "index.html"), appTableauBord(V, D, C, LIENS));

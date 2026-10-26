@@ -231,6 +231,24 @@ qu'il n'y a pas de client.
   cette catégorie » avec les nombres, dessous un encadré par sujet. Secteurs
   fait de même avec ses divisions.
 - **Pas de barre de défilement**, nulle part (site.css, en tête).
+- **Rien qui ait l'air cliquable sans l'être.** Une pastille, une case ou une
+  capture qu'on clique fait quelque chose : les pastilles de l'entreprise
+  mènent à Réglages, les métiers de l'accueil choisissent le métier dans
+  l'outil, les captures s'agrandissent (`agrandir()` + `captures()`). Une
+  étiquette qui ne mène nulle part est du texte, sans bulle.
+- **Les cases d'une même ligne ont la même hauteur** (grilles en
+  `align-items: stretch`, puces en flex).
+- **Fait / pas fait** : `boutonFait()` dans « Ce que vous devez faire » (relevé,
+  tableau de bord) et sur chaque sujet du plan (revue qui redevient à faire à
+  son rythme, `JOURS_DE`). État dans `localStorage` « pco-faits » ; les cartes
+  comptent « N faits sur M » (`faits()` dans app.js).
+- **Comment ça marche** (`decouvrir.html`, `pageDecouvrir()`) : les étapes, des
+  dessins SVG aux couleurs du thème (version en hauteur sous 40rem) et les
+  captures. On y va depuis l'accueil (bouton du héros), le menu et le pied ;
+  elle ne mène pas dans l'application.
+- **Réglages, l'entreprise en chiffres** : chiffre d'affaires, forme, création,
+  sites, SIRET (contrôle de Luhn), certifications. Ils décrivent l'entreprise
+  sur le plan ; ils ne changent pas les sujets, et la page le dit.
 - **Le texte va à côté de sa source.** Sur la fiche de secteur, chaque texte se
   déplie sur ce qu'il exige, avec sa fiche et son lien officiel. Dans le plan
   et le tableau de bord, les actions et les textes liés sont visibles sans

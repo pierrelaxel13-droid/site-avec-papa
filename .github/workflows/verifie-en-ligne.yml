@@ -61,7 +61,7 @@ jobs:
         if: always() && steps.version.outputs.a_jour == 'oui'
         run: |
           faute=0
-          for p in / /abonnement.html /connexion.html /app/index.html \
+          for p in / /decouvrir.html /abonnement.html /connexion.html /app/index.html \
                    /app/releve.html /app/secteurs.html /assets/site.css \
                    /assets/amorce.js; do
             code=$(curl -sS -o /dev/null -w "%{http_code}" --max-time 30 "$SITE$p" || echo 000)
