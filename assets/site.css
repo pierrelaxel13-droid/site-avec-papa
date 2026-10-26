@@ -2043,6 +2043,71 @@ a.carte-categorie:focus-visible { outline: 2px solid var(--accent); outline-offs
 
 .categorie-naf > h2 { margin-bottom: var(--t4); }
 
+/* Ce qu'il y a dans une catégorie : la liste des sujets en haut, puis un
+   encadré par sujet, filet de couleur à gauche, pour qu'on ne confonde pas
+   la paie avec le droit du travail. */
+.dedans { margin: var(--t4) 0 var(--t5); }
+.dedans .etiq { margin: 0 0 var(--t2); }
+.dedans ul { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: .55rem; }
+.dedans li { flex: 1 1 16rem; display: flex; min-width: 0; }
+.dedans a {
+  flex: 1; min-width: 0;
+  display: flex; justify-content: space-between; align-items: center; gap: .7rem;
+  padding: .7rem .95rem;
+  background: var(--accent-clair); color: var(--encre);
+  border: 1px solid var(--accent-filet); border-radius: var(--r1);
+  font-weight: 600; line-height: 1.35; text-decoration: none;
+  transition: border-color .18s ease;
+}
+.dedans a:hover { border-color: var(--accent); }
+.dedans .compte {
+  flex: none; display: inline-grid; place-items: center;
+  min-width: 2rem; height: 2rem; padding-inline: .45rem;
+  border-radius: var(--rp); background: var(--carte); color: var(--accent); font-weight: 700;
+}
+[data-vue="recherche"] .dedans { display: none !important; }
+
+.sous-groupe {
+  margin-top: var(--t4); padding: var(--t4);
+  background: var(--papier-pale);
+  border: 1px solid var(--filet); border-left: 4px solid var(--accent); border-radius: var(--r2);
+  scroll-margin-top: .5rem;
+}
+.sous-groupe > h4 {
+  display: flex; flex-wrap: wrap; align-items: baseline; gap: .4rem .7rem;
+  margin: 0 0 var(--t3);
+  font-size: clamp(1.15rem, 1.05rem + .45vw, 1.45rem); letter-spacing: -.02em; color: var(--encre);
+}
+.sous-groupe > h4 .etiq { color: var(--accent); }
+.sous-groupe .tableau-boite { margin-top: 0; }
+.sous-groupe .liste-releve { margin-top: 0; }
+@media (max-width: 36rem) { .sous-groupe { padding: var(--t3); } }
+
+/* Les divisions d'un grand secteur : un encadré chacune, comme les sujets. */
+.categorie-naf .grappe-naf {
+  padding: var(--t4);
+  background: var(--papier-pale);
+  border: 1px solid var(--filet); border-left: 4px solid var(--accent); border-radius: var(--r2);
+}
+.categorie-naf .grappe-naf + .grappe-naf { margin-top: var(--t4); }
+.categorie-naf .grappe-naf { scroll-margin-top: .5rem; }
+@media (max-width: 36rem) { .categorie-naf .grappe-naf { padding: var(--t3); } }
+
+/* Sur grand écran, chaque texte du tableau est sa propre case, séparée de la
+   suivante — au téléphone, les lignes sont déjà des cartes. */
+@media (min-width: 52.01rem) {
+  .tableau-textes { border-collapse: separate; border-spacing: 0 .55rem; margin-top: -.55rem; }
+  .tableau-textes thead th { border-bottom: 0; padding-bottom: .1rem; }
+  .tableau-textes tbody th, .tableau-textes tbody td,
+  .tableau-textes tbody tr:last-child th, .tableau-textes tbody tr:last-child td {
+    background: var(--carte);
+    border-top: 1px solid var(--filet); border-bottom: 1px solid var(--filet);
+  }
+  .tableau-textes tbody th { border-left: 1px solid var(--filet); border-radius: var(--r2) 0 0 var(--r2); }
+  .tableau-textes tbody td:last-child { border-right: 1px solid var(--filet); border-radius: 0 var(--r2) var(--r2) 0; }
+  .tableau-textes tbody tr:hover > *, .tableau-textes tbody tr:focus-within > * { background: var(--carte-pale); }
+}
+
 /* Les familles du relevé, dessous : même grammaire que le reste. */
 .famille-releve { margin-top: var(--t6); }
 .famille-releve h3 {

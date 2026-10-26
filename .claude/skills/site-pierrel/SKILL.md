@@ -226,6 +226,10 @@ qu'il n'y a pas de client.
   bouton « Toutes les catégories ». Ne pas remettre de contenu entre les
   cartes et les catégories : il resterait affiché au clic, et le client
   demande « seulement ça ». Les fiches de secteur, elles, déplient leurs textes.
+- **Dans une catégorie, on distingue ce qu'il y a dedans.** `parSujet()` range
+  son contenu par sujet (domaine du référentiel) : en haut la liste « Dans
+  cette catégorie » avec les nombres, dessous un encadré par sujet. Secteurs
+  fait de même avec ses divisions.
 - **Pas de barre de défilement**, nulle part (site.css, en tête).
 - **Le texte va à côté de sa source.** Sur la fiche de secteur, chaque texte se
   déplie sur ce qu'il exige, avec sa fiche et son lien officiel. Dans le plan

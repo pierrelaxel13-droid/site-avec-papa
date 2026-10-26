@@ -223,7 +223,6 @@
     main.insertBefore(retour, main.firstChild);
 
     var caches = [];
-    var depuisLesCartes = false;
     /* Au retour, le navigateur remettrait la page où elle était dans la
        catégorie ; on veut les cartes, depuis le haut. */
     try { history.scrollRestoration = "manual"; } catch (x) { /* sans effet */ }
@@ -257,7 +256,7 @@
            on remet en haut tout de suite, puis à l'image suivante. */
         var placer = function () {
           if (choisi.cible === choisi.sec) window.scrollTo({ top: 0, left: 0, behavior: "instant" });
-          else choisi.cible.scrollIntoView({ block: "start" });
+          else choisi.cible.scrollIntoView({ block: "start", behavior: "instant" });
         };
         placer();
         requestAnimationFrame(placer);
@@ -268,12 +267,10 @@
       }
     }
 
-    choix.addEventListener("click", function (e) {
-      if (e.target.closest && e.target.closest('a[href^="#"]')) depuisLesCartes = true;
-    });
+    /* Le bouton mène toujours aux cartes, même après être passé d'un sujet à
+       l'autre dans la catégorie : revenir d'un cran n'y suffirait plus. */
     bouton.addEventListener("click", function (e) {
       e.preventDefault();
-      if (depuisLesCartes) { depuisLesCartes = false; history.back(); return; }
       try { history.pushState(null, "", location.pathname + location.search); } catch (x) { /* sans effet */ }
       afficher();
     });

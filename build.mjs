@@ -1151,6 +1151,7 @@ function tableauDeTextes(V, C, LIENS, TEXTES, entrees, racine = "", cherchable =
   <section class="famille-textes" id="textes-${esc(g.id)}" data-categorie${cherchable ? " data-groupe" : ""}>
     <h3>${esc(g.cl.l)} <span class="etiq">${g.textes.length} texte${g.textes.length > 1 ? "s" : ""}</span></h3>
     <p class="precision">${esc(g.cl.d)}</p>
+    ${parSujet(V, `textes-${g.id}`, g.textes, (e) => e.id, (liste) => `
     <div class="tableau-boite">
     <table class="tableau-textes">
       <thead><tr>
@@ -1160,7 +1161,7 @@ function tableauDeTextes(V, C, LIENS, TEXTES, entrees, racine = "", cherchable =
         <th scope="col">Où le lire</th>
       </tr></thead>
       <tbody>
-        ${g.textes.map((e) => {
+        ${liste.map((e) => {
           const f = TEXTES[e.ref] || {};
           const L = lienDuTexte(C, LIENS, e.ref);
           const exige = (f.exige || []).slice(0, 2);
@@ -1185,7 +1186,7 @@ function tableauDeTextes(V, C, LIENS, TEXTES, entrees, racine = "", cherchable =
       </tr>`; }).join("")}
       </tbody>
     </table>
-    </div>
+    </div>`)}
   </section>`).join("");
 
   return { note, cartes, tables };
@@ -1236,6 +1237,33 @@ function cartesCategories(cartes) {
     }).join("")}
   </ul>
 </nav>`;
+}
+
+/* Ce qu'il y a dans une catégorie, rangé par sujet : en haut, la liste des
+   sujets avec leur nombre, qui mène à chacun ; dessous, un encadré par sujet.
+   « Social », c'est cinquante textes de paie et cinq de droit du travail :
+   les servir d'affilée, c'est ne pas les distinguer. Un seul sujet : pas de
+   liste en haut, il n'y a rien à choisir. */
+function parSujet(V, prefixe, entrees, domaineDe, rendre, unite = "texte") {
+  const par = new Map();
+  for (const e of entrees) {
+    const id = domaineDe(e) || "autres";
+    if (!par.has(id)) par.set(id, []);
+    par.get(id).push(e);
+  }
+  const sujets = [...par.entries()]
+    .map(([id, liste]) => ({ id, nom: (V.domaines[id] || {}).nom || "Autres", liste }))
+    .sort((a, b) => b.liste.length - a.liste.length || a.nom.localeCompare(b.nom, "fr"));
+  const compte = (n) => `${n} ${unite}${n > 1 ? "s" : ""}`;
+  return `${sujets.length > 1 ? `<nav class="dedans" aria-label="Ce qu'il y a dans cette catégorie">
+    <p class="etiq">Dans cette catégorie</p>
+    <ul>${sujets.map((g) => `<li><a href="#${esc(prefixe)}--${esc(g.id)}"><span>${esc(g.nom)}</span>
+      <span class="compte">${g.liste.length}</span></a></li>`).join("")}</ul>
+  </nav>` : ""}
+  ${sujets.map((g) => `<section class="sous-groupe" id="${esc(prefixe)}--${esc(g.id)}" data-groupe>
+    <h4>${esc(g.nom)} <span class="etiq">${compte(g.liste.length)}</span></h4>
+    ${rendre(g.liste)}
+  </section>`).join("")}`;
 }
 
 /* Ce qui explique la page sans être ce qu'on vient y chercher : replié. */
@@ -1300,9 +1328,9 @@ function appReleve(V, D, JO, C, LIENS, SOURCES = []) {
   <section class="famille-releve" id="famille-${esc(g.id)}"${categorie ? " data-categorie" : ""}>
     <h3>${esc(g.cl.l)} <span class="etiq">${g.textes.length} texte${g.textes.length > 1 ? "s" : ""}</span></h3>
     <p class="precision">${esc(g.cl.d)}</p>
-    <ul class="liste-releve">
-      ${g.textes.map((t) => ligneReleve(V, C, LIENS, t)).join("")}
-    </ul>
+    ${parSujet(V, `famille-${g.id}`, g.textes, (t) => t.domaine, (liste) => `<ul class="liste-releve">
+      ${liste.map((t) => ligneReleve(V, C, LIENS, t)).join("")}
+    </ul>`)}
   </section>`;
   const statutsDemo = `<dl class="compteurs">
     ${parStatut.map((x) => `<div><dt class="etiq">${esc(x.l)}</dt><dd><span class="grand">${x.n}</span></dd></div>`).join("")}
@@ -1352,10 +1380,11 @@ function appReleve(V, D, JO, C, LIENS, SOURCES = []) {
   <section class="famille-releve" id="jo-famille-${esc(g.id)}" data-categorie>
     <h3>${esc(g.cl.l)} <span class="etiq">${g.textes.length} texte${g.textes.length > 1 ? "s" : ""}</span></h3>
     <p class="precision">${esc(g.cl.d)}</p>
-    <ul class="liste-releve">
-      ${g.textes.slice().sort((a, b) => ((a.dateTexte || a.date) < (b.dateTexte || b.date) ? 1 : -1))
-                .map((t) => ligneJO(V, t, n++, JO.releve_le)).join("")}
-    </ul>
+    ${parSujet(V, `jo-famille-${g.id}`,
+      g.textes.slice().sort((a, b) => ((a.dateTexte || a.date) < (b.dateTexte || b.date) ? 1 : -1)),
+      domaineJO, (liste) => `<ul class="liste-releve">
+      ${liste.map((t) => ligneJO(V, t, n++, JO.releve_le)).join("")}
+    </ul>`)}
   </section>`).join(""); })()}` : `
   <p class="reserve">
     <strong>Aucune relève n'a encore été faite.</strong>
@@ -1490,12 +1519,18 @@ function appSecteurs(V, METIERS, NAF) {
     ${V.sections.map((sec) => `
     <section class="categorie-naf" id="naf-${esc(sec.c)}" data-categorie data-groupe>
       <h2>${esc(sec.l)}</h2>
+      ${(() => { const divs = groupes.filter((g) => g.d.s === sec.c); return divs.length > 1 ? `
+      <nav class="dedans" aria-label="Ce qu'il y a dans ce secteur">
+        <p class="etiq">Dans ce secteur</p>
+        <ul>${divs.map((g) => `<li><a href="#naf-${esc(sec.c)}--${esc(g.d.c)}"><span>${esc(g.d.l)}</span>
+          <span class="compte">${g.codes.length || 1}</span></a></li>`).join("")}</ul>
+      </nav>` : ""; })()}
       ${groupes.filter((g) => g.d.s === sec.c).map((g) => {
       const mots = METIERS[g.d.c] || [];
       const adresse = `secteur/${esc(g.d.c)}-${slug(g.d.l)}.html`;
       const commun = [g.d.c, g.d.l, g.section ? g.section.l : "", ...mots].join(" ");
       return `
-    <section class="grappe grappe-naf" data-groupe>
+    <section class="grappe grappe-naf" id="naf-${esc(g.d.s)}--${esc(g.d.c)}" data-groupe>
       <h3 class="etiq">
         <span class="lettre">${esc(g.d.c)}</span>
         <a href="${adresse}">${esc(g.d.l)}</a>
