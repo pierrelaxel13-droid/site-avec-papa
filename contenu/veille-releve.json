@@ -6,8 +6,8 @@
   {
    "id": "jorf",
    "nom": "Journal officiel de la République française",
-   "entrees": 135612,
-   "retenus": 8996,
+   "entrees": 136032,
+   "retenus": 9000,
    "souci": null
   },
   {
@@ -180,6 +180,109 @@
   }
  ],
  "textes": [
+  {
+   "source": "jorf",
+   "sourceNom": "Journal officiel de la République française",
+   "genre": "texte",
+   "id": "JORFARTI000055019012",
+   "titre": "Avis relatif à la tarification de certains dispositifs médicaux visés à l'article L. 165-1 du code de la sécurité sociale",
+   "nature": "Article",
+   "date": "2026-10-27",
+   "corps": "En application de la convention entre le comité économique des produits de santé et la société DHCARE France, les prix de vente maximum hors taxes au distributeur revendant directement aux assurés sociaux (dénommés ci-après prix de cession en euros HT) et les tarifs et les prix limites de vente au public en € TTC (PLV) des produits visés ci-dessous sont fixés comme suit et prennent effet à compter du treizième jour suivant la date de la publication du présent avis au Journal officiel de la République française :\n\n \n \n\n \n \n \n\nCODE \n \n\nDÉSIGNATION \n \n\nPrix de cession \n \n\n en € HT \n \n\nTarif \n \n\n en € TTC \n \n\nPLV\n \n\n en € TTC \n \n \n \n\n1256730 \n \n\nEscarres, coussin en mousse et gel, s/classe IB, DHCARE, Flo-Tech Image. \n \n\n- \n \n\n66,63 \n \n\n66,63 \n \n \n \n\n1255274 \n \n\nEscarres, coussin visco, classe II, DHCARE, FLO-TECH CONTOUR VISCO, technique \n \n\n- \n \n\n81,00 \n \n\n81,00 \n \n \n \n\n1258864 \n \n\nEscarres, coussin visco, classe II, DHCARE, CLASSIC VISCO, standard. \n \n\n- \n \n\n69,00 \n \n\n69,00 \n \n \n \n\n1260677 \n \n\nEscarres, coussin visco, classe II, DHCARE, CLASSIC VISCO, standard < 38cm. \n \n\n- \n \n\n81,00 \n \n\n81,00 \n \n \n \n\n1203679 \n \n\nEscarres, coussin en visco, classe II, DHCARE, CLASSIC VISCO, standard > 45 cm. \n \n\n- \n \n\n81,00 \n \n\n81,00 \n \n \n \n\n1204839 \n \n\nEscarres, coussin visco, classe II, DHCARE, MATRX CONTOUR VISCO, technique \n \n\n- \n \n\n81,00 \n \n\n81,00 \n \n \n \n\n1212276 \n \n\nEscarres matelas en mousse, s'classe IA, DHCARE, SOFTFORM ATMOS. \n \n\n- \n \n\n135,45 \n \n\n135,45 \n \n \n \n\n1237017 \n \n\nEscarres surmatelas mousse viscoélastique, classe II, DHCARE, SOFTFORM VISCO. \n \n\n- \n \n\n247,18 \n \n\n247,18 \n \n \n \n\n1203640 \n \n\nEscarres matelas en mousse viscoélastique, classe II, DHCARE, SOFTFORM VISCOMIXT. \n \n\n- \n \n\n296,62 \n \n\n296,62 \n \n \n \n\n4353586 \n \n\nVHP, assistance électrique à la propulsion, DHCARE, ALBER SMOOV ONE O10. \n \n\n- \n \n\n3 500,00 \n \n\n3 500,00 \n \n \n \n\n4321630 \n \n\nVHP, assistance électrique à la propulsion, DHCARE, ALBER E MOTION M25. \n \n\n- \n \n\n3 500,00 \n \n\n3 500,00 \n \n \n \n\n4903437 \n \n\nVPH, traction à entraînement électrique, DHCARE, ALBER E-PILOT P15 \n \n\n- \n \n\n3 500,00 \n \n\n3 500,00 \n \n \n \n\n4302057 \n \n\nVPH, monte-escalier transportable, DHCARE, ALBER SCALAMOBIL S35 \n \n\n4 836,50 \n \n\n6 002,95 \n \n\n6 002,95 \n \n \n \n\n4320552 \n \n\nVPH, monte-escalier transportable, DHCARE, ALBER SCALAMOBIL S38 \n \n\n4 836,50 \n \n\n6 002,95 \n \n\n6 002,95 \n \n \n \n\n4371160 \n \n\nVHP, monte-escalier transportable, DHCARE, ALBER SCALAMOBIL, prestation kit \n \n\n- \n \n\n105,50 \n \n\n105,50 \n \n \n \n\n4335298 \n \n\nVHP, monte-escalier transportable, DHCARE, ALBER SCALAMOBIL, presta init \n \n\n- \n \n\n375,00 \n \n\n375,00 \n \n \n \n\n4399039 \n \n\nVHP, monte-escalier transportable, DHCARE, ALBER SCALAMOBIL S45 \n \n\n4 352,85 \n \n\n5 402,57 \n \n\n5 402,57 \n \n \n \n\n4305185 \n \n\nVHP, monte-escalier, accessoire, DHCARE, ALBER SCALAMOBIL S45, verrou auto \n \n\n- \n \n\n120,00 \n \n\n120,00 \n \n \n \n\n4345180 \n \n\nVHP, monte-escalier, accessoire, DHCARE, ALBER SCALAMOBIL S45, reduc fix \n \n\n- \n \n\n378,20 \n \n\n378,20 \n \n \n \n\n4314669 \n \n\nVHP, monte-escalier, accessoire, DHCARE, ALBER SCALAMOBIL S45, tube bascu \n \n\n- \n \n\n110,00 \n \n\n110,00 \n \n \n \n\n4318756 \n \n\nVHP, monte-escalier, accessoire, DHCARE, ALBER SCALAMOBIL S45, batterie sup \n \n\n- \n \n\n214,00 \n \n\n214,00 \n \n \n \n\n4308054 \n \n\nVHP, monte-escalier, accessoire, DHCARE, ALBER SCALAMOBIL S45, appui-tête \n \n\n- \n \n\n160,00 \n \n\n160,00 \n \n \n \n\n4314110 \n \n\nVHP, monte-escalier, accessoire, DHCARE, ALBER SCALAMOBIL S45, ceinture \n \n\n- \n \n\n79,00 \n \n\n79,00 \n \n \n \n\n4353787 \n \n\nVHP, monte-escalier transportable, DHCARE, ALBER SCALAMOBIL, kit fixation \n \n\n205,00 \n \n\n254,44 \n \n\n254,44",
+   "nota": "",
+   "lien": "https://www.legifrance.gouv.fr/jorf/id/JORFARTI000055019012",
+   "domaines": [
+    {
+     "id": "paie",
+     "nom": "Paie, cotisations et protection sociale",
+     "mots": [
+      "securite sociale"
+     ]
+    },
+    {
+     "id": "pharma",
+     "nom": "Produits de santé et dispositifs médicaux",
+     "mots": [
+      "dispositifs medicaux"
+     ]
+    }
+   ],
+   "morceaux": 1,
+   "dateTexte": "",
+   "vuLe": "2026-10-27"
+  },
+  {
+   "source": "jorf",
+   "sourceNom": "Journal officiel de la République française",
+   "genre": "texte",
+   "id": "JORFARTI000055019018",
+   "titre": "Avis relatif à la tarification de l'endoprothèse œsophagienne DANIS STENT visée à l'article L. 165-1 du code de la sécurité sociale",
+   "nature": "Article",
+   "date": "2026-10-27",
+   "corps": "En application de la convention entre le comité économique des produits de santé et la société NOVATECH, les tarifs et les prix limites de vente au public en € TTC (PLV) du produit visé ci-dessous sont fixés comme suit et prennent effet à compter du treizième jour suivant la date de la publication du présent avis au Journal officiel de la République française :\n\n \n \n\n \n \n \n\nCODE \n \n\nDÉSIGNATION \n \n\nTarif/PLV actuel\n \n\n en € TTC \n \n\nNouveau Tarif/PLV\n \n\n en € TTC \n \n \n \n\n5442168 \n \n\nEndoprothèse oesophagienne, auto-expansible, couverte, NOVATECH, DANIS STENT \n \n\n1 320,00 \n \n\n1 188,00",
+   "nota": "",
+   "lien": "https://www.legifrance.gouv.fr/jorf/id/JORFARTI000055019018",
+   "domaines": [
+    {
+     "id": "paie",
+     "nom": "Paie, cotisations et protection sociale",
+     "mots": [
+      "securite sociale"
+     ]
+    }
+   ],
+   "morceaux": 1,
+   "dateTexte": "",
+   "vuLe": "2026-10-27"
+  },
+  {
+   "source": "jorf",
+   "sourceNom": "Journal officiel de la République française",
+   "genre": "texte",
+   "id": "JORFARTI000055019016",
+   "titre": "Avis relatif à la tarification de l'implant d'embolisation liquide ONYX visé à l'article L. 165-1 du code de la sécurité sociale",
+   "nature": "Article",
+   "date": "2026-10-27",
+   "corps": "En application de la convention entre le comité économique des produits de santé et la société MEDTRONIC France, le tarif et le prix limite de vente au public en € TTC (PLV) du produit visé ci-dessous sont fixés comme suit et prennent effet à compter du treizième jour suivant la date de la publication du présent avis au Journal officiel de la République française :\n\n \n \n\n \n \n \n\nCODE \n \n\nDÉSIGNATION \n \n\nTarif\n \n\n en € TTC \n \n\nPLV\n \n\n en € TTC \n \n \n \n\n3128551 \n \n\nImplant d'embolisation liquide, MEDTRONIC, ONYX 12. \n \n\n581,40 \n \n\n581,40",
+   "nota": "",
+   "lien": "https://www.legifrance.gouv.fr/jorf/id/JORFARTI000055019016",
+   "domaines": [
+    {
+     "id": "paie",
+     "nom": "Paie, cotisations et protection sociale",
+     "mots": [
+      "securite sociale"
+     ]
+    }
+   ],
+   "morceaux": 1,
+   "dateTexte": "",
+   "vuLe": "2026-10-27"
+  },
+  {
+   "source": "jorf",
+   "sourceNom": "Journal officiel de la République française",
+   "genre": "texte",
+   "id": "JORFARTI000055019014",
+   "titre": "Avis relatif à la tarification des pansements hydrocellulaires à absorption importante ALLEVYN COMPLETE CARE HEEL et ALLEVYN COMPLETE CARE SACRUM visés à l'article L. 165-1 du code de la sécurité sociale",
+   "nature": "Article",
+   "date": "2026-10-27",
+   "corps": "En application, d'une part, de la convention entre le comité économique des produits de santé et :\n\n \n\n- la société SMITH & NEPHEW,\n\n \n\net, d'autre part, par décision du comité économique des produits de santé, en l'absence de convention entre le comité économique des produits de santé et :\n\n \n\n- la Chambre syndicale de la répartition pharmaceutique (CSRP) ;\n- la Fédération des syndicats pharmaceutiques de France (FSPF) ;\n- l'Union syndicale des pharmaciens d'officine (USPO),\n\n \n\nles prix de vente maximum hors taxes au distributeur revendant directement aux assurés sociaux (dénommés ci-après prix de cession) en € HT et les tarifs et les prix limites de vente au public en € TTC (PLV) des produits visés ci-dessous sont fixés comme suit et prennent effet à compter du treizième jour suivant la date de la publication du présent avis au Journal officiel de la République française :\n\n \n \n\n \n \n \n\nCODE \n \n\nDÉSIGNATION \n \n\nPrix de cession \n \n\n en € HT \n \n\nTarif/PLV\n \n\n en € TTC \n \n \n \n\n1302016 \n \n\nPansement anat. abs. imp., 545,3cm 2 , SMITH, ALLEVYN COMPLETE CARE HEEL, B/10 \n \n\n79,39 \n \n\n100,07 \n \n \n \n\n1364632 \n \n\nPansement anat. abs. imp., 234,7cm 2 , SMITH, ALLEVYN COMPLETE CARE SACRUM, B/10 \n \n\n37,34 \n \n\n49,61 \n \n \n \n\n1397666 \n \n\nPansement anat. abs. imp., 385,8cm 2 , SMITH, ALLEVYN COMPLETE CARE SACRUM, B/10 \n \n\n59,61 \n \n\n76,33",
+   "nota": "",
+   "lien": "https://www.legifrance.gouv.fr/jorf/id/JORFARTI000055019014",
+   "domaines": [
+    {
+     "id": "paie",
+     "nom": "Paie, cotisations et protection sociale",
+     "mots": [
+      "securite sociale"
+     ]
+    }
+   ],
+   "morceaux": 1,
+   "dateTexte": "",
+   "vuLe": "2026-10-27"
+  },
   {
    "source": "jorf",
    "sourceNom": "Journal officiel de la République française",
