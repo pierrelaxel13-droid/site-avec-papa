@@ -27,7 +27,13 @@
    publication ne les atteignait plus. Le cache d'une empreinte disparue est
    supprimé à l'activation. */
 const CACHE = "pco-__EMPREINTE__";
-const HORS_LIGNE = "accueil.html";
+/* La page qu'on montre hors ligne quand celle demandée n'a jamais été vue.
+   C'était « accueil.html », qui n'existe pas : le filet était troué. */
+const HORS_LIGNE = "index.html";
+/* Les pages demandent leurs feuilles et scripts avec « ?v=empreinte » : on
+   les met en cache sous ce nom-là, sinon hors ligne elles ne s'y retrouvent
+   pas et la page s'affiche sans habillage. */
+const V = "?v=__EMPREINTE__";
 
 self.addEventListener("install", (e) => {
   e.waitUntil((async () => {
@@ -37,11 +43,14 @@ self.addEventListener("install", (e) => {
     // fichier manquant ne doit pas empêcher l'installation.
     await Promise.allSettled([
       c.add(HORS_LIGNE),
-      c.add("assets/site.css"),
-      c.add("assets/polices.css"),
+      c.add("assets/site.css" + V),
+      c.add("assets/polices.css" + V),
       c.add("assets/polices/plus-jakarta-sans.woff2"),
-      c.add("assets/app.js"),
-      c.add("assets/theme.js")
+      c.add("assets/theme.js" + V),
+      c.add("assets/amorce.js" + V),
+      c.add("assets/app.js" + V),
+      c.add("assets/session.js" + V),
+      c.add("assets/entreprise.js" + V)
     ]);
     self.skipWaiting();
   })());

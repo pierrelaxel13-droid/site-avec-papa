@@ -399,14 +399,18 @@
   function captures() {
     var boutons = $$(".agrandir");
     if (!boutons.length || typeof HTMLDialogElement === "undefined") return;
-    var d = document.createElement("dialog");
+    /* La fenêtre n'est construite qu'au premier clic : une image sans adresse
+       qui attend dans la page compte pour une image cassée. */
+    var d = null, img = null;
+    function construire() {
+    d = document.createElement("dialog");
     d.className = "zoom";
     d.setAttribute("aria-label", "Capture agrandie");
     var fermer = document.createElement("button");
     fermer.type = "button";
     fermer.className = "zoom-fermer";
     fermer.textContent = "Fermer ✕";
-    var img = document.createElement("img");
+    img = document.createElement("img");
     d.appendChild(fermer);
     d.appendChild(img);
     document.body.appendChild(d);
@@ -414,8 +418,10 @@
     fermer.addEventListener("click", refermer);
     img.addEventListener("click", refermer);
     d.addEventListener("click", function (e) { if (e.target === d) refermer(); });
+    }
     boutons.forEach(function (b) {
       b.addEventListener("click", function () {
+        if (!d) construire();
         var fig = b.closest("figure");
         /* L'image visible : la claire ou la sombre, selon le thème. */
         var vue = $$("img", fig).filter(function (i) { return i.getClientRects().length; })[0] || $("img", fig);

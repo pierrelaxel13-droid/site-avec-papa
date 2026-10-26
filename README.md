@@ -321,10 +321,11 @@ documentation, les chemins courants. Bilan dans `contenu/sources-decouverte.txt`
 
 | | |
 | --- | --- |
-| **20 répondent** | Journal officiel, EUR-Lex série L, ministère du Travail, OPPBTP, BOFiP, CNIL, CERT-FR avis et alertes, Transition écologique, Ineris-AIDA, ADEME (nouvelles publications), RappelConso, DGCCRF, ANSES, Entreprendre, AMF, ARCEP, HAS, ANSM, Douane |
+| **19 répondent** | Journal officiel, EUR-Lex série L, ministère du Travail, OPPBTP, BOFiP, CNIL, CERT-FR avis et alertes, Transition écologique, Ineris-AIDA, ADEME (nouvelles publications), RappelConso, DGCCRF, ANSES, Entreprendre, AMF, ARCEP, HAS, Douane |
 | BOSS, URSSAF | ferment la porte aux machines de GitHub (délai dépassé, connexion coupée) |
 | ACPR | répond 403 et ne déclare aucun flux |
 | INRS, BOAMP | n'ont pas de flux RSS |
+| ANSM | son flux répond mais reste vide (vingt relèves de suite, le 26 octobre) |
 
 Celles qui répondent portent `confirme: true`. **Les autres gardent
 `confirme: false` et une note datée disant ce qu'elles ont répondu** — on ne

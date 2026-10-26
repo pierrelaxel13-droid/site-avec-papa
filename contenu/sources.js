@@ -24,12 +24,13 @@
    la recherche de flux (node outils/veille.mjs --decouvrir) a demandé à
    chaque site où est son flux ; le bilan est dans contenu/sources-decouverte.txt.
 
-     20 répondent — elles portent « confirme: true ». Leur note « vu » dit
+     19 répondent — elles portent « confirme: true ». Leur note « vu » dit
         ce qu'elles ont donné, et d'où vient l'adresse. RappelConso, qui a
         fermé son flux, est lu dans les données ouvertes de Bercy (type « ods »).
-      5 ne répondent pas, et la note dit pourquoi :
+      6 ne donnent rien, et la note dit pourquoi :
         BOSS et URSSAF ferment la porte aux machines de GitHub ;
-        l'ACPR répond 403 ; l'INRS et le BOAMP n'ont pas de flux.
+        l'ACPR répond 403 ; l'INRS et le BOAMP n'ont pas de flux ;
+        le flux de l'ANSM répond mais reste vide (constaté le 26 octobre).
 
    « pourquoi » est la raison dite au client, en trois mots, sur la page du
    relevé.
@@ -167,9 +168,10 @@ window.SOURCES = [
     vu: "25 octobre 2026 : trouvé par la recherche de flux, répond avec des entrées datées — 50 entrées, la plus récente du 21 octobre. Le site envoie une chaîne de certificats incomplète : la relève la complète (voir releve.yml)" },
 
   { id: "ansm", nom: "ANSM — actualités",
-    type: "rss", genre: "actualite", confirme: true,
+    type: "rss", genre: "actualite", confirme: false,
     url: "https://ansm.sante.fr/rss/actualites",
-    vu: "25 octobre 2026 : flux officiel trouvé sur ansm.sante.fr/page/flux-rss. C'est un flux « du jour » : il est vide les jours sans publication (vide ce dimanche), et se remplit les autres" },
+    vu: "26 octobre 2026 : le flux répond, mais il est resté vide à chacune des vingt dernières relèves, lundi compris — il ne donne rien à relever",
+    pourquoi: "son flux reste vide" },
 
   { id: "douane", nom: "Douane française",
     type: "rss", genre: "actualite", confirme: true,

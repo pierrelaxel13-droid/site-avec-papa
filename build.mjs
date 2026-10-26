@@ -3365,14 +3365,18 @@ async function main() {
   // Une empreinte stable évite de purger le cache pour rien ; une empreinte
   // qui change purge tout, et c'est ce qui fait qu'une publication atteint
   // les visiteurs déjà venus.
-  const habillage = ["site.css", "polices.css", "app.js", "theme.js",
-                     "session.js", "entreprise.js", "avis.js"];
+  /* Tout ce que les pages chargent avec « ?v= » doit entrer dans l'empreinte :
+     sans amorce.js ni les données des alertes, un changement de l'un d'eux
+     restait servi dans son ancienne version. */
+  const habillage = ["site.css", "polices.css", "app.js", "theme.js", "amorce.js",
+                     "session.js", "entreprise.js", "avis.js", "referentiel.js"];
   const empreinte = createHash("sha256");
   for (const f of habillage) empreinte.update(await readFile(join(SORTIE, "assets", f)));
   empreinte.update(plan);
+  empreinte.update(avis);
   const version = empreinte.digest("hex").slice(0, 12);
   VERSION = version;
-  const worker = (await readFile(resolve(RACINE, "sw.js"), "utf8")).replace("__EMPREINTE__", version);
+  const worker = (await readFile(resolve(RACINE, "sw.js"), "utf8")).replaceAll("__EMPREINTE__", version);
   if (worker.includes("__EMPREINTE__")) throw new Error("sw.js : l'empreinte n'a pas été posée.");
   await writeFile(join(SORTIE, "sw.js"), worker);
 
@@ -3432,7 +3436,7 @@ async function main() {
   }
 
   const total = await poids(SORTIE);
-  console.log(`  public              3 pages (accueil, abonnement, connexion)`);
+  console.log(`  public              4 pages (accueil, comment ça marche, abonnement, connexion)`);
   console.log(`  app/                7 écrans + ${V.divisions.length} fiches de secteur + ${Object.keys(parTexte).length} fiches de texte`);
   console.log(`  assets/             ${((await poids(join(SORTIE, "assets"))) / 1024).toFixed(1)} Ko`);
   console.log(`  plan-data.js        ${(plan.length / 1024).toFixed(1)} Ko pour le simulateur`);
@@ -3446,10 +3450,10 @@ async function main() {
       (C.changements.length ? " — " + C.changements.length + " changement(s)" : " — aucun changement")
     : "AUCUN — lancer outils/codes.mjs"}`);
   console.log(`  relève officielle   ${JO ? JO.textes.length + " entrées, relevées le " + JO.releve_le +
-    " (" + JO.rapport.filter((r) => r.retenus).length + " sources sur " + JO.rapport.length + ")"
+    " (" + JO.rapport.filter((r) => !r.souci).length + " sources ont répondu sur " + JO.rapport.length + ")"
     : "AUCUNE — lancer outils/veille.mjs (tourne toutes les heures dans .github/workflows/releve.yml)"}`);
   console.log(`\n_site/ prêt — ${(total / 1024).toFixed(1)} Ko, ` +
-    `${V.divisions.length + Object.keys(parTexte).length + (C ? C.morceaux.length : 0) + 10} pages, ` +
+    `${V.divisions.length + Object.keys(parTexte).length + (C ? C.morceaux.length : 0) + 11} pages, ` +
     `${Object.keys(V.domaines).length} domaines, ${Object.keys(PIEGES).length} secteurs avec pièges.`);
 }
 

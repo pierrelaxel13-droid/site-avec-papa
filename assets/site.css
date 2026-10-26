@@ -2304,7 +2304,12 @@ a.carte-vide .carte-aller { display: none; }
    date d'entrée en vigueur à côté, son texte en dessous avec les alinéas et les
    tableaux de valeurs tels que l'État les publie. Rien de décoratif : ce qui
    compte est le texte. */
-.articles { list-style: none; padding: 0; margin: 0; display: grid; gap: var(--t4); }
+/* Un article de grille garde sa largeur : sans « minmax(0, 1fr) », un tableau
+   de valeurs limites élargissait toute la liste, et la page débordait au
+   téléphone. Le tableau défile seul, dans sa boîte. */
+.articles { list-style: none; padding: 0; margin: 0; display: grid; gap: var(--t4); grid-template-columns: minmax(0, 1fr); }
+.articles > .article { min-width: 0; }
+.texte-loi { overflow-wrap: anywhere; }
 .article {
   padding: var(--t4) clamp(1rem, .7rem + 1vw, 1.4rem);
   background: var(--carte);

@@ -76,15 +76,30 @@ const normalise = (s) => sansAccent(String(s)).toLowerCase().replace(/\s+/g, " "
 /* --- Réseau ---------------------------------------------------------------- */
 /* Un échec n'est jamais masqué : on remonte le code, et le programme continue
    avec les autres sources. Une source muette doit se voir dans le rapport. */
-async function recupere(url, delai = 20000) {
-  const stop = AbortSignal.timeout(delai);
-  const r = await fetch(url, {
-    signal: stop,
-    redirect: "follow",
-    headers: { "user-agent": "pierrel-co-veille/1.0 (+veille reglementaire)" }
-  });
-  if (!r.ok) throw new Error(`HTTP ${r.status}`);
-  return r;
+/* Une source rate parfois une relève et revient à la suivante (l'Ineris a
+   répondu 403 une fois le 26 octobre, l'AMF une autre fois). On réessaie donc
+   une fois, quinze secondes plus tard, sur un échec passager : délai,
+   connexion coupée, 403, 429, 5xx. Pas plus, et toujours sous notre nom : un
+   site qui refuse deux fois est noté comme tel. */
+const PASSAGER = /timeout|aborted|fetch failed|ECONNRESET|UND_ERR|HTTP (403|408|429|5\d\d)/i;
+async function recupere(url, delai = 20000, essai = 1) {
+  try {
+    const stop = AbortSignal.timeout(delai);
+    const r = await fetch(url, {
+      signal: stop,
+      redirect: "follow",
+      headers: { "user-agent": "pierrel-co-veille/1.0 (+veille reglementaire)" }
+    });
+    if (!r.ok) throw new Error(`HTTP ${r.status}`);
+    return r;
+  } catch (e) {
+    const m = String((e && e.message) || e) + " " + String((e && e.cause && (e.cause.code || e.cause.message)) || "");
+    if (essai < 2 && !DECOUVRIR && PASSAGER.test(m)) {
+      await new Promise((ok) => setTimeout(ok, 15000));
+      return recupere(url, delai, essai + 1);
+    }
+    throw e;
+  }
 }
 
 function diagnostic(e) {
@@ -311,7 +326,9 @@ async function chargeDejaVus() {
 }
 
 async function relevéFlux(V, s, depuis) {
-  const xml = await (await recupere(s.url)).text();
+  /* Une source pas encore confirmée n'a pas droit au second essai : elle
+     ne répond pas d'habitude, inutile d'attendre deux fois. */
+  const xml = await (await recupere(s.url, 20000, s.confirme ? 1 : 2)).text();
   const entrees = lisSource(s, xml);
   if (!entrees.length) {
     /* Un flux bien formé mais vide — l'ANSM ne garde que ceux du jour — n'est
