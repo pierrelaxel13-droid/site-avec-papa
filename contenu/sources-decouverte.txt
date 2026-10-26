@@ -1,4 +1,4 @@
-Recherche du flux de 5 sources muettes.
+Recherche du flux de 6 sources muettes.
 
 ■ inrs — INRS — actualités
     · https://www.inrs.fr/rss/?feed=actualites  — 0 entrées  (text/html)  [adresse actuelle]
@@ -7,10 +7,10 @@ Recherche du flux de 5 sources muettes.
       la page déclare 0 lien(s) de flux
     · https://www.inrs.fr/  — 0 entrées  (text/html)  [page du site]
       la page déclare 0 lien(s) de flux
-    ✘ https://www.inrs.fr/feed/  — injoignable (fetch failed : UND_ERR_SOCKET) — l'hôte refuse le robot, ou le réseau d'ici le bloque  [chemin courant]
+    ✘ https://www.inrs.fr/feed/  — HTTP 404  [chemin courant]
     · https://www.inrs.fr/rss  — 0 entrées  (text/html)  [chemin courant]
-    ✘ https://www.inrs.fr/rss.xml  — HTTP 404  [chemin courant]
-    ✘ https://www.inrs.fr/fr/rss.xml  — injoignable (fetch failed : UND_ERR_SOCKET) — l'hôte refuse le robot, ou le réseau d'ici le bloque  [chemin courant]
+    ✘ https://www.inrs.fr/rss.xml  — injoignable (fetch failed : UND_ERR_SOCKET) — l'hôte refuse le robot, ou le réseau d'ici le bloque  [chemin courant]
+    ✘ https://www.inrs.fr/fr/rss.xml  — HTTP 404  [chemin courant]
     ✘ https://www.inrs.fr/feed.xml  — HTTP 404  [chemin courant]
     ✘ https://www.inrs.fr/atom.xml  — HTTP 404  [chemin courant]
     ✘ https://www.inrs.fr/index.xml  — HTTP 404  [chemin courant]
@@ -71,13 +71,13 @@ Recherche du flux de 5 sources muettes.
 ■ urssaf — URSSAF — actualités employeurs
     ✘ https://www.urssaf.fr/accueil/outils-documentation/actualites.rss  — injoignable (fetch failed : ECONNRESET) — l'hôte refuse le robot, ou le réseau d'ici le bloque  [adresse actuelle]
     ✘ https://www.urssaf.fr/accueil.html  — injoignable (fetch failed : ECONNRESET) — l'hôte refuse le robot, ou le réseau d'ici le bloque  [page du site]
-    ✘ https://www.urssaf.fr/feed/  — injoignable (fetch failed : ECONNRESET) — l'hôte refuse le robot, ou le réseau d'ici le bloque  [chemin courant]
+    ✘ https://www.urssaf.fr/feed/  — injoignable (fetch failed : UND_ERR_SOCKET) — l'hôte refuse le robot, ou le réseau d'ici le bloque  [chemin courant]
     ✘ https://www.urssaf.fr/rss  — injoignable (fetch failed : ECONNRESET) — l'hôte refuse le robot, ou le réseau d'ici le bloque  [chemin courant]
     ✘ https://www.urssaf.fr/rss.xml  — injoignable (fetch failed : ECONNRESET) — l'hôte refuse le robot, ou le réseau d'ici le bloque  [chemin courant]
     ✘ https://www.urssaf.fr/fr/rss.xml  — injoignable (fetch failed : ECONNRESET) — l'hôte refuse le robot, ou le réseau d'ici le bloque  [chemin courant]
     ✘ https://www.urssaf.fr/feed.xml  — injoignable (fetch failed : ECONNRESET) — l'hôte refuse le robot, ou le réseau d'ici le bloque  [chemin courant]
     ✘ https://www.urssaf.fr/atom.xml  — injoignable (fetch failed : ECONNRESET) — l'hôte refuse le robot, ou le réseau d'ici le bloque  [chemin courant]
-    ✘ https://www.urssaf.fr/index.xml  — injoignable (fetch failed : ECONNRESET) — l'hôte refuse le robot, ou le réseau d'ici le bloque  [chemin courant]
+    ✘ https://www.urssaf.fr/index.xml  — injoignable (fetch failed : UND_ERR_SOCKET) — l'hôte refuse le robot, ou le réseau d'ici le bloque  [chemin courant]
     ✘ https://www.urssaf.fr/spip.php?page=backend  — injoignable (fetch failed : ECONNRESET) — l'hôte refuse le robot, ou le réseau d'ici le bloque  [chemin courant]
   → aucun flux trouvé
 
@@ -102,6 +102,56 @@ Recherche du flux de 5 sources muettes.
         /fr/actualites-publications « Actualités & Publications »
   → aucun flux trouvé
 
+■ ansm — ANSM — actualités
+    · https://ansm.sante.fr/rss/actualites  — 0 entrées  (application/xml)  [adresse actuelle]
+        contenu : <?xml version="1.0" encoding="UTF-8"?> <rss version="2.0"> <channel> <title>Actualités - Ansm.sante.fr</title> <link>https://ansm.sante.fr/actualites/</link> <description>Actualités du jour de l'ANSM</description> </channel> </rss>
+    ✔ https://ansm.sante.fr/rss/informations_securite  — 3 entrées, la plus récente du 2026-10-25  « Informations de sécurité - Ansm.sante.fr »  [piste connue]
+    · https://ansm.sante.fr/page/flux-rss  — 0 entrées  (text/html)  [page du site]
+      la page déclare 25 lien(s) de flux
+    · https://ansm.sante.fr/rss/actualites?produitsSante=medicaments  — 0 entrées  (application/xml)  [déclaré par la page]
+        contenu : <?xml version="1.0" encoding="UTF-8"?> <rss version="2.0"> <channel> <title>Actualités - Ansm.sante.fr</title> <link>https://ansm.sante.fr/actualites/</link> <description>Actualités du jour de l'ANSM</description> </channel> </rss>
+    · https://ansm.sante.fr/rss/actualites?produitsSante=dispositifs_medicaux  — 0 entrées  (application/xml)  [déclaré par la page]
+        contenu : <?xml version="1.0" encoding="UTF-8"?> <rss version="2.0"> <channel> <title>Actualités - Ansm.sante.fr</title> <link>https://ansm.sante.fr/actualites/</link> <description>Actualités du jour de l'ANSM</description> </channel> </rss>
+    · https://ansm.sante.fr/rss/informations_securite?produitsSante=medicaments  — 0 entrées  (application/xml)  [déclaré par la page]
+        contenu : <?xml version="1.0" encoding="UTF-8"?> <rss version="2.0"> <channel> <title>Informations de sécurité - Ansm.sante.fr</title> <link>https://ansm.sante.fr/informations-de-securite/</link> <description>Informations de sécurité du jour de l'ANSM</description> </channel> </rss>
+    ✔ https://ansm.sante.fr/rss/informations_securite?produitsSante=dispositifs_medicaux  — 2 entrées, la plus récente du 2026-10-25  « Informations de sécurité - Ansm.sante.fr »  [déclaré par la page]
+    ✔ https://ansm.sante.fr/rss/informations_securite?produitsSante=dispositifs_medicaux_de_diagnostic_in_vitro  — 1 entrées, la plus récente du 2026-10-25  « Informations de sécurité - Ansm.sante.fr »  [déclaré par la page]
+    ✔ https://ansm.sante.fr/rss/disponibilite_produits_sante  — 5 entrées, la plus récente du 2026-10-25  « Disponibilité des produits de santé - Ansm.sante.fr »  [déclaré par la page]
+    ✔ https://ansm.sante.fr/rss/disponibilite_produits_sante?produitsSante=medicaments  — 5 entrées, la plus récente du 2026-10-25  « Disponibilité des produits de santé - Ansm.sante.fr »  [déclaré par la page]
+    · https://ansm.sante.fr/rss/disponibilite_produits_sante?produitsSante=vaccins  — 0 entrées  (application/xml)  [déclaré par la page]
+        contenu : <?xml version="1.0" encoding="UTF-8"?> <rss version="2.0"> <channel> <title>Disponibilité des produits de santé - Ansm.sante.fr</title> <link>https://ansm.sante.fr/disponibilites-des-produits-de-sante</link> <description>Informations du jour de l'ANSM sur les tensions d'approvisionnement des produits de santé (médicaments MITM, vaccins, dispositifs médicaux et dispositifs médicaux de diagnostic in vitro)</description> </channel> </rss>
+    · https://ansm.sante.fr/rss/disponibilite_produits_sante?produitsSante=dispositifs_medicaux  — 0 entrées  (application/xml)  [déclaré par la page]
+        contenu : <?xml version="1.0" encoding="UTF-8"?> <rss version="2.0"> <channel> <title>Disponibilité des produits de santé - Ansm.sante.fr</title> <link>https://ansm.sante.fr/disponibilites-des-produits-de-sante</link> <description>Informations du jour de l'ANSM sur les tensions d'approvisionnement des produits de santé (médicaments MITM, vaccins, dispositifs médicaux et dispositifs médicaux de diagnostic in vitro)</description> </channel> </rss>
+    · https://ansm.sante.fr/rss/disponibilite_produits_sante?produitsSante=dispositifs_medicaux_de_diagnostic_in_vitro  — 0 entrées  (application/xml)  [déclaré par la page]
+        contenu : <?xml version="1.0" encoding="UTF-8"?> <rss version="2.0"> <channel> <title>Disponibilité des produits de santé - Ansm.sante.fr</title> <link>https://ansm.sante.fr/disponibilites-des-produits-de-sante</link> <description>Informations du jour de l'ANSM sur les tensions d'approvisionnement des produits de santé (médicaments MITM, vaccins, dispositifs médicaux et dispositifs médicaux de diagnostic in vitro)</description> </channel> </rss>
+    · https://ansm.sante.fr/rss/actualites?domainesMedicaux=addictologie  — 0 entrées  (application/xml)  [déclaré par la page]
+        contenu : <?xml version="1.0" encoding="UTF-8"?> <rss version="2.0"> <channel> <title>Actualités - Ansm.sante.fr</title> <link>https://ansm.sante.fr/actualites/</link> <description>Actualités du jour de l'ANSM</description> </channel> </rss>
+    · https://ansm.sante.fr/rss/actualites?domainesMedicaux=allergologie  — 0 entrées  (application/xml)  [déclaré par la page]
+        contenu : <?xml version="1.0" encoding="UTF-8"?> <rss version="2.0"> <channel> <title>Actualités - Ansm.sante.fr</title> <link>https://ansm.sante.fr/actualites/</link> <description>Actualités du jour de l'ANSM</description> </channel> </rss>
+    · https://ansm.sante.fr/rss/actualites?domainesMedicaux=anesthesie_reanimation_soins_intensifs  — 0 entrées  (application/xml)  [déclaré par la page]
+        contenu : <?xml version="1.0" encoding="UTF-8"?> <rss version="2.0"> <channel> <title>Actualités - Ansm.sante.fr</title> <link>https://ansm.sante.fr/actualites/</link> <description>Actualités du jour de l'ANSM</description> </channel> </rss>
+    · https://ansm.sante.fr/rss/actualites?domainesMedicaux=angiologie  — 0 entrées  (application/xml)  [déclaré par la page]
+        contenu : <?xml version="1.0" encoding="UTF-8"?> <rss version="2.0"> <channel> <title>Actualités - Ansm.sante.fr</title> <link>https://ansm.sante.fr/actualites/</link> <description>Actualités du jour de l'ANSM</description> </channel> </rss>
+    · https://ansm.sante.fr/rss/actualites?domainesMedicaux=biologie_medicale  — 0 entrées  (application/xml)  [déclaré par la page]
+        contenu : <?xml version="1.0" encoding="UTF-8"?> <rss version="2.0"> <channel> <title>Actualités - Ansm.sante.fr</title> <link>https://ansm.sante.fr/actualites/</link> <description>Actualités du jour de l'ANSM</description> </channel> </rss>
+    · https://ansm.sante.fr/rss/actualites?domainesMedicaux=cardiologie  — 0 entrées  (application/xml)  [déclaré par la page]
+        contenu : <?xml version="1.0" encoding="UTF-8"?> <rss version="2.0"> <channel> <title>Actualités - Ansm.sante.fr</title> <link>https://ansm.sante.fr/actualites/</link> <description>Actualités du jour de l'ANSM</description> </channel> </rss>
+    · https://ansm.sante.fr/rss/actualites?domainesMedicaux=chirurgie  — 0 entrées  (application/xml)  [déclaré par la page]
+        contenu : <?xml version="1.0" encoding="UTF-8"?> <rss version="2.0"> <channel> <title>Actualités - Ansm.sante.fr</title> <link>https://ansm.sante.fr/actualites/</link> <description>Actualités du jour de l'ANSM</description> </channel> </rss>
+    · https://ansm.sante.fr/rss/actualites?domainesMedicaux=dermatologie  — 0 entrées  (application/xml)  [déclaré par la page]
+        contenu : <?xml version="1.0" encoding="UTF-8"?> <rss version="2.0"> <channel> <title>Actualités - Ansm.sante.fr</title> <link>https://ansm.sante.fr/actualites/</link> <description>Actualités du jour de l'ANSM</description> </channel> </rss>
+    · https://ansm.sante.fr/rss/actualites?domainesMedicaux=endocrinologie  — 0 entrées  (application/xml)  [déclaré par la page]
+        contenu : <?xml version="1.0" encoding="UTF-8"?> <rss version="2.0"> <channel> <title>Actualités - Ansm.sante.fr</title> <link>https://ansm.sante.fr/actualites/</link> <description>Actualités du jour de l'ANSM</description> </channel> </rss>
+    · https://ansm.sante.fr/rss/actualites?domainesMedicaux=gynecologie  — 0 entrées  (application/xml)  [déclaré par la page]
+        contenu : <?xml version="1.0" encoding="UTF-8"?> <rss version="2.0"> <channel> <title>Actualités - Ansm.sante.fr</title> <link>https://ansm.sante.fr/actualites/</link> <description>Actualités du jour de l'ANSM</description> </channel> </rss>
+    · https://ansm.sante.fr/rss/actualites?domainesMedicaux=hematologie  — 0 entrées  (application/xml)  [déclaré par la page]
+        contenu : <?xml version="1.0" encoding="UTF-8"?> <rss version="2.0"> <channel> <title>Actualités - Ansm.sante.fr</title> <link>https://ansm.sante.fr/actualites/</link> <description>Actualités du jour de l'ANSM</description> </channel> </rss>
+    · https://ansm.sante.fr/rss/actualites?domainesMedicaux=hepato_gastroenterologie  — 0 entrées  (application/xml)  [déclaré par la page]
+        contenu : <?xml version="1.0" encoding="UTF-8"?> <rss version="2.0"> <channel> <title>Actualités - Ansm.sante.fr</title> <link>https://ansm.sante.fr/actualites/</link> <description>Actualités du jour de l'ANSM</description> </channel> </rss>
+    · https://ansm.sante.fr/rss/actualites?domainesMedicaux=imagerie_radiologie  — 0 entrées  (application/xml)  [déclaré par la page]
+        contenu : <?xml version="1.0" encoding="UTF-8"?> <rss version="2.0"> <channel> <title>Actualités - Ansm.sante.fr</title> <link>https://ansm.sante.fr/actualites/</link> <description>Actualités du jour de l'ANSM</description> </channel> </rss>
+  → RETENUE : https://ansm.sante.fr/rss/disponibilite_produits_sante
+
 ■ boamp — BOAMP — marchés publics
     ✘ https://www.boamp.fr/rss  — HTTP 404  [adresse actuelle]
     ✘ https://boamp-datadila.opendatasoft.com/api/explore/v2.1/catalog/datasets/boamp/exports/rss?order_by=dateparution%20desc&limit=50  — HTTP 400  [piste connue]
@@ -118,4 +168,4 @@ Recherche du flux de 5 sources muettes.
         /pages/entreprise-actualites « Actualités »
   → aucun flux trouvé
 
-0 source(s) sur 5 ont maintenant un flux qui répond.
+1 source(s) sur 6 ont maintenant un flux qui répond.

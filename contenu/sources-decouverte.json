@@ -1,5 +1,5 @@
 {
- "le": "2026-10-26T22:28:46.898Z",
+ "le": "2026-10-26T22:41:39.252Z",
  "bilan": [
   {
    "id": "inrs",
@@ -9,8 +9,8 @@
    "flux": [],
    "essais": 11,
    "refus": [
-    "injoignable (fetch failed : UND_ERR_SOCKET) — l'hôte refuse le robot, ou le réseau d'ici le bloque",
-    "HTTP 404"
+    "HTTP 404",
+    "injoignable (fetch failed : UND_ERR_SOCKET) — l'hôte refuse le robot, ou le réseau d'ici le bloque"
    ]
   },
   {
@@ -32,7 +32,8 @@
    "flux": [],
    "essais": 10,
    "refus": [
-    "injoignable (fetch failed : ECONNRESET) — l'hôte refuse le robot, ou le réseau d'ici le bloque"
+    "injoignable (fetch failed : ECONNRESET) — l'hôte refuse le robot, ou le réseau d'ici le bloque",
+    "injoignable (fetch failed : UND_ERR_SOCKET) — l'hôte refuse le robot, ou le réseau d'ici le bloque"
    ]
   },
   {
@@ -46,6 +47,51 @@
     "injoignable (HTTP 403) — l'hôte refuse le robot, ou le réseau d'ici le bloque",
     "HTTP 404"
    ]
+  },
+  {
+   "id": "ansm",
+   "nom": "ANSM — actualités",
+   "retenue": "https://ansm.sante.fr/rss/disponibilite_produits_sante",
+   "derniere": "2026-10-25",
+   "flux": [
+    {
+     "url": "https://ansm.sante.fr/rss/informations_securite",
+     "entrees": 3,
+     "derniere": "2026-10-25",
+     "titre": "Informations de sécurité - Ansm.sante.fr",
+     "d_ou": "piste connue"
+    },
+    {
+     "url": "https://ansm.sante.fr/rss/informations_securite?produitsSante=dispositifs_medicaux",
+     "entrees": 2,
+     "derniere": "2026-10-25",
+     "titre": "Informations de sécurité - Ansm.sante.fr",
+     "d_ou": "déclaré par la page"
+    },
+    {
+     "url": "https://ansm.sante.fr/rss/informations_securite?produitsSante=dispositifs_medicaux_de_diagnostic_in_vitro",
+     "entrees": 1,
+     "derniere": "2026-10-25",
+     "titre": "Informations de sécurité - Ansm.sante.fr",
+     "d_ou": "déclaré par la page"
+    },
+    {
+     "url": "https://ansm.sante.fr/rss/disponibilite_produits_sante",
+     "entrees": 5,
+     "derniere": "2026-10-25",
+     "titre": "Disponibilité des produits de santé - Ansm.sante.fr",
+     "d_ou": "déclaré par la page"
+    },
+    {
+     "url": "https://ansm.sante.fr/rss/disponibilite_produits_sante?produitsSante=medicaments",
+     "entrees": 5,
+     "derniere": "2026-10-25",
+     "titre": "Disponibilité des produits de santé - Ansm.sante.fr",
+     "d_ou": "déclaré par la page"
+    }
+   ],
+   "essais": 26,
+   "refus": []
   },
   {
    "id": "boamp",
