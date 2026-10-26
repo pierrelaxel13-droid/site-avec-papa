@@ -23,7 +23,7 @@ un fichier de `_site/` ne sert à rien, il est effacé à chaque construction.
 |---|---|
 | `build.mjs` | Le gabarit commun (`page()`), les trois pages publiques, les cinq écrans de l'application, les 88 fiches de secteur, et les garde-fous (`verifie`). |
 | `assets/site.css` | Toute la mise en forme, les deux thèmes, le mouvement et l'impression. |
-| `assets/app.js` | Bandeau, menu repliable, bascules, simulateur, recherche, affinage du périmètre, apparitions. |
+| `assets/app.js` | Bandeau, menu repliable, pages à catégories, bascules, simulateur, recherche, affinage du périmètre, apparitions. |
 | `assets/theme.js` | Le choix de thème (auto / clair / sombre), appliqué avant le premier rendu. |
 | `assets/amorce.js` | Les trois lignes qui appliquent le thème et arment les apparitions, avant tout rendu. Elles tenaient dans la page ; elles en sont sorties parce que la politique de sécurité interdit désormais tout script écrit dans le HTML. **Ne jamais remettre de `<script>` en ligne dans `build.mjs`** : il serait refusé par le navigateur. |
 | `assets/session.js` | Le jeton de démonstration et la formule ouverte. **Ce n'est pas une sécurité** — voir plus bas. |
@@ -218,8 +218,15 @@ qu'il n'y a pas de client.
 - **On clique la case, pas le mot.** Une ligne ou une carte qui mène quelque
   part reçoit `lienCarte()` ; ses propres liens repassent devant en
   `z-index: 1`.
-- **Le tableau par catégorie est pour la page Textes**, pas pour les fiches de
-  secteur : là, les textes se déplient.
+- **Relevé, Textes, Secteurs : les catégories d'abord, seules.** Ces pages
+  s'ouvrent sur `cartesCategories()` (une carte par catégorie) ; chaque
+  catégorie porte `data-categorie`, les explications sont repliées dans
+  `aSavoir()` (`data-annexe`). Au clic, `categories()` (assets/app.js) cache
+  tout ce qui n'est pas la catégorie choisie — en-tête compris — et met un
+  bouton « Toutes les catégories ». Ne pas remettre de contenu entre les
+  cartes et les catégories : il resterait affiché au clic, et le client
+  demande « seulement ça ». Les fiches de secteur, elles, déplient leurs textes.
+- **Pas de barre de défilement**, nulle part (site.css, en tête).
 - **Le texte va à côté de sa source.** Sur la fiche de secteur, chaque texte se
   déplie sur ce qu'il exige, avec sa fiche et son lien officiel. Dans le plan
   et le tableau de bord, les actions et les textes liés sont visibles sans

@@ -195,69 +195,95 @@
     }, true);
   }
 
-  /* --- Ne montrer que ce qu'on a cliqué -------------------------------------
-     Cliquer une famille dans un tableau amenait à elle, mais toutes les autres
-     restaient affichées dessous, avec leurs fiches : le client ne savait plus
-     ce qu'il regardait. On n'affiche plus que la famille choisie, avec une
-     barre qui dit laquelle et de quoi revenir à toutes. Une fiche qu'on ouvre
-     referme les autres : une chose à la fois.
-     Sans JavaScript, les ancres marchent comme avant et tout reste lisible. */
+  /* --- Les catégories, puis seulement celle qu'on choisit -----------------
+     Les pages Relevé, Textes et Secteurs s'ouvrent sur leurs cartes, et rien
+     d'autre. Un clic sur une carte n'affiche plus que ce qui appartient à la
+     catégorie : ni l'en-tête, ni les autres catégories, ni les explications.
+     « Toutes les catégories », ou le retour du navigateur, ramène aux cartes.
+     Taper dans le champ montre tout ce qui correspond, d'où que ce soit.
+     Sans JavaScript, les cartes sont des ancres et tout se lit dessous. */
   var LISTES_DE_FICHES = ".liste-releve, .liste-registre, .textes, .textes-depliants";
 
-  function seulementCeQuOnClique() {
-    $$(".tableau-familles").forEach(function (tableau) {
-      var liens = $$('a.lien-carte[href^="#"]', tableau);
-      var sections = liens.map(function (a) {
-        return document.getElementById(a.getAttribute("href").slice(1));
-      }).filter(Boolean);
-      if (!sections.length) return;
+  function categories() {
+    var choix = $("[data-choix]");
+    var main = $("main");
+    var sections = $$("[data-categorie]");
+    if (!choix || !main || !sections.length) return;
+    var racine = document.documentElement;
+    var champ = $("#recherche-secteur");
 
-      var barre = document.createElement("div");
-      barre.className = "barre-filtre";
-      barre.hidden = true;
-      var dit = document.createElement("p");
-      dit.setAttribute("role", "status");
-      var tout = document.createElement("button");
-      tout.type = "button";
-      tout.className = "bouton bouton-sobre";
-      tout.textContent = "Voir toutes les familles";
-      barre.appendChild(dit);
-      barre.appendChild(tout);
-      sections[0].parentNode.insertBefore(barre, sections[0]);
+    var retour = document.createElement("div");
+    retour.className = "retour-categories enveloppe";
+    retour.hidden = true;
+    var bouton = document.createElement("a");
+    bouton.className = "bouton bouton-sobre";
+    bouton.href = location.pathname + location.search;
+    bouton.textContent = "← Toutes les catégories";
+    retour.appendChild(bouton);
+    main.insertBefore(retour, main.firstChild);
 
-      function montrer(cible) {
-        sections.forEach(function (sec) { sec.hidden = cible ? sec !== cible : false; });
-        barre.hidden = !cible;
-        if (cible) {
-          var h = cible.querySelector("h3");
-          dit.textContent = "Vous voyez : " + (h && h.firstChild ? h.firstChild.textContent.trim() : "une famille");
+    var caches = [];
+    var depuisLesCartes = false;
+    /* Au retour, le navigateur remettrait la page où elle était dans la
+       catégorie ; on veut les cartes, depuis le haut. */
+    try { history.scrollRestoration = "manual"; } catch (x) { /* sans effet */ }
+
+    function categorieDe(id) {
+      var cible = id ? document.getElementById(id) : null;
+      if (!cible) return null;
+      var sec = cible.hasAttribute("data-categorie") ? cible : cible.closest("[data-categorie]");
+      return sec ? { sec: sec, cible: cible } : null;
+    }
+
+    function afficher() {
+      var avant = racine.getAttribute("data-vue");
+      caches.forEach(function (e) { e.classList.remove("hors-vue"); });
+      caches = [];
+      var id = "";
+      try { id = decodeURIComponent(location.hash.slice(1)); } catch (x) { id = ""; }
+      var choisi = categorieDe(id);
+
+      if (choisi) {
+        /* On cache tout ce qui n'est pas sur le chemin de la catégorie : ses
+           voisines, et à chaque étage, les voisins de ce qui la contient. */
+        for (var n = choisi.sec; n && n !== main && n.parentElement; n = n.parentElement) {
+          [].forEach.call(n.parentElement.children, function (f) {
+            if (f !== n && f !== retour) { f.classList.add("hors-vue"); caches.push(f); }
+          });
         }
+        racine.setAttribute("data-vue", "une");
+        retour.hidden = false;
+        if (choisi.cible === choisi.sec) window.scrollTo({ top: 0, left: 0, behavior: "instant" });
+        else choisi.cible.scrollIntoView({ block: "start" });
+      } else {
+        racine.setAttribute("data-vue", champ && champ.value.trim() ? "recherche" : "categories");
+        retour.hidden = true;
+        if (avant === "une") window.scrollTo({ top: 0, left: 0, behavior: "instant" });
       }
+    }
 
-      liens.forEach(function (a) {
-        a.addEventListener("click", function (e) {
-          var cible = document.getElementById(a.getAttribute("href").slice(1));
-          if (!cible) return;
-          e.preventDefault();
-          montrer(cible);
-          try { history.replaceState(null, "", "#" + cible.id); } catch (x) { /* sans effet */ }
-          barre.scrollIntoView({ block: "start", behavior: SOBRE ? "auto" : "smooth" });
-        });
-      });
-      tout.addEventListener("click", function () {
-        montrer(null);
-        try { history.replaceState(null, "", location.pathname + location.search); } catch (x) { /* sans effet */ }
-        tableau.scrollIntoView({ block: "start", behavior: SOBRE ? "auto" : "smooth" });
-      });
-
-      /* Arrivée directe sur une famille, depuis une notification ou un lien. */
-      var ici = location.hash && document.getElementById(location.hash.slice(1));
-      if (ici && sections.indexOf(ici) !== -1) montrer(ici);
+    choix.addEventListener("click", function (e) {
+      if (e.target.closest && e.target.closest('a[href^="#"]')) depuisLesCartes = true;
     });
+    bouton.addEventListener("click", function (e) {
+      e.preventDefault();
+      if (depuisLesCartes) { depuisLesCartes = false; history.back(); return; }
+      try { history.pushState(null, "", location.pathname + location.search); } catch (x) { /* sans effet */ }
+      afficher();
+    });
+    window.addEventListener("hashchange", afficher);
+    if (champ) {
+      champ.addEventListener("input", function () {
+        if (racine.getAttribute("data-vue") !== "une") afficher();
+      });
+    }
+    afficher();
+  }
 
-    /* Une fiche à la fois. Ce gestionnaire doit passer avant celui qui remonte
-       la fiche en haut de l'écran : refermer les autres fait bouger la page, et
-       la position se calcule après. */
+  /* Une fiche à la fois. Ce gestionnaire doit passer avant celui qui remonte
+     la fiche en haut de l'écran : refermer les autres fait bouger la page, et
+     la position se calcule après. */
+  function uneFicheALaFois() {
     document.addEventListener("toggle", function (e) {
       var d = e.target;
       if (!d || d.tagName !== "DETAILS" || !d.open || !d.closest(LISTES_DE_FICHES)) return;
@@ -618,11 +644,12 @@
   codeChoisi();
   bandeau();
   menu();
-  seulementCeQuOnClique();
+  uneFicheALaFois();
   remonterLesFiches();
   bascules();
   simulateur();
   rechercheSecteurs();
+  categories();
   affiner();
   paraitre();
 })();

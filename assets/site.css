@@ -212,6 +212,11 @@ img { height: auto; display: block; }
    hidden : la règle du navigateur est moins spécifique que la nôtre. */
 [hidden] { display: none !important; }
 
+/* Pas de barre de défilement sur le côté, nulle part : la page défile à la
+   molette, au pavé ou au doigt, sans ce rail qui mange la largeur. */
+html, body, * { scrollbar-width: none; }
+::-webkit-scrollbar { display: none; width: 0; height: 0; }
+
 .cache-visuellement {
   position: absolute; width: 1px; height: 1px;
   padding: 0; margin: -1px; overflow: hidden;
@@ -1015,13 +1020,10 @@ img { height: auto; display: block; }
 .cases {
   display: grid; gap: .1rem;
   max-height: 24rem; overflow-y: auto;
-  scrollbar-width: thin; scrollbar-color: var(--filet-fort) transparent;
   overscroll-behavior: contain;
   /* Un dégradé en bas dit qu'il reste des questions sous le pli. */
   mask-image: linear-gradient(180deg, #000 calc(100% - 2rem), transparent);
 }
-.cases::-webkit-scrollbar { width: 6px; }
-.cases::-webkit-scrollbar-thumb { background: var(--filet-fort); border-radius: var(--rp); }
 @media (prefers-reduced-motion: reduce) { .cases { mask-image: none; } }
 .case {
   display: grid; grid-template-columns: 1.25rem minmax(0, 1fr);
@@ -1529,19 +1531,7 @@ details[open] > summary .chevron { transform: rotate(180deg); }
   border-radius: var(--r2);
   font-size: .95rem; line-height: 1.7;
   white-space: normal; overflow-wrap: anywhere;
-  scrollbar-width: thin;
 }
-
-/* La barre qui dit quelle famille on regarde, et comment revenir à toutes. */
-.barre-filtre {
-  display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between;
-  gap: var(--t3);
-  margin-top: var(--t5); padding: var(--t3) var(--t4);
-  border: 1px solid var(--accent-filet); border-radius: var(--r2);
-  background: var(--accent-clair);
-}
-.barre-filtre[hidden] { display: none; }
-.barre-filtre p { margin: 0; font-weight: 700; color: var(--encre); }
 
 /* --- Les cases d'une fiche ouverte -------------------------------------------
    Une fiche ouverte empilait tout à la suite : ce qu'il faut faire, le texte,
@@ -1936,18 +1926,18 @@ details[open] > summary .chevron { transform: rotate(180deg); }
    capitales : c'est lui que le client cherche des yeux en faisant défiler les
    88 secteurs. La classe « etiq » qu'il porte reste pour le code et le compte,
    pas pour le nom. */
-.grappe-naf h2 {
+.grappe-naf h3 {
   display: flex; flex-wrap: wrap; align-items: center; gap: .5rem .8rem;
   margin-bottom: var(--t3);
   font-size: clamp(1.15rem, 1.05rem + .4vw, 1.4rem);
   text-transform: none; letter-spacing: -.015em;
   color: var(--encre); font-weight: 700;
 }
-.grappe-naf h2 .precision { font-size: .95rem; }
-.grappe-naf h2 .lettre { font-size: .95rem; }
-.grappe-naf h2 a { color: var(--encre); text-decoration: none; }
-.grappe-naf h2 a:hover { color: var(--accent); text-decoration: underline; }
-.grappe-naf h2 .precision { color: var(--encre-tenue); font-weight: 400; letter-spacing: .02em; }
+.grappe-naf h3 .precision { font-size: .95rem; }
+.grappe-naf h3 .lettre { font-size: .95rem; }
+.grappe-naf h3 a { color: var(--encre); text-decoration: none; }
+.grappe-naf h3 a:hover { color: var(--accent); text-decoration: underline; }
+.grappe-naf h3 .precision { color: var(--encre-tenue); font-weight: 400; letter-spacing: .02em; }
 .grappe-naf + .grappe-naf { margin-top: var(--t5); }
 
 /* --- 18 ter. Les propositions de code APE -------------------------------- */
@@ -1966,65 +1956,92 @@ details[open] > summary .chevron { transform: rotate(180deg); }
 .proposition:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 .propositions .etiq { margin-bottom: .1rem; }
 
-/* --- 18 quater. Le tableau des familles ---------------------------------- */
-/* Un tableau se lit en largeur ; un téléphone n'en a pas. Sous 52rem, chaque
-   ligne devient une carte et chaque cellule porte son intitulé en tête — le
-   même contenu, le même ordre, sans défilement latéral. */
+/* --- 18 quater. Les catégories, d'abord seules ------------------------- */
+/* Les pages Relevé, Textes et Secteurs s'ouvrent sur une carte par catégorie.
+   Au clic, app.js n'affiche plus que la catégorie choisie (data-vue="une") :
+   ni l'en-tête, ni les autres, ni les explications. Sans JavaScript, aucune
+   de ces règles ne s'applique et tout se lit à la suite. */
 .tableau-boite { margin-top: var(--t5); }
-.tableau-familles {
-  width: 100%; border-collapse: collapse;
-  font-size: .96rem;
-}
-.tableau-familles th, .tableau-familles td {
-  padding: .8rem .9rem; text-align: left; vertical-align: top;
-  border-bottom: 1px solid var(--filet);
-}
-.tableau-familles thead th {
-  font-size: .78rem; font-weight: 600; letter-spacing: .06em; text-transform: uppercase;
-  color: var(--encre-tenue); border-bottom-color: var(--filet-fort);
-}
-.tableau-familles tbody th { font-weight: 600; }
-.tableau-familles tbody th a { color: var(--encre); text-decoration: none; }
-.tableau-familles tbody th a:hover { color: var(--accent); text-decoration: underline; }
-.tableau-familles tbody tr:last-child th,
-.tableau-familles tbody tr:last-child td { border-bottom: 0; }
-/* Toute la ligne mène à sa catégorie : on clique la case, pas le mot. */
-.tableau-familles tbody tr { position: relative; }
-.tableau-familles tbody tr:hover:not(.famille-vide) { background: var(--carte-pale); }
-.tableau-familles a:not(.lien-carte) { position: relative; z-index: 1; }
-.tableau-familles .compte-famille {
-  display: inline-grid; place-items: center; min-width: 2rem; height: 2rem;
-  padding-inline: .4rem;
-  border-radius: var(--rp); background: var(--accent-clair);
-  color: var(--accent); font-weight: 700; font-size: .95rem;
-}
-.tableau-familles .date { display: block; color: var(--encre-tenue); font-size: .85rem; }
-.tableau-familles .titre { display: block; color: var(--encre); }
-.tableau-familles td:last-child { color: var(--encre-douce); }
-/* Une famille sans texte reste dans le tableau : savoir qu'il n'y a rien du
-   côté de l'hygiène est une information, pas un trou. */
-.tableau-familles .famille-vide th,
-.tableau-familles .famille-vide td { color: var(--encre-tenue); }
-.tableau-familles .famille-vide .compte-famille { background: var(--carte-pale); color: var(--encre-tenue); }
 
-@media (max-width: 52rem) {
-  .tableau-familles thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
-  .tableau-familles tbody tr {
-    display: grid; gap: .5rem;
-    margin-bottom: var(--t4); padding: var(--t4);
-    background: var(--carte); border: 1px solid var(--filet); border-radius: var(--r2);
-  }
-  .tableau-familles tbody th, .tableau-familles tbody td {
-    display: block; padding: 0; border: 0;
-  }
-  .tableau-familles tbody td::before {
-    content: attr(data-intitule);
-    display: block; margin-bottom: .15rem;
-    font-size: .74rem; font-weight: 600; letter-spacing: .06em; text-transform: uppercase;
-    color: var(--encre-tenue);
-  }
-  .tableau-familles tbody th { font-size: 1.05rem; }
+[data-vue="categories"] [data-categorie] { display: none !important; }
+[data-vue="recherche"] [data-choix],
+[data-vue="recherche"] [data-annexe] { display: none !important; }
+.hors-vue { display: none !important; }
+
+.retour-categories { padding-top: var(--t4); }
+[data-vue="une"] main > .rubrique { padding-top: var(--t3); }
+[data-vue="une"] [data-categorie] { margin-top: 0; }
+[data-vue="une"] .famille-releve > h3,
+[data-vue="une"] .famille-textes > h3,
+[data-vue="une"] .categorie-naf > h2 {
+  font-size: clamp(1.7rem, 1.35rem + 1.2vw, 2.4rem); letter-spacing: -.03em;
 }
+
+.choix-categories { margin: 0 0 var(--t5); }
+/* Toujours des lignes pleines : une colonne au téléphone, deux à la tablette
+   (la dernière s'étale si elles sont impaires), puis une grille de six où la
+   dernière rangée se partage la largeur — build.mjs dit à chaque carte combien
+   de sixièmes elle prend. */
+.cartes-categories {
+  list-style: none; margin: 0; padding: 0;
+  display: grid; gap: var(--t3); grid-template-columns: minmax(0, 1fr);
+}
+.cartes-categories > li { display: flex; min-width: 0; }
+@media (min-width: 36rem) and (max-width: 63.99rem) {
+  .cartes-categories { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .cartes-categories > li:last-child:nth-child(odd) { grid-column: 1 / -1; }
+}
+@media (min-width: 64rem) {
+  .cartes-categories { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+  .cartes-categories > li { grid-column: span 2; }
+  .cartes-categories > li[data-large="3"] { grid-column: span 3; }
+  .cartes-categories > li[data-large="6"] { grid-column: 1 / -1; }
+}
+
+.carte-categorie {
+  flex: 1; min-width: 0;
+  display: flex; flex-direction: column; gap: .45rem;
+  padding: var(--t4);
+  background: var(--carte); color: var(--encre-douce);
+  border: 1px solid var(--filet); border-radius: var(--r2);
+  box-shadow: var(--ombre-1);
+  text-decoration: none; line-height: 1.5;
+  transition: border-color .18s ease, transform .18s ease, box-shadow .18s ease;
+}
+a.carte-categorie:hover { border-color: var(--accent); transform: translateY(-2px); box-shadow: var(--ombre-2); }
+a.carte-categorie:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+.carte-tete { display: flex; flex-wrap: wrap; align-items: center; gap: .4rem .6rem; }
+.carte-nom {
+  font-size: clamp(1.2rem, 1.1rem + .35vw, 1.4rem); font-weight: 700;
+  letter-spacing: -.02em; line-height: 1.25; color: var(--encre);
+}
+.carte-compte { font-weight: 700; color: var(--accent); }
+.carte-ligne { overflow-wrap: anywhere; }
+.carte-aller { margin-top: auto; align-self: flex-end; display: inline-flex; color: var(--accent); }
+.carte-aller svg { width: 1.4rem; height: 1.4rem; }
+.carte-vide { background: var(--carte-pale); box-shadow: none; }
+.carte-vide .carte-compte { color: var(--encre-tenue); }
+@media (prefers-reduced-motion: reduce) { a.carte-categorie:hover { transform: none; } }
+
+/* Ce qui explique la page sans être ce qu'on y vient chercher : replié sous
+   les cartes. */
+.a-savoir {
+  margin: 0 0 var(--t5);
+  border: 1px solid var(--filet); border-radius: var(--r2);
+  background: var(--carte-pale);
+}
+.a-savoir > summary {
+  display: flex; justify-content: space-between; align-items: center; gap: var(--t3);
+  padding: var(--t3) var(--t4);
+  font-weight: 700; color: var(--encre); cursor: pointer; list-style: none;
+}
+.a-savoir > summary::-webkit-details-marker { display: none; }
+.a-savoir > summary::after { content: "+"; font-size: 1.3rem; line-height: 1; color: var(--accent); }
+.a-savoir[open] > summary::after { content: "–"; }
+.a-savoir-corps { padding: 0 var(--t4) var(--t4); }
+.a-savoir + .a-savoir { margin-top: calc(-1 * var(--t5) + var(--t3)); }
+
+.categorie-naf > h2 { margin-bottom: var(--t4); }
 
 /* Les familles du relevé, dessous : même grammaire que le reste. */
 .famille-releve { margin-top: var(--t6); }
@@ -2187,7 +2204,8 @@ details[open] > summary .chevron { transform: rotate(180deg); }
     margin-bottom: var(--t4); padding: var(--t4);
     background: var(--carte); border: 1px solid var(--filet); border-radius: var(--r2);
   }
-  .tableau-textes tbody th, .tableau-textes tbody td {
+  .tableau-textes tbody th, .tableau-textes tbody td,
+  .tableau-textes .cellule-depuis, .tableau-textes td:last-child {
     display: block; width: auto; padding: 0; border: 0;
   }
   .tableau-textes tbody td::before {
@@ -2236,7 +2254,7 @@ details[open] > summary .chevron { transform: rotate(180deg); }
 .texte-loi table {
   display: block; max-width: 100%; overflow-x: auto;
   margin: 0 0 .7rem; border-collapse: collapse;
-  font-size: .9rem; scrollbar-width: thin;
+  font-size: .9rem;
 }
 .texte-loi th, .texte-loi td {
   padding: .4rem .6rem; border: 1px solid var(--filet); text-align: left; vertical-align: top;

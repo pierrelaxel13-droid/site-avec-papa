@@ -1114,27 +1114,24 @@ function tableauDeTextes(V, C, LIENS, TEXTES, entrees, racine = "", cherchable =
   const avecDate = entrees.filter((e) => (dateDuTexte(C, e.ref) || {}).depuis).length;
   const neufs = entrees.filter((e) => (dateDuTexte(C, e.ref) || {}).neuf).length;
 
-  const sommaire = `${avecDate ? `<p class="note-source" style="margin-bottom:var(--t4)">
-    <strong>Lesquels sont nouveaux.</strong> La colonne « en vigueur depuis » donne la
-    dernière évolution du texte, pour les ${avecDate} textes dont nous publions le contenu
-    consolidé${neufs ? ` ; ${neufs} ${neufs > 1 ? "ont" : "a"} bougé à la dernière relève et porte${neufs > 1 ? "nt" : ""} la marque <span class="marque-neuf">Nouveau</span>` : " ; aucun n'a bougé à la dernière relève"}.
+  const note = avecDate ? `<p class="note-source">
+    La colonne « en vigueur depuis » donne la dernière évolution du texte, pour les
+    ${avecDate} textes dont nous publions le contenu consolidé${neufs ? ` ; ${neufs} ${neufs > 1 ? "ont" : "a"} bougé à la dernière relève et porte${neufs > 1 ? "nt" : ""} la marque <span class="marque-neuf">Nouveau</span>` : " ; aucun n'a bougé à la dernière relève"}.
     Pour les autres, nous n'avons pas encore la date, et nous ne l'inventons pas.
-  </p>` : ""}<div class="tableau-boite">
-  <table class="tableau-familles">
-  <thead><tr><th scope="col">Catégorie</th><th scope="col">Textes</th><th scope="col">Ce que c'est</th></tr></thead>
-  <tbody>
-    ${familles.map((g) => `<tr${g.textes.length ? "" : ' class="famille-vide"'}>
-      <th scope="row" data-intitule="Catégorie">${esc(g.cl.l)}${g.textes.length
-        ? lienCarte(`#textes-${esc(g.id)}`, `Aller à la catégorie ${g.cl.l}`) : ""}</th>
-      <td data-intitule="Textes"><span class="compte-famille">${g.textes.length}</span></td>
-      <td data-intitule="Ce que c'est">${esc(g.cl.d)}</td>
-    </tr>`).join("")}
-  </tbody>
-</table>
-</div>`;
+  </p>` : "";
+
+  const cartes = cartesCategories(familles.map((g) => {
+    const n = g.textes.filter((e) => (dateDuTexte(C, e.ref) || {}).neuf).length;
+    return {
+      id: `textes-${g.id}`, nom: g.cl.l, vide: !g.textes.length,
+      compte: g.textes.length ? `${g.textes.length} texte${g.textes.length > 1 ? "s" : ""}` : "Aucun texte",
+      marque: n ? `${n} nouveau${n > 1 ? "x" : ""}` : "",
+      lignes: [esc(g.cl.d)]
+    };
+  }));
 
   const tables = familles.filter((g) => g.textes.length).map((g) => `
-  <section class="famille-textes" id="textes-${esc(g.id)}"${cherchable ? " data-groupe" : ""}>
+  <section class="famille-textes" id="textes-${esc(g.id)}" data-categorie${cherchable ? " data-groupe" : ""}>
     <h3>${esc(g.cl.l)} <span class="etiq">${g.textes.length} texte${g.textes.length > 1 ? "s" : ""}</span></h3>
     <p class="precision">${esc(g.cl.d)}</p>
     <div class="tableau-boite">
@@ -1174,7 +1171,7 @@ function tableauDeTextes(V, C, LIENS, TEXTES, entrees, racine = "", cherchable =
     </div>
   </section>`).join("");
 
-  return { sommaire, tables };
+  return { note, cartes, tables };
 }
 
 /* --- Les textes rangés par nature ------------------------------------------
@@ -1193,42 +1190,43 @@ function groupesParClassement(V, entrees, domaineDe) {
     .map((id) => ({ id, cl: V.classements[id], textes: par[id] || [] }));
 }
 
-function tableauDesFamilles(V, groupes, titreDe, dateDe, domaineDe, prefixe = "", marqueDe = null) {
-  if (!groupes.length) return "";
-  return `<div class="tableau-boite">
-  <table class="tableau-familles">
-  <thead><tr>
-    <th scope="col">Famille</th>
-    <th scope="col">Textes</th>
-    <th scope="col">Le plus récent</th>
-    <th scope="col">Ce qu'il faut faire en premier</th>
-  </tr></thead>
-  <tbody>
-    ${groupes.map((g) => {
-      const liste = g.textes.slice().sort((a, b) => (dateDe(a) < dateDe(b) ? 1 : -1));
-      if (!liste.length) {
-        return `<tr class="famille-vide">
-      <th scope="row" data-intitule="Famille">${esc(g.cl.l)}</th>
-      <td data-intitule="Textes"><span class="compte-famille">0</span></td>
-      <td data-intitule="Le plus récent" colspan="2">Rien à traiter de ce côté sur la période.</td>
-    </tr>`;
-      }
-      const t = liste[0];
-      const d = V.domaines[domaineDe(t)];
-      const action = d && d.actions && d.actions.length ? d.actions[0] : "—";
-      return `<tr>
-      <th scope="row" data-intitule="Famille">${esc(g.cl.l)}${
-        lienCarte(`#${esc(prefixe)}famille-${esc(g.id)}`, `Aller à la famille ${g.cl.l}`)}</th>
-      <td data-intitule="Textes"><span class="compte-famille">${liste.length}</span></td>
-      <td data-intitule="Le plus récent">
-        <span class="mono date">${esc(dateFr(dateDe(t)))}</span>
-        <span class="titre">${esc(titreDe(t))}</span>${
-          marqueDe ? `<span class="statut etiq">${esc(marqueDe(t))}</span>` : ""}</td>
-      <td data-intitule="Ce qu'il faut faire en premier">${esc(action)}</td>
-    </tr>`; }).join("")}
-  </tbody>
-</table>
-</div>`;
+/* --- Les catégories, d'abord seules -----------------------------------------
+   « Une seule page avec les catégories, et quand on clique sur une, ce qui y
+   appartient, seulement ça. » Les pages Relevé, Textes et Secteurs s'ouvrent
+   sur une carte par catégorie, et rien d'autre ; app.js n'affiche ensuite que
+   celle qu'on a choisie. Sans JavaScript, les cartes sont des ancres et tout
+   reste lisible dessous.
+
+   Les cartes finissent toujours leurs lignes : sur la grille de six colonnes
+   du bureau, la dernière rangée se partage la largeur au lieu de laisser une
+   carte seule dans un coin. */
+function cartesCategories(cartes) {
+  const n = cartes.length;
+  const cols = n % 3 === 0 ? 3 : (n % 2 === 0 ? 2 : 3);
+  const reste = n % cols;
+  return `<nav class="choix-categories" data-choix aria-label="Catégories">
+  <ul class="cartes-categories">
+    ${cartes.map((c, i) => {
+      const large = reste && i >= n - reste ? 6 / reste : 6 / cols;
+      const dedans = `
+        <span class="carte-tete"><span class="carte-nom">${esc(c.nom)}</span>${
+          c.marque ? `<span class="marque-neuf">${esc(c.marque)}</span>` : ""}</span>
+        <span class="carte-compte">${esc(c.compte)}</span>
+        ${(c.lignes || []).map((l) => `<span class="carte-ligne">${l}</span>`).join("")}`;
+      return `<li data-large="${large}">${c.vide
+        ? `<div class="carte-categorie carte-vide">${dedans}</div>`
+        : `<a class="carte-categorie" href="#${esc(c.id)}">${dedans}<span class="carte-aller">${fleche}</span></a>`}</li>`;
+    }).join("")}
+  </ul>
+</nav>`;
+}
+
+/* Ce qui explique la page sans être ce qu'on vient y chercher : replié. */
+function aSavoir(titre, contenu) {
+  return `<details class="a-savoir" data-annexe>
+  <summary>${esc(titre)}</summary>
+  <div class="a-savoir-corps">${contenu}</div>
+</details>`;
 }
 
 /* --- Relevé ------------------------------------------------------------------ */
@@ -1252,11 +1250,48 @@ function appReleve(V, D, JO, C, LIENS, SOURCES = []) {
   const neufsJO = officiel
     ? JO.textes.filter((t) => (t.vuLe || t.date) === JO.releve_le).length : 0;
 
-  const corps = enTeteApp(D, "Relevé des textes",
-    "Les textes parus qui vous concernent, et seulement ceux-là. Ce que chacun change, et où en est la décision.",
-    ficheDeLEntreprise(V, D)) + `
+  /* Une carte par famille : combien de textes, combien de nouveaux, le plus
+     récent, et ce qu'il faut faire en premier. C'est ce qu'on voit en
+     arrivant ; les textes eux-mêmes viennent au clic, famille par famille. */
+  const carteFamille = (g, prefixe, dateDe, domaineDe, neufDe) => {
+    const liste = g.textes.slice().sort((a, b) => (dateDe(a) < dateDe(b) ? 1 : -1));
+    if (!liste.length) {
+      return { nom: g.cl.l, compte: "Rien sur la période", lignes: [esc(g.cl.d)], vide: true };
+    }
+    const d = V.domaines[domaineDe(liste[0])];
+    const neufs = neufDe ? liste.filter(neufDe).length : 0;
+    return {
+      id: `${prefixe}famille-${g.id}`, nom: g.cl.l,
+      compte: `${liste.length} texte${liste.length > 1 ? "s" : ""}`,
+      marque: neufs ? `${neufs} nouveau${neufs > 1 ? "x" : ""}` : "",
+      lignes: [`Le plus récent : ${esc(dateFr(dateDe(liste[0])))}`,
+               d && d.actions && d.actions.length ? `En premier : ${esc(d.actions[0])}` : esc(g.cl.d)]
+    };
+  };
+  const articlesSuivis = C ? C.morceaux.reduce((n, m) => n + m.articles.length, 0) : 0;
+  const carteCodes = C ? [{
+    id: "codes-changements", nom: "Les codes",
+    compte: C.changements.length
+      ? `${C.changements.length} changement${C.changements.length > 1 ? "s" : ""}` : "Aucun changement",
+    lignes: [`${articlesSuivis} articles suivis, mot à mot`, `Relevés le ${esc(dateFr(C.preleve))}`]
+  }] : [];
 
-${officiel ? rubrique({ etiq: "Relevé officiel", contenu: `
+  /* Le jeu d'essai montre le parcours complet d'un texte : analyse, décision,
+     trace. Avec un vrai relevé, il passe dans un repli ; sans, c'est lui que
+     la page présente, famille par famille. */
+  const familleDemo = (g, categorie) => `
+  <section class="famille-releve" id="famille-${esc(g.id)}"${categorie ? " data-categorie" : ""}>
+    <h3>${esc(g.cl.l)} <span class="etiq">${g.textes.length} texte${g.textes.length > 1 ? "s" : ""}</span></h3>
+    <p class="precision">${esc(g.cl.d)}</p>
+    <ul class="liste-releve">
+      ${g.textes.map((t) => ligneReleve(V, C, LIENS, t)).join("")}
+    </ul>
+  </section>`;
+  const statutsDemo = `<dl class="compteurs">
+    ${parStatut.map((x) => `<div><dt class="etiq">${esc(x.l)}</dt><dd><span class="grand">${x.n}</span></dd></div>`).join("")}
+  </dl>`;
+
+  const commentFait = officiel ? `
   <dl class="compteurs">
     <div><dt class="etiq">Textes de droit</dt><dd><span class="grand">${JO.textes.filter((x) => x.genre === "texte").length}</span></dd></div>
     <div><dt class="etiq">Publications officielles</dt><dd><span class="grand">${JO.textes.filter((x) => x.genre !== "texte").length}</span></dd></div>
@@ -1266,11 +1301,9 @@ ${officiel ? rubrique({ etiq: "Relevé officiel", contenu: `
   </dl>
   <p class="lecture" style="margin-top:var(--t4)">
     Relevé automatiquement sur ${confirmees.length} sources officielles vérifiées —
-    Journal officiel en tête — et
-    filtré sur les domaines du référentiel. Le contenu est dans la page : rien à aller
-    chercher ailleurs. Un <strong>texte</strong> est du droit ; une
-    <strong>publication</strong> est un commentaire officiel, qui compte pour la veille
-    mais n'en est pas.
+    Journal officiel en tête — et filtré sur les domaines du référentiel. Un
+    <strong>texte</strong> est du droit ; une <strong>publication</strong> est un
+    commentaire officiel, qui compte pour la veille mais n'en est pas.
   </p>
   ${SOURCES.length > confirmees.length ? `<p class="note-source" style="margin-top:var(--t4)">
     <strong>Pas encore relevées :</strong>
@@ -1279,37 +1312,49 @@ ${officiel ? rubrique({ etiq: "Relevé officiel", contenu: `
   ${muettes.length ? `<p class="reserve" style="margin-top:var(--t4)">
     <strong>Muettes à la dernière relève :</strong> ${esc(muettes.map((r) => r.nom).join(" · "))}.
     Ce qu'elles auraient publié depuis ne figure pas ici ; elles seront relues à la
-    prochaine relève.</p>` : ""}
-  <p class="lecture" style="margin-top:var(--t4)">
-    <strong>Rangés par famille.</strong> La colonne « le plus récent » dit où ça a bougé
-    en dernier, et « ce qu'il faut faire en premier » ce que vous avez à faire de ce
-    côté. Cliquez la ligne pour descendre à la famille${neufsJO ? ` ; ${neufsJO} texte${
-      neufsJO > 1 ? "s sont arrivés" : " est arrivé"} à la dernière relève et porte${
-      neufsJO > 1 ? "nt" : ""} la marque <span class="marque-neuf">Nouveau</span>` : ""}.
-    Chaque texte s'ouvre ici même, en entier, avec ce qu'il faut faire.
-  </p>
-  ${tableauDesFamilles(V, groupesJO, (t) => t.titre, (t) => t.dateTexte || t.date,
-                       domaineJO, "jo-", (t) => (t.genre === "texte" ? "Texte" : "Publication"))}
+    prochaine relève.</p>` : ""}` : "";
+
+  const corps = enTeteApp(D, "Relevé des textes",
+    "Choisissez une famille : vous ne verrez que ses textes, chacun avec ce qu'il faut faire.",
+    ficheDeLEntreprise(V, D)) + `
+
+<section class="rubrique">
+  <div class="enveloppe">
+  ${officiel ? `
+  ${cartesCategories([
+    ...groupesJO.map((g) => carteFamille(g, "jo-", (t) => t.dateTexte || t.date, domaineJO,
+                                         (t) => (t.vuLe || t.date) === JO.releve_le)),
+    ...carteCodes])}
+  ${aSavoir("Comment ce relevé est fait", commentFait)}
+  ${aSavoir("Exemple : le parcours complet d'un texte", `<p class="lecture">
+    Des textes de démonstration, conservés pour montrer le cycle complet : analyse,
+    décision, trace.</p>
+    ${statutsDemo}
+    ${groupes.filter((g) => g.textes.length).map((g) => familleDemo(g, false)).join("")}`)}
   ${(() => { let n = 0; return groupesJO.filter((g) => g.textes.length).map((g) => `
-  <section class="famille-releve" id="jo-famille-${esc(g.id)}">
+  <section class="famille-releve" id="jo-famille-${esc(g.id)}" data-categorie>
     <h3>${esc(g.cl.l)} <span class="etiq">${g.textes.length} texte${g.textes.length > 1 ? "s" : ""}</span></h3>
     <p class="precision">${esc(g.cl.d)}</p>
     <ul class="liste-releve">
       ${g.textes.slice().sort((a, b) => ((a.dateTexte || a.date) < (b.dateTexte || b.date) ? 1 : -1))
                 .map((t) => ligneJO(V, t, n++, JO.releve_le)).join("")}
     </ul>
-  </section>`).join(""); })()}` }) : rubrique({ etiq: "Relevé officiel", contenu: `
+  </section>`).join(""); })()}` : `
   <p class="reserve">
     <strong>Aucune relève n'a encore été faite.</strong>
     Le robot qui va chercher sur les sources officielles tourne
-    <strong>toutes les heures</strong>, et le texte des codes une fois par jour ;
-    ce qu'il trouve est publié aussitôt. Cette page-ci a été construite sans
-    relevé — c'est le cas sur un poste de développement, dont le réseau ne joint
-    pas ces hôtes. Elle montre donc le jeu d'essai ci-dessous, et rien d'autre :
-    pas de texte inventé.
-  </p>` })}
+    <strong>toutes les heures</strong>. Cette page montre donc le jeu d'essai, et
+    rien d'autre : pas de texte inventé.
+  </p>
+  ${cartesCategories([
+    ...groupes.map((g) => carteFamille(g, "", (t) => t.date, (t) => t.domaine, null)),
+    ...carteCodes])}
+  ${aSavoir("Où en sont ces textes", statutsDemo)}
+  ${groupes.filter((g) => g.textes.length).map((g) => familleDemo(g, true)).join("")}`}
+  </div>
+</section>
 
-${C ? rubrique({ etiq: "Ce qui a changé dans les codes", contenu: `
+${C ? rubrique({ etiq: "Ce qui a changé dans les codes", id: "codes-changements", attrs: " data-categorie", contenu: `
   <dl class="compteurs">
     <div><dt class="etiq">Articles suivis</dt><dd><span class="grand">${C.morceaux.reduce((n, m) => n + m.articles.length, 0)}</span></dd></div>
     <div><dt class="etiq">Codes suivis</dt><dd><span class="grand">${C.codes.length}</span></dd></div>
@@ -1329,24 +1374,7 @@ ${C ? rubrique({ etiq: "Ce qui a changé dans les codes", contenu: `
     changé depuis la relève précédente. C’est une comparaison article par article, pas une
     absence d’information : le jour où un mot bouge, il apparaît ici, avec l’avant et
     l’après, et part en alerte.</p>`}
-  ${noteDeSource(C)}` }) : ""}
-
-${rubrique({ etiq: officiel ? "Jeu d'essai" : "Le relevé", aplat: true, contenu: `
-  <p class="lecture">${officiel
-    ? "Les textes de démonstration, conservés pour montrer le cycle complet : analyse, décision, trace."
-    : "Rangés par nature : ce qui touche les personnes, ce qui touche l'hygiène, ce qui touche le contrat, ce qui touche le site, et ce qui tient à votre métier. Les textes écartés ne figurent pas ici : ils sont tracés dans le registre, avec le motif de leur mise à l'écart."}</p>
-  <dl class="compteurs" style="margin-top:var(--t4)">
-    ${parStatut.map((x) => `<div><dt class="etiq">${esc(x.l)}</dt><dd><span class="grand">${x.n}</span></dd></div>`).join("")}
-  </dl>
-  ${tableauDesFamilles(V, groupes, (t) => t.titre, (t) => t.date, (t) => t.domaine)}
-  ${groupes.filter((g) => g.textes.length).map((g) => `
-  <section class="famille-releve" id="famille-${esc(g.id)}">
-    <h3>${esc(g.cl.l)} <span class="etiq">${g.textes.length} texte${g.textes.length > 1 ? "s" : ""}</span></h3>
-    <p class="precision">${esc(g.cl.d)}</p>
-    <ul class="liste-releve">
-      ${g.textes.map((t) => ligneReleve(V, C, LIENS, t)).join("")}
-    </ul>
-  </section>`).join("")}` })}`;
+  ${noteDeSource(C)}` }) : ""}`;
 
   return page({
     titre: `Relevé des textes | ${SITE.nom}`,
@@ -1412,23 +1440,17 @@ function appSecteurs(V, METIERS, NAF) {
     </ul>
     <h1>Trouvez votre code</h1>
     <p class="chapeau">
-      ${NAF ? `La nomenclature d'activités française en entier : ses ${codes.length} codes APE,
-      ceux que porte votre entreprise — 4322B, 5610A, 8690F. Chacun mène à ce qui
-      s'applique à sa famille de métier, parce que c'est à ce niveau que les obligations
-      se ressemblent.`
-      : `La nomenclature d'activités française, division par division. Ouvrez un secteur
-      pour voir ses textes, ses obligations et les pièges du métier.`}
+      Choisissez votre grand secteur, puis votre code APE : vous verrez ce qui
+      s'applique à votre métier.
     </p>
     <div class="recherche" style="margin-top:var(--t5)">
-      <label class="etiq" for="recherche-secteur">Chercher un code, un métier, un mot</label>
+      <label class="etiq" for="recherche-secteur">Ou tapez votre code ou votre métier</label>
       <input type="search" id="recherche-secteur" placeholder="4322B, plomberie, boulangerie, 43…"
              autocomplete="off" spellcheck="false">
       <p class="recherche-compte etiq"><span id="compte-secteurs"></span></p>
     </div>
-    ${NAF ? `<p class="note-source">
-      ${esc(NAF.source.nom)}, relevée le ${esc(dateFr(NAF.releve))}. Votre code APE figure
-      sur votre avis de situation INSEE et sur vos bulletins de paie.
-    </p>` : ""}
+    <p class="note-source">Votre code APE est sur votre avis de situation INSEE et sur vos
+      bulletins de paie.${NAF ? ` Nomenclature ${esc(NAF.source.nom)}, relevée le ${esc(dateFr(NAF.releve))}.` : ""}</p>
   </div>
 </section>
 
@@ -1437,18 +1459,31 @@ function appSecteurs(V, METIERS, NAF) {
   <p id="aucun-secteur" class="etat-vide" hidden>
     Aucun code ne correspond. Essayez les deux premiers chiffres, ou un mot du métier.
   </p>
+  ${cartesCategories(V.sections.map((sec) => {
+    const divs = groupes.filter((g) => g.d.s === sec.c);
+    const n = divs.reduce((k, g) => k + g.codes.length, 0);
+    const noms = divs.map((g) => g.d.l);
+    return {
+      id: `naf-${sec.c}`, nom: sec.l,
+      compte: `${divs.length} division${divs.length > 1 ? "s" : ""}${n ? ` · ${n} codes APE` : ""}`,
+      lignes: [esc(noms.slice(0, 3).join(" · ") + (noms.length > 3 ? " …" : ""))]
+    };
+  }))}
   <div id="liste-secteurs">
-    ${groupes.map((g) => {
+    ${V.sections.map((sec) => `
+    <section class="categorie-naf" id="naf-${esc(sec.c)}" data-categorie data-groupe>
+      <h2>${esc(sec.l)}</h2>
+      ${groupes.filter((g) => g.d.s === sec.c).map((g) => {
       const mots = METIERS[g.d.c] || [];
       const adresse = `secteur/${esc(g.d.c)}-${slug(g.d.l)}.html`;
       const commun = [g.d.c, g.d.l, g.section ? g.section.l : "", ...mots].join(" ");
       return `
     <section class="grappe grappe-naf" data-groupe>
-      <h2 class="etiq">
+      <h3 class="etiq">
         <span class="lettre">${esc(g.d.c)}</span>
         <a href="${adresse}">${esc(g.d.l)}</a>
         <span class="precision">${g.codes.length ? `${g.codes.length} code${g.codes.length > 1 ? "s" : ""} APE` : "division"}</span>
-      </h2>
+      </h3>
       <ul class="puces">
         ${(g.codes.length ? g.codes.map((c) => `<li data-recherche="${esc([c.c, c.c.replace(".", ""), c.l, commun].join(" "))}">
           <a href="${adresse}?ape=${esc(c.c.replace(".", ""))}" title="${esc(c.l)}">
@@ -1458,6 +1493,8 @@ function appSecteurs(V, METIERS, NAF) {
             <span class="code">${esc(g.d.c)}</span><span class="nom">${esc(g.d.l)}</span></a></li>`]).join("\n")}
       </ul>
     </section>`; }).join("\n")}
+    </section>`).join("\n")}
+  </div>
   </div>
 </div>
 </section>`;
@@ -1629,14 +1666,11 @@ function appTextes(V, TEXTES, parTexte, C, LIENS) {
     </ul>
     <h1>Tous les textes</h1>
     <p class="chapeau">
-      Chaque texte de référence a sa fiche : à qui il s'applique, ce qu'il exige, et le
-      texte officiel lui-même quand nous savons le relever. Lisible ici, sans quitter
-      le site.${C ? ` <strong>${Object.keys(C.perimetres).filter((r) => (C.perimetres[r] || []).length).length} fiches
-      portent le texte intégral</strong>, soit ${C.morceaux.reduce((n, m) => n + m.articles.length, 0)}
-      articles de code, relevés le ${esc(dateFr(C.preleve))}.` : ""}
+      Choisissez une catégorie : vous ne verrez que ses textes, chacun avec ce qu'il
+      exige et où le lire.
     </p>
     <div class="recherche" style="margin-top:var(--t5)">
-      <label class="etiq" for="recherche-secteur">Chercher</label>
+      <label class="etiq" for="recherche-secteur">Ou tapez un mot</label>
       <input type="search" id="recherche-secteur" placeholder="amiante, RGPD, code du travail…"
              autocomplete="off" spellcheck="false">
       <p class="recherche-compte etiq"><span id="compte-secteurs">${refs.length} textes</span></p>
@@ -1646,8 +1680,13 @@ function appTextes(V, TEXTES, parTexte, C, LIENS) {
 
 <section class="rubrique">
 <div class="enveloppe" data-unite="textes">
-  <h2>Les textes, par catégorie</h2>
-  ${tableaux.sommaire}
+  ${tableaux.cartes}
+  ${aSavoir("À savoir sur ces fiches", `<p class="lecture">
+    Chaque texte de référence a sa fiche : à qui il s'applique, ce qu'il exige, et le
+    texte officiel lui-même quand nous savons le relever.${C ? ` <strong>${Object.keys(C.perimetres).filter((r) => (C.perimetres[r] || []).length).length} fiches
+    portent le texte intégral</strong>, soit ${C.morceaux.reduce((n, m) => n + m.articles.length, 0)}
+    articles de code, relevés le ${esc(dateFr(C.preleve))}.` : ""}</p>
+    ${tableaux.note}`)}
   <p id="aucun-secteur" class="etat-vide" hidden>Aucun texte ne correspond.</p>
   <div id="liste-secteurs">
     ${tableaux.tables}
