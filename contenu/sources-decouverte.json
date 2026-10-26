@@ -1,5 +1,5 @@
 {
- "le": "2026-10-25T12:29:38.911Z",
+ "le": "2026-10-26T22:28:46.898Z",
  "bilan": [
   {
    "id": "inrs",
@@ -9,6 +9,7 @@
    "flux": [],
    "essais": 11,
    "refus": [
+    "injoignable (fetch failed : UND_ERR_SOCKET) — l'hôte refuse le robot, ou le réseau d'ici le bloque",
     "HTTP 404"
    ]
   },

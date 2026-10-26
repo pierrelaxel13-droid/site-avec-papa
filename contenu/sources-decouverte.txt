@@ -7,10 +7,10 @@ Recherche du flux de 5 sources muettes.
       la page déclare 0 lien(s) de flux
     · https://www.inrs.fr/  — 0 entrées  (text/html)  [page du site]
       la page déclare 0 lien(s) de flux
-    ✘ https://www.inrs.fr/feed/  — HTTP 404  [chemin courant]
+    ✘ https://www.inrs.fr/feed/  — injoignable (fetch failed : UND_ERR_SOCKET) — l'hôte refuse le robot, ou le réseau d'ici le bloque  [chemin courant]
     · https://www.inrs.fr/rss  — 0 entrées  (text/html)  [chemin courant]
     ✘ https://www.inrs.fr/rss.xml  — HTTP 404  [chemin courant]
-    ✘ https://www.inrs.fr/fr/rss.xml  — HTTP 404  [chemin courant]
+    ✘ https://www.inrs.fr/fr/rss.xml  — injoignable (fetch failed : UND_ERR_SOCKET) — l'hôte refuse le robot, ou le réseau d'ici le bloque  [chemin courant]
     ✘ https://www.inrs.fr/feed.xml  — HTTP 404  [chemin courant]
     ✘ https://www.inrs.fr/atom.xml  — HTTP 404  [chemin courant]
     ✘ https://www.inrs.fr/index.xml  — HTTP 404  [chemin courant]
@@ -22,6 +22,9 @@ Recherche du flux de 5 sources muettes.
       liens d'actualité sur https://www.inrs.fr/actualites.html :
         /carrefour-actualites.html « ACTUALITÉS »
         /carrefour-actualites.html « Toute l'actualité »
+        /actualites/empoussierement-amiante-scolamiante-maj2026.html « 26/10/2026 
+ 
+ Actualisation des données sur les niveaux d’empoussièrement à l »
         /actualites/apprentissage-apprendre-son-metier-en-toute-securite.html « 21/10/2026 
  
  Apprentissage : apprendre son métier en toute sécurité 
@@ -49,11 +52,6 @@ Recherche du flux de 5 sources muettes.
  
  
  Le numéro  »
-        /actualites/RST-187.html « 28/09/2026 
- 
- Références en santé au travail : parution du numéro 187 
- 
-  »
         /actualites.html « Actualités »
         /carrefour-actualites.html « Actualités »
   → aucun flux trouvé
