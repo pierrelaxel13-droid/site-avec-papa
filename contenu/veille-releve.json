@@ -90,9 +90,9 @@
   {
    "id": "ineris-aida",
    "nom": "Ineris et AIDA — nouveautés",
-   "entrees": 10,
+   "entrees": 0,
    "retenus": 0,
-   "souci": null
+   "souci": "injoignable (HTTP 403) — l'hôte refuse le robot, ou le réseau d'ici le bloque"
   },
   {
    "id": "ademe",
@@ -4102,12 +4102,12 @@
    "source": "certfr-alerte",
    "sourceNom": "CERT-FR — alertes",
    "genre": "actualite",
-   "id": "https://www.cert.ssi.gouv.fr/alerte/CERTFR-2026-ALE-012/",
+   "id": "https://www.cert.cyber.gouv.fr/alerte/CERTFR-2026-ALE-012/",
    "titre": "Incident de sécurité ciblant les contrôleurs à distance des installations de réfrigération (12 octobre 2026)",
    "nature": "Publication officielle",
    "date": "2026-10-12",
    "corps": "Le CERT-FR a connaissance de nombreuses compromissions des controleurs à distance d'installation de réfrigération Danfoss série AK-SM, AK-SC ainsi que Copeland xweb et Dixell xweb. De manière générale l'exposition d'une interface de gestion sur Internet est contraire aux bonnes pratiques.",
-   "lien": "https://www.cert.ssi.gouv.fr/alerte/CERTFR-2026-ALE-012/",
+   "lien": "https://www.cert.cyber.gouv.fr/alerte/CERTFR-2026-ALE-012/",
    "domaines": [
     {
      "id": "cyber",
