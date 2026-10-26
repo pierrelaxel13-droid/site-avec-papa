@@ -14,7 +14,7 @@
    "id": "eurlex-l",
    "nom": "Journal officiel de l'Union européenne — série L",
    "entrees": 100,
-   "retenus": 15,
+   "retenus": 16,
    "souci": null
   },
   {
@@ -490,6 +490,52 @@
    ],
    "morceaux": 130,
    "dateTexte": "2006-12-21",
+   "vuLe": "2026-10-25"
+  },
+  {
+   "source": "eurlex-l",
+   "sourceNom": "Journal officiel de l'Union européenne — série L",
+   "genre": "texte",
+   "id": "https://eur-lex.europa.eu/./legal-content/AUTO/?uri=OJ:L_202602345",
+   "titre": "OJ:L_202602345: Règlement d’exécution (UE) 2026/2345 de la Commission du 23 octobre 2026 soumettant à enregistrement les importations d’un certain polychlorure de vinyle (PVC) originaire de la République populaire de Chine, de la République de Corée, du Mexique et de Taïwan en vue de permettre la perception de droits antidumping sur les importations soumises à enregistrement",
+   "nature": "Texte officiel",
+   "date": "2026-10-25",
+   "corps": "",
+   "lien": "https://eur-lex.europa.eu/./legal-content/AUTO/?uri=OJ:L_202602345",
+   "domaines": [
+    {
+     "id": "douane",
+     "nom": "Douane et échanges internationaux",
+     "mots": [
+      "importation"
+     ]
+    }
+   ],
+   "morceaux": 0,
+   "dateTexte": "2026-10-23",
+   "vuLe": "2026-10-25"
+  },
+  {
+   "source": "eurlex-l",
+   "sourceNom": "Journal officiel de l'Union européenne — série L",
+   "genre": "texte",
+   "id": "https://eur-lex.europa.eu/./legal-content/AUTO/?uri=OJ:L_202602346",
+   "titre": "OJ:L_202602346: Règlement d’exécution (UE) 2026/2346 de la Commission du 23 octobre 2026 soumettant à enregistrement les importations de silicium originaire de la République populaire de Chine",
+   "nature": "Texte officiel",
+   "date": "2026-10-25",
+   "corps": "",
+   "lien": "https://eur-lex.europa.eu/./legal-content/AUTO/?uri=OJ:L_202602346",
+   "domaines": [
+    {
+     "id": "douane",
+     "nom": "Douane et échanges internationaux",
+     "mots": [
+      "importation"
+     ]
+    }
+   ],
+   "morceaux": 0,
+   "dateTexte": "2026-10-23",
    "vuLe": "2026-10-25"
   },
   {
@@ -3619,29 +3665,6 @@
    ],
    "morceaux": 3,
    "dateTexte": "2026-10-07",
-   "vuLe": "2026-10-14"
-  },
-  {
-   "source": "eurlex-l",
-   "sourceNom": "Journal officiel de l'Union européenne — série L",
-   "genre": "texte",
-   "id": "https://eur-lex.europa.eu/./legal-content/AUTO/?uri=CELEX:32026D2332",
-   "titre": "CELEX:32026D2332: Décision (PESC) 2026/2332 du Conseil du 15 octobre 2026 modifiant la décision 2014/145/PESC concernant des mesures restrictives eu égard aux actions compromettant ou menaçant l’intégrité territoriale, la souveraineté et l’indépendance de l’Ukraine",
-   "nature": "Texte officiel",
-   "date": "2026-10-14",
-   "corps": "",
-   "lien": "https://eur-lex.europa.eu/./legal-content/AUTO/?uri=CELEX:32026D2332",
-   "domaines": [
-    {
-     "id": "douane",
-     "nom": "Douane et échanges internationaux",
-     "mots": [
-      "mesures restrictives"
-     ]
-    }
-   ],
-   "morceaux": 0,
-   "dateTexte": "2026-10-15",
    "vuLe": "2026-10-14"
   },
   {
