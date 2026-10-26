@@ -97,7 +97,7 @@
   {
    "id": "ademe",
    "nom": "ADEME — nouvelles publications",
-   "entrees": 94,
+   "entrees": 95,
    "retenus": 1,
    "souci": null
   },
@@ -125,7 +125,7 @@
   {
    "id": "entreprendre",
    "nom": "Entreprendre — service-public.fr",
-   "entrees": 235,
+   "entrees": 236,
    "retenus": 1,
    "souci": null
   },
@@ -134,14 +134,14 @@
    "nom": "ACPR — Banque de France",
    "entrees": 0,
    "retenus": 0,
-   "souci": "HTTP 503"
+   "souci": "injoignable (HTTP 403) — l'hôte refuse le robot, ou le réseau d'ici le bloque"
   },
   {
    "id": "amf",
    "nom": "AMF — Autorité des marchés financiers",
-   "entrees": 0,
-   "retenus": 0,
-   "souci": "injoignable (HTTP 403) — l'hôte refuse le robot, ou le réseau d'ici le bloque"
+   "entrees": 200,
+   "retenus": 1,
+   "souci": null
   },
   {
    "id": "arcep",
@@ -2314,6 +2314,29 @@
    ],
    "morceaux": 33,
    "dateTexte": "1993-01-04",
+   "vuLe": "2026-10-20"
+  },
+  {
+   "source": "amf",
+   "sourceNom": "AMF — Autorité des marchés financiers",
+   "genre": "actualite",
+   "id": "https://www.amf-france.org/fr/actualites-publications/communiques/communiques-de-lamf/la-sec-et-lamf-concluent-un-accord-renforcant-la-cooperation-en-matiere-de-supervision-des#xts=607212&xtor=RSS-3&type=RSS",
+   "titre": "La SEC et l'AMF concluent un accord renforçant la coopération en matière de supervision des conseillers en investissement et de prestataires de services d'investissement",
+   "nature": "Publication officielle",
+   "date": "2026-10-20",
+   "corps": "Communiqué AMF Coopération Europe &amp; international Gestion d&#039;actifs Supervision Conseil en investissement La SEC et l&#039;AMF concluent un accord renforçant la coopération en matière de supervision des conseillers en investissement et de prestataires de services...",
+   "lien": "https://www.amf-france.org/fr/actualites-publications/communiques/communiques-de-lamf/la-sec-et-lamf-concluent-un-accord-renforcant-la-cooperation-en-matiere-de-supervision-des#xts=607212&xtor=RSS-3&type=RSS",
+   "domaines": [
+    {
+     "id": "finance",
+     "nom": "Services financiers, assurance et LCB-FT",
+     "mots": [
+      "prestataires de services d'investissement"
+     ]
+    }
+   ],
+   "morceaux": 1,
+   "dateTexte": "",
    "vuLe": "2026-10-20"
   },
   {
