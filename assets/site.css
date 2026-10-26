@@ -2703,3 +2703,38 @@ a.carte-vide .carte-aller { display: none; }
   .dessin-etroit { display: block; max-width: 26rem; margin-inline: auto; }
   .dessin .d-titre-tel { font-size: 16px; }
 }
+
+/* --- 30. Accueil : prix affichés, normes, questions ------------------------ */
+.gage-prix { margin-top: .4rem; }
+.normes { list-style: none; margin: var(--t5) 0 0; padding: 0; display: grid; gap: var(--t4); grid-template-columns: minmax(0, 1fr); }
+@media (min-width: 46rem) { .normes { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (min-width: 80rem) { .normes { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+.norme {
+  display: flex; flex-direction: column; gap: .6rem; min-width: 0;
+  padding: var(--t4); background: var(--carte);
+  border: 1px solid var(--filet); border-top: 4px solid var(--accent); border-radius: var(--r2);
+  box-shadow: var(--ombre-1);
+}
+.norme p { margin: 0; color: var(--encre-douce); line-height: 1.55; }
+.norme strong { color: var(--encre); }
+.norme-nom { font-size: 1.35rem; font-weight: 800; letter-spacing: -.02em; color: var(--encre) !important; }
+.norme-nom span { display: block; font-size: .95rem; font-weight: 600; letter-spacing: 0; color: var(--accent); }
+
+.faq { margin: var(--t5) auto 0; display: grid; gap: var(--t3); grid-template-columns: minmax(0, 1fr); }
+@media (min-width: 62rem) { .faq { grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: stretch; } }
+.faq-question { background: var(--carte); border: 1px solid var(--filet); border-radius: var(--r2); }
+.faq-question > summary {
+  display: flex; justify-content: space-between; align-items: center; gap: var(--t3);
+  padding: var(--t3) var(--t4); cursor: pointer; list-style: none;
+  font-weight: 700; color: var(--encre); font-size: 1.05rem;
+}
+.faq-question > summary::-webkit-details-marker { display: none; }
+.faq-question > summary::after { content: "+"; font-size: 1.4rem; line-height: 1; color: var(--accent); flex: none; }
+.faq-question[open] > summary::after { content: "–"; }
+.faq-question[open] { border-color: var(--accent-filet); }
+.faq-question > p { margin: 0; padding: 0 var(--t4) var(--t4); color: var(--encre-douce); line-height: 1.6; }
+
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .zone-public .norme { transition: transform .22s cubic-bezier(.2, .7, .2, 1), box-shadow .22s ease; }
+  .zone-public .norme:hover { transform: translateY(-5px); box-shadow: var(--ombre-2); }
+}

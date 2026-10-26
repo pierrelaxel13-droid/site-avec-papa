@@ -2284,6 +2284,13 @@ function pageAccueil(V, D, METIERS, ECRANS, C = null, NAF = null, SOURCES = []) 
       <span>${V.divisions.length} familles de métiers couvertes</span>
       <span class="doux">— rien à créer, rien à payer pour regarder</span>
     </p>
+    <!-- Presque tous les services de veille vendent « sur devis ». Le nôtre
+         affiche ses prix : on le dit dès le haut, chiffres tirés de FORMULES. -->
+    <p class="gage gage-prix">
+      <span>Prix affichés, sans devis :</span>
+      <span class="doux">${esc(FORMULES.cadrage.prix.replace(" une fois", ""))} le cadrage, puis
+        ${esc(FORMULES.veille.prix.replace(" par mois", ""))} ou ${esc(FORMULES.preuves.prix)}</span>
+    </p>
 
     <div class="heros-visuel">
       ${portable(ECRANS, "bord.png", "Le tableau de bord de l'application : revues en retard, textes à analyser, actions ouvertes.")}
@@ -2588,6 +2595,41 @@ function pageAccueil(V, D, METIERS, ECRANS, C = null, NAF = null, SOURCES = []) 
   </div>
 </section>
 
+<!-- Pour votre certification. Les services de veille se présentent d'abord
+     par norme (ISO 14001, ISO 45001, MASE) : c'est la question qu'un dirigeant
+     se pose en premier — « est-ce que ça me sert pour l'audit ? ». Chaque
+     carte dit ce que la norme demande sur la réglementation, puis ce que le
+     site donne. Les numéros de chapitre sont ceux des normes en vigueur. -->
+<section class="section">
+  <div class="enveloppe">
+    <h2 class="titre-section">Pour votre certification</h2>
+    <p class="intro titre-section">Ce que la norme demande sur la réglementation, et ce que le
+    site vous donne pour le montrer à l'auditeur.</p>
+    <ul class="normes">
+      ${[
+        { n: "ISO 14001", t: "Environnement",
+          demande: "Connaître vos obligations de conformité (§ 6.1.3) et évaluer votre conformité, en gardant la preuve (§ 9.1.2).",
+          donne: "La liste de ce qui s'applique chez vous, les textes qui paraissent, et chaque évaluation datée au registre." },
+        { n: "ISO 45001", t: "Santé et sécurité au travail",
+          demande: "Déterminer les exigences légales applicables (§ 6.1.3) et évaluer votre conformité, preuve à l'appui (§ 9.1.2).",
+          donne: "Les sujets santé-sécurité de votre métier, ce qu'il faut faire pour chaque texte, et la case « fait » datée." },
+        { n: "MASE", t: "Entreprises intervenantes",
+          demande: "Connaître et suivre la réglementation qui s'applique à vos interventions, et le montrer.",
+          donne: "La fiche de votre métier, ce qu'il faut faire pour chaque texte, et un registre qui s'imprime tel quel pour l'audit." },
+        { n: "Qualiopi", t: "Organismes de formation",
+          demande: "Une veille légale et réglementaire sur la formation professionnelle, et son exploitation (indicateur 23).",
+          donne: "Le sujet « Enseignement, formation et certification qualité » suivi à son rythme, revue après revue." }
+      ].map((x) => `<li class="norme">
+        <p class="norme-nom">${esc(x.n)} <span>${esc(x.t)}</span></p>
+        <p><strong>Elle demande :</strong> ${esc(x.demande)}</p>
+        <p><strong>Le site donne :</strong> ${esc(x.donne)}</p>
+      </li>`).join("")}
+    </ul>
+    <p class="note-source" style="text-align:center;margin-top:var(--t4)">Le site ne certifie
+    pas : il vous aide à tenir et à montrer votre veille. La décision reste à l'auditeur.</p>
+  </div>
+</section>
+
 <section class="section">
   <div class="enveloppe">
     <h2 class="titre-section">D'où viennent les textes</h2>
@@ -2610,6 +2652,38 @@ function pageAccueil(V, D, METIERS, ECRANS, C = null, NAF = null, SOURCES = []) 
         de comptes ni de paiement. La « connexion » pose un jeton dans votre navigateur et ne
         protège rien. Tout est écrit sur les écrans concernés.
       </p>
+    </div>
+  </div>
+</section>
+
+<!-- Les questions qu'on pose avant de s'abonner. Chaque réponse dit ce qui
+     est vrai aujourd'hui, y compris ce qui n'est pas encore en place. Repliées :
+     on n'ouvre que celle qui nous intéresse. -->
+<section class="section section-tein">
+  <div class="enveloppe">
+    <h2 class="titre-section">Vos questions</h2>
+    <div class="faq">
+      ${[
+        ["D'où viennent les textes ?",
+         `De ${SOURCES.filter((x) => x.confirme).length} sources publiques, Journal officiel en tête, relues toutes les heures par notre robot. Chaque texte garde sa source, sa date et le lien vers l'original.`],
+        ["Est-ce un conseil juridique ?",
+         "Non. Le site dit ce qui s'applique et ce qu'il faut faire ; ce que ça implique chez vous reste à valider par quelqu'un de compétent. C'est la source officielle qui fait foi."],
+        ["Combien ça coûte ?",
+         `${esc(FORMULES.cadrage.prix)} pour le cadrage, puis ${esc(FORMULES.veille.prix)} pour la veille tenue, ou ${esc(FORMULES.preuves.prix)} avec le registre de preuves. Sans devis : <a href="abonnement.html">les tarifs</a>.`],
+        ["Mon métier est-il couvert ?",
+         `Les ${V.divisions.length} familles de métiers${NAF ? ` et les ${NAF.codes.length} codes APE` : ""} de la nomenclature officielle. Choisissez le vôtre dans <a href="#simulateur">l'outil plus haut</a> : vous voyez tout de suite ce qui s'applique.`],
+        ["Comment je reçois les nouveautés ?",
+         "Dans l'application : le relevé se met à jour toutes les heures, et ce qui vient d'arriver porte la marque « Nouveau ». L'envoi par courriel n'est pas encore en place ; vos réglages d'alerte sont gardés pour le jour où il le sera."],
+        ["Où sont mes données ?",
+         "Aujourd'hui, sur votre appareil : vos réglages et vos cases « fait » restent dans votre navigateur, rien n'est envoyé. L'application est ouverte en démonstration, sans compte."],
+        ["Faut-il installer quelque chose ?",
+         "Non : tout marche dans le navigateur. Sur téléphone, vous pouvez l'ajouter à l'écran d'accueil, et elle s'ouvre même sans réseau."],
+        ["Comment on démarre ?",
+         `Par un premier échange d'une heure, sans engagement, avec ${esc(SITE.nom)} : on définit ensemble ce qui s'applique chez vous. <a href="#cabinet">Nous joindre</a>.`]
+      ].map(([q, r]) => `<details class="faq-question">
+        <summary>${esc(q)}</summary>
+        <p>${r}</p>
+      </details>`).join("")}
     </div>
   </div>
 </section>
