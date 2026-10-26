@@ -108,7 +108,13 @@ const sigle = `<svg class="sigle" viewBox="0 0 24 24" aria-hidden="true" fill="c
   <rect x="8" y="16.9" width="14" height="3.1" rx="1.55" opacity=".42"/>
 </svg>`;
 
-const fleche = `<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor"
+/* L'empreinte de l'habillage, posée par main() avant d'écrire les pages. */
+let VERSION = "";
+
+/* Une taille écrite sur l'icône elle-même : si la feuille de style manque ou
+   est en retard d'une version, la flèche reste une flèche, pas un dessin qui
+   prend toute la largeur. */
+const fleche = `<svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" fill="none" stroke="currentColor"
   stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h13m-5-6 6 6-6 6"/></svg>`;
 
 const imprimante = `<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor"
@@ -193,7 +199,10 @@ function bandeInstallation(a) {
 /* --- Gabarit commun ----------------------------------------------------------- */
 function page({ titre, description, racine = "", zone = "public", actif = "", corps,
                 attrsBody = "", verrou = false, donneesPlan = false, formule = "" }) {
-  const a = (f) => racine + f;
+  /* Les feuilles de style et les scripts portent la version de l'habillage :
+     une page nouvelle ne peut plus être servie avec la feuille de style de la
+     veille, gardée par le navigateur (une heure) ou par le service worker. */
+  const a = (f) => racine + f + (VERSION && /\.(css|js)$/.test(f) ? `?v=${VERSION}` : "");
   const lien = (href, libelle, cle) =>
     `<a href="${a(href)}"${actif === cle ? ' aria-current="page"' : ""}>${libelle}</a>`;
 
@@ -212,7 +221,7 @@ function page({ titre, description, racine = "", zone = "public", actif = "", co
       ${lien("app/reglages.html", "Réglages", "reglages")}
       ${selecteurTheme}`;
 
-  return `<!doctype html>
+  return tailleDesIcones(`<!doctype html>
 <html lang="fr">
 <head>
 <meta charset="utf-8">
@@ -385,7 +394,15 @@ ${zone === "app" ? `<script src="${a("assets/avis-data.js")}"></script>
 ${zone === "app" || verrou || actif === "connexion" || actif === "abonnement" ? `<script src="${a("assets/session.js")}"></script>` : ""}
 </body>
 </html>
-`;
+`);
+}
+
+/* Chaque icône (dessin de 24 sur 24) porte une taille par défaut sur elle-même.
+   La feuille de style la remplace partout ; mais si elle manque ou arrive en
+   retard, une icône sans taille prend toute la largeur — d'où les « grosses
+   flèches » vues le 26 octobre. */
+function tailleDesIcones(html) {
+  return html.replace(/<svg(?![^>]*\swidth=)([^>]*viewBox="0 0 24 24")/g, '<svg width="20" height="20"$1');
 }
 
 /* --- Périmètre d'une division ---------------------------------------------- */
@@ -2975,6 +2992,7 @@ async function main() {
   for (const f of habillage) empreinte.update(await readFile(join(SORTIE, "assets", f)));
   empreinte.update(plan);
   const version = empreinte.digest("hex").slice(0, 12);
+  VERSION = version;
   const worker = (await readFile(resolve(RACINE, "sw.js"), "utf8")).replace("__EMPREINTE__", version);
   if (worker.includes("__EMPREINTE__")) throw new Error("sw.js : l'empreinte n'a pas été posée.");
   await writeFile(join(SORTIE, "sw.js"), worker);

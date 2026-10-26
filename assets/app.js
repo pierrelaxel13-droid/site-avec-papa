@@ -253,8 +253,14 @@
         }
         racine.setAttribute("data-vue", "une");
         retour.hidden = false;
-        if (choisi.cible === choisi.sec) window.scrollTo({ top: 0, left: 0, behavior: "instant" });
-        else choisi.cible.scrollIntoView({ block: "start" });
+        /* Le navigateur peut encore descendre vers l'ancre juste après nous :
+           on remet en haut tout de suite, puis à l'image suivante. */
+        var placer = function () {
+          if (choisi.cible === choisi.sec) window.scrollTo({ top: 0, left: 0, behavior: "instant" });
+          else choisi.cible.scrollIntoView({ block: "start" });
+        };
+        placer();
+        requestAnimationFrame(placer);
       } else {
         racine.setAttribute("data-vue", champ && champ.value.trim() ? "recherche" : "categories");
         retour.hidden = true;
@@ -272,6 +278,13 @@
       afficher();
     });
     window.addEventListener("hashchange", afficher);
+    /* Arrivée directe sur une catégorie : le navigateur descend tout seul
+       jusqu'à l'ancre après le chargement, et le bouton « Toutes les
+       catégories » passe sous le bandeau. On remet la page en haut, après lui. */
+    window.addEventListener("load", function () {
+      if (racine.getAttribute("data-vue") !== "une") return;
+      requestAnimationFrame(function () { afficher(); });
+    });
     if (champ) {
       champ.addEventListener("input", function () {
         if (racine.getAttribute("data-vue") !== "une") afficher();
