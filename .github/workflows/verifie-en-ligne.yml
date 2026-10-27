@@ -1,8 +1,8 @@
 # ==========================================================================
 # Le site publié est-il bien celui qu'on a poussé — et répond-il correctement ?
 # --------------------------------------------------------------------------
-# L'environnement de développement n'atteint pas netlify.app : sa politique
-# réseau le refuse. Personne ne peut donc y ouvrir le site pour vérifier.
+# L'environnement de développement n'atteint pas le site en ligne : sa
+# politique réseau le refuse. Personne ne peut donc y ouvrir le site pour vérifier.
 # Les machines de GitHub, elles, ont un accès libre. Cette action est donc le
 # seul endroit d'où l'on puisse constater ce qui est réellement en ligne, et
 # elle le dit en annotations, lisibles sans ouvrir le journal.
@@ -12,8 +12,10 @@
 name: Vérifier le site en ligne
 
 on:
-  push:
-    branches: [main]
+  # Après chaque publication (code ou relève), et quatre fois par jour.
+  workflow_run:
+    workflows: ["Publier le site"]
+    types: [completed]
   schedule:
     - cron: "23 */6 * * *"   # quatre fois par jour, pour attraper aussi les
                              # relèves, qui ne déclenchent pas « push »
@@ -26,8 +28,10 @@ concurrency:
   group: verifie-en-ligne
   cancel-in-progress: true
 
+# Depuis le 27 octobre 2026, le site est publié par GitHub Pages
+# (.github/workflows/publie.yml) : le quota de Netlify était épuisé.
 env:
-  SITE: https://adorable-marigold-fd062f.netlify.app
+  SITE: https://pierrelaxel13-droid.github.io/site-avec-papa
 
 jobs:
   verifier:
@@ -35,14 +39,14 @@ jobs:
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
 
-      # Netlify met une à deux minutes à publier. On attend que version.txt
-      # porte le commit attendu, sans dépasser six minutes : au-delà, soit la
-      # construction a échoué, soit elle n'a jamais été déclenchée, et dans les
-      # deux cas il faut le dire.
+      # On compare version.txt au dernier commit de main. La publication vient
+      # de finir, mais le cache de GitHub Pages peut garder l'ancienne version
+      # quelques minutes : on attend, sans dépasser six minutes.
       - name: Le site en ligne est-il à jour
         id: version
         run: |
-          attendu="${{ github.sha }}"
+          git fetch -q origin main
+          attendu=$(git rev-parse origin/main)
           echo "commit attendu : $attendu"
           for i in $(seq 1 24); do
             enligne=$(curl -sS --max-time 20 "$SITE/version.txt" | head -1 || true)
@@ -51,12 +55,11 @@ jobs:
             sleep 15
           done
           echo "a_jour=non" >> "$GITHUB_OUTPUT"
-          echo "::error::Six minutes après l'envoi, $SITE sert encore « ${enligne:-rien} » au lieu de $attendu. La construction Netlify a échoué, ou elle n'a pas été déclenchée."
+          echo "::error::Six minutes après l'envoi, $SITE sert encore « ${enligne:-rien} » au lieu de $attendu. La publication (« Publier le site ») a échoué, ou elle n'a pas été déclenchée."
           exit 1
 
       # Le site peut être à jour et mal servi. On regarde donc ce que valent
-      # quelques pages, et si les en-têtes de sécurité de netlify.toml sont
-      # bien là — ils ne servent à rien s'ils ne sortent pas du serveur.
+      # quelques pages, et si la politique de sécurité est bien dans les pages.
       - name: Les pages répondent-elles
         if: always() && steps.version.outputs.a_jour == 'oui'
         run: |
@@ -71,35 +74,26 @@ jobs:
           done
           exit $faute
 
-      - name: Les en-têtes de sécurité sortent-ils bien
+      # GitHub Pages n'envoie pas d'en-têtes choisis : la politique est écrite
+      # dans chaque page (balise meta, posée par build.mjs).
+      - name: La politique de sécurité est-elle dans les pages
         if: always() && steps.version.outputs.a_jour == 'oui'
         run: |
-          entetes=$(curl -sSI --max-time 30 "$SITE/app/index.html" | tr 'A-Z' 'a-z')
           faute=0
-          for e in content-security-policy strict-transport-security \
-                   x-content-type-options x-frame-options referrer-policy \
-                   permissions-policy cross-origin-opener-policy; do
-            if echo "$entetes" | grep -q "^$e:"; then echo "  ok      $e"
-            else echo "::error::en-tête absent : $e"; faute=1; fi
+          for p in / /app/index.html /le-site.html; do
+            csp=$(curl -sS --max-time 30 "$SITE$p" | grep -o '<meta http-equiv="Content-Security-Policy" content="[^"]*"' || true)
+            [ -n "$csp" ] || { echo "::error::$p n'a plus sa politique de sécurité"; faute=1; continue; }
+            # La règle qui compte : aucun script écrit dans le HTML.
+            case "$csp" in
+              *"script-src 'self';"*) echo "  ok      $p : script-src 'self'" ;;
+              *) echo "::error::$p — la politique ne porte plus script-src 'self' seul : $csp"; faute=1 ;;
+            esac
           done
-          # La règle qui compte : aucun script écrit dans le HTML.
-          csp=$(echo "$entetes" | grep "^content-security-policy:" || true)
-          case "$csp" in
-            *"script-src 'self'"*) echo "  ok      script-src 'self'" ;;
-            *) echo "::error::la politique ne porte plus script-src 'self' — $csp"; faute=1 ;;
-          esac
-          # On isole la directive des scripts : 'unsafe-inline' est légitime
-          # pour les styles, jamais pour les scripts.
-          scripts=$(echo "$csp" | tr ';' '\n' | grep -E "(^|[[:space:]])script-src" || true)
-          case "$scripts" in
-            *unsafe-inline*|*unsafe-eval*)
-              echo "::error::script-src accepte désormais $scripts — la politique ne protège plus rien"; faute=1 ;;
-          esac
           exit $faute
 
       - name: Ce qu'on a constaté
         if: always()
         run: |
           if [ "${{ steps.version.outputs.a_jour }}" = "oui" ]; then
-            echo "::notice::$SITE sert bien le commit ${{ github.sha }}."
+            echo "::notice::$SITE sert bien le dernier commit de main."
           fi

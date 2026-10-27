@@ -1,0 +1,72 @@
+# ==========================================================================
+# Pierrel & Co — la publication, par GitHub Pages
+# --------------------------------------------------------------------------
+# Le quota gratuit de Netlify s'est épuisé le 27 octobre 2026 : chaque envoi
+# sur main, relèves comprises, y coûtait une construction. GitHub Pages ne
+# compte rien pour un dépôt public. Le site est donc construit ici, par
+# build.mjs comme avant, et publié sur
+#   https://pierrelaxel13-droid.github.io/site-avec-papa/
+#
+# QUAND
+#   — à chaque envoi sur main (le code) ;
+#   — après chaque relève qui a réussi. Un commit poussé par le robot de
+#     relève ne déclenche pas « push » (GitHub l'interdit, pour éviter les
+#     boucles) : c'est la fin de la relève qui déclenche la publication ;
+#   — à la demande, depuis l'onglet Actions.
+#
+# UNE FOIS POUR TOUTES, à la main (le jeton du robot n'en a pas le droit) :
+#   Settings → Pages → Build and deployment → Source : « GitHub Actions ».
+# ==========================================================================
+name: Publier le site
+
+on:
+  push:
+    branches: [main]
+  workflow_run:
+    workflows: ["Relève"]
+    types: [completed]
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Une publication à la fois ; la plus récente gagne.
+concurrency:
+  group: publication
+  cancel-in-progress: true
+
+jobs:
+  construire:
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    steps:
+      # Toujours le dernier état de main : après une relève, c'est le commit
+      # qu'elle vient de pousser.
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          ref: main
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Construire
+        run: |
+          COMMIT_REF=$(git rev-parse HEAD) node build.mjs
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+  publier:
+    needs: construire
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.publication.outputs.page_url }}
+    steps:
+      - id: publication
+        uses: actions/deploy-pages@v4

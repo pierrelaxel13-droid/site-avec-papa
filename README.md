@@ -1,9 +1,11 @@
 # Pierrel & Co — veille réglementaire, secteur par secteur
 
-**En ligne : https://adorable-marigold-fd062f.netlify.app**
-Netlify construit depuis la branche `main` à chaque envoi ; une modification
-est publiée environ une minute plus tard. Le nom de domaine propre reste à
-brancher.
+**En ligne : https://pierrelaxel13-droid.github.io/site-avec-papa/**
+GitHub Pages publie la branche `main` à chaque envoi et après chaque relève
+(`.github/workflows/publie.yml`), environ deux minutes plus tard. L'ancienne
+adresse Netlify (https://adorable-marigold-fd062f.netlify.app) est figée au
+27 octobre 2026 : son quota gratuit de constructions était épuisé. Le nom de
+domaine propre reste à brancher.
 
 Site statique engendré, sans dépendance ni framework. La porte d'entrée est le
 **secteur** : une page par division de la nomenclature NAF, avec ce qui s'y

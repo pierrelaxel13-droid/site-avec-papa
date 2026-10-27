@@ -5,12 +5,17 @@ description: "Modifier et publier le site Pierrel & Co de ce dépôt (build.mjs,
 
 # Le site Pierrel & Co
 
-**En ligne : https://adorable-marigold-fd062f.netlify.app** — Netlify
-construit la branche `main` à chaque envoi, et publie environ une minute plus
-tard. Rien d'autre n'est à faire pour mettre à jour le site : pousser suffit.
-Cet environnement de développement n'atteint pas `netlify.app` ; la
-vérification se fait donc en servant `_site/` en local avec les en-têtes de
-`netlify.toml`, jamais en ouvrant l'adresse publique.
+**En ligne : https://pierrelaxel13-droid.github.io/site-avec-papa/** —
+GitHub Pages (`.github/workflows/publie.yml`) construit `main` à chaque envoi
+et après chaque relève, et publie environ deux minutes plus tard. Pousser
+suffit. Netlify n'est plus utilisé depuis le 27 octobre 2026 : son quota
+gratuit était épuisé (chaque relève y coûtait une construction), l'adresse
+netlify.app est figée. Le site vit dans un sous-dossier (`/site-avec-papa/`) :
+**aucun chemin absolu** (`href="/…"`), tout passe par `racine`. Pages
+n'envoie pas d'en-têtes : la politique de sécurité est aussi une balise meta
+(`POLITIQUE` dans build.mjs) — la garder alignée sur `netlify.toml`.
+Cet environnement n'atteint pas l'adresse publique ; on vérifie en servant
+`_site/` en local, et « Vérifier le site en ligne » constate ce qui est publié.
 
 Site statique **entièrement engendré** par `build.mjs`. Aucune dépendance,
 aucun framework, pas de `package.json`, et il n'en faut pas. **Ne jamais

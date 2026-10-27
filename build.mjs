@@ -197,6 +197,15 @@ function bandeInstallation(a) {
 }
 
 /* --- Gabarit commun ----------------------------------------------------------- */
+/* La politique de sécurité, écrite aussi dans chaque page. GitHub Pages, qui
+   publie le site depuis le 27 octobre 2026, ne sait pas envoyer d'en-têtes :
+   sans cette balise, la règle « aucun script écrit dans le HTML » tomberait.
+   C'est celle de netlify.toml, moins frame-ancestors, qu'une balise ne peut
+   pas porter (le navigateur l'ignore et le signale). */
+const POLITIQUE = "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; " +
+  "font-src 'self'; connect-src 'self'; manifest-src 'self'; worker-src 'self'; frame-src 'none'; object-src 'none'; " +
+  "base-uri 'none'; form-action 'self'; upgrade-insecure-requests";
+
 function page({ titre, description, racine = "", zone = "public", actif = "", corps,
                 attrsBody = "", verrou = false, donneesPlan = false, formule = "" }) {
   /* Les feuilles de style et les scripts portent la version de l'habillage :
@@ -225,6 +234,7 @@ function page({ titre, description, racine = "", zone = "public", actif = "", co
 <html lang="fr">
 <head>
 <meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="${POLITIQUE}">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>${esc(titre)}</title>
 <meta name="description" content="${esc(description)}">
