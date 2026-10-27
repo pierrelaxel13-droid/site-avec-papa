@@ -318,10 +318,12 @@ function dateDuTitre(titre) {
    le garde d'une relève à l'autre. */
 const AUJOURDHUI = new Date().toISOString().slice(0, 10);
 let DEJA_VUS = new Map();
+let AVANT = [];
 async function chargeDejaVus() {
   try {
     const avant = JSON.parse(await readFile(SORTIE, "utf8"));
-    DEJA_VUS = new Map((avant.textes || []).map((t) => [t.id, t.vuLe || t.date]));
+    AVANT = avant.textes || [];
+    DEJA_VUS = new Map(AVANT.map((t) => [t.id, t.vuLe || t.date]));
   } catch { /* première relève : rien à reprendre */ }
 }
 
@@ -688,6 +690,25 @@ async function main() {
     const cle = `${t.titre}|${t.dateTexte || t.vuLe}`;
     return vus.has(cle) ? false : (vus.add(cle), true);
   });
+
+  /* Une source qui a raté cette relève ne perd pas ses textes. Le 27 octobre
+     à 5 h, le Journal officiel a coupé la connexion deux fois de suite : la
+     relève a réécrit le fichier sans lui, et 130 textes ont disparu du site
+     jusqu'à l'heure suivante. On reprend donc, pour chaque source muette, ses
+     textes de la relève précédente encore dans la fenêtre — et le rapport le
+     dit, la source reste signalée muette. */
+  const muettes = new Set(rapport.filter((r) => r.souci).map((r) => r.id));
+  for (const r of rapport) {
+    if (!r.souci) continue;
+    const repris = AVANT.filter((t) => t.source === r.id && (t.vuLe || t.date) >= depuis)
+      .filter((t) => { const cle = `${t.titre}|${t.dateTexte || t.vuLe}`; return vus.has(cle) ? false : (vus.add(cle), true); });
+    if (!repris.length) continue;
+    propres.push(...repris);
+    r.repris = repris.length;
+    r.souci += ` — ${repris.length} texte${repris.length > 1 ? "s" : ""} de la relève précédente conservé${repris.length > 1 ? "s" : ""}`;
+    console.log(`  ${r.id.padEnd(16)} muette : ${repris.length} textes de la relève précédente conservés`);
+  }
+  if (muettes.size) propres.sort((a, b) => (a.vuLe < b.vuLe ? 1 : (a.vuLe > b.vuLe ? -1 : (a.titre < b.titre ? -1 : 1))));
 
   await writeFile(SORTIE, JSON.stringify({
     licence: "Textes officiels de la République française — Licence Ouverte. " +
