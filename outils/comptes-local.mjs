@@ -6,7 +6,9 @@
    stockage KV (en mémoire) et un faux Stripe :
      - le paiement « cs_test_paye » est un abonnement « Textes et suivi »
        payé par client@exemple.fr ;
-     - /__abo?montant=8000&statut=active règle l'abonnement de ce client.
+     - /__abo?montant=8000&statut=active règle l'abonnement de ce client ;
+     - l'administrateur est admin@exemple.fr ; les courriels ne partent pas,
+       /__courriels les montre (le lien « nouveau mot de passe » y est).
    Usage :
      node build.mjs
      node outils/comptes-local.mjs 8820
@@ -23,26 +25,33 @@ const PORT = Number(process.argv[2] || 8820);
 // Les fonctions, recopiées en .mjs avec le chemin du serveur rendu absolu.
 async function charge(rel) {
   const src = (await readFile(join(DEPOT, "functions", rel), "utf8"))
-    .replace(/"\.\.\/\.\.\/serveur\/compte\.mjs"/g, JSON.stringify(join(DEPOT, "serveur/compte.mjs")));
+    .replace(/"(\.\.\/)+serveur\/compte\.mjs"/g, JSON.stringify(join(DEPOT, "serveur/compte.mjs")));
   const f = join(ICI, "fn", rel.replace(/\.js$/, ".mjs"));
   await mkdir(dirname(f), { recursive: true }); await writeFile(f, src);
   return import(f + "?t=" + Date.now());
 }
 const routes = {
   "/api/connexion": await charge("api/connexion.js"), "/api/deconnexion": await charge("api/deconnexion.js"),
-  "/api/moi": await charge("api/moi.js"), "/api/bienvenue": await charge("api/bienvenue.js")
+  "/api/moi": await charge("api/moi.js"), "/api/bienvenue": await charge("api/bienvenue.js"),
+  "/api/oubli": await charge("api/oubli.js"), "/api/nouveau": await charge("api/nouveau.js"),
+  "/api/admin/comptes": await charge("api/admin/comptes.js")
 };
 const porte = await charge("app/_middleware.js");
 
 // Faux KV
 const kv = new Map();
-const env = { STRIPE_SECRET: "rk_test_faux", COMPTES: {
-  get: async (k) => kv.has(k) ? kv.get(k) : null, put: async (k, v) => { kv.set(k, v); }, delete: async (k) => { kv.delete(k); } } };
+const env = { STRIPE_SECRET: "rk_test_faux", ADMIN_COURRIEL: "admin@exemple.fr", BREVO_API_KEY: "faux", EXPEDITEUR: "contact@exemple.fr",
+  COMPTES: {
+    get: async (k) => kv.has(k) ? kv.get(k) : null, put: async (k, v) => { kv.set(k, v); }, delete: async (k) => { kv.delete(k); },
+    list: async ({ prefix }) => ({ keys: [...kv.keys()].filter((k) => k.startsWith(prefix)).map((name) => ({ name })), list_complete: true }) } };
+// Les courriels « envoyés » : /__courriels les montre.
+const courriels = [];
 // Faux Stripe : l'abonnement de cus_1 est réglable par /__abo?montant=
 let montantAbo = 5500, statutAbo = "active";
 const vraiFetch = globalThis.fetch;
 globalThis.fetch = async (url, opts) => {
   const u = String(url);
+  if (u === "https://api.brevo.com/v3/smtp/email") { courriels.push(JSON.parse(opts.body)); return new Response("{}", { status: 201 }); }
   if (!u.startsWith("https://api.stripe.com/")) return vraiFetch(url, opts);
   const rep = (o, s = 200) => new Response(JSON.stringify(o), { status: s, headers: { "Content-Type": "application/json" } });
   if (u.includes("/checkout/sessions/cs_test_paye")) return rep({ mode: "subscription", status: "complete", payment_status: "paid",
@@ -62,6 +71,7 @@ async function statique(chemin) {
 
 createServer(async (req, res) => {
   const url = new URL(req.url, `http://localhost:${PORT}`);
+  if (url.pathname === "/__courriels") { res.writeHead(200, { "Content-Type": "application/json" }); res.end(JSON.stringify(courriels)); return; }
   if (url.pathname === "/__abo") { montantAbo = Number(url.searchParams.get("montant")); statutAbo = url.searchParams.get("statut") || "active"; res.end("ok"); return; }
   const corps = await new Promise((ok) => { const b = []; req.on("data", (c) => b.push(c)); req.on("end", () => ok(Buffer.concat(b))); });
   const requete = new Request(url, { method: req.method, headers: req.headers, body: ["GET", "HEAD"].includes(req.method) ? undefined : corps });

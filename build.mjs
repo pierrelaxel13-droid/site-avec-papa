@@ -3431,8 +3431,7 @@ function pageConnexion() {
         </p>
         <p class="etat-compte" id="etat-connexion" role="status"></p>
         <p style="margin-top:var(--t3)">
-          <a href="mailto:${esc(SITE.courriel)}?subject=Mot de passe oublié">Mot de passe oublié</a> :
-          écrivez-nous, on vous répond dans la journée.
+          <a href="compte/oubli.html">Mot de passe oublié ?</a>
         </p>
       </form>
     </div>
@@ -3493,6 +3492,108 @@ function pageBienvenue() {
     titre: `Bienvenue | ${SITE.nom}`, description: "Créer votre compte après votre abonnement.",
     racine: "../", zone: "public", corps, scripts: ["assets/compte.js"]
   });
+}
+
+/* Mot de passe oublié : on reçoit un lien par courriel. C'est aussi par là
+   que l'administrateur choisit le sien. */
+function pageOubli() {
+  const corps = `
+<section class="heros heros-court">
+  <div class="enveloppe">
+    <div class="heros-texte"><h1>Mot de passe oublié</h1></div>
+    <p class="heros-sous">Entrez votre adresse : vous recevez un lien pour en choisir un nouveau, valable une heure.</p>
+  </div>
+</section>
+<section class="section">
+  <div class="enveloppe">
+    <div class="connexion connexion-seule">
+      <form class="carte-connexion" id="form-oubli" novalidate>
+        <h2>Recevoir un lien</h2>
+        <div class="champ">
+          <label for="o-courriel">Adresse électronique</label>
+          <input type="email" id="o-courriel" autocomplete="username" inputmode="email" spellcheck="false" required>
+        </div>
+        <p class="rangee" style="margin-top:var(--t4)">
+          <button type="submit" class="bouton bouton-accent bouton-large">Envoyer le lien</button>
+        </p>
+        <p class="etat-compte" id="etat-oubli" role="status"></p>
+        <p style="margin-top:var(--t3)"><a href="../connexion.html">Revenir à la connexion</a></p>
+      </form>
+    </div>
+  </div>
+</section>`;
+  return page({ titre: `Mot de passe oublié | ${SITE.nom}`, description: "Recevoir un lien pour choisir un nouveau mot de passe.",
+    racine: "../", zone: "public", corps, scripts: ["assets/compte.js"] });
+}
+
+/* Le lien reçu par courriel : choisir le nouveau mot de passe. */
+function pageNouveau() {
+  const corps = `
+<section class="heros heros-court">
+  <div class="enveloppe">
+    <div class="heros-texte"><h1>Nouveau mot de passe</h1></div>
+  </div>
+</section>
+<section class="section">
+  <div class="enveloppe">
+    <div class="connexion connexion-seule">
+      <form class="carte-connexion" id="form-nouveau" novalidate>
+        <h2 id="titre-nouveau">Choisir votre mot de passe</h2>
+        <p class="etat-compte" id="etat-nouveau" role="status">Vérification du lien…</p>
+        <div id="nouveau-champs" hidden>
+          <div class="champ">
+            <label for="n-courriel">Adresse électronique</label>
+            <input type="email" id="n-courriel" autocomplete="username" readonly>
+          </div>
+          <div class="champ">
+            <label for="n-motdepasse">Nouveau mot de passe <span class="aide">au moins 10 caractères</span></label>
+            <input type="password" id="n-motdepasse" autocomplete="new-password" minlength="10" required>
+          </div>
+          <div class="champ">
+            <label for="n-confirme">Le même, une seconde fois</label>
+            <input type="password" id="n-confirme" autocomplete="new-password" minlength="10" required>
+          </div>
+          <p class="rangee" style="margin-top:var(--t4)">
+            <button type="submit" class="bouton bouton-accent bouton-large">Enregistrer</button>
+          </p>
+        </div>
+        <p style="margin-top:var(--t3)"><a href="oubli.html">Demander un nouveau lien</a></p>
+      </form>
+    </div>
+  </div>
+</section>`;
+  return page({ titre: `Nouveau mot de passe | ${SITE.nom}`, description: "Choisir un nouveau mot de passe.",
+    racine: "../", zone: "public", corps, scripts: ["assets/compte.js"] });
+}
+
+/* L'administration : la liste des comptes, pour l'administrateur seul (le
+   serveur refuse les données à tout autre). */
+function pageAdmin() {
+  const corps = `
+<section class="heros heros-court">
+  <div class="enveloppe">
+    <div class="heros-texte"><h1>Administration</h1></div>
+    <p class="heros-sous" id="admin-etat">Chargement…</p>
+    <p class="rangee rangee-centre" id="admin-actions" hidden>
+      <a class="bouton bouton-accent" href="../app/">Ouvrir l'application</a>
+      <a class="bouton bouton-sobre" href="https://dashboard.stripe.com/subscriptions" target="_blank" rel="noopener">Les abonnements, chez Stripe</a>
+      <a class="bouton bouton-sobre" href="../api/deconnexion">Se déconnecter</a>
+    </p>
+  </div>
+</section>
+<section class="section" id="admin-liste" hidden>
+  <div class="enveloppe">
+    <h2 class="titre-section">Les comptes</h2>
+    <div class="tableau-defile">
+      <table class="tableau-admin">
+        <thead><tr><th scope="col">Adresse</th><th scope="col">Créé le</th><th scope="col">Chez Stripe</th><th scope="col">Mot de passe</th></tr></thead>
+        <tbody id="admin-comptes"></tbody>
+      </table>
+    </div>
+  </div>
+</section>`;
+  return page({ titre: `Administration | ${SITE.nom}`, description: "Administration des comptes.",
+    racine: "../", zone: "public", corps, scripts: ["assets/compte.js"] });
 }
 
 /* Un écran que la formule du compte n'ouvre pas : laquelle il faut. */
@@ -3766,7 +3867,8 @@ function entetesCloudflare() {
   if (!lignes.some((l) => l.includes("Content-Security-Policy"))) throw new Error("_headers : la politique de sécurité n'a pas été lue dans netlify.toml.");
   return ["/*", ...lignes, "", "/assets/polices/*", "  Cache-Control: public, max-age=31536000, immutable", "",
     "/app/*", "  Cache-Control: private, no-store", "  X-Robots-Tag: noindex", "",
-    "/demo/*", "  X-Robots-Tag: noindex", ""].join("\n");
+    "/demo/*", "  X-Robots-Tag: noindex", "",
+    "/compte/*", "  X-Robots-Tag: noindex", "  Cache-Control: no-store", ""].join("\n");
 }
 
 async function main() {
@@ -3900,6 +4002,9 @@ async function main() {
   await mkdir(join(SORTIE, "compte"), { recursive: true });
   await writeFile(join(SORTIE, "compte", "bienvenue.html"), pageBienvenue());
   await writeFile(join(SORTIE, "compte", "formule.html"), pageFormuleManquante());
+  await writeFile(join(SORTIE, "compte", "oubli.html"), pageOubli());
+  await writeFile(join(SORTIE, "compte", "nouveau.html"), pageNouveau());
+  await writeFile(join(SORTIE, "compte", "admin.html"), pageAdmin());
 
   await writeFile(join(SORTIE, "app", "index.html"), appTableauBord(V, D, C, LIENS));
   await writeFile(join(SORTIE, "app", "plan.html"), appPlan(V, D, C, LIENS));

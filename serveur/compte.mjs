@@ -26,7 +26,17 @@
    LES SECRETS (variables de l'environnement Cloudflare, jamais dans le dépôt)
      STRIPE_SECRET   clé Stripe restreinte, en lecture seule : Checkout
                      Sessions, Customers, Subscriptions
+     ADMIN_COURRIEL  l'adresse de l'administrateur. Ce compte ouvre tout, sans
+                     abonnement, et voit la liste des comptes. Son mot de passe
+                     se choisit par le lien « mot de passe oublié » : il n'est
+                     écrit nulle part.
+     BREVO_API_KEY   la clé de Brevo, qui envoie les courriels
+     EXPEDITEUR      l'adresse qui les envoie (vérifiée chez Brevo)
      SECRET_SESSION  facultatif (sinon tiré au hasard et gardé dans KV)
+
+   LES LIENS PAR COURRIEL
+     reinit:<jeton>  l'adresse à qui il appartient ; valable une heure, une fois.
+     oubli:<adresse> le nombre de liens demandés dans l'heure (trois au plus).
    ========================================================================== */
 
 /* Mêmes clés, rangs et montants que FORMULES dans build.mjs, qui le vérifie. */
@@ -238,3 +248,51 @@ export async function noteEssai(env, adresse) {
   await env.COMPTES.put(`essais:${adresse}`, String(n), { expirationTtl: 900 });
 }
 export const oublieEssais = (env, adresse) => env.COMPTES.delete(`essais:${adresse}`);
+
+/* --- L'administrateur -------------------------------------------------------- */
+export const estAdmin = (env, adresse) =>
+  !!env.ADMIN_COURRIEL && normaliseAdresse(env.ADMIN_COURRIEL) === normaliseAdresse(adresse);
+/* L'administrateur a tout, sans passer par Stripe. */
+export const CLIENT_ADMIN = "admin";
+
+/* --- Les liens « nouveau mot de passe » ---------------------------------------- */
+export async function creeJeton(env, adresse) {
+  const jeton = hex(crypto.getRandomValues(new Uint8Array(32)));
+  await env.COMPTES.put(`reinit:${jeton}`, adresse, { expirationTtl: 3600 });
+  return jeton;
+}
+export const lireJeton = (env, jeton) =>
+  /^[0-9a-f]{64}$/.test(String(jeton || "")) ? env.COMPTES.get(`reinit:${jeton}`) : Promise.resolve(null);
+export const effaceJeton = (env, jeton) => env.COMPTES.delete(`reinit:${jeton}`);
+
+export async function tropDeLiens(env, adresse) {
+  const n = (Number(await env.COMPTES.get(`oubli:${adresse}`)) || 0) + 1;
+  await env.COMPTES.put(`oubli:${adresse}`, String(n), { expirationTtl: 3600 });
+  return n > 3;
+}
+
+/* --- Les courriels (Brevo) ----------------------------------------------------- */
+export const courrielPossible = (env) => !!(env.BREVO_API_KEY && env.EXPEDITEUR);
+
+export async function envoieCourriel(env, { a, sujet, texte, lien, bouton }) {
+  if (!courrielPossible(env)) throw new Error("Courriel non configuré");
+  const echappe = (t) => String(t).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
+  const html = `<div style="font-family:Arial,sans-serif;font-size:16px;line-height:1.5;color:#14142A;max-width:520px">
+<p style="font-weight:bold;font-size:18px">Pierrel &amp; Co</p>
+${texte.split("\n\n").map((p) => `<p>${echappe(p)}</p>`).join("")}
+${lien ? `<p><a href="${echappe(lien)}" style="display:inline-block;background:#4A2BE8;color:#fff;padding:12px 20px;border-radius:999px;text-decoration:none">${echappe(bouton || "Ouvrir")}</a></p>
+<p style="font-size:13px;color:#555">Si le bouton ne marche pas, copiez cette adresse : ${echappe(lien)}</p>` : ""}
+</div>`;
+  const r = await fetch("https://api.brevo.com/v3/smtp/email", {
+    method: "POST",
+    headers: { "api-key": env.BREVO_API_KEY, "Content-Type": "application/json", Accept: "application/json" },
+    body: JSON.stringify({
+      sender: { name: "Pierrel & Co", email: env.EXPEDITEUR },
+      to: [{ email: a }],
+      subject: sujet,
+      textContent: texte + (lien ? `\n\n${lien}` : ""),
+      htmlContent: html
+    })
+  });
+  if (!r.ok) throw new Error(`Brevo ${r.status}`);
+}

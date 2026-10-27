@@ -63,6 +63,11 @@
         var sortie = document.createElement("a");
         sortie.href = api("deconnexion"); sortie.textContent = "Se déconnecter";
         deja.appendChild(t); deja.appendChild(lien);
+        if (m.admin) {
+          var adm = document.createElement("a");
+          adm.href = racine + "compte/admin.html"; adm.textContent = "Administration";
+          deja.appendChild(document.createTextNode(" · ")); deja.appendChild(adm);
+        }
         deja.appendChild(document.createTextNode(" · ")); deja.appendChild(sortie);
         deja.hidden = false;
       }
@@ -136,6 +141,113 @@
         dire(r.erreur || "Le compte n'a pas pu être créé. Réessayez.");
       }).catch(function () { dire("Le serveur ne répond pas. Réessayez dans un instant."); });
     });
+  }
+
+  /* --- Mot de passe oublié : recevoir un lien --------------------------------- */
+  var fo = $("#form-oubli");
+  if (fo) {
+    var etatO = $("#etat-oubli");
+    fo.addEventListener("submit", function (e) {
+      e.preventDefault();
+      var adresse = $("#o-courriel").value.trim();
+      if (!adresse) { etatO.textContent = "Entrez votre adresse électronique."; return; }
+      etatO.textContent = "Envoi…";
+      envoie("oubli", { courriel: adresse }).then(function (r) {
+        if (r.statut === 404 || r.statut === 405) {
+          etatO.textContent = "Les comptes ne sont pas encore ouverts sur cette adresse. Écrivez-nous.";
+          return;
+        }
+        etatO.textContent = r.message || r.erreur || "La demande n'a pas abouti. Réessayez.";
+      }).catch(function () { etatO.textContent = "Le serveur ne répond pas. Réessayez dans un instant."; });
+    });
+  }
+
+  /* --- Le lien reçu par courriel : choisir le mot de passe -------------------- */
+  var fn = $("#form-nouveau");
+  if (fn) {
+    var etatN = $("#etat-nouveau");
+    var jeton = new URLSearchParams(window.location.search).get("jeton") || "";
+    var direN = function (t) { etatN.textContent = t; };
+    if (!jeton) direN("Ce lien est incomplet. Demandez-en un nouveau.");
+    else {
+      fetch(api("nouveau") + "?jeton=" + encodeURIComponent(jeton), { credentials: "same-origin" })
+        .then(function (r) {
+          if (r.status === 404 || r.status === 405) return { absent: true };
+          return r.json().catch(function () { return {}; });
+        })
+        .then(function (j) {
+          if (j.absent) { direN("Les comptes ne sont pas encore ouverts sur cette adresse."); return; }
+          if (j.erreur) { direN(j.erreur); return; }
+          direN("");
+          if (j.admin) $("#titre-nouveau").textContent = "Votre mot de passe administrateur";
+          $("#n-courriel").value = j.courriel;
+          $("#nouveau-champs").hidden = false;
+          $("#n-motdepasse").focus();
+        })
+        .catch(function () { direN("Le serveur ne répond pas. Réessayez dans un instant."); });
+    }
+    fn.addEventListener("submit", function (e) {
+      e.preventDefault();
+      var m1 = $("#n-motdepasse"), m2 = $("#n-confirme");
+      if (m1.value.length < 10) { direN("Le mot de passe doit faire au moins 10 caractères."); return; }
+      if (m1.value !== m2.value) { direN("Les deux mots de passe ne sont pas les mêmes."); return; }
+      direN("Enregistrement…");
+      envoie("nouveau", { jeton: jeton, motdepasse: m1.value }).then(function (r) {
+        m1.value = ""; m2.value = "";
+        if (r.ok && r.accueil) { window.location.href = vers(r.accueil); return; }
+        if (r.ok) { direN(r.message); $("#nouveau-champs").hidden = true; return; }
+        direN(r.erreur || "Le mot de passe n'a pas pu être changé.");
+      }).catch(function () { direN("Le serveur ne répond pas. Réessayez dans un instant."); });
+    });
+  }
+
+  /* --- Administration ------------------------------------------------------- */
+  var tbody = $("#admin-comptes");
+  if (tbody) {
+    var etatA = $("#admin-etat");
+    var cellule = function (tr, contenu) {
+      var td = document.createElement("td");
+      if (typeof contenu === "string") td.textContent = contenu; else if (contenu) td.appendChild(contenu);
+      tr.appendChild(td); return td;
+    };
+    fetch(api("admin/comptes"), { credentials: "same-origin" }).then(function (r) {
+      if (r.status === 404 || r.status === 405) return { absent: true };
+      return r.json().catch(function () { return {}; }).then(function (j) { j.statut = r.status; return j; });
+    }).then(function (j) {
+      if (j.absent) { etatA.textContent = "Les comptes ne sont pas encore ouverts sur cette adresse."; return; }
+      if (j.statut === 403) {
+        etatA.innerHTML = "";
+        etatA.appendChild(document.createTextNode("Réservé à l'administrateur. "));
+        var a = document.createElement("a"); a.href = racine + "connexion.html"; a.textContent = "Se connecter";
+        etatA.appendChild(a);
+        return;
+      }
+      var n = (j.comptes || []).length;
+      etatA.textContent = n + " compte" + (n > 1 ? "s" : "") + ". Les abonnements et les paiements se gèrent chez Stripe.";
+      $("#admin-actions").hidden = false;
+      $("#admin-liste").hidden = false;
+      (j.comptes || []).forEach(function (c) {
+        var tr = document.createElement("tr");
+        cellule(tr, c.courriel + (c.admin ? " (vous)" : ""));
+        cellule(tr, c.cree ? new Date(c.cree).toLocaleDateString("fr-FR") : "—");
+        if (c.client) {
+          var l = document.createElement("a");
+          l.href = "https://dashboard.stripe.com/customers/" + encodeURIComponent(c.client);
+          l.target = "_blank"; l.rel = "noopener"; l.textContent = "Voir le client";
+          cellule(tr, l);
+        } else cellule(tr, "—");
+        var b = document.createElement("button");
+        b.type = "button"; b.className = "lien-nu"; b.textContent = "Envoyer un lien";
+        b.addEventListener("click", function () {
+          b.disabled = true; b.textContent = "Envoi…";
+          envoie("oubli", { courriel: c.courriel }).then(function (r) {
+            b.textContent = r.ok ? "Lien envoyé" : (r.erreur || "Échec");
+          }).catch(function () { b.textContent = "Échec"; b.disabled = false; });
+        });
+        cellule(tr, b);
+        tbody.appendChild(tr);
+      });
+    }).catch(function () { etatA.textContent = "Le serveur ne répond pas."; });
   }
 
   /* --- La formule ne suffit pas ---------------------------------------------- */

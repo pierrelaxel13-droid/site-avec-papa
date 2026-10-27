@@ -12,6 +12,10 @@
 #   CLOUDFLARE_ACCOUNT_ID  l'identifiant du compte Cloudflare
 #   STRIPE_SECRET          une clé Stripe RESTREINTE, en lecture seule sur
 #                          Checkout Sessions, Customers et Subscriptions
+#   ADMIN_COURRIEL         l'adresse de l'administrateur (son mot de passe se
+#                          choisit ensuite par « Mot de passe oublié »)
+#   BREVO_API_KEY          la clé de Brevo, qui envoie les courriels
+#   EXPEDITEUR             l'adresse d'envoi, vérifiée chez Brevo
 # Tant que les deux premiers manquent, cette action ne fait rien et le dit.
 # Tout le reste (le projet Pages, le stockage des comptes) se crée tout seul.
 #
@@ -45,6 +49,9 @@ jobs:
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
       CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
       STRIPE_SECRET: ${{ secrets.STRIPE_SECRET }}
+      ADMIN_COURRIEL: ${{ secrets.ADMIN_COURRIEL }}
+      BREVO_API_KEY: ${{ secrets.BREVO_API_KEY }}
+      EXPEDITEUR: ${{ secrets.EXPEDITEUR }}
     steps:
       - name: Cloudflare est-il configuré
         id: pret
@@ -117,6 +124,18 @@ jobs:
             esac
             printf '%s' "$STRIPE_SECRET" | npx --yes $WRANGLER pages secret put STRIPE_SECRET --project-name "$PROJET"
           fi
+
+      - name: L'administrateur et les courriels
+        if: steps.pret.outputs.pret == 'oui'
+        run: |
+          for nom in ADMIN_COURRIEL BREVO_API_KEY EXPEDITEUR; do
+            valeur="${!nom}"
+            if [ -z "$valeur" ]; then
+              echo "::warning::$nom absent : $( [ $nom = ADMIN_COURRIEL ] && echo "pas de compte administrateur" || echo "pas de courriel (mot de passe oublié indisponible)" )."
+            else
+              printf '%s' "$valeur" | npx --yes $WRANGLER pages secret put "$nom" --project-name "$PROJET"
+            fi
+          done
 
       - name: Publier
         if: steps.pret.outputs.pret == 'oui'

@@ -4,7 +4,7 @@
    elle, vit sous /demo/ et reste ouverte à tous. */
 import {
   lireSession, aRevoir, formuleDuClient, cookiesSession, cookiesEffaces,
-  formuleExigee, rang, redirige
+  formuleExigee, rang, redirige, estAdmin, CLIENT_ADMIN
 } from "../../serveur/compte.mjs";
 
 export async function onRequest(ctx) {
@@ -13,9 +13,14 @@ export async function onRequest(ctx) {
   let session = await lireSession(ctx.request, ctx.env);
   if (!session) return redirige(`/connexion.html?retour=${retour}`);
 
+  // L'administrateur ne dépend d'aucun abonnement — tant que son adresse
+  // reste celle d'ADMIN_COURRIEL.
+  const admin = session.c === CLIENT_ADMIN;
+  if (admin && !estAdmin(ctx.env, session.e)) return redirige(`/connexion.html`, cookiesEffaces);
+
   // Toutes les six heures, on redemande à Stripe ce qui est payé.
   let cookies = [];
-  if (aRevoir(session)) {
+  if (!admin && aRevoir(session)) {
     try {
       const f = await formuleDuClient(ctx.env, session.c);
       if (!f) return redirige(`/connexion.html?fin=1`, cookiesEffaces);

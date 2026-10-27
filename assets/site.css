@@ -2946,3 +2946,11 @@ a.defile:hover .avis-appel strong { text-decoration: underline; text-underline-o
 /* Les messages des pages de compte (connexion, bienvenue). */
 .etat-compte { margin: var(--t3) 0 0; min-height: 1.5em; color: var(--encre); font-weight: 600; }
 .etat-compte:empty { display: none; }
+
+/* L'administration : un tableau simple, qui défile de côté au téléphone. */
+.tableau-defile { overflow-x: auto; margin-top: var(--t4); border: 1px solid var(--filet); border-radius: var(--r2); background: var(--carte); }
+.tableau-admin { width: 100%; border-collapse: collapse; font-size: .95rem; }
+.tableau-admin th, .tableau-admin td { padding: .75rem 1rem; text-align: left; border-bottom: 1px solid var(--filet); white-space: nowrap; }
+.tableau-admin th { font-size: .8rem; text-transform: uppercase; letter-spacing: .06em; color: var(--encre-douce); }
+.tableau-admin tr:last-child td { border-bottom: 0; }
+.tableau-admin .lien-nu { font: inherit; }

@@ -2,7 +2,7 @@
    Vérifie le mot de passe, puis demande à Stripe ce qui est payé. */
 import {
   lireJson, json, normaliseAdresse, lireCompte, verifieMotDePasse, empreinte, tropDEssais,
-  noteEssai, oublieEssais, formuleDuClient, cookiesSession, accueilDe
+  noteEssai, oublieEssais, formuleDuClient, cookiesSession, accueilDe, estAdmin, CLIENT_ADMIN
 } from "../../serveur/compte.mjs";
 
 export async function onRequestPost(ctx) {
@@ -23,6 +23,12 @@ export async function onRequestPost(ctx) {
     return json({ erreur: "Adresse ou mot de passe incorrect." }, 401);
   }
   await oublieEssais(ctx.env, adresse);
+
+  // L'administrateur a tout, sans abonnement.
+  if (estAdmin(ctx.env, adresse)) {
+    const cookies = await cookiesSession(ctx.env, { e: adresse, c: CLIENT_ADMIN, f: "complet" });
+    return json({ ok: true, formule: "complet", admin: true, accueil: "/compte/admin.html" }, 200, { "Set-Cookie": cookies });
+  }
 
   let formule;
   try { formule = await formuleDuClient(ctx.env, compte.client); }

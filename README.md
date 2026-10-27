@@ -59,12 +59,19 @@ tourne à côté des pages :
 La démonstration est copiée sous `/demo/`, ouverte à tous. Pour essayer tout
 ça sur un poste, sans Cloudflare ni Stripe : `node outils/comptes-local.mjs`.
 
-À faire une fois : un compte Cloudflare, puis trois secrets dans GitHub
-(`CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID`, `STRIPE_SECRET` — clé
-restreinte en lecture seule). Le détail est en tête de `cloudflare.yml`.
+À faire une fois : un compte Cloudflare et un compte Brevo, puis les secrets
+dans GitHub (`CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID`, `STRIPE_SECRET` —
+clé restreinte en lecture seule —, `ADMIN_COURRIEL`, `BREVO_API_KEY`,
+`EXPEDITEUR`). Le détail est en tête de `cloudflare.yml`.
 
-Pas encore fait : l'oubli de mot de passe (par courriel), et les données
-propres à chaque client — l'espace montre encore l'entreprise de démonstration.
+**L'administrateur** : son adresse est le secret `ADMIN_COURRIEL`. Il ouvre
+tout sans abonnement et voit la liste des comptes (`/compte/admin.html`). Son
+mot de passe n'est écrit nulle part : il le choisit par « Mot de passe
+oublié », comme un client qui a perdu le sien. Les courriels partent par
+Brevo (`BREVO_API_KEY`, `EXPEDITEUR`) ; le lien vaut une heure, une fois.
+
+Pas encore fait : les données propres à chaque client — l'espace montre encore
+l'entreprise de démonstration.
 
 ### Ouvrir l'abonnement payant
 
