@@ -14,7 +14,7 @@
    "id": "eurlex-l",
    "nom": "Journal officiel de l'Union européenne — série L",
    "entrees": 100,
-   "retenus": 21,
+   "retenus": 20,
    "souci": null
   },
   {
@@ -50,7 +50,7 @@
    "nom": "URSSAF — actualités employeurs",
    "entrees": 0,
    "retenus": 0,
-   "souci": "injoignable (fetch failed : UND_ERR_SOCKET) — l'hôte refuse le robot, ou le réseau d'ici le bloque"
+   "souci": "injoignable (fetch failed : ECONNRESET) — l'hôte refuse le robot, ou le réseau d'ici le bloque"
   },
   {
    "id": "bofip",
@@ -83,9 +83,9 @@
   {
    "id": "ecologie",
    "nom": "Ministère de la Transition écologique",
-   "entrees": 0,
+   "entrees": 10,
    "retenus": 0,
-   "souci": "injoignable (fetch failed : UND_ERR_CONNECT_TIMEOUT) — l'hôte refuse le robot, ou le réseau d'ici le bloque"
+   "souci": null
   },
   {
    "id": "ineris-aida",
@@ -160,7 +160,7 @@
   {
    "id": "ansm",
    "nom": "ANSM — actualités",
-   "entrees": 0,
+   "entrees": 1,
    "retenus": 0,
    "souci": null
   },
@@ -476,6 +476,121 @@
    "vuLe": "2026-10-26"
   },
   {
+   "source": "eurlex-l",
+   "sourceNom": "Journal officiel de l'Union européenne — série L",
+   "genre": "texte",
+   "id": "https://eur-lex.europa.eu/./legal-content/AUTO/?uri=CELEX:32026D2372",
+   "titre": "CELEX:32026D2372: Décision (PESC) 2026/2372 du Conseil du 26 octobre 2026 modifiant la décision 2010/788/PESC concernant des mesures restrictives en raison de la situation en République démocratique du Congo",
+   "nature": "Texte officiel",
+   "date": "2026-10-26",
+   "corps": "",
+   "lien": "https://eur-lex.europa.eu/./legal-content/AUTO/?uri=CELEX:32026D2372",
+   "domaines": [
+    {
+     "id": "douane",
+     "nom": "Douane et échanges internationaux",
+     "mots": [
+      "mesures restrictives"
+     ]
+    }
+   ],
+   "morceaux": 0,
+   "dateTexte": "2026-10-26",
+   "vuLe": "2026-10-26"
+  },
+  {
+   "source": "eurlex-l",
+   "sourceNom": "Journal officiel de l'Union européenne — série L",
+   "genre": "texte",
+   "id": "https://eur-lex.europa.eu/./legal-content/AUTO/?uri=CELEX:32026D2378",
+   "titre": "CELEX:32026D2378: Décision (PESC) 2026/2378 du Conseil du 26 octobre 2026 modifiant la décision (PESC) 2016/1693 concernant des mesures restrictives à l’encontre de l’EIIL (Daech) et d’Al-Qaida et de personnes, groupes, entreprises et entités associés",
+   "nature": "Texte officiel",
+   "date": "2026-10-26",
+   "corps": "",
+   "lien": "https://eur-lex.europa.eu/./legal-content/AUTO/?uri=CELEX:32026D2378",
+   "domaines": [
+    {
+     "id": "douane",
+     "nom": "Douane et échanges internationaux",
+     "mots": [
+      "mesures restrictives"
+     ]
+    }
+   ],
+   "morceaux": 0,
+   "dateTexte": "2026-10-26",
+   "vuLe": "2026-10-26"
+  },
+  {
+   "source": "eurlex-l",
+   "sourceNom": "Journal officiel de l'Union européenne — série L",
+   "genre": "texte",
+   "id": "https://eur-lex.europa.eu/./legal-content/AUTO/?uri=CELEX:32026D2397",
+   "titre": "CELEX:32026D2397: Décision (PESC) 2026/2397 du Conseil du 26 octobre 2026 modifiant la décision 2010/573/PESC concernant des mesures restrictives à l’encontre des dirigeants de la région de Transnistrie (République de Moldavie)",
+   "nature": "Texte officiel",
+   "date": "2026-10-26",
+   "corps": "",
+   "lien": "https://eur-lex.europa.eu/./legal-content/AUTO/?uri=CELEX:32026D2397",
+   "domaines": [
+    {
+     "id": "douane",
+     "nom": "Douane et échanges internationaux",
+     "mots": [
+      "mesures restrictives"
+     ]
+    }
+   ],
+   "morceaux": 0,
+   "dateTexte": "2026-10-26",
+   "vuLe": "2026-10-26"
+  },
+  {
+   "source": "eurlex-l",
+   "sourceNom": "Journal officiel de l'Union européenne — série L",
+   "genre": "texte",
+   "id": "https://eur-lex.europa.eu/./legal-content/AUTO/?uri=CELEX:32026R2359",
+   "titre": "CELEX:32026R2359: Règlement (UE) 2026/2359 du Parlement européen et du Conseil du 7 octobre 2026 modifiant le règlement (CE) n° 883/2004 portant sur la coordination des systèmes de sécurité sociale et le règlement (CE) n° 987/2009 fixant les modalités d’application du règlement (CE) n° 883/2004 (Texte présentant de l’intérêt pour l’EEE et pour la Suisse)",
+   "nature": "Texte officiel",
+   "date": "2026-10-26",
+   "corps": "",
+   "lien": "https://eur-lex.europa.eu/./legal-content/AUTO/?uri=CELEX:32026R2359",
+   "domaines": [
+    {
+     "id": "paie",
+     "nom": "Paie, cotisations et protection sociale",
+     "mots": [
+      "securite sociale"
+     ]
+    }
+   ],
+   "morceaux": 0,
+   "dateTexte": "2026-10-07",
+   "vuLe": "2026-10-26"
+  },
+  {
+   "source": "eurlex-l",
+   "sourceNom": "Journal officiel de l'Union européenne — série L",
+   "genre": "texte",
+   "id": "https://eur-lex.europa.eu/./legal-content/AUTO/?uri=CELEX:32026R2374",
+   "titre": "CELEX:32026R2374: Règlement (UE) 2026/2374 du Conseil du 26 octobre 2026 modifiant le règlement (CE) n° 1183/2005 concernant des mesures restrictives en raison de la situation en République démocratique du Congo",
+   "nature": "Texte officiel",
+   "date": "2026-10-26",
+   "corps": "",
+   "lien": "https://eur-lex.europa.eu/./legal-content/AUTO/?uri=CELEX:32026R2374",
+   "domaines": [
+    {
+     "id": "douane",
+     "nom": "Douane et échanges internationaux",
+     "mots": [
+      "mesures restrictives"
+     ]
+    }
+   ],
+   "morceaux": 0,
+   "dateTexte": "2026-10-26",
+   "vuLe": "2026-10-26"
+  },
+  {
    "source": "jorf",
    "sourceNom": "Journal officiel de la République française",
    "genre": "texte",
@@ -689,121 +804,6 @@
    ],
    "morceaux": 116,
    "dateTexte": "2020-12-14",
-   "vuLe": "2026-10-26"
-  },
-  {
-   "source": "eurlex-l",
-   "sourceNom": "Journal officiel de l'Union européenne — série L",
-   "genre": "texte",
-   "id": "https://eur-lex.europa.eu/./legal-content/AUTO/?uri=OJ:L_202602359",
-   "titre": "OJ:L_202602359: Règlement (UE) 2026/2359 du Parlement européen et du Conseil du 7 octobre 2026 modifiant le règlement (CE) n° 883/2004 portant sur la coordination des systèmes de sécurité sociale et le règlement (CE) n° 987/2009 fixant les modalités d’application du règlement (CE) n° 883/2004 (Texte présentant de l’intérêt pour l’EEE et pour la Suisse)",
-   "nature": "Texte officiel",
-   "date": "2026-10-26",
-   "corps": "",
-   "lien": "https://eur-lex.europa.eu/./legal-content/AUTO/?uri=OJ:L_202602359",
-   "domaines": [
-    {
-     "id": "paie",
-     "nom": "Paie, cotisations et protection sociale",
-     "mots": [
-      "securite sociale"
-     ]
-    }
-   ],
-   "morceaux": 0,
-   "dateTexte": "2026-10-07",
-   "vuLe": "2026-10-26"
-  },
-  {
-   "source": "eurlex-l",
-   "sourceNom": "Journal officiel de l'Union européenne — série L",
-   "genre": "texte",
-   "id": "https://eur-lex.europa.eu/./legal-content/AUTO/?uri=OJ:L_202602372",
-   "titre": "OJ:L_202602372: Décision (PESC) 2026/2372 du Conseil du 26 octobre 2026 modifiant la décision 2010/788/PESC concernant des mesures restrictives en raison de la situation en République démocratique du Congo",
-   "nature": "Texte officiel",
-   "date": "2026-10-26",
-   "corps": "",
-   "lien": "https://eur-lex.europa.eu/./legal-content/AUTO/?uri=OJ:L_202602372",
-   "domaines": [
-    {
-     "id": "douane",
-     "nom": "Douane et échanges internationaux",
-     "mots": [
-      "mesures restrictives"
-     ]
-    }
-   ],
-   "morceaux": 0,
-   "dateTexte": "2026-10-26",
-   "vuLe": "2026-10-26"
-  },
-  {
-   "source": "eurlex-l",
-   "sourceNom": "Journal officiel de l'Union européenne — série L",
-   "genre": "texte",
-   "id": "https://eur-lex.europa.eu/./legal-content/AUTO/?uri=OJ:L_202602374",
-   "titre": "OJ:L_202602374: Règlement (UE) 2026/2374 du Conseil du 26 octobre 2026 modifiant le règlement (CE) n° 1183/2005 concernant des mesures restrictives en raison de la situation en République démocratique du Congo",
-   "nature": "Texte officiel",
-   "date": "2026-10-26",
-   "corps": "",
-   "lien": "https://eur-lex.europa.eu/./legal-content/AUTO/?uri=OJ:L_202602374",
-   "domaines": [
-    {
-     "id": "douane",
-     "nom": "Douane et échanges internationaux",
-     "mots": [
-      "mesures restrictives"
-     ]
-    }
-   ],
-   "morceaux": 0,
-   "dateTexte": "2026-10-26",
-   "vuLe": "2026-10-26"
-  },
-  {
-   "source": "eurlex-l",
-   "sourceNom": "Journal officiel de l'Union européenne — série L",
-   "genre": "texte",
-   "id": "https://eur-lex.europa.eu/./legal-content/AUTO/?uri=OJ:L_202602378",
-   "titre": "OJ:L_202602378: Décision (PESC) 2026/2378 du Conseil du 26 octobre 2026 modifiant la décision (PESC) 2016/1693 concernant des mesures restrictives à l’encontre de l’EIIL (Daech) et d’Al-Qaida et de personnes, groupes, entreprises et entités associés",
-   "nature": "Texte officiel",
-   "date": "2026-10-26",
-   "corps": "",
-   "lien": "https://eur-lex.europa.eu/./legal-content/AUTO/?uri=OJ:L_202602378",
-   "domaines": [
-    {
-     "id": "douane",
-     "nom": "Douane et échanges internationaux",
-     "mots": [
-      "mesures restrictives"
-     ]
-    }
-   ],
-   "morceaux": 0,
-   "dateTexte": "2026-10-26",
-   "vuLe": "2026-10-26"
-  },
-  {
-   "source": "eurlex-l",
-   "sourceNom": "Journal officiel de l'Union européenne — série L",
-   "genre": "texte",
-   "id": "https://eur-lex.europa.eu/./legal-content/AUTO/?uri=OJ:L_202602397",
-   "titre": "OJ:L_202602397: Décision (PESC) 2026/2397 du Conseil du 26 octobre 2026 modifiant la décision 2010/573/PESC concernant des mesures restrictives à l’encontre des dirigeants de la région de Transnistrie (République de Moldavie)",
-   "nature": "Texte officiel",
-   "date": "2026-10-26",
-   "corps": "",
-   "lien": "https://eur-lex.europa.eu/./legal-content/AUTO/?uri=OJ:L_202602397",
-   "domaines": [
-    {
-     "id": "douane",
-     "nom": "Douane et échanges internationaux",
-     "mots": [
-      "mesures restrictives"
-     ]
-    }
-   ],
-   "morceaux": 0,
-   "dateTexte": "2026-10-26",
    "vuLe": "2026-10-26"
   },
   {
@@ -3637,29 +3637,6 @@
    ],
    "morceaux": 4,
    "dateTexte": "2026-07-21",
-   "vuLe": "2026-10-15"
-  },
-  {
-   "source": "eurlex-l",
-   "sourceNom": "Journal officiel de l'Union européenne — série L",
-   "genre": "texte",
-   "id": "https://eur-lex.europa.eu/./legal-content/AUTO/?uri=CELEX:32026R2270",
-   "titre": "CELEX:32026R2270: Règlement d’exécution (UE) 2026/2270 de la Commission du 15 octobre 2026 modifiant le règlement d’exécution (UE) 2025/2351 instituant une mesure de sauvegarde définitive à l’égard des importations de certains éléments de ferro-alliages",
-   "nature": "Texte officiel",
-   "date": "2026-10-15",
-   "corps": "",
-   "lien": "https://eur-lex.europa.eu/./legal-content/AUTO/?uri=CELEX:32026R2270",
-   "domaines": [
-    {
-     "id": "douane",
-     "nom": "Douane et échanges internationaux",
-     "mots": [
-      "importation"
-     ]
-    }
-   ],
-   "morceaux": 0,
-   "dateTexte": "2026-10-15",
    "vuLe": "2026-10-15"
   },
   {
