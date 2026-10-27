@@ -2853,7 +2853,7 @@ h2.titre-section + .vitrine { margin-top: clamp(2rem, 1.2rem + 3vw, 3.5rem); }
 .bande-avis {
   border-block: 1px solid var(--filet);
   background: var(--papier-pale);
-  padding-block: var(--t3);
+  padding-block: clamp(.9rem, .7rem + .8vw, 1.4rem);
 }
 .bande-avis-interieur { display: flex; align-items: center; gap: var(--t4); }
 .bande-avis-titre {
@@ -2872,12 +2872,20 @@ h2.titre-section + .vitrine { margin-top: clamp(2rem, 1.2rem + 3vw, 3.5rem); }
 .avis-item {
   display: inline-flex; align-items: baseline; gap: .5rem;
   padding-inline: 1.6rem; white-space: nowrap;
-  color: var(--encre-douce); font-size: 1rem;
+  color: var(--encre-douce); font-size: 1.05rem;
 }
 .avis-item + .avis-item::before, .defile-piste + .defile-piste .avis-item:first-child::before {
   content: "•"; margin-right: 1.6rem; margin-left: -1.6rem; color: var(--accent);
 }
 .avis-item strong, .avis-item q { color: var(--encre); }
+/* La bande entière ouvre le formulaire ; « Laisser votre avis » y est écrit
+   en couleur, en plus grand, et revient entre les avis. */
+a.defile { display: block; color: inherit; text-decoration: none; cursor: pointer; border-radius: var(--r1); }
+a.defile:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
+.avis-appel { font-size: 1.2rem; }
+.avis-appel strong { color: var(--accent); font-weight: 800; }
+a.defile:hover .avis-appel strong { text-decoration: underline; text-underline-offset: 3px; }
+.avis-appel .bulle { color: var(--accent); }
 .avis-qui { font-size: .92rem; }
 .etoiles { color: #E8A317; letter-spacing: .05em; }
 .bouton-avis { flex: none; min-height: 2.75rem; padding: .55rem 1.2rem; }

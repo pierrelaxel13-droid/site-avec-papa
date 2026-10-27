@@ -2373,21 +2373,28 @@ function questionsSimulateur(declencheurs) {
    pour boucler sans à-coup ; la copie est cachée aux lecteurs d'écran. */
 function bandeAvis(AVIS) {
   const etoiles = (n) => `<span class="etoiles" aria-label="${n} sur 5">${"★".repeat(n)}${"☆".repeat(5 - n)}</span>`;
+  /* « Laisser votre avis » est écrit dans la bande elle-même, et revient
+     entre les avis : c'est ce qui défile en premier. */
+  const appel = `<li class="avis-item avis-appel"><span class="bulle" aria-hidden="true">✎</span> <strong>Laisser votre avis</strong></li>`;
   const items = AVIS.length
-    ? AVIS.map((a) => `<li class="avis-item">${a.note ? etoiles(a.note) : ""}
+    ? AVIS.flatMap((a, k) => [`<li class="avis-item">${a.note ? etoiles(a.note) : ""}
         <q>${esc(a.texte)}</q>
-        <span class="avis-qui">— ${esc([a.nom, a.entreprise, a.ville].filter(Boolean).join(", "))}</span></li>`)
-    : [`<li class="avis-item"><strong>Aucun avis publié pour l'instant.</strong></li>`,
-       `<li class="avis-item">Vous êtes client ? Laissez votre avis : il paraîtra ici, avec votre accord.</li>`,
-       `<li class="avis-item">Seuls de vrais avis de clients sont publiés, tels qu'ils ont été écrits.</li>`];
+        <span class="avis-qui">— ${esc([a.nom, a.entreprise, a.ville].filter(Boolean).join(", "))}</span></li>`]
+        .concat(k % 3 === 2 || k === AVIS.length - 1 ? [appel] : []))
+    : [appel,
+       `<li class="avis-item">Vous êtes client ? Dites-nous ce que vous en pensez</li>`,
+       appel,
+       `<li class="avis-item">Votre avis paraîtra ici, avec votre accord</li>`,
+       appel,
+       `<li class="avis-item">Pas encore d'avis publié : soyez le premier</li>`];
   const piste = (cache) => `<ul class="defile-piste"${cache ? ' aria-hidden="true"' : ""}>${items.join("")}</ul>`;
   const sujet = encodeURIComponent(`Mon avis sur ${SITE.nom}`);
   return `<section class="bande-avis" aria-labelledby="titre-avis">
   <div class="enveloppe bande-avis-interieur">
     <h2 class="bande-avis-titre" id="titre-avis">${sigle}<span>Avis clients</span></h2>
-    <div class="defile">
+    <a class="defile" href="mailto:${esc(SITE.courriel)}?subject=${sujet}" data-avis>
       <div class="defile-rail" style="--duree:${Math.max(30, items.join("").replace(/<[^>]+>/g, "").length / 5).toFixed(0)}s">${piste(false)}${piste(true)}</div>
-    </div>
+    </a>
     <a class="bouton bouton-accent bouton-avis" href="mailto:${esc(SITE.courriel)}?subject=${sujet}" data-avis>Laisser votre avis</a>
   </div>
 </section>

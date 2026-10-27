@@ -457,19 +457,19 @@
      n'y a pas d'autre façon honnête de le recevoir. Sans JavaScript (ou sans
      <dialog>), le bouton reste un lien qui ouvre la messagerie. */
   function avis() {
-    var bouton = $("[data-avis]");
+    var boutons = $$("[data-avis]");   // le bouton, et la bande qui défile
     var d = $("#fenetre-avis");
     var f = $("#formulaire-avis");
-    if (!bouton || !d || !f || typeof d.showModal !== "function") return;
-    var adresse = bouton.getAttribute("href").replace(/^mailto:/, "").split("?")[0];
+    if (!boutons.length || !d || !f || typeof d.showModal !== "function") return;
+    var adresse = boutons[0].getAttribute("href").replace(/^mailto:/, "").split("?")[0];
     var erreur = $("#erreur-avis"), merci = $("#merci-avis");
-    bouton.addEventListener("click", function (e) {
+    boutons.forEach(function (bouton) { bouton.addEventListener("click", function (e) {
       e.preventDefault();
       erreur.hidden = true; merci.hidden = true;
       d.showModal();
       var premier = f.elements.nom;
       if (premier) premier.focus();
-    });
+    }); });
     $$("[data-fermer]", d).forEach(function (b) { b.addEventListener("click", function () { d.close(); }); });
     d.addEventListener("click", function (e) { if (e.target === d) d.close(); });
     f.addEventListener("submit", function (e) {
