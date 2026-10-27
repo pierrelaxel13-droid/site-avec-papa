@@ -208,7 +208,6 @@ function page({ titre, description, racine = "", zone = "public", actif = "", co
 
   const menuPublic = `
       ${lien("index.html", "Le produit", "produit")}
-      ${lien("decouvrir.html", "Comment ça marche", "decouvrir")}
       ${lien("abonnement.html", "S'abonner", "abonnement")}
       ${selecteurTheme}`;
 
@@ -254,7 +253,8 @@ ${zone === "app" ? '<meta name="robots" content="noindex">' : ""}
     <a class="marque" href="${a(zone === "app" ? "app/index.html" : "index.html")}">
       ${sigle}<span>Pierrel <span class="co">&amp; Co</span></span>
     </a>
-    ${zone === "public" ? `<a class="bouton bouton-bandeau" href="${a("connexion.html")}">Connexion</a>` : ""}
+    ${zone === "public" ? `<a class="bouton bouton-sobre bouton-bandeau" href="${a("decouvrir.html")}"${actif === "decouvrir" ? ' aria-current="page"' : ""}>Comment ça marche</a>
+    <a class="bouton bouton-bandeau" href="${a("connexion.html")}">Connexion</a>` : ""}
     ${zone === "app" ? `<div class="cloche-boite">
       <button type="button" class="cloche" id="cloche" aria-expanded="false" aria-controls="panneau-avis">
         <span class="cache-visuellement">Nouveaux textes</span>
@@ -2219,28 +2219,141 @@ function mobile(ECRANS, nom, alt) {
        </figure>`;
 }
 
-/* À côté d'une capture : le texte, puis un bouton qui déplie de quoi en savoir
-   plus, sur place. L'accueil sert à nous connaître et à connaître le site ; on
-   n'entre dans l'application que par « Connexion » ou « Démarrer un
-   abonnement ». Le panneau est un <details> : sans JavaScript, il s'ouvre et
-   se ferme pareil. Ses encarts vont par quatre, en deux et deux. */
-function vitrine(ECRANS, { image, alt, titre, texte, bouton = "", encarts = [] }) {
+/* À côté d'une capture : le texte, puis un bouton qui mène à une page à part.
+   « En savoir plus sur le site » ne déplie plus rien sur l'accueil : il ouvre
+   le-site.html, où il n'y a que ça (de même pour nous.html). L'accueil reste
+   court, et la page d'à côté se lit d'un bout à l'autre. */
+function vitrine(ECRANS, { image, alt, titre, texte, bouton = "", lien = "" }) {
   return `<article class="vitrine" data-paraitre>
   ${portable(ECRANS, image, alt)}
   <div class="vitrine-texte">
     <h2>${titre}</h2>
     <p>${texte}</p>
-    ${encarts.length ? `<details class="en-savoir-plus">
-      <summary class="bouton bouton-accent">${esc(bouton)}</summary>
-      <div class="infos-encarts">
-        ${encarts.map((e) => `<section class="info-encart">
-          <h3>${esc(e.titre)}</h3>
-          <ul>${e.lignes.map((l) => `<li>${l}</li>`).join("")}</ul>
-        </section>`).join("")}
-      </div>
-    </details>` : ""}
+    ${lien ? `<p class="rangee"><a class="bouton bouton-accent" href="${esc(lien)}">${esc(bouton)}</a></p>` : ""}
   </div>
 </article>`;
+}
+
+/* Les encarts des deux pages « En savoir plus ». Chaque chiffre vient des
+   données du dépôt. */
+function encartsDuSite(V, C, NAF, SOURCES) {
+  const confirmees = SOURCES.filter((x) => x.confirme);
+  const nArticles = C ? C.morceaux.reduce((n, m) => n + m.articles.length, 0) : 0;
+  return [
+    { titre: "D'où viennent les textes", lignes: [
+      `Relevés <strong>toutes les heures</strong>, automatiquement, sans que vous ayez rien à faire`,
+      `Sur <strong>${confirmees.length} sources officielles</strong> vérifiées, Journal officiel en tête : ${esc(
+        [...new Set(confirmees.map((x) => x.nom.split(" — ")[0]))].slice(1, 7).join(", "))}…`,
+      C ? `${C.codes.length} codes relus chaque jour, article par article (${esc(C.codes.map((c) => c.titre).join(", "))}) — ${nArticles.toLocaleString("fr-FR")} articles en tout`
+        : `Les codes consolidés, relus chaque jour`,
+      `Chaque texte garde sa source et le lien direct vers l'original : c'est la source qui fait foi`
+    ] },
+    { titre: "Ce que vous voyez pour chaque texte", lignes: [
+      `<strong>Ce que vous devez faire</strong>, en premier, en liste et en français courant`,
+      `Le <strong>texte entier</strong>, tel que publié, à côté de sa source — pas un résumé`,
+      `Sa date de parution, et la marque « Nouveau » tant que vous ne l'avez pas lu`,
+      `Un bouton <strong>Fait</strong> qui garde la date où vous l'avez traité`
+    ] },
+    { titre: "Seulement ce qui vous concerne", lignes: [
+      `${V.divisions.length} familles de métiers${NAF ? `, ${NAF.codes.length} codes APE` : ""} : vous choisissez le vôtre, le reste disparaît`,
+      `${Object.keys(V.domaines).length} sujets à suivre, rangés en cinq familles : santé et sécurité, hygiène, social, environnement, métier et gestion`,
+      `${V.declencheurs.length} questions simples (salariés, chantiers, produits chimiques…) ajoutent ce qui vient de votre façon de travailler`,
+      `Chaque sujet a son rythme de revue : chaque semaine, chaque mois ou chaque trimestre`
+    ] },
+    { titre: "Ce que vous gardez", lignes: [
+      `Un <strong>registre</strong> daté de chaque revue, décision et action, prêt pour l'auditeur`,
+      `Chaque fiche s'enregistre en PDF et s'imprime telle quelle`,
+      `L'application s'installe sur le téléphone et s'ouvre même sans réseau`,
+      `Vos réglages restent sur votre appareil : rien n'est envoyé ailleurs`
+    ] }
+  ];
+}
+
+function encartsDeNous() {
+  return [
+    { titre: "Le cabinet", lignes: [
+      `<strong>${esc(SITE.nom)}</strong>, conseil en organisation et conformité`,
+      `Installé à ${esc(SITE.ville)}`,
+      `Zone d'intervention : ${esc(SITE.zone)}`,
+      `Joignable au <a href="tel:${esc(SITE.telephoneLien)}">${esc(SITE.telephone)}</a> et à <a href="mailto:${esc(SITE.courriel)}">${esc(SITE.courriel)}</a>`
+    ] },
+    { titre: "Votre interlocuteur", lignes: [
+      `<strong>Clément Pierrel</strong>`,
+      `Un interlocuteur unique, pas un abonnement anonyme ni un centre d'appels`,
+      `Il connaît votre site, et il vient dessus`,
+      `Le premier échange, d'une heure, est sans engagement`
+    ] },
+    { titre: "Ce qu'on fait pour vous", lignes: [
+      `<strong>Le cadrage</strong> (${esc(FORMULES.cadrage.prix)}) : une demi-journée chez vous, puis le document écrit — ce qui s'applique, à quel rythme, et qui s'en occupe`,
+      `<strong>La veille tenue</strong> (${esc(FORMULES.veille.prix)}) : on vous prévient dès qu'un texte vous concerne, avec ce qu'il faut faire`,
+      `<strong>Les preuves</strong> (${esc(FORMULES.preuves.prix)}) : le registre, et une revue annuelle sur place`,
+      `Prix hors taxes, affichés sur la <a href="abonnement.html">page des tarifs</a>, sans devis`
+    ] },
+    { titre: "Les audits qu'on prépare", lignes: [
+      `<strong>ISO 14001</strong> (environnement) et <strong>ISO 45001</strong> (santé et sécurité)`,
+      `<strong>MASE</strong>, pour les entreprises qui interviennent chez des industriels`,
+      `<strong>Qualiopi</strong>, pour les organismes de formation`,
+      `On vous aide à tenir et à montrer votre veille ; la décision reste à l'auditeur`
+    ] }
+  ];
+}
+
+/* Une page « En savoir plus » : le titre, une phrase, les quatre encarts en
+   deux et deux, et de quoi continuer. Rien d'autre. */
+function pageInfos({ titre, h1, sous, encarts, suite }) {
+  const corps = `
+<section class="heros heros-court">
+  <div class="enveloppe">
+    <div class="heros-texte"><h1>${esc(h1)}</h1></div>
+    <p class="heros-sous">${sous}</p>
+  </div>
+</section>
+
+<section class="section">
+  <div class="enveloppe">
+    <div class="infos-encarts infos-page">
+      ${encarts.map((e) => `<section class="info-encart">
+        <h2>${esc(e.titre)}</h2>
+        <ul>${e.lignes.map((l) => `<li>${l}</li>`).join("")}</ul>
+      </section>`).join("")}
+    </div>
+    <p class="rangee rangee-centre" style="margin-top:var(--t6)">${suite}</p>
+  </div>
+</section>`;
+  return page({ titre: `${titre} | ${SITE.nom}`, description: sous.replace(/<[^>]+>/g, "").replace(/&amp;/g, "&"), zone: "public", corps });
+}
+
+/* Tous les métiers, rangés par grand secteur d'activité. Un clic choisit le
+   métier dans l'outil de l'accueil, qui dit tout de suite ce qui s'applique. */
+function pageMetiers(V, NAF) {
+  const groupes = V.sections.map((s) => ({ s, divisions: V.divisions.filter((d) => d.s === s.c) }))
+    .filter((g) => g.divisions.length);
+  const corps = `
+<section class="heros heros-court">
+  <div class="enveloppe">
+    <div class="heros-texte"><h1>Tous les métiers couverts</h1></div>
+    <p class="heros-sous">Les ${V.divisions.length} familles de métiers de la nomenclature officielle${NAF ? `
+      (${NAF.codes.length} codes APE)` : ""}. Cliquez la vôtre : vous voyez tout de suite ce qui s'applique chez vous.
+      Votre code APE (par exemple 43.21A) commence par le numéro de votre famille.</p>
+  </div>
+</section>
+
+<section class="section">
+  <div class="enveloppe">
+    ${groupes.map((g) => `<section class="groupe-metiers">
+      <h2><span class="lettre">${esc(g.s.c)}</span> ${esc(g.s.l)}</h2>
+      <ul class="puces">
+        ${g.divisions.map((d) => `<li><a href="index.html?q=${esc(d.c)}#simulateur" title="Voir ce qui s'applique : ${esc(d.l)}">
+          <span class="code">${esc(d.c)}</span><span class="nom">${esc(d.l)}</span></a></li>`).join("")}
+      </ul>
+    </section>`).join("\n")}
+  </div>
+</section>`;
+  return page({
+    titre: `Tous les métiers couverts | ${SITE.nom}`,
+    description: `Les ${V.divisions.length} familles de métiers couvertes par la veille, rangées par secteur d'activité.`,
+    zone: "public", corps
+  });
 }
 
 function questionsSimulateur(declencheurs) {
@@ -2250,11 +2363,78 @@ function questionsSimulateur(declencheurs) {
 </label>`).join("\n");
 }
 
+/* --- La barre des avis ---------------------------------------------------
+   Une bande qui défile sous le héros, avec « Laisser votre avis » à côté. On
+   n'y met que de vrais avis (contenu/temoignages.js), publiés avec l'accord
+   de leur auteur ; tant qu'il n'y en a pas, elle le dit et invite à laisser le
+   sien. Le bouton ouvre un petit formulaire qui prépare un courriel : sans
+   serveur, c'est la seule façon honnête de recevoir un avis. Sans JavaScript,
+   le bouton ouvre directement la messagerie. La piste est écrite deux fois
+   pour boucler sans à-coup ; la copie est cachée aux lecteurs d'écran. */
+function bandeAvis(AVIS) {
+  const etoiles = (n) => `<span class="etoiles" aria-label="${n} sur 5">${"★".repeat(n)}${"☆".repeat(5 - n)}</span>`;
+  const items = AVIS.length
+    ? AVIS.map((a) => `<li class="avis-item">${a.note ? etoiles(a.note) : ""}
+        <q>${esc(a.texte)}</q>
+        <span class="avis-qui">— ${esc([a.nom, a.entreprise, a.ville].filter(Boolean).join(", "))}</span></li>`)
+    : [`<li class="avis-item"><strong>Aucun avis publié pour l'instant.</strong></li>`,
+       `<li class="avis-item">Vous êtes client ? Laissez votre avis : il paraîtra ici, avec votre accord.</li>`,
+       `<li class="avis-item">Seuls de vrais avis de clients sont publiés, tels qu'ils ont été écrits.</li>`];
+  const piste = (cache) => `<ul class="defile-piste"${cache ? ' aria-hidden="true"' : ""}>${items.join("")}</ul>`;
+  const sujet = encodeURIComponent(`Mon avis sur ${SITE.nom}`);
+  return `<section class="bande-avis" aria-labelledby="titre-avis">
+  <div class="enveloppe bande-avis-interieur">
+    <h2 class="bande-avis-titre" id="titre-avis">${sigle}<span>Avis clients</span></h2>
+    <div class="defile">
+      <div class="defile-rail" style="--duree:${Math.max(30, items.join("").replace(/<[^>]+>/g, "").length / 5).toFixed(0)}s">${piste(false)}${piste(true)}</div>
+    </div>
+    <a class="bouton bouton-accent bouton-avis" href="mailto:${esc(SITE.courriel)}?subject=${sujet}" data-avis>Laisser votre avis</a>
+  </div>
+</section>
+
+<dialog class="fenetre-avis" id="fenetre-avis" aria-labelledby="titre-fenetre-avis">
+  <form class="formulaire-avis" id="formulaire-avis" method="dialog" novalidate>
+    <div class="fenetre-tete">
+      <h2 id="titre-fenetre-avis">Laisser votre avis</h2>
+      <button type="button" class="zoom-fermer" data-fermer>Fermer ✕</button>
+    </div>
+    <p class="aide-avis">Votre messagerie s'ouvre avec l'avis déjà écrit : il ne reste qu'à
+      l'envoyer. Il arrive à ${esc(SITE.courriel)} et n'est publié qu'avec votre accord.</p>
+    <fieldset class="note-avis">
+      <legend>Votre note</legend>
+      <div class="note-choix">
+        ${[5, 4, 3, 2, 1].map((n) => `<label><input type="radio" name="note" value="${n}"${n === 5 ? " checked" : ""}>
+          <span>${"★".repeat(n)}<span class="cache-visuellement"> ${n} sur 5</span></span></label>`).join("")}
+      </div>
+    </fieldset>
+    <div class="champs-avis">
+      <label>Votre nom <span class="aide">prénom et initiale</span>
+        <input type="text" name="nom" autocomplete="name" required maxlength="80"></label>
+      <label>Votre entreprise <span class="aide">facultatif</span>
+        <input type="text" name="entreprise" autocomplete="organization" maxlength="100"></label>
+      <label>Votre ville <span class="aide">facultatif</span>
+        <input type="text" name="ville" autocomplete="address-level2" maxlength="60"></label>
+    </div>
+    <label class="champ-texte-avis">Votre avis
+      <textarea name="texte" rows="5" required maxlength="1200"></textarea></label>
+    <label class="accord-avis"><input type="checkbox" name="accord" required>
+      <span>J'accepte que cet avis soit publié sur ce site, avec mon nom tel que je l'ai écrit.</span></label>
+    <p class="erreur-avis" id="erreur-avis" role="alert" hidden></p>
+    <p class="rangee">
+      <button type="submit" class="bouton bouton-accent">Préparer le courriel</button>
+    </p>
+    <p class="merci-avis" id="merci-avis" role="status" hidden>Merci ! Votre messagerie devrait
+      s'ouvrir avec votre avis. Si rien ne s'ouvre, écrivez-nous simplement à
+      <a href="mailto:${esc(SITE.courriel)}?subject=${sujet}">${esc(SITE.courriel)}</a>.</p>
+  </form>
+</dialog>`;
+}
+
 /* Les douze secteurs montrés sur l'accueil : ceux qu'un cabinet d'Istres
    rencontre le plus. L'index des 88 est dans l'application. */
 const VITRINE_SECTEURS = ["43", "41", "10", "56", "47", "49", "52", "20", "25", "81", "86", "85"];
 
-function pageAccueil(V, D, METIERS, ECRANS, C = null, NAF = null, SOURCES = []) {
+function pageAccueil(V, D, METIERS, ECRANS, C = null, NAF = null, SOURCES = [], AVIS = []) {
   const nbDomaines = Object.keys(V.domaines).length;
   const defaut = "43";                      // Travaux de construction spécialisés
   const divDefaut = V.divisions.filter((d) => d.c === defaut)[0] || V.divisions[0];
@@ -2263,6 +2443,113 @@ function pageAccueil(V, D, METIERS, ECRANS, C = null, NAF = null, SOURCES = []) 
   const parSection = V.sections.map((s) => ({
     s, divisions: V.divisions.filter((d) => d.s === s.c)
   })).filter((g) => g.divisions.length);
+
+  const confirmees = SOURCES.filter((x) => x.confirme);
+  const muettes = SOURCES.filter((x) => !x.confirme);
+  const nomCourt = (x) => x.nom.split(" — ")[0];
+  const exemples = ["salaries", "chantier", "chimique", "alimentaire"]
+    .map((id) => V.declencheurs.filter((q) => q.id === id)[0]).filter(Boolean)
+    .map((q) => `« ${esc(q.q.replace(/^Vous /, "vous ").replace(/^Votre /, "votre "))} »`);
+  const faq = [
+    { theme: "Le service", questions: [
+      ["À quoi sert une veille réglementaire ?",
+       `<p><strong>À savoir, avant qu'on vous le demande, quels textes s'appliquent chez vous et ce qu'ils vous obligent à faire.</strong></p>
+        <p>Lois, décrets et arrêtés changent chaque semaine. Lors d'un contrôle, d'un accident ou d'un audit,
+        on vous demandera ce que vous saviez et ce que vous avez fait. La veille, c'est repérer les textes
+        qui vous concernent, comprendre ce qu'ils changent, agir, et garder la trace de tout cela.</p>`],
+      ["D'où viennent les textes ?",
+       `<p><strong>De ${confirmees.length} sources officielles, relues automatiquement toutes les heures.</strong></p>
+        <p>${esc([...new Set(confirmees.map(nomCourt))].join(", "))}.${C ? ` S'y ajoutent ${C.codes.length} codes
+        (${esc(C.codes.map((c) => c.titre).join(", "))}), relus chaque jour, article par article.` : ""}</p>
+        <p>Chaque texte garde sa date, sa source et le lien direct vers l'original : c'est la source qui fait foi.</p>
+        ${muettes.length ? `<p>${muettes.length} sources ne sont pas encore relevées automatiquement :
+        ${esc(muettes.map((x) => `${nomCourt(x)} (${x.pourquoi || "ne répond pas"})`).join(", "))}.</p>` : ""}`],
+      ["Comment savez-vous ce qui me concerne ?",
+       `<p><strong>Par votre métier, puis par vos réponses à quelques questions.</strong></p>
+        <p>Chacune des ${V.divisions.length} familles de métiers est rattachée aux sujets qui la concernent,
+        parmi ${Object.keys(V.domaines).length}. ${V.declencheurs.length} questions simples ajoutent ce qui vient de votre
+        façon de travailler : ${exemples.join(", ")}… Ce qui ne vous concerne pas n'arrive pas.</p>
+        <p>La liste n'est pas garantie complète : le cadrage sert justement à la vérifier avec vous, chez vous.</p>`],
+      ["Que se passe-t-il quand un nouveau texte paraît ?",
+       `<p><strong>Il arrive dans votre relevé, rangé dans son sujet, avec la marque « Nouveau ».</strong></p>
+        <p>Vous ouvrez sa fiche et vous y trouvez, dans cet ordre : ce que vous devez faire, le texte tel
+        qu'il a été publié, et sa source. Quand c'est traité, vous cochez « Fait » : la date est gardée
+        et le registre la montre à l'auditeur.</p>`],
+      ["Est-ce que je reçois un courriel à chaque nouveauté ?",
+       `<p><strong>Pas encore automatiquement.</strong></p>
+        <p>L'envoi suppose un serveur qui expédie les courriels, et il n'est pas encore en place. En attendant,
+        le relevé se met à jour toutes les heures dans l'application, et la cloche, en haut de l'écran, compte
+        les textes que vous n'avez pas lus. Vos réglages d'alerte sont gardés pour le jour où l'envoi sera branché.</p>`],
+      ["Est-ce un conseil juridique ?",
+       `<p><strong>Non.</strong></p>
+        <p>Le site dit ce qui s'applique à votre métier et ce qu'il faut faire. Ce que cela implique dans
+        votre cas précis reste à valider par quelqu'un de compétent. En cas de doute, c'est toujours la
+        source officielle qui fait foi.</p>`]
+    ] },
+    { theme: "Prix et démarrage", questions: [
+      ["Combien ça coûte ?",
+       `<p><strong>${esc(FORMULES.cadrage.prix)} pour le cadrage, puis ${esc(FORMULES.veille.prix)} ou ${esc(FORMULES.preuves.prix)}.</strong> Hors taxes, sans devis.</p>
+        <ul>
+          <li><strong>${esc(FORMULES.cadrage.l)}</strong> (${esc(FORMULES.cadrage.prix)}) : une demi-journée chez vous, puis le
+            document écrit — ce qui s'applique, à quel rythme le revoir, et qui s'en occupe. Il vous reste,
+            que vous continuiez ou non.</li>
+          <li><strong>${esc(FORMULES.veille.l)}</strong> (${esc(FORMULES.veille.prix)}) : on vous prévient dès qu'un texte vous
+            concerne, avec ce qu'il change et ce qu'il faut faire. L'application comprise.</li>
+          <li><strong>${esc(FORMULES.preuves.l)}</strong> (${esc(FORMULES.preuves.prix)}) : la veille tenue, plus le registre
+            de preuves et une revue annuelle sur place.</li>
+        </ul>
+        <p>Ces montants sont encore une proposition : ils seront confirmés avec vous avant tout engagement.</p>`],
+      ["Laquelle choisir ?",
+       `<p><strong>Celle qui correspond à votre situation d'aujourd'hui.</strong></p>
+        <ul>
+          <li>Vous ne savez pas ce qui vous concerne : le <strong>cadrage</strong>.</li>
+          <li>Vous le savez, mais vous n'avez pas le temps de suivre : la <strong>veille tenue</strong>.</li>
+          <li>Vous préparez un audit ou une certification : la <strong>veille et preuves</strong>.</li>
+        </ul>`],
+      ["Mon métier est-il couvert ?",
+       `<p><strong>Oui, quel qu'il soit : les ${V.divisions.length} familles de métiers${NAF ? ` et les ${NAF.codes.length} codes APE` : ""} de la nomenclature officielle.</strong></p>
+        <p>Choisissez le vôtre dans <a href="#simulateur">l'outil en haut de page</a>, ou dans
+        <a href="metiers.html">la liste de tous les métiers</a> : vous voyez tout de suite les sujets à
+        suivre et à quel rythme.</p>`],
+      ["Peut-on essayer avant de s'abonner ?",
+       `<p><strong>Oui, tout de suite, sans compte et sans mot de passe.</strong></p>
+        <p>L'application est ouverte en démonstration, avec une entreprise et des textes d'essai. Vous
+        choisissez une formule et vous voyez exactement les écrans qu'elle ouvre :
+        <a href="abonnement.html#essayer">essayer la démonstration</a>.</p>`],
+      ["Comment on démarre ?",
+       `<p><strong>Par un premier échange d'une heure, sans engagement.</strong></p>
+        <p>Avec Clément Pierrel, on définit ensemble ce qui s'applique chez vous. Si vous continuez, le
+        cadrage se fait sur place, puis la veille prend le relais. Pour prendre rendez-vous :
+        <a href="tel:${esc(SITE.telephoneLien)}">${esc(SITE.telephone)}</a> ou
+        <a href="mailto:${esc(SITE.courriel)}">${esc(SITE.courriel)}</a>.</p>`]
+    ] },
+    { theme: "L'outil et vos données", questions: [
+      ["Est-ce que ça m'aide pour ma certification ?",
+       `<p><strong>Oui pour la partie réglementaire : ISO 14001, ISO 45001, MASE, Qualiopi.</strong></p>
+        <p>Ces référentiels demandent de connaître les exigences légales qui vous concernent et de montrer
+        que vous les suivez. Le site vous donne la liste de ce qui s'applique, les textes qui paraissent, et
+        un registre daté de chaque revue et de chaque décision, qui s'imprime tel quel.</p>
+        <p>Le site ne certifie pas : la décision reste à l'auditeur.</p>`],
+      ["Où sont mes données ?",
+       `<p><strong>Aujourd'hui, uniquement sur votre appareil.</strong></p>
+        <p>Vos réglages, vos chiffres et vos cases « Fait » restent dans votre navigateur : rien n'est envoyé
+        à un serveur. C'est aussi pourquoi l'application est encore en démonstration : de vrais comptes,
+        partagés entre plusieurs personnes, supposent un serveur qui n'est pas encore en place.</p>`],
+      ["Faut-il installer quelque chose ?",
+       `<p><strong>Non : tout marche dans le navigateur, sur ordinateur comme sur téléphone.</strong></p>
+        <p>Si vous le souhaitez, vous pouvez l'ajouter à l'écran d'accueil de votre téléphone. Elle s'ouvre
+        alors comme une application, même sans réseau.</p>`],
+      ["Et si une source officielle ne répond pas ?",
+       `<p><strong>Rien n'est perdu.</strong></p>
+        <p>Le robot réessaie, et les textes déjà relevés restent affichés tant que la source est muette. Les
+        sources qu'on ne peut pas encore relever sont citées, avec la raison, dans la réponse
+        « D'où viennent les textes ? » ci-dessus.</p>`],
+      ["Qui est derrière le site ?",
+       `<p><strong>${esc(SITE.nom)}, un cabinet de conseil en organisation et conformité installé à ${esc(SITE.ville)}.</strong></p>
+        <p>Votre interlocuteur est Clément Pierrel. Il intervient sur ${esc(SITE.zone)}, connaît votre site et
+        vient dessus. <a href="nous.html">En savoir plus sur nous</a>.</p>`]
+    ] }
+  ];
 
   const corps = `
 <section class="heros">
@@ -2276,7 +2563,6 @@ function pageAccueil(V, D, METIERS, ECRANS, C = null, NAF = null, SOURCES = []) 
     </p>
     <p class="rangee rangee-centre">
       <a class="bouton bouton-accent" href="#simulateur">Voir ce qui me concerne</a>
-      <a class="bouton bouton-sobre" href="decouvrir.html">Comment ça marche</a>
       <a class="bouton bouton-sobre" href="abonnement.html">Les tarifs</a>
     </p>
     <p class="gage">
@@ -2298,6 +2584,8 @@ function pageAccueil(V, D, METIERS, ECRANS, C = null, NAF = null, SOURCES = []) 
     </div>
   </div>
 </section>
+
+${bandeAvis(AVIS)}
 
 <section class="section section-tein" id="simulateur">
   <div class="enveloppe">
@@ -2477,29 +2765,7 @@ function pageAccueil(V, D, METIERS, ECRANS, C = null, NAF = null, SOURCES = []) 
       texte: `Une veille qui remonte tout ne se lit plus, et le texte qui comptait se perd.
         Ici le tri est fait avant, sur votre métier : chaque texte arrive avec ce qu'il change
         chez vous et ce qu'il faut faire.`,
-      bouton: "En savoir plus sur le site",
-      encarts: [
-        { titre: "D'où viennent les textes", lignes: [
-          `Relevés <strong>toutes les heures</strong>, automatiquement`,
-          `Sur ${SOURCES.filter((x) => x.confirme).length} sources officielles vérifiées, Journal officiel en tête`,
-          C ? `${C.codes.length} codes relus chaque jour, article par article — ${C.morceaux.reduce((n, m) => n + m.articles.length, 0).toLocaleString("fr-FR")} articles` : `Les codes consolidés, relus chaque jour`
-        ] },
-        { titre: "Ce que vous voyez pour chaque texte", lignes: [
-          `Le <strong>texte entier</strong>, tel que publié, à côté de sa source`,
-          `<strong>Ce que vous devez faire</strong>, en liste`,
-          `Sa date, et la marque « Nouveau » s'il vient d'arriver`
-        ] },
-        { titre: "Seulement ce qui vous concerne", lignes: [
-          `${V.divisions.length} familles de métiers, ${NAF ? NAF.codes.length + " codes APE" : "chacune avec sa fiche"}`,
-          `${Object.keys(V.domaines).length} sujets à suivre, rangés en cinq familles`,
-          `Santé & sécurité, hygiène, social, environnement, métier & gestion`
-        ] },
-        { titre: "Ce que vous gardez", lignes: [
-          `Un registre daté de chaque revue, décision et action`,
-          `Chaque fiche s'enregistre en PDF`,
-          `L'application s'installe sur le téléphone et marche sans réseau`
-        ] }
-      ]
+      bouton: "En savoir plus sur le site", lien: "le-site.html"
     })}
 
     ${vitrine(ECRANS, {
@@ -2508,29 +2774,7 @@ function pageAccueil(V, D, METIERS, ECRANS, C = null, NAF = null, SOURCES = []) 
       titre: "Ce qu'un auditeur demande vraiment",
       texte: `L'écart le plus souvent relevé en audit n'est pas l'absence de veille : c'est la
         veille faite et jamais écrite. Tout est daté et conservé, et s'imprime tel quel.`,
-      bouton: "En savoir plus sur nous",
-      encarts: [
-        { titre: "Le cabinet", lignes: [
-          `<strong>${esc(SITE.nom)}</strong>, conseil en organisation et conformité`,
-          `Installé à ${esc(SITE.ville)}`,
-          `Zone d'intervention : ${esc(SITE.zone)}`
-        ] },
-        { titre: "Votre interlocuteur", lignes: [
-          `<strong>Clément Pierrel</strong>`,
-          `Un interlocuteur unique, pas un abonnement anonyme`,
-          `Il connaît votre site, et il vient dessus`
-        ] },
-        { titre: "Ce qu'on fait pour vous", lignes: [
-          `<strong>Le cadrage</strong> : une demi-journée chez vous, puis le document écrit`,
-          `<strong>La veille tenue</strong> : on vous prévient dès qu'un texte vous concerne`,
-          `<strong>Les preuves</strong> : le registre, et une revue annuelle sur place`
-        ] },
-        { titre: "Les audits qu'on prépare", lignes: [
-          `ISO 14001 et ISO 45001`,
-          `MASE et Qualiopi`,
-          `Prix affichés sur la <a href="abonnement.html">page des tarifs</a>, sans devis`
-        ] }
-      ]
+      bouton: "En savoir plus sur nous", lien: "nous.html"
     })}
   </div>
 </section>
@@ -2552,8 +2796,7 @@ function pageAccueil(V, D, METIERS, ECRANS, C = null, NAF = null, SOURCES = []) 
       </ul>
     </div>
     <p class="rangee rangee-centre" style="margin-top:var(--t5)">
-      <a class="bouton bouton-accent" href="abonnement.html">Démarrer un abonnement</a>
-      <a class="bouton bouton-sobre" href="connexion.html">Connexion</a>
+      <a class="bouton bouton-accent" href="metiers.html">Voir tout</a>
     </p>
   </div>
 </section>
@@ -2653,34 +2896,23 @@ function pageAccueil(V, D, METIERS, ECRANS, C = null, NAF = null, SOURCES = []) 
   </div>
 </section>
 
-<!-- Les questions qu'on pose avant de s'abonner. Chaque réponse dit ce qui
-     est vrai aujourd'hui, y compris ce qui n'est pas encore en place. Repliées :
-     on n'ouvre que celle qui nous intéresse. -->
-<section class="section section-tein">
+<!-- Les questions qu'on pose avant de s'abonner, rangées en trois thèmes.
+     Chaque réponse commence par la réponse elle-même (oui, non, le chiffre),
+     puis le détail. Elle dit ce qui est vrai aujourd'hui, y compris ce qui
+     n'est pas encore en place. Repliées : on n'ouvre que celle qui intéresse. -->
+<section class="section section-tein" id="questions">
   <div class="enveloppe">
     <h2 class="titre-section">Vos questions</h2>
+    <p class="intro titre-section">Les réponses courtes d'abord, le détail ensuite.
+    Ce qui n'est pas encore en place est dit tel quel.</p>
     <div class="faq">
-      ${[
-        ["D'où viennent les textes ?",
-         `De ${SOURCES.filter((x) => x.confirme).length} sources publiques, Journal officiel en tête, relues toutes les heures par notre robot. Chaque texte garde sa source, sa date et le lien vers l'original.`],
-        ["Est-ce un conseil juridique ?",
-         "Non. Le site dit ce qui s'applique et ce qu'il faut faire ; ce que ça implique chez vous reste à valider par quelqu'un de compétent. C'est la source officielle qui fait foi."],
-        ["Combien ça coûte ?",
-         `${esc(FORMULES.cadrage.prix)} pour le cadrage, puis ${esc(FORMULES.veille.prix)} pour la veille tenue, ou ${esc(FORMULES.preuves.prix)} avec le registre de preuves. Sans devis : <a href="abonnement.html">les tarifs</a>.`],
-        ["Mon métier est-il couvert ?",
-         `Les ${V.divisions.length} familles de métiers${NAF ? ` et les ${NAF.codes.length} codes APE` : ""} de la nomenclature officielle. Choisissez le vôtre dans <a href="#simulateur">l'outil plus haut</a> : vous voyez tout de suite ce qui s'applique.`],
-        ["Comment je reçois les nouveautés ?",
-         "Dans l'application : le relevé se met à jour toutes les heures, et ce qui vient d'arriver porte la marque « Nouveau ». L'envoi par courriel n'est pas encore en place ; vos réglages d'alerte sont gardés pour le jour où il le sera."],
-        ["Où sont mes données ?",
-         "Aujourd'hui, sur votre appareil : vos réglages et vos cases « fait » restent dans votre navigateur, rien n'est envoyé. L'application est ouverte en démonstration, sans compte."],
-        ["Faut-il installer quelque chose ?",
-         "Non : tout marche dans le navigateur. Sur téléphone, vous pouvez l'ajouter à l'écran d'accueil, et elle s'ouvre même sans réseau."],
-        ["Comment on démarre ?",
-         `Par un premier échange d'une heure, sans engagement, avec ${esc(SITE.nom)} : on définit ensemble ce qui s'applique chez vous. <a href="#cabinet">Nous joindre</a>.`]
-      ].map(([q, r]) => `<details class="faq-question">
-        <summary>${esc(q)}</summary>
-        <p>${r}</p>
-      </details>`).join("")}
+      ${faq.map((t) => `<section class="faq-theme">
+        <h3>${esc(t.theme)}</h3>
+        ${t.questions.map(([q, r]) => `<details class="faq-question">
+          <summary>${esc(q).replace(/ ([?!:;])/g, "\u00a0$1")}</summary>
+          <div class="faq-reponse">${r}</div>
+        </details>`).join("")}
+      </section>`).join("")}
     </div>
   </div>
 </section>
@@ -3401,6 +3633,15 @@ async function main() {
 
   const SOURCES = await chargeFichier("contenu/sources.js", "SOURCES");
 
+  // Les avis des clients : de vrais avis seulement, publiés avec leur accord.
+  const AVIS = existsSync(resolve(RACINE, "contenu/temoignages.js"))
+    ? await chargeFichier("contenu/temoignages.js", "TEMOIGNAGES") : [];
+  AVIS.forEach((a, k) => {
+    if (!a || !a.nom || !a.texte) throw new Error(`contenu/temoignages.js : l'avis n° ${k + 1} n'a pas de nom ou de texte.`);
+    if (a.note != null && !(Number.isInteger(a.note) && a.note >= 1 && a.note <= 5))
+      throw new Error(`contenu/temoignages.js : la note de l'avis n° ${k + 1} doit aller de 1 à 5.`);
+  });
+
   const cheminNaf = resolve(RACINE, "contenu/naf.js");
   const NAF = existsSync(cheminNaf) ? await chargeFichier("contenu/naf.js", "NAF") : null;
   if (NAF) verifieNaf(V, NAF);
@@ -3461,7 +3702,23 @@ async function main() {
     `${process.env.COMMIT_REF || "local"}\n${new Date().toISOString()}\n`);
   console.log(`  cache du worker     pco-${version}`);
 
-  await writeFile(join(SORTIE, "index.html"), pageAccueil(V, D, METIERS, ECRANS, C, NAF, SOURCES));
+  await writeFile(join(SORTIE, "index.html"), pageAccueil(V, D, METIERS, ECRANS, C, NAF, SOURCES, AVIS));
+  await writeFile(join(SORTIE, "le-site.html"), pageInfos({
+    titre: "Le site en détail", h1: "Le site en détail",
+    sous: "D'où viennent les textes, ce que vous voyez pour chacun, comment le tri se fait, et ce que vous gardez.",
+    encarts: encartsDuSite(V, C, NAF, SOURCES),
+    suite: `<a class="bouton bouton-accent" href="decouvrir.html">Comment ça marche, en dessins</a>
+      <a class="bouton bouton-sobre" href="index.html#simulateur">Voir ce qui me concerne</a>`
+  }));
+  await writeFile(join(SORTIE, "nous.html"), pageInfos({
+    titre: "Qui sommes-nous", h1: "Qui sommes-nous",
+    sous: `${esc(SITE.nom)}, conseil en organisation et conformité à ${esc(SITE.ville)} : le cabinet, votre interlocuteur, ce qu'on fait pour vous et les audits qu'on prépare.`,
+    encarts: encartsDeNous(),
+    suite: `<a class="bouton bouton-accent" href="mailto:${esc(SITE.courriel)}">${esc(SITE.courriel)}</a>
+      <a class="bouton bouton-sobre" href="tel:${esc(SITE.telephoneLien)}">${esc(SITE.telephone)}</a>
+      <a class="bouton bouton-sobre" href="abonnement.html">Les tarifs</a>`
+  }));
+  await writeFile(join(SORTIE, "metiers.html"), pageMetiers(V, NAF));
   await writeFile(join(SORTIE, "abonnement.html"), pageAbonnement(V));
   await writeFile(join(SORTIE, "decouvrir.html"), pageDecouvrir(V, ECRANS, C, NAF, SOURCES));
   await writeFile(join(SORTIE, "connexion.html"), pageConnexion());

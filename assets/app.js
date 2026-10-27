@@ -451,6 +451,58 @@
     });
   }
 
+  /* --- Laisser votre avis --------------------------------------------------
+     Le bouton de la barre des avis ouvre un petit formulaire ; « Préparer le
+     courriel » ouvre la messagerie avec l'avis déjà écrit. Sans serveur, il
+     n'y a pas d'autre façon honnête de le recevoir. Sans JavaScript (ou sans
+     <dialog>), le bouton reste un lien qui ouvre la messagerie. */
+  function avis() {
+    var bouton = $("[data-avis]");
+    var d = $("#fenetre-avis");
+    var f = $("#formulaire-avis");
+    if (!bouton || !d || !f || typeof d.showModal !== "function") return;
+    var adresse = bouton.getAttribute("href").replace(/^mailto:/, "").split("?")[0];
+    var erreur = $("#erreur-avis"), merci = $("#merci-avis");
+    bouton.addEventListener("click", function (e) {
+      e.preventDefault();
+      erreur.hidden = true; merci.hidden = true;
+      d.showModal();
+      var premier = f.elements.nom;
+      if (premier) premier.focus();
+    });
+    $$("[data-fermer]", d).forEach(function (b) { b.addEventListener("click", function () { d.close(); }); });
+    d.addEventListener("click", function (e) { if (e.target === d) d.close(); });
+    f.addEventListener("submit", function (e) {
+      e.preventDefault();
+      var v = function (n) { return (f.elements[n] && f.elements[n].value || "").trim(); };
+      var manque = [];
+      if (!v("nom")) manque.push("votre nom");
+      if (!v("texte")) manque.push("votre avis");
+      if (!f.elements.accord.checked) manque.push("votre accord pour la publication");
+      if (manque.length) {
+        erreur.textContent = "Il manque " + manque.join(", ") + ".";
+        erreur.hidden = false;
+        return;
+      }
+      erreur.hidden = true;
+      var note = (f.querySelector("input[name=note]:checked") || {}).value || "";
+      var corps = [
+        "Note : " + (note ? note + " sur 5" : "—"),
+        "Nom : " + v("nom"),
+        "Entreprise : " + (v("entreprise") || "—"),
+        "Ville : " + (v("ville") || "—"),
+        "",
+        "Mon avis :",
+        v("texte"),
+        "",
+        "J'accepte que cet avis soit publié sur le site, avec mon nom tel que je l'ai écrit."
+      ].join("\n");
+      merci.hidden = false;
+      window.location.href = "mailto:" + adresse + "?subject=" +
+        encodeURIComponent("Mon avis sur Pierrel & Co") + "&body=" + encodeURIComponent(corps);
+    });
+  }
+
   function bascules() {
     $$("[data-bascule]").forEach(function (groupe) {
       var boutons = $$("button", groupe);
@@ -808,6 +860,7 @@
   categories();
   captures();
   metiersDeLAccueil();
+  avis();
   faits();
   affiner();
   paraitre();

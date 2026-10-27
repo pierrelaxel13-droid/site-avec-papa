@@ -374,12 +374,22 @@ html, body, * { scrollbar-width: none; }
   color: var(--bouton-texte);
   white-space: nowrap;
 }
-@media (max-width: 26rem) { .bouton-bandeau { padding-inline: 1rem; font-size: .95rem; } }
-/* Sous 352 px, le mot-symbole cède la place : le sigle suffit à identifier le
-   site, et « Connexion » doit rester atteignable. */
+/* « Comment ça marche » se tient à côté de « Connexion », en haut, sur toutes
+   les pages publiques : même taille, mais en bouton clair. */
+.bouton-sobre.bouton-bandeau { color: var(--encre); }
+.bouton-sobre.bouton-bandeau[aria-current="page"] { background: var(--accent-clair); border-color: var(--accent-filet); }
+/* Au téléphone, les deux boutons et le menu doivent tenir sur la ligne du
+   logo : le mot-symbole cède la place au sigle (il suffit à reconnaître le
+   site), et les boutons se resserrent. */
+@media (max-width: 34rem) {
+  .zone-public .marque > span { display: none; }
+  .zone-public .bandeau-interieur { gap: .4rem; }
+  .bouton-bandeau { min-height: 2.6rem; padding: .45rem .75rem; font-size: .9rem; }
+}
 @media (max-width: 22rem) {
   .marque > span { display: none; }
   .bandeau-interieur { gap: .4rem; }
+  .bouton-bandeau { padding-inline: .65rem; font-size: .86rem; }
 }
 
 .menu-bascule {
@@ -2720,8 +2730,20 @@ a.carte-vide .carte-aller { display: none; }
 .norme-nom { font-size: 1.35rem; font-weight: 800; letter-spacing: -.02em; color: var(--encre) !important; }
 .norme-nom span { display: block; font-size: .95rem; font-weight: 600; letter-spacing: 0; color: var(--accent); }
 
-.faq { margin: var(--t5) auto 0; display: grid; gap: var(--t3); grid-template-columns: minmax(0, 1fr); }
-@media (min-width: 62rem) { .faq { grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: stretch; } }
+/* Trois thèmes. Sur grand écran, trois colonnes côte à côte : une question
+   qui s'ouvre n'allonge que la sienne. Plus étroit, une seule colonne, à
+   largeur de lecture. */
+.faq { margin: var(--t5) auto 0; display: grid; gap: var(--t5) var(--t4); grid-template-columns: minmax(0, 1fr); max-width: 52rem; }
+@media (min-width: 80rem) { .faq { grid-template-columns: repeat(3, minmax(0, 1fr)); align-items: start; max-width: none; } }
+.faq-theme { display: grid; gap: var(--t3); min-width: 0; }
+.faq-theme > h3 {
+  margin: 0 0 var(--t1); font-size: .82rem; font-weight: 800; letter-spacing: .08em;
+  text-transform: uppercase; color: var(--accent);
+}
+.faq-reponse { display: grid; gap: var(--t2); padding: 0 var(--t4) var(--t4); color: var(--encre-douce); line-height: 1.6; }
+.faq-reponse p, .faq-reponse ul { margin: 0; }
+.faq-reponse ul { padding-left: 1.1rem; display: grid; gap: .35rem; }
+.faq-reponse strong { color: var(--encre); }
 .faq-question { background: var(--carte); border: 1px solid var(--filet); border-radius: var(--r2); }
 .faq-question > summary {
   display: flex; justify-content: space-between; align-items: center; gap: var(--t3);
@@ -2732,7 +2754,6 @@ a.carte-vide .carte-aller { display: none; }
 .faq-question > summary::after { content: "+"; font-size: 1.4rem; line-height: 1; color: var(--accent); flex: none; }
 .faq-question[open] > summary::after { content: "–"; }
 .faq-question[open] { border-color: var(--accent-filet); }
-.faq-question > p { margin: 0; padding: 0 var(--t4) var(--t4); color: var(--encre-douce); line-height: 1.6; }
 
 @media (hover: hover) and (prefers-reduced-motion: no-preference) {
   .zone-public .norme { transition: transform .22s cubic-bezier(.2, .7, .2, 1), box-shadow .22s ease; }
@@ -2800,3 +2821,118 @@ a.carte-vide .carte-aller { display: none; }
 /* « À quoi ça ressemble » n'a plus de phrase sous son titre : la première
    capture garde sa distance. */
 h2.titre-section + .vitrine { margin-top: clamp(2rem, 1.2rem + 3vw, 3.5rem); }
+
+/* --- 32. Pages « En savoir plus », tous les métiers, barre des avis -------- */
+/* Les quatre encarts, seuls sur leur page : plus grands, deux et deux. */
+.infos-page { margin-top: 0; gap: var(--t4); }
+.infos-page .info-encart { padding: clamp(1.1rem, .8rem + 1.2vw, 1.75rem); }
+.info-encart h2 { font-size: clamp(1.15rem, 1rem + .5vw, 1.4rem); margin: 0 0 var(--t3); }
+.infos-page .info-encart ul { gap: .6rem; }
+.infos-page .info-encart li { font-size: 1.02rem; }
+
+/* Tous les métiers : un bloc par grand secteur, sa lettre en tête. */
+.groupe-metiers + .groupe-metiers { margin-top: var(--t6); }
+.groupe-metiers h2 {
+  display: flex; align-items: center; gap: .7rem;
+  margin: 0 0 var(--t3); font-size: clamp(1.1rem, 1rem + .45vw, 1.35rem);
+}
+.groupe-metiers .lettre {
+  display: grid; place-items: center; flex: none;
+  width: 2.1rem; height: 2.1rem; border-radius: var(--r1, .5rem);
+  background: var(--accent); color: #fff; font-size: .95rem;
+}
+:root[data-theme="dark"] .groupe-metiers .lettre { color: #14142A; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .groupe-metiers .lettre { color: #14142A; } }
+.groupe-metiers .puces .nom { -webkit-line-clamp: 3; }
+/* Au téléphone, deux par ligne, comme les métiers de l'accueil. */
+@media (max-width: 52rem) { .groupe-metiers .puces li { flex: 1 1 calc(50% - .3rem); min-width: 0; } }
+
+/* La barre des avis : une ligne qui défile, son titre à gauche, le bouton à
+   droite. Elle s'arrête quand la souris ou le clavier s'y pose, et ne bouge
+   pas du tout pour qui a demandé moins d'animations. */
+.bande-avis {
+  border-block: 1px solid var(--filet);
+  background: var(--papier-pale);
+  padding-block: var(--t3);
+}
+.bande-avis-interieur { display: flex; align-items: center; gap: var(--t4); }
+.bande-avis-titre {
+  display: inline-flex; align-items: center; gap: .5rem; flex: none;
+  margin: 0; font-size: .95rem; font-weight: 800; white-space: nowrap;
+}
+.bande-avis-titre .sigle { width: 1.2rem; height: 1.2rem; color: var(--accent); }
+.defile {
+  flex: 1; min-width: 0; overflow: hidden;
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
+          mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
+}
+.defile-rail { display: flex; width: max-content; animation: defile var(--duree, 40s) linear infinite; }
+.defile:hover .defile-rail, .bande-avis:focus-within .defile-rail { animation-play-state: paused; }
+.defile-piste { display: flex; flex: none; list-style: none; margin: 0; padding: 0; }
+.avis-item {
+  display: inline-flex; align-items: baseline; gap: .5rem;
+  padding-inline: 1.6rem; white-space: nowrap;
+  color: var(--encre-douce); font-size: 1rem;
+}
+.avis-item + .avis-item::before, .defile-piste + .defile-piste .avis-item:first-child::before {
+  content: "•"; margin-right: 1.6rem; margin-left: -1.6rem; color: var(--accent);
+}
+.avis-item strong, .avis-item q { color: var(--encre); }
+.avis-qui { font-size: .92rem; }
+.etoiles { color: #E8A317; letter-spacing: .05em; }
+.bouton-avis { flex: none; min-height: 2.75rem; padding: .55rem 1.2rem; }
+@keyframes defile { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+@media (prefers-reduced-motion: reduce) {
+  .defile { -webkit-mask-image: none; mask-image: none; }
+  .defile-rail { animation: none; width: auto; }
+  .defile-piste { flex-wrap: wrap; flex: 1; row-gap: .3rem; }
+  .defile-piste[aria-hidden="true"] { display: none; }
+  .avis-item { white-space: normal; padding-inline: 0 1.6rem; }
+  .avis-item + .avis-item::before { margin-left: 0; margin-right: .6rem; }
+}
+@media (max-width: 40rem) {
+  .bande-avis-interieur { gap: var(--t2) var(--t3); flex-wrap: wrap; }
+  .bande-avis-titre { order: 1; }
+  .bouton-avis { order: 2; margin-left: auto; min-height: 2.5rem; padding: .45rem 1rem; font-size: .92rem; }
+  .defile { order: 3; flex-basis: 100%; }
+  .avis-item { font-size: .95rem; }
+}
+
+/* Le formulaire d'avis, dans une fenêtre. */
+.fenetre-avis {
+  width: min(94vw, 36rem); max-height: 92vh; padding: 0;
+  border: 0; border-radius: var(--r2);
+  background: var(--carte); color: var(--encre); box-shadow: var(--ombre-3);
+}
+.fenetre-avis::backdrop { background: rgba(11, 13, 20, .6); }
+.formulaire-avis { display: grid; gap: var(--t3); padding: clamp(1.1rem, .8rem + 1.4vw, 1.8rem); }
+.fenetre-tete { display: flex; justify-content: space-between; align-items: center; gap: var(--t3); }
+.fenetre-tete h2 { margin: 0; font-size: 1.35rem; }
+.fenetre-tete .zoom-fermer { position: static; float: none; margin: 0; box-shadow: none; }
+.aide-avis { margin: 0; color: var(--encre-douce); line-height: 1.55; }
+.note-avis { margin: 0; padding: 0; border: 0; }
+.note-avis legend { font-weight: 700; margin-bottom: var(--t2); }
+.note-choix { display: flex; flex-wrap: wrap; gap: .4rem; }
+.note-choix label {
+  display: inline-flex; align-items: center; cursor: pointer;
+  padding: .35rem .7rem; border: 1px solid var(--filet-fort); border-radius: var(--rp);
+  color: #E8A317; font-size: 1.05rem; letter-spacing: .05em;
+}
+.note-choix input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+.note-choix label:has(input:checked) { background: var(--accent-clair); border-color: var(--accent); }
+.note-choix label:has(input:focus-visible) { outline: 2px solid var(--accent); outline-offset: 2px; }
+.champs-avis { display: grid; gap: var(--t3); }
+@media (min-width: 34rem) { .champs-avis { grid-template-columns: repeat(3, minmax(0, 1fr)); align-items: end; } }
+.formulaire-avis label { display: grid; gap: .3rem; font-weight: 600; font-size: .95rem; min-width: 0; }
+.formulaire-avis .aide { font-weight: 400; font-size: .82rem; color: var(--encre-douce); }
+.formulaire-avis input[type=text], .formulaire-avis textarea {
+  width: 100%; min-width: 0; padding: .6rem .75rem;
+  border: 1px solid var(--filet-fort); border-radius: var(--r1, .5rem);
+  background: var(--papier); color: var(--encre); font: inherit; font-weight: 400;
+}
+.formulaire-avis textarea { resize: vertical; min-height: 7rem; }
+.formulaire-avis .accord-avis { display: flex; align-items: flex-start; gap: .6rem; font-weight: 400; }
+.accord-avis input { margin-top: .25rem; width: 1.1rem; height: 1.1rem; flex: none; accent-color: var(--accent); }
+.erreur-avis { margin: 0; color: #C2410C; font-weight: 600; }
+.merci-avis { margin: 0; padding: var(--t3); border-radius: var(--r2); background: var(--accent-clair); color: var(--encre); }
+.formulaire-avis .rangee { margin: 0; }

@@ -249,8 +249,23 @@ qu'il n'y a pas de client.
   comptent « N faits sur M » (`faits()` dans app.js).
 - **Comment ça marche** (`decouvrir.html`, `pageDecouvrir()`) : les étapes, des
   dessins SVG aux couleurs du thème (version en hauteur sous 40rem) et les
-  captures. On y va depuis l'accueil (bouton du héros), le menu et le pied ;
-  elle ne mène pas dans l'application.
+  captures. On y va par le bouton « Comment ça marche » du bandeau, à côté de
+  « Connexion » (sur toutes les pages publiques, plus dans le menu), et par le
+  pied ; elle ne mène pas dans l'application.
+- **« En savoir plus » ouvre une page à part** : `le-site.html` et `nous.html`
+  (`pageInfos()`, encarts dans `encartsDuSite()` / `encartsDeNous()`), rien
+  ne se déplie sur l'accueil. « Voir tout » sous « Votre métier y est » mène à
+  `metiers.html` (`pageMetiers()`, les 88 divisions par section) ; chaque
+  métier ouvre `index.html?q=CODE#simulateur`.
+- **Vos questions** : trois thèmes (`faq` dans `pageAccueil()`), chaque réponse
+  commence par la réponse courte en gras. Chiffres tirés des données ; ce qui
+  n'est pas en place (courriel, comptes, prix à confirmer) est dit.
+- **La barre des avis** (`bandeAvis()`, sous le héros) : défile les avis de
+  `contenu/temoignages.js` — de vrais avis seulement, publiés avec l'accord de
+  leur auteur. Vide, elle le dit et invite à laisser le sien. « Laisser votre
+  avis » ouvre un formulaire (`avis()` dans app.js) qui prépare un courriel à
+  l'adresse du cabinet ; sans JS, c'est un simple lien mailto. Pour publier un
+  avis reçu : l'ajouter à `temoignages.js`, reconstruire.
 - **Réglages, l'entreprise en chiffres** : chiffre d'affaires, forme, création,
   sites, SIRET (contrôle de Luhn), certifications. Ils décrivent l'entreprise
   sur le plan ; ils ne changent pas les sujets, et la page le dit.
