@@ -119,7 +119,7 @@
    "id": "anses",
    "nom": "ANSES — avis et actualités",
    "entrees": 10,
-   "retenus": 2,
+   "retenus": 1,
    "souci": null
   },
   {
@@ -1550,36 +1550,6 @@
    ],
    "morceaux": 0,
    "dateTexte": "2026-10-22",
-   "vuLe": "2026-10-22"
-  },
-  {
-   "source": "anses",
-   "sourceNom": "ANSES — avis et actualités",
-   "genre": "actualite",
-   "id": "https://www.anses.fr/fr/evaluations/phytosanitaire/conclusions-devaluation-autorisation-mise-marche-reconnaissance-76",
-   "titre": "Conclusions d'évaluation: Autorisation de mise sur le marché par reconnaissance mutuelle d'un produit phytopharmaceutique - AMMARI",
-   "nature": "Publication officielle",
-   "date": "2026-10-22",
-   "corps": "<span>Conclusions d'évaluation: Autorisation de mise sur le marché par reconnaissance mutuelle d'un produit phytopharmaceutique - AMMARI</span>\n\n<span><span>Anonyme (non vérifié)</span></span>\n\n<span><time datetime=\"2026-10-22T06:05:37+02:00\" title=\"Jeudi, 22 octobre, 2026 - 06:05\">jeu, 22/10/2026 - 06:05</time>\n</span>\n\n \n <div class=\"evaluation__product_type-wrap\">\n <p class=\"field-label\">Type de produit</p>\n <div class=\"evaluation__product_type field--entity-reference\"><a href=\"https://www.anses.fr/fr/type-de-produit/ppp\" hreflang=\"fr\">PPP</a></div> </div>\n\n \n\n \n <div class=\"evaluation__product_name-wrap\">\n <p class=\"field-label\">Nom du produit</p>\n <div class=\"evaluation__product_name field--string\">AMMARI</div> </div>\n\n \n\n \n <div class=\"evaluation__type_of_request-wrap\">\n <p class=\"field-label\">Type de la demande</p>\n <div class=\"evaluation__type_of_request field--string\">Autorisation de mise sur le marché par reconnaissance mutuelle d'un produit phytopharmaceutique</div> </div>\n\n \n\n \n <div class=\"evaluation__file_number-wrap\">\n <p class=\"field-label\">Numéro de dossier</p>\n <div class=\"evaluation__file_number field--string\">2026-1219</div> </div>\n\n \n\n \n <div class=\"evaluation__signature_date-wrap\">\n <p class=\"field-label\">Date signature</p>\n <div class=\"evaluation__signature_date field--datetime\"><time datetime=\"2026-09-25T12:00:00Z\">ven, 25/09/2026 - 12:00</time>\n</div> </div>\n\n \n\n \n <div class=\"evaluation__publication_date-wrap\">\n <p class=\"field-label\">Date de publication</p>\n <div class=\"evaluation__publication_date field--datetime\"><time datetime=\"2026-10-21T12:00:00Z\">mer, 21/10/2026 - 12:00</time>\n</div> </div>\n\n \n\n \n <div class=\"evaluation__document_list-wrap\">\n <p class=\"field-label\">Document(s)</p>\n <div>\n <div class=\"evaluation__document_list-item\"> <div class=\"paragraph paragraph--type--document-list paragraph--view-mode--default\">\n \n\n \n <div class=\"document-list__file field--file\"><span class=\"file file--mime-application-pdf file--application-pdf\"><a href=\"https://www.anses.fr/sites/default/files/phyto/evaluations/AMMARI_PMUT_2026-1219_Ans.pdf\" type=\"application/pdf\">AMMARI_PMUT_2026-1219_Ans.pdf</a></span>\n <span>(306.08 Ko)</span>\n</div>\n \n \n\n \n <div class=\"document-list__document_type_ad field--list-string\">Conclusions d'évaluation</div>\n \n \n\n </div>\n</div> </div>\n </div>\n\n \n\n \n <div class=\"evaluation__display_in_register-wrap\">\n <p class=\"field-label\">Apparait dans le registre</p>\n <div class=\"evaluation__display_in_register field--boolean\">Non</div> </div>",
-   "lien": "https://www.anses.fr/fr/evaluations/phytosanitaire/conclusions-devaluation-autorisation-mise-marche-reconnaissance-76",
-   "domaines": [
-    {
-     "id": "produits_ce",
-     "nom": "Conformité des produits et marquage CE",
-     "mots": [
-      "mise sur le marche"
-     ]
-    },
-    {
-     "id": "pharma",
-     "nom": "Produits de santé et dispositifs médicaux",
-     "mots": [
-      "autorisation de mise sur le marche"
-     ]
-    }
-   ],
-   "morceaux": 1,
-   "dateTexte": "",
    "vuLe": "2026-10-22"
   },
   {
