@@ -50,7 +50,7 @@
    "nom": "URSSAF — actualités employeurs",
    "entrees": 0,
    "retenus": 0,
-   "souci": "injoignable (fetch failed : ECONNRESET) — l'hôte refuse le robot, ou le réseau d'ici le bloque"
+   "souci": "injoignable (fetch failed : UND_ERR_SOCKET) — l'hôte refuse le robot, ou le réseau d'ici le bloque"
   },
   {
    "id": "bofip",
@@ -97,7 +97,7 @@
   {
    "id": "ademe",
    "nom": "ADEME — nouvelles publications",
-   "entrees": 95,
+   "entrees": 97,
    "retenus": 1,
    "souci": null
   },
@@ -2508,12 +2508,12 @@
    "source": "amf",
    "sourceNom": "AMF — Autorité des marchés financiers",
    "genre": "actualite",
-   "id": "https://www.amf-france.org/fr/actualites-publications/communiques/communiques-de-lamf/la-sec-et-lamf-concluent-un-accord-renforcant-la-cooperation-en-matiere-de-supervision-des#xts=607212&xtor=RSS-3&type=RSS",
+   "id": "https://www.amf-france.org/fr/actualites-publications/communiques/communiques-de-lamf/la-sec-et-lamf-concluent-un-accord-renforcant-la-cooperation-en-matiere-de-supervision-des#xts=607212&at_medium=RSS feeds&at_campaign=RSS-3&type=RSS",
    "titre": "La SEC et l'AMF concluent un accord renforçant la coopération en matière de supervision des conseillers en investissement et de prestataires de services d'investissement",
    "nature": "Publication officielle",
    "date": "2026-10-20",
    "corps": "Communiqué AMF Coopération Europe &amp; international Gestion d&#039;actifs Supervision Conseil en investissement La SEC et l&#039;AMF concluent un accord renforçant la coopération en matière de supervision des conseillers en investissement et de prestataires de services...",
-   "lien": "https://www.amf-france.org/fr/actualites-publications/communiques/communiques-de-lamf/la-sec-et-lamf-concluent-un-accord-renforcant-la-cooperation-en-matiere-de-supervision-des#xts=607212&xtor=RSS-3&type=RSS",
+   "lien": "https://www.amf-france.org/fr/actualites-publications/communiques/communiques-de-lamf/la-sec-et-lamf-concluent-un-accord-renforcant-la-cooperation-en-matiere-de-supervision-des#xts=607212&at_medium=RSS feeds&at_campaign=RSS-3&type=RSS",
    "domaines": [
     {
      "id": "finance",
