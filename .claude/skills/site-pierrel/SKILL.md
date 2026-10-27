@@ -231,6 +231,11 @@ qu'il n'y a pas de client.
   cette catégorie » avec les nombres, dessous un encadré par sujet. Secteurs
   fait de même avec ses divisions.
 - **Pas de barre de défilement**, nulle part (site.css, en tête).
+- **Au téléphone, la même disposition qu'au PC** (choix d'Axel, 27 octobre :
+  « la même, lisible ») : l'ordinateur et son téléphone en tête, boutons côte
+  à côte, cases par deux (site.css § 31). Seuls les longs textes — l'outil,
+  les captures, les questions — gardent toute la largeur. Pas de version
+  « miniature » du PC : illisible sans zoomer.
 - **Rien qui ait l'air cliquable sans l'être.** Une pastille, une case ou une
   capture qu'on clique fait quelque chose : les pastilles de l'entreprise
   mènent à Réglages, les métiers de l'accueil choisissent le métier dans

@@ -2705,7 +2705,7 @@ a.carte-vide .carte-aller { display: none; }
 }
 
 /* --- 30. Accueil : prix affichés, normes, questions ------------------------ */
-.gage-prix { margin-top: .4rem; }
+.gage-prix { margin-top: .4rem; text-align: center; }
 .normes { list-style: none; margin: var(--t5) 0 0; padding: 0; display: grid; gap: var(--t4); grid-template-columns: minmax(0, 1fr); }
 @media (min-width: 46rem) { .normes { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (min-width: 80rem) { .normes { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
@@ -2737,4 +2737,62 @@ a.carte-vide .carte-aller { display: none; }
 @media (hover: hover) and (prefers-reduced-motion: no-preference) {
   .zone-public .norme { transition: transform .22s cubic-bezier(.2, .7, .2, 1), box-shadow .22s ease; }
   .zone-public .norme:hover { transform: translateY(-5px); box-shadow: var(--ombre-2); }
+}
+
+/* --- 31. Au téléphone, la même disposition que sur le PC -------------------- */
+/* « Sur téléphone, il faut que ce soit comme sur le PC. » Même composition,
+   écriture lisible : l'ordinateur et son téléphone en tête, les boutons côte
+   à côte, les cases par deux comme elles vont par quatre au bureau. Seuls les
+   longs textes (l'outil, les captures, les questions) gardent toute la
+   largeur : à moitié d'écran, ils ne se liraient plus. */
+@media (max-width: 52rem) {
+  /* L'ordinateur revient, le téléphone le chevauche, penché, comme au bureau. */
+  .heros-visuel .portable { display: block; width: 100%; }
+  .heros-visuel .mobile {
+    position: absolute; right: 0; bottom: 0; width: 31%;
+    transform: rotate(-3deg); transform-origin: 100% 100%;
+  }
+}
+@media (max-width: 36rem) {
+  /* Le bouton principal sur toute la ligne, les deux autres côte à côte. */
+  .heros .rangee { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .6rem; }
+  .heros .rangee > .bouton { width: 100%; padding-inline: .5rem; font-size: .95rem; justify-content: center; text-align: center; white-space: nowrap; }
+  .heros .rangee > .bouton:first-child { grid-column: 1 / -1; }
+  .heros .rangee > .bouton:last-child:nth-child(even) { grid-column: auto; }
+}
+@media (max-width: 59.99rem) {
+  /* Les quatre chiffres : deux et deux, chacun sous son trait. */
+  .rail { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--t4) var(--t3); }
+  .rail-fil { display: none; }
+  .rail-item { padding: var(--t3) 0 0; }
+  .rail-item::before { top: 0; left: 0; width: 100%; }
+}
+@media (max-width: 40rem) {
+  /* Pourquoi nous, les normes, les écrans de « Comment ça marche » : par deux. */
+  .raisons, .normes, .pieces { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--t3); }
+  .raisons > :last-child:nth-child(odd), .normes > :last-child:nth-child(odd),
+  .pieces > :last-child:nth-child(odd) { grid-column: 1 / -1; }
+  .raison, .norme { padding: var(--t3); border-radius: var(--r2); }
+  .raison .numero { width: 2.3rem; height: 2.3rem; font-size: 1.05rem; margin-bottom: var(--t3); }
+  .raison h3, .piece h3 { font-size: 1.02rem; }
+  .raison p, .norme p, .piece p { font-size: .93rem; }
+  .norme-nom { font-size: 1.12rem; }
+  .piece { padding: .5rem .5rem var(--t3); }
+  .piece h3, .piece p { margin-inline: .2rem; }
+  /* Les métiers : deux par ligne. */
+  .panneau-puces .puces { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .5rem; }
+  .puces a, .puces .puce-fixe { grid-template-columns: 1fr; gap: .4rem; padding: .7rem; font-size: .9rem; }
+  .puces .code { width: 2rem; height: 2rem; font-size: .8rem; }
+  /* Dirigeant / QHSE : deux par ligne, l'icône au-dessus du titre. */
+  .traits { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--t4) var(--t3); }
+  .trait { grid-template-columns: 1fr; gap: .4rem; }
+  .trait h3 { font-size: 1.02rem; }
+  .trait p { font-size: .93rem; }
+  /* Le pied : la marque sur toute la ligne, puis les colonnes deux par deux. */
+  .pied-grille { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--t4) var(--t3); }
+  .pied-grille > :first-child { grid-column: 1 / -1; }
+  .pied-grille > :last-child:nth-child(even) { grid-column: 1 / -1; }
+  /* Seule sur sa ligne, la dernière colonne se range elle-même en deux. */
+  .pied-grille > :last-child:nth-child(even) ul { columns: 2; column-gap: var(--t3); }
+  .pied-grille > :last-child:nth-child(even) li { break-inside: avoid; }
 }
