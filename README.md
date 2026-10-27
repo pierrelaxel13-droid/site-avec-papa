@@ -41,6 +41,15 @@ ne sont pas en place :
   existent et que les pages ne soient plus servies sans jeton valide ;
 - **le paiement** — Stripe ou équivalent, pour l'abonnement et sa résiliation.
 
+### Ouvrir l'abonnement payant
+
+Remplir `contenu/paiement.js` avec les trois liens de paiement Stripe
+(`https://buy.stripe.com/…`) et, si possible, le lien du portail client
+(`https://billing.stripe.com/…`). Rien d'autre : la construction refuse tout
+autre lien, et toute clé Stripe. Tant qu'un lien est vide, le bouton de la
+formule ouvre un courriel. Le paiement ne verrouille pas encore l'application :
+de vrais comptes restent à faire.
+
 La grille, fixée le 27 octobre 2026 : **40, 55 et 80 € par mois, TTC**, sans
 cadrage sur place (`FORMULES` dans build.mjs).
 

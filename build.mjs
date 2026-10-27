@@ -65,6 +65,11 @@ const dateFr = (iso) => new Date(iso + "T12:00:00Z")
    rang, la session en porte un. C'est la seule règle, et elle est appliquée
    dans le navigateur — donc contournable. Elle décrit le produit, elle ne le
    protège pas. Les mêmes clés et les mêmes rangs sont dans assets/session.js. */
+/* Les liens de paiement Stripe, lus dans contenu/paiement.js par main(). Vide :
+   le bouton ouvre un courriel. */
+let PAIEMENT = {};
+const lienPaiement = (id) => PAIEMENT[id] || "";
+
 const FORMULES = {
   textes:  { l: "Textes", rang: 1, montant: "40 €", prix: "40 € par mois",
              pour: "Vous voulez savoir ce qui paraît pour votre métier.",
@@ -362,6 +367,7 @@ ${zone === "public" ? bandeInstallation(a) : ""}
           <li><a href="${a("index.html")}">Le produit</a></li>
           <li><a href="${a("decouvrir.html")}">Comment ça marche</a></li>
           <li><a href="${a("abonnement.html")}">S'abonner et voir les tarifs</a></li>
+          ${lienPaiement("portail") ? `<li><a href="${esc(lienPaiement("portail"))}">Gérer ou résilier mon abonnement</a></li>` : ""}
           <li><a href="${a("connexion.html")}">Connexion</a></li>
         </ul>
       </div>
@@ -407,7 +413,7 @@ ${zone === "public" ? bandeInstallation(a) : ""}
       </p>
       <p>
         Éditeur : ${esc(SITE.nom)}, Clément Pierrel, ${esc(SITE.ville)}.
-        SIRET : à compléter. Hébergement : à compléter.
+        SIRET : à compléter. Hébergement : GitHub Pages, GitHub, Inc., 88 Colin P. Kelly Jr. Street, San Francisco, CA 94107, États-Unis.
         Aucun cookie, aucune mesure d'audience, aucune requête vers un service tiers.
         Le service fournit un cadre méthodologique, pas un conseil juridique.
       </p>
@@ -2562,8 +2568,9 @@ function pageAccueil(V, D, METIERS, ECRANS, C = null, NAF = null, SOURCES = [], 
         <ul>
           ${Object.values(FORMULES).map((f) => `<li><strong>${esc(f.l)}</strong> — ${esc(f.prix)} : ${esc(f.ouvre.replace(/^En plus : /, "en plus de la formule précédente, "))}</li>`).join("\n          ")}
         </ul>
-        <p>Le détail de chaque formule est sur <a href="abonnement.html">la page des tarifs</a>. Le paiement en ligne
-        n'est pas encore branché : pour l'instant, on s'abonne par courriel.</p>`],
+        <p>Le détail de chaque formule est sur <a href="abonnement.html">la page des tarifs</a>. ${Object.keys(FORMULES).every((id) => lienPaiement(id))
+        ? "Le paiement se fait en ligne, par Stripe, et se renouvelle chaque mois."
+        : "Le paiement en ligne n'est pas encore branché : pour l'instant, on s'abonne par courriel."}</p>`],
       ["Laquelle choisir ?",
        `<p><strong>Celle qui correspond à ce que vous devez montrer.</strong></p>
         <ul>
@@ -3290,15 +3297,21 @@ function pageAbonnement(V) {
         <p class="prix"><span class="grand">${esc(f.montant)}</span> <span class="etiq">par mois, TTC</span></p>
         <p class="pour">${esc(f.pour)}</p>
         <ul class="formule-donne">${f.donne.map((d) => `<li>${esc(d)}</li>`).join("")}</ul>
-        <a class="bouton ${id === "complet" ? "bouton-accent" : "bouton-sobre"}" href="mailto:${esc(SITE.courriel)}?subject=${encodeURIComponent(`Démarrer un abonnement — ${f.l}`)}">Démarrer un abonnement</a>
+        <a class="bouton ${id === "complet" ? "bouton-accent" : "bouton-sobre"}" href="${esc(lienPaiement(id) ||
+          `mailto:${SITE.courriel}?subject=${encodeURIComponent(`Démarrer un abonnement — ${f.l}`)}`)}">Démarrer un abonnement</a>
       </article>`).join("\n      ")}
     </div>
 
-    <p class="reserve" style="margin-top:var(--t5)">
+    ${Object.keys(FORMULES).every((id) => lienPaiement(id)) ? `<p class="reserve reserve-ok" style="margin-top:var(--t5)">
+      <strong>Paiement en ligne, sécurisé par Stripe.</strong>
+      « Démarrer un abonnement » ouvre la page de paiement de Stripe : par carte, prélevé chaque mois.
+      Vos coordonnées bancaires ne passent jamais par ce site.
+      ${lienPaiement("portail") ? `Vous pouvez <a href="${esc(lienPaiement("portail"))}">gérer ou résilier votre abonnement</a> à tout moment.` : ""}
+    </p>` : `<p class="reserve" style="margin-top:var(--t5)">
       <strong>Le paiement en ligne n'est pas encore branché.</strong>
       « Démarrer un abonnement » ouvre pour l'instant un courriel à ${esc(SITE.courriel)} :
       le prélèvement automatique suppose un service de paiement, qui n'est pas encore en place.
-    </p>
+    </p>`}
   </div>
 </section>
 
@@ -3701,6 +3714,17 @@ async function main() {
   const LIENS = await chargeFichier("contenu/liens.js", "LIENS");
 
   const SOURCES = await chargeFichier("contenu/sources.js", "SOURCES");
+
+  // Les liens de paiement : publics par nature, mais jamais une clé Stripe.
+  if (existsSync(resolve(RACINE, "contenu/paiement.js"))) {
+    PAIEMENT = await chargeFichier("contenu/paiement.js", "PAIEMENT") || {};
+    for (const [id, url] of Object.entries(PAIEMENT)) {
+      if (!url) continue;
+      if (/\b(sk|pk|rk)_(live|test)_/.test(url)) throw new Error(`contenu/paiement.js : « ${id} » contient une clé Stripe. Ne mettre que des liens.`);
+      const attendu = id === "portail" ? "https://billing.stripe.com/" : "https://buy.stripe.com/";
+      if (!url.startsWith(attendu)) throw new Error(`contenu/paiement.js : le lien « ${id} » doit commencer par ${attendu}`);
+    }
+  }
 
   // Les avis des clients : de vrais avis seulement, publiés avec leur accord.
   const AVIS = existsSync(resolve(RACINE, "contenu/temoignages.js"))

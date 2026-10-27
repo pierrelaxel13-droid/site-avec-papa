@@ -2939,3 +2939,6 @@ a.defile:hover .avis-appel strong { text-decoration: underline; text-underline-o
 .erreur-avis { margin: 0; color: #C2410C; font-weight: 600; }
 .merci-avis { margin: 0; padding: var(--t3); border-radius: var(--r2); background: var(--accent-clair); color: var(--encre); }
 .formulaire-avis .rangee { margin: 0; }
+
+/* Le paiement en ligne est branché : la réserve devient une bonne nouvelle. */
+.reserve.reserve-ok { background: var(--accent-clair); border-color: var(--accent-filet); }
