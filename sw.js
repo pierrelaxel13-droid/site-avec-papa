@@ -71,6 +71,8 @@ self.addEventListener("fetch", (e) => {
 
   const url = new URL(req.url);
   if (url.origin !== self.location.origin) return;   // rien d'extérieur, ici
+  // Les réponses du serveur de comptes ne se gardent jamais.
+  if (/\/api\//.test(url.pathname)) return;
 
   if (req.mode === "navigate") {
     e.respondWith((async () => {

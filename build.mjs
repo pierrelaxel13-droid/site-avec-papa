@@ -23,7 +23,7 @@
    ========================================================================== */
 
 import { cp, rm, mkdir, writeFile, readFile, readdir, stat } from "node:fs/promises";
-import { existsSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { createHash } from "node:crypto";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -229,7 +229,7 @@ const POLITIQUE = "default-src 'self'; script-src 'self'; style-src 'self' 'unsa
   "base-uri 'none'; form-action 'self'; upgrade-insecure-requests";
 
 function page({ titre, description, racine = "", zone = "public", actif = "", corps,
-                attrsBody = "", verrou = false, donneesPlan = false, formule = "" }) {
+                attrsBody = "", verrou = false, donneesPlan = false, formule = "", scripts = [] }) {
   /* Les feuilles de style et les scripts portent la version de l'habillage :
      une page nouvelle ne peut plus être servie avec la feuille de style de la
      veille, gardée par le navigateur (une heure) ou par le service worker. */
@@ -319,15 +319,21 @@ ${zone === "app" ? '<meta name="robots" content="noindex">' : ""}
   </div>
 </header>
 
-${zone === "app" ? `<p class="bandeau-demo">
+${zone === "app" ? `<p class="bandeau-demo" data-mode="demo">
   <strong>Démonstration.</strong>
   <span id="formule-active"></span>
   Les données ci-dessous sont un jeu d'essai (entreprise et textes fictifs).
   La connexion ne protège rien : elle pose un jeton dans votre navigateur, et le
-  contenu de ces pages reste lisible dans la source. Un vrai compte suppose un
-  service d'authentification, qui n'est pas encore en place.
-  <a href="${a("connexion.html")}">Changer de formule</a> ·
+  contenu de ces pages reste lisible dans la source.
+  <a href="${a("abonnement.html")}#essayer">Changer de formule</a> ·
   <a href="${a("index.html")}">Revenir au site</a>
+</p>
+<p class="bandeau-demo" data-mode="compte" hidden>
+  <strong>Votre espace.</strong>
+  <span data-formule-compte></span>
+  Pour l'instant, l'entreprise, le tableau de bord et le registre affichés sont encore ceux
+  de la démonstration : vos propres données arrivent bientôt. Les textes, eux, sont les vrais.
+  <a href="${a("api/deconnexion")}">Se déconnecter</a>
 </p>` : ""}
 
 <main id="contenu">
@@ -341,7 +347,7 @@ ${verrou ? `<section class="verrou" id="verrou">
       contient l'application.
     </p>
     <p class="rangee rangee-centre" style="margin-top:var(--t5)">
-      <a class="bouton bouton-accent" href="${a("connexion.html")}" id="verrou-action">Ouvrir la démonstration</a>
+      <a class="bouton bouton-accent" href="${a("abonnement.html")}#essayer" id="verrou-action">Ouvrir la démonstration</a>
       <a class="bouton bouton-sobre" href="${a("abonnement.html")}">Voir les tarifs</a>
     </p>
   </div>
@@ -427,6 +433,7 @@ ${zone === "app" ? `<script src="${a("assets/avis-data.js")}"></script>
 <script src="${a("assets/entreprise.js")}"></script>
 <script src="${a("assets/avis.js")}"></script>` : ""}
 ${zone === "app" || verrou || actif === "connexion" || actif === "abonnement" ? `<script src="${a("assets/session.js")}"></script>` : ""}
+${scripts.map((f) => `<script src="${a(f)}"></script>`).join("\n")}
 </body>
 </html>
 `);
@@ -3402,74 +3409,109 @@ function pageConnexion() {
       <form class="carte-connexion" id="form-connexion" novalidate>
         <h2>Se connecter à votre espace</h2>
 
-        <p class="reserve">
-          <strong>N'entrez pas un vrai mot de passe ici.</strong>
-          Cet écran est la maquette de la future connexion : il n'y a pas encore de
-          serveur, donc rien n'est vérifié, rien n'est envoyé et rien n'est enregistré.
-          Le champ est là pour montrer à quoi ressemblera l'écran, pas pour servir.
+        <p class="reserve" id="connexion-fermee" hidden>
+          <strong>Les comptes ne sont pas encore ouverts sur cette adresse.</strong>
+          En attendant, vous pouvez essayer l'application en démonstration, sans compte.
         </p>
+        <p class="reserve" id="connexion-deja" hidden></p>
 
         <div class="champ">
           <label for="courriel">Adresse électronique</label>
           <input type="email" id="courriel" name="courriel" autocomplete="username"
-                 inputmode="email" placeholder="prenom@entreprise.fr" spellcheck="false">
+                 inputmode="email" placeholder="prenom@entreprise.fr" spellcheck="false" required>
         </div>
 
         <div class="champ">
           <label for="motdepasse">Mot de passe</label>
-          <input type="password" id="motdepasse" name="motdepasse" autocomplete="off"
-                 placeholder="••••••••">
+          <input type="password" id="motdepasse" name="motdepasse" autocomplete="current-password" required>
         </div>
 
         <p class="rangee" style="margin-top:var(--t4)">
           <button type="submit" class="bouton bouton-accent bouton-large">Se connecter</button>
         </p>
-        <p class="etiq" id="etat-connexion" role="status" style="margin-top:var(--t3)"></p>
+        <p class="etat-compte" id="etat-connexion" role="status"></p>
         <p style="margin-top:var(--t3)">
-          <a href="mailto:${esc(SITE.courriel)}?subject=Mot de passe oublié">Mot de passe oublié</a>
+          <a href="mailto:${esc(SITE.courriel)}?subject=Mot de passe oublié">Mot de passe oublié</a> :
+          écrivez-nous, on vous répond dans la journée.
         </p>
       </form>
     </div>
 
     <p class="rangee rangee-centre" style="margin-top:var(--t5)">
-      <a class="bouton bouton-sobre" href="abonnement.html#essayer">Ou entrer en démonstration</a>
+      <a class="bouton bouton-sobre" href="abonnement.html#essayer">Ou essayer la démonstration</a>
     </p>
-  </div>
-</section>
-
-<section class="section">
-  <div class="enveloppe">
-    <h2 class="titre-section">Ce qu'il reste à brancher</h2>
-    <ul class="raisons">
-      <li class="raison" data-paraitre>
-        <span class="numero" aria-hidden="true">1</span>
-        <h3>L'authentification</h3>
-        <p>Netlify Identity ou un équivalent, pour que les comptes existent, que les
-        mots de passe soient vérifiés ailleurs que dans le navigateur, et que les
-        pages ne soient plus servies à tout le monde.</p>
-      </li>
-      <li class="raison" data-paraitre>
-        <span class="numero" aria-hidden="true">2</span>
-        <h3>Le paiement</h3>
-        <p>Stripe ou un équivalent, pour l'abonnement mensuel, son renouvellement et
-        sa résiliation — et pour que la formule portée par le compte soit la formule
-        réellement payée.</p>
-      </li>
-      <li class="raison" data-paraitre>
-        <span class="numero" aria-hidden="true">3</span>
-        <h3>En attendant</h3>
-        <p>Le tri par formule se fait dans le navigateur : il décrit le produit, il ne
-        le protège pas. Qui regarde la source voit tout, quelle que soit la formule
-        choisie. C'est écrit sur chaque écran de l'application.</p>
-      </li>
-    </ul>
   </div>
 </section>`;
 
   return page({
     titre: `Connexion | ${SITE.nom}`,
     description: "Connexion à l'application de veille réglementaire Pierrel & Co.",
-    zone: "public", actif: "connexion", corps
+    zone: "public", actif: "connexion", corps, scripts: ["assets/compte.js"]
+  });
+}
+
+/* --- Après le paiement : créer son mot de passe ---------------------------
+   Stripe renvoie ici avec ?session=cs_… ; la page demande au serveur ce qui a
+   été payé, puis fait choisir un mot de passe. Sans serveur, elle le dit. */
+function pageBienvenue() {
+  const corps = `
+<section class="heros heros-court">
+  <div class="enveloppe">
+    <div class="heros-texte"><h1>Bienvenue</h1></div>
+    <p class="heros-sous">Merci pour votre abonnement. Il reste une étape : choisir votre mot de passe.</p>
+  </div>
+</section>
+<section class="section">
+  <div class="enveloppe">
+    <div class="connexion connexion-seule">
+      <form class="carte-connexion" id="form-bienvenue" novalidate>
+        <h2>Créer votre compte</h2>
+        <p class="etat-compte" id="etat-bienvenue" role="status">Vérification de votre paiement…</p>
+        <div id="bienvenue-champs" hidden>
+          <p class="lecture" id="bienvenue-formule"></p>
+          <div class="champ">
+            <label for="b-courriel">Adresse électronique</label>
+            <input type="email" id="b-courriel" autocomplete="username" readonly>
+          </div>
+          <div class="champ">
+            <label for="b-motdepasse">Mot de passe <span class="aide">au moins 10 caractères</span></label>
+            <input type="password" id="b-motdepasse" autocomplete="new-password" minlength="10" required>
+          </div>
+          <div class="champ">
+            <label for="b-confirme">Le même, une seconde fois</label>
+            <input type="password" id="b-confirme" autocomplete="new-password" minlength="10" required>
+          </div>
+          <p class="rangee" style="margin-top:var(--t4)">
+            <button type="submit" class="bouton bouton-accent bouton-large">Créer mon compte</button>
+          </p>
+        </div>
+      </form>
+    </div>
+  </div>
+</section>`;
+  return page({
+    titre: `Bienvenue | ${SITE.nom}`, description: "Créer votre compte après votre abonnement.",
+    racine: "../", zone: "public", corps, scripts: ["assets/compte.js"]
+  });
+}
+
+/* Un écran que la formule du compte n'ouvre pas : laquelle il faut. */
+function pageFormuleManquante() {
+  const infos = Object.fromEntries(Object.entries(FORMULES).map(([id, f]) => [id, { l: f.l, prix: f.prix, rang: f.rang }]));
+  const corps = `
+<section class="heros heros-court">
+  <div class="enveloppe">
+    <div class="heros-texte"><h1>Cet écran n'est pas dans votre formule</h1></div>
+    <p class="heros-sous" id="formule-manque" data-formules="${esc(JSON.stringify(infos))}">Il fait partie d'une formule plus complète.</p>
+    <p class="rangee rangee-centre">
+      <a class="bouton bouton-accent" href="${esc(lienPaiement("portail") || "../abonnement.html")}">Changer de formule</a>
+      <a class="bouton bouton-sobre" id="formule-retour" href="../app/releve.html">Revenir à mon espace</a>
+    </p>
+  </div>
+</section>`;
+  return page({
+    titre: `Formule | ${SITE.nom}`, description: "Cet écran fait partie d'une autre formule.",
+    racine: "../", zone: "public", corps, scripts: ["assets/compte.js"]
   });
 }
 
@@ -3695,7 +3737,47 @@ async function poids(chemin) {
   return total;
 }
 
+/* --- La démonstration, à part ----------------------------------------------
+   Sur Cloudflare, /app/ est fermé : seuls les abonnés y entrent. La
+   démonstration en est une copie exacte sous /demo/, ouverte à tous, avec le
+   jeu d'essai. Les liens d'une page de démo vers une autre restent dans
+   /demo/ : on réécrit « ../app/ » en « ../demo/ ». */
+async function copieDemo() {
+  const source = join(SORTIE, "app"), cible = join(SORTIE, "demo");
+  await cp(source, cible, { recursive: true });
+  async function reecrit(d) {
+    for (const e of await readdir(d, { withFileTypes: true })) {
+      const f = join(d, e.name);
+      if (e.isDirectory()) { await reecrit(f); continue; }
+      if (!e.name.endsWith(".html")) continue;
+      const h = await readFile(f, "utf8");
+      await writeFile(f, h.replace(/(href|src)="((?:\.\.\/)+)app\//g, '$1="$2demo/'));
+    }
+  }
+  await reecrit(cible);
+}
+
+/* Les en-têtes de sécurité pour Cloudflare Pages (fichier _headers), tirés de
+   netlify.toml pour qu'il n'y ait qu'une source. */
+function entetesCloudflare() {
+  const toml = readFileSync(resolve(RACINE, "netlify.toml"), "utf8");
+  const bloc = toml.split('for = "/*"')[1].split("[[headers]]")[0];
+  const lignes = [...bloc.matchAll(/^\s*([A-Za-z-]+)\s*=\s*"(.*)"\s*$/gm)].map((m) => `  ${m[1]}: ${m[2]}`);
+  if (!lignes.some((l) => l.includes("Content-Security-Policy"))) throw new Error("_headers : la politique de sécurité n'a pas été lue dans netlify.toml.");
+  return ["/*", ...lignes, "", "/assets/polices/*", "  Cache-Control: public, max-age=31536000, immutable", "",
+    "/app/*", "  Cache-Control: private, no-store", "  X-Robots-Tag: noindex", "",
+    "/demo/*", "  X-Robots-Tag: noindex", ""].join("\n");
+}
+
 async function main() {
+  // Les formules du serveur (serveur/compte.mjs) doivent dire la même chose.
+  const { FORMULES: SERVEUR } = await import("./serveur/compte.mjs");
+  for (const [id, f] of Object.entries(FORMULES)) {
+    const sv = SERVEUR[id];
+    if (!sv || sv.rang !== f.rang || sv.centimes !== Number(f.montant.replace(/[^0-9]/g, "")) * 100)
+      throw new Error(`serveur/compte.mjs : la formule « ${id} » ne correspond pas à FORMULES de build.mjs.`);
+  }
+
   const V = await chargeFichier("assets/referentiel.js", "VEILLE");
   const PIEGES = await chargeFichier("contenu/pieges.js", "PIEGES");
   const METIERS = await chargeFichier("contenu/metiers.js", "METIERS");
@@ -3774,7 +3856,7 @@ async function main() {
      sans amorce.js ni les données des alertes, un changement de l'un d'eux
      restait servi dans son ancienne version. */
   const habillage = ["site.css", "polices.css", "app.js", "theme.js", "amorce.js",
-                     "session.js", "entreprise.js", "avis.js", "referentiel.js"];
+                     "session.js", "entreprise.js", "avis.js", "referentiel.js", "compte.js"];
   const empreinte = createHash("sha256");
   for (const f of habillage) empreinte.update(await readFile(join(SORTIE, "assets", f)));
   empreinte.update(plan);
@@ -3815,6 +3897,9 @@ async function main() {
   await writeFile(join(SORTIE, "abonnement.html"), pageAbonnement(V));
   await writeFile(join(SORTIE, "decouvrir.html"), pageDecouvrir(V, ECRANS, C, NAF, SOURCES));
   await writeFile(join(SORTIE, "connexion.html"), pageConnexion());
+  await mkdir(join(SORTIE, "compte"), { recursive: true });
+  await writeFile(join(SORTIE, "compte", "bienvenue.html"), pageBienvenue());
+  await writeFile(join(SORTIE, "compte", "formule.html"), pageFormuleManquante());
 
   await writeFile(join(SORTIE, "app", "index.html"), appTableauBord(V, D, C, LIENS));
   await writeFile(join(SORTIE, "app", "plan.html"), appPlan(V, D, C, LIENS));
@@ -3855,6 +3940,9 @@ async function main() {
     await writeFile(join(SORTIE, "app", "secteur", `${d.c}-${slug(d.l)}.html`),
       appSecteur(V, PIEGES, METIERS, TEXTES, NAF, C, LIENS, d));
   }
+
+  await copieDemo();
+  await writeFile(join(SORTIE, "_headers"), entetesCloudflare());
 
   const total = await poids(SORTIE);
   console.log(`  public              4 pages (accueil, comment ça marche, abonnement, connexion)`);

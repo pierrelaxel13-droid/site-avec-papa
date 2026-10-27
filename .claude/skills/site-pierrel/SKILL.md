@@ -257,6 +257,13 @@ qu'il n'y a pas de client.
   captures. On y va par le menu, le bouton du héros de l'accueil et le pied
   (pas dans le bandeau : seul « Connexion » y est) ; elle ne mène pas dans
   l'application.
+- **Les vrais comptes** : `functions/` + `serveur/compte.mjs`, sur Cloudflare
+  Pages seulement (`.github/workflows/cloudflare.yml`). La démo est copiée de
+  `app/` vers `demo/` à la fin de build.mjs (`copieDemo()`), liens réécrits.
+  Les pages publiques mènent à la démo par `demo/`, jamais par `app/`. Essayer
+  en local : `node outils/comptes-local.mjs 8820` (faux Stripe, faux KV).
+  Sur GitHub Pages, `/api/` n'existe pas : la connexion le dit (404 attendu
+  sur `api/moi`).
 - **Les formules** (27 octobre 2026) : Textes 40 €, Textes et suivi 55 €,
   Veille complète 80 €, par mois TTC, sans cadrage. Tout le texte des tarifs,
   de l'accueil, de la FAQ et de « Qui sommes-nous » sort de `FORMULES` ; les

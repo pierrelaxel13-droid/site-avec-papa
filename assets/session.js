@@ -27,10 +27,21 @@
     suivi:   { l: "Textes et suivi", rang: 2 },
     complet: { l: "Veille complète", rang: 3 }
   };
+  /* Sur Cloudflare, /app/ est l'espace d'un vrai compte : sa formule vient du
+     serveur (cookie « pco_formule », posé à la connexion). Ce cookie ne sert
+     qu'à l'affichage ; la porte, c'est functions/app/_middleware.js. */
+  function formuleDuCompte() {
+    if (!/\/app\//.test(window.location.pathname)) return null;
+    var m = document.cookie.match(/(?:^|;\s*)pco_formule=([a-z]+)/);
+    return m ? m[1] : null;
+  }
+
   // Les noms d'avant la grille du 27 octobre 2026, encore dans des navigateurs.
   var ANCIENNES = { cadrage: "textes", veille: "suivi", preuves: "complet", demo: "complet" };
 
   function lu() {
+    var compte = formuleDuCompte();
+    if (compte && FORMULES[compte]) return compte;
     try {
       var v = window.localStorage.getItem(CLE);
       if (!v) return null;
@@ -81,6 +92,15 @@
       }
     }
 
+    if (formuleDuCompte()) {
+      var demo = document.querySelector('.bandeau-demo[data-mode="demo"]');
+      var vrai = document.querySelector('.bandeau-demo[data-mode="compte"]');
+      if (demo && vrai) {
+        demo.hidden = true; vrai.hidden = false;
+        var fc = vrai.querySelector("[data-formule-compte]");
+        if (fc) fc.textContent = "Formule « " + FORMULES[active].l + " ».";
+      }
+    }
     var banniere = document.getElementById("formule-active");
     if (banniere && active) {
       banniere.textContent = "Formule « " + FORMULES[active].l + " ».";
@@ -132,26 +152,7 @@
       var coche = document.querySelector('input[name="formule"]:checked');
       var f = ouvrir(coche ? coche.value : "complet");
       // Le tableau de bord n'est pas dans « Textes » : on entre par le relevé.
-      window.location.href = FORMULES[f].rang >= 2 ? "app/index.html" : "app/releve.html";
-    });
-  }
-
-  /* Le formulaire de connexion est une maquette : il ne lit pas le mot de
-     passe, ne l'envoie nulle part, et le vide aussitôt. */
-  var form = document.getElementById("form-connexion");
-  if (form) {
-    form.addEventListener("submit", function (e) {
-      e.preventDefault();
-      var mdp = document.getElementById("motdepasse");
-      if (mdp) mdp.value = "";
-      var dit = document.getElementById("etat-connexion");
-      if (dit) {
-        dit.textContent = "Aucun compte n'existe encore : rien n'a été vérifié, " +
-          "rien n'a été envoyé, et le champ du mot de passe vient d'être vidé. " +
-          "Entrez en démonstration ci-dessous.";
-      }
-      var demo = document.getElementById("entrer-demo");
-      if (demo) demo.focus();
+      window.location.href = FORMULES[f].rang >= 2 ? "demo/index.html" : "demo/releve.html";
     });
   }
 

@@ -41,6 +41,31 @@ ne sont pas en place :
   existent et que les pages ne soient plus servies sans jeton valide ;
 - **le paiement** — Stripe ou équivalent, pour l'abonnement et sa résiliation.
 
+### Les vrais comptes (Cloudflare)
+
+GitHub Pages ne sert que des fichiers : il ne peut pas fermer l'application.
+Sur **Cloudflare Pages** (`.github/workflows/cloudflare.yml`), `functions/`
+tourne à côté des pages :
+
+- `functions/app/_middleware.js` — la porte de `/app/` : sans session, vers la
+  connexion ; formule trop basse, vers `compte/formule.html`. La formule est
+  relue chez Stripe toutes les six heures.
+- `functions/api/` — `connexion`, `deconnexion`, `moi`, `bienvenue` (créer son
+  mot de passe après le paiement : Stripe renvoie sur
+  `/compte/bienvenue.html?session={CHECKOUT_SESSION_ID}`).
+- `serveur/compte.mjs` — mots de passe (PBKDF2), cookie signé, appels Stripe,
+  stockage KV « COMPTES ». Ses formules sont vérifiées contre `FORMULES`.
+
+La démonstration est copiée sous `/demo/`, ouverte à tous. Pour essayer tout
+ça sur un poste, sans Cloudflare ni Stripe : `node outils/comptes-local.mjs`.
+
+À faire une fois : un compte Cloudflare, puis trois secrets dans GitHub
+(`CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID`, `STRIPE_SECRET` — clé
+restreinte en lecture seule). Le détail est en tête de `cloudflare.yml`.
+
+Pas encore fait : l'oubli de mot de passe (par courriel), et les données
+propres à chaque client — l'espace montre encore l'entreprise de démonstration.
+
 ### Ouvrir l'abonnement payant
 
 Remplir `contenu/paiement.js` avec les trois liens de paiement Stripe

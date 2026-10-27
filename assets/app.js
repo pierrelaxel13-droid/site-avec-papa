@@ -640,7 +640,7 @@
         ". Le plus fréquent est à revoir <strong>" +
         (paquets.length ? paquets[0].l.toLowerCase() : "—") + "</strong>.";
 
-      if (sortie.lien) sortie.lien.href = "app/secteur/" + div.u + ".html";
+      if (sortie.lien) sortie.lien.href = "demo/secteur/" + div.u + ".html";
     }
 
     choix.addEventListener("change", function () { calculer(true); });

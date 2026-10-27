@@ -2942,3 +2942,7 @@ a.defile:hover .avis-appel strong { text-decoration: underline; text-underline-o
 
 /* Le paiement en ligne est branché : la réserve devient une bonne nouvelle. */
 .reserve.reserve-ok { background: var(--accent-clair); border-color: var(--accent-filet); }
+
+/* Les messages des pages de compte (connexion, bienvenue). */
+.etat-compte { margin: var(--t3) 0 0; min-height: 1.5em; color: var(--encre); font-weight: 600; }
+.etat-compte:empty { display: none; }

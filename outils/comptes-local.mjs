@@ -1,0 +1,84 @@
+/* ==========================================================================
+   Essayer les comptes sans Cloudflare
+   --------------------------------------------------------------------------
+   Imite Cloudflare Pages sur ce poste : sert _site/, passe /app/ par
+   functions/app/_middleware.js et /api/… par functions/api/, avec un faux
+   stockage KV (en mémoire) et un faux Stripe :
+     - le paiement « cs_test_paye » est un abonnement « Textes et suivi »
+       payé par client@exemple.fr ;
+     - /__abo?montant=8000&statut=active règle l'abonnement de ce client.
+   Usage :
+     node build.mjs
+     node outils/comptes-local.mjs 8820
+     puis ouvrir http://localhost:8820/compte/bienvenue.html?session=cs_test_paye
+   ========================================================================== */
+import { createServer } from "node:http";
+import { readFile, writeFile, mkdir } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import { join, extname, dirname, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
+const DEPOT = resolve(dirname(fileURLToPath(import.meta.url)), ".."), SITE = join(DEPOT, "_site"), ICI = join(tmpdir(), "pco-comptes-local");
+const PORT = Number(process.argv[2] || 8820);
+
+// Les fonctions, recopiées en .mjs avec le chemin du serveur rendu absolu.
+async function charge(rel) {
+  const src = (await readFile(join(DEPOT, "functions", rel), "utf8"))
+    .replace(/"\.\.\/\.\.\/serveur\/compte\.mjs"/g, JSON.stringify(join(DEPOT, "serveur/compte.mjs")));
+  const f = join(ICI, "fn", rel.replace(/\.js$/, ".mjs"));
+  await mkdir(dirname(f), { recursive: true }); await writeFile(f, src);
+  return import(f + "?t=" + Date.now());
+}
+const routes = {
+  "/api/connexion": await charge("api/connexion.js"), "/api/deconnexion": await charge("api/deconnexion.js"),
+  "/api/moi": await charge("api/moi.js"), "/api/bienvenue": await charge("api/bienvenue.js")
+};
+const porte = await charge("app/_middleware.js");
+
+// Faux KV
+const kv = new Map();
+const env = { STRIPE_SECRET: "rk_test_faux", COMPTES: {
+  get: async (k) => kv.has(k) ? kv.get(k) : null, put: async (k, v) => { kv.set(k, v); }, delete: async (k) => { kv.delete(k); } } };
+// Faux Stripe : l'abonnement de cus_1 est réglable par /__abo?montant=
+let montantAbo = 5500, statutAbo = "active";
+const vraiFetch = globalThis.fetch;
+globalThis.fetch = async (url, opts) => {
+  const u = String(url);
+  if (!u.startsWith("https://api.stripe.com/")) return vraiFetch(url, opts);
+  const rep = (o, s = 200) => new Response(JSON.stringify(o), { status: s, headers: { "Content-Type": "application/json" } });
+  if (u.includes("/checkout/sessions/cs_test_paye")) return rep({ mode: "subscription", status: "complete", payment_status: "paid",
+    customer: "cus_1", customer_details: { email: "Client@Exemple.fr" }, line_items: { data: [{ price: { unit_amount: 5500 } }] } });
+  if (u.includes("/checkout/sessions/")) return rep({ error: { message: "No such checkout session" } }, 404);
+  if (u.includes("/subscriptions?customer=cus_1")) return rep({ data: [{ status: statutAbo, items: { data: [{ price: { unit_amount: montantAbo } }] } }] });
+  return rep({ data: [] });
+};
+
+const TYPES = { ".html": "text/html; charset=utf-8", ".js": "text/javascript", ".css": "text/css", ".json": "application/json",
+  ".png": "image/png", ".svg": "image/svg+xml", ".woff2": "font/woff2", ".webmanifest": "application/manifest+json", ".txt": "text/plain" };
+async function statique(chemin) {
+  let p = decodeURIComponent(chemin); if (p.endsWith("/")) p += "index.html";
+  try { return new Response(await readFile(join(SITE, p)), { headers: { "Content-Type": TYPES[extname(p)] || "application/octet-stream" } }); }
+  catch { return new Response("non trouvé", { status: 404 }); }
+}
+
+createServer(async (req, res) => {
+  const url = new URL(req.url, `http://localhost:${PORT}`);
+  if (url.pathname === "/__abo") { montantAbo = Number(url.searchParams.get("montant")); statutAbo = url.searchParams.get("statut") || "active"; res.end("ok"); return; }
+  const corps = await new Promise((ok) => { const b = []; req.on("data", (c) => b.push(c)); req.on("end", () => ok(Buffer.concat(b))); });
+  const requete = new Request(url, { method: req.method, headers: req.headers, body: ["GET", "HEAD"].includes(req.method) ? undefined : corps });
+  let reponse;
+  const r = routes[url.pathname];
+  if (r) {
+    const h = r[`onRequest${req.method[0] + req.method.slice(1).toLowerCase()}`] || r.onRequest;
+    reponse = h ? await h({ request: requete, env, params: {} }) : new Response("Méthode refusée", { status: 405 });
+  } else if (url.pathname.startsWith("/api/")) {
+    reponse = new Response("non trouvé", { status: 404 });
+  } else if (url.pathname.startsWith("/app")) {
+    reponse = await porte.onRequest({ request: requete, env, next: () => statique(url.pathname) });
+  } else reponse = await statique(url.pathname);
+  const entetes = {};
+  reponse.headers.forEach((v, k) => { if (k !== "set-cookie") entetes[k] = v; });
+  const cookies = reponse.headers.getSetCookie ? reponse.headers.getSetCookie() : [];
+  if (cookies.length) entetes["set-cookie"] = cookies;
+  res.writeHead(reponse.status, entetes);
+  res.end(Buffer.from(await reponse.arrayBuffer()));
+}).listen(PORT, () => console.log("Cloudflare imité sur", PORT));
