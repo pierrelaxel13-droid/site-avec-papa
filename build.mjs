@@ -2469,9 +2469,6 @@ function pageAccueil(V, D, METIERS, ECRANS, C = null, NAF = null, SOURCES = []) 
 <section class="section">
   <div class="enveloppe">
     <h2 class="titre-section">À quoi ça ressemble</h2>
-    <p class="intro titre-section">De vraies captures, pas des dessins : cliquez-en une pour la
-    voir en grand. Le fonctionnement complet, schémas compris, est sur
-    <a href="decouvrir.html">Comment ça marche</a>.</p>
 
     ${vitrine(ECRANS, {
       image: "releve.png",

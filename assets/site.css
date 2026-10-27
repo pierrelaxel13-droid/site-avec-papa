@@ -2796,3 +2796,7 @@ a.carte-vide .carte-aller { display: none; }
   .pied-grille > :last-child:nth-child(even) ul { columns: 2; column-gap: var(--t3); }
   .pied-grille > :last-child:nth-child(even) li { break-inside: avoid; }
 }
+
+/* « À quoi ça ressemble » n'a plus de phrase sous son titre : la première
+   capture garde sa distance. */
+h2.titre-section + .vitrine { margin-top: clamp(2rem, 1.2rem + 3vw, 3.5rem); }
