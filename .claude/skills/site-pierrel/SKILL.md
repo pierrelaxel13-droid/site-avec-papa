@@ -254,15 +254,20 @@ qu'il n'y a pas de client.
   comptent « N faits sur M » (`faits()` dans app.js).
 - **Comment ça marche** (`decouvrir.html`, `pageDecouvrir()`) : les étapes, des
   dessins SVG aux couleurs du thème (version en hauteur sous 40rem) et les
-  captures. On y va par le bouton « Comment ça marche » du bandeau, à côté de
-  « Connexion » (sur toutes les pages publiques, plus dans le menu), et par le
-  pied ; elle ne mène pas dans l'application.
+  captures. On y va par le menu, le bouton du héros de l'accueil et le pied
+  (pas dans le bandeau : seul « Connexion » y est) ; elle ne mène pas dans
+  l'application.
+- **Les formules** (27 octobre 2026) : Textes 40 €, Textes et suivi 55 €,
+  Veille complète 80 €, par mois TTC, sans cadrage. Tout le texte des tarifs,
+  de l'accueil, de la FAQ et de « Qui sommes-nous » sort de `FORMULES` ; les
+  clés et rangs sont aussi dans `assets/session.js`.
 - **« En savoir plus » ouvre une page à part** : `le-site.html` et `nous.html`
   (`pageInfos()`, encarts dans `encartsDuSite()` / `encartsDeNous()`), rien
   ne se déplie sur l'accueil. « Voir tout » sous « Votre métier y est » mène à
   `metiers.html` (`pageMetiers()`, les 88 divisions par section) ; chaque
   métier ouvre `index.html?q=CODE#simulateur`.
-- **Vos questions** : trois thèmes (`faq` dans `pageAccueil()`), chaque réponse
+- **Vos questions** : seize questions en trois thèmes (`faq` dans
+  `pageAccueil()`) — ne pas en ajouter, développer les réponses. Chaque réponse
   commence par la réponse courte en gras. Chiffres tirés des données ; ce qui
   n'est pas en place (courriel, comptes, prix à confirmer) est dit.
 - **La barre des avis** (`bandeAvis()`, sous le héros) : défile les avis de

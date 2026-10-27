@@ -41,8 +41,8 @@ ne sont pas en place :
   existent et que les pages ne soient plus servies sans jeton valide ;
 - **le paiement** — Stripe ou équivalent, pour l'abonnement et sa résiliation.
 
-La grille de tarifs est une **proposition à valider**, construite depuis la
-revue de marché, pas une grille arrêtée par Clément Pierrel. La page le dit.
+La grille, fixée le 27 octobre 2026 : **40, 55 et 80 € par mois, TTC**, sans
+cadrage sur place (`FORMULES` dans build.mjs).
 
 ## Les captures de l'accueil
 
@@ -87,9 +87,11 @@ notification système. Le panneau le dit plutôt que de le laisser croire.
 
 ## Les trois formules
 
-La formule choisie décide des écrans ouverts : **Cadrage** donne le plan de
-veille et les fiches de secteur, **Veille tenue** y ajoute le tableau de bord
-et le relevé, **Veille et preuves** ouvre le registre. Une page déclare le rang
+La formule choisie décide des écrans ouverts : **Textes** (40 €) donne le
+relevé, les textes, les fiches de secteur et les réglages ; **Textes et suivi**
+(55 €) y ajoute le plan, le tableau de bord et les alertes (la cloche, l'onglet
+« Mes alertes » : `data-exige="suivi"`) ; **Veille complète** (80 €) ouvre le
+registre. Les anciennes clés (cadrage, veille, preuves) restent reconnues. Une page déclare le rang
 qu'elle demande (`data-formule` sur `<body>`), la session en porte un, et
 `assets/session.js` compare.
 

@@ -374,22 +374,12 @@ html, body, * { scrollbar-width: none; }
   color: var(--bouton-texte);
   white-space: nowrap;
 }
-/* « Comment ça marche » se tient à côté de « Connexion », en haut, sur toutes
-   les pages publiques : même taille, mais en bouton clair. */
-.bouton-sobre.bouton-bandeau { color: var(--encre); }
-.bouton-sobre.bouton-bandeau[aria-current="page"] { background: var(--accent-clair); border-color: var(--accent-filet); }
-/* Au téléphone, les deux boutons et le menu doivent tenir sur la ligne du
-   logo : le mot-symbole cède la place au sigle (il suffit à reconnaître le
-   site), et les boutons se resserrent. */
-@media (max-width: 34rem) {
-  .zone-public .marque > span { display: none; }
-  .zone-public .bandeau-interieur { gap: .4rem; }
-  .bouton-bandeau { min-height: 2.6rem; padding: .45rem .75rem; font-size: .9rem; }
-}
+@media (max-width: 26rem) { .bouton-bandeau { padding-inline: 1rem; font-size: .95rem; } }
+/* Sous 352 px, le mot-symbole cède la place : le sigle suffit à identifier le
+   site, et « Connexion » doit rester atteignable. */
 @media (max-width: 22rem) {
   .marque > span { display: none; }
   .bandeau-interieur { gap: .4rem; }
-  .bouton-bandeau { padding-inline: .65rem; font-size: .86rem; }
 }
 
 .menu-bascule {
@@ -1792,7 +1782,12 @@ details[open] > summary .chevron { transform: rotate(180deg); }
   box-shadow: var(--ombre-1);
   display: flex; flex-direction: column; gap: var(--t3);
 }
-.formule > p:nth-of-type(2) { margin-bottom: auto; }
+/* Ce que la formule donne, en liste ; la marge du bas aligne les boutons. */
+.formule-donne {
+  margin: 0 0 auto; padding-left: 1.15rem;
+  display: grid; gap: .5rem; color: var(--encre-douce); line-height: 1.5;
+}
+.formule-donne li:first-child { color: var(--encre); font-weight: 600; }
 .formule.mise-en-avant { border-color: var(--accent); box-shadow: var(--ombre-2); }
 /* La phrase qui dit à qui la formule s'adresse : elle vient avant le détail,
    parce que le client se reconnaît avant de comparer. */

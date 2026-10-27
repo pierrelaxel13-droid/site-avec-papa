@@ -60,16 +60,33 @@ const dateFr = (iso) => new Date(iso + "T12:00:00Z")
   .toLocaleDateString("fr-FR", JOUR).replace(/^1 /, "1er ");
 
 /* --- Les trois formules, et ce que chacune ouvre ---------------------------- */
-/* Le rang décide : une page demande un rang, la session en porte un. C'est la
-   seule règle, et elle est appliquée dans le navigateur — donc contournable.
-   Elle décrit le produit, elle ne le protège pas. */
+/* Grille fixée le 27 octobre 2026 : 40, 55 et 80 € par mois, toutes taxes
+   comprises, sans cadrage sur place. Le rang décide : une page demande un
+   rang, la session en porte un. C'est la seule règle, et elle est appliquée
+   dans le navigateur — donc contournable. Elle décrit le produit, elle ne le
+   protège pas. Les mêmes clés et les mêmes rangs sont dans assets/session.js. */
 const FORMULES = {
-  cadrage: { l: "Cadrage", rang: 1, prix: "890 € une fois",
-             ouvre: "Ce qui s'applique chez vous, et les 88 fiches de métier." },
-  veille:  { l: "Veille tenue", rang: 2, prix: "180 € par mois",
-             ouvre: "En plus : le tableau de bord et les textes qui paraissent." },
-  preuves: { l: "Veille et preuves", rang: 3, prix: "290 € par mois",
-             ouvre: "Tout, le registre de preuves compris." }
+  textes:  { l: "Textes", rang: 1, montant: "40 €", prix: "40 € par mois",
+             pour: "Vous voulez savoir ce qui paraît pour votre métier.",
+             ouvre: "Les textes de votre métier, chacun avec ce qu'il faut faire, et les 88 fiches de métier.",
+             donne: ["Le relevé des textes de votre métier, mis à jour toutes les heures",
+                     "Pour chaque texte : ce qu'il faut faire, et le texte lui-même, à côté de sa source",
+                     "Les 88 fiches de métier, et les codes relus article par article",
+                     "Vos réglages : votre métier, vos réponses, vos chiffres"] },
+  suivi:   { l: "Textes et suivi", rang: 2, montant: "55 €", prix: "55 € par mois",
+             pour: "Vous voulez aussi savoir quoi revoir, et quand.",
+             ouvre: "En plus : votre plan de veille, le tableau de bord et les alertes.",
+             donne: ["Tout ce que donne la formule Textes",
+                     "Votre plan de veille : chaque sujet à son rythme, avec la case « Fait »",
+                     "Le tableau de bord : les revues en retard et les textes à analyser",
+                     "Les alertes : la cloche qui compte les nouveautés à lire"] },
+  complet: { l: "Veille complète", rang: 3, montant: "80 €", prix: "80 € par mois",
+             pour: "Vous passez un audit ou une certification.",
+             ouvre: "Tout, le registre de preuves compris.",
+             donne: ["Tout ce que donne la formule Textes et suivi",
+                     "Le registre de preuves : chaque revue, décision et action, datée",
+                     "Imprimable tel quel pour l'auditeur",
+                     "Pensé pour ISO 14001, ISO 45001, MASE et Qualiopi"] }
 };
 
 /* --- Le manifeste : ce qui rend l'application installable ------------------- */
@@ -217,6 +234,7 @@ function page({ titre, description, racine = "", zone = "public", actif = "", co
 
   const menuPublic = `
       ${lien("index.html", "Le produit", "produit")}
+      ${lien("decouvrir.html", "Comment ça marche", "decouvrir")}
       ${lien("abonnement.html", "S'abonner", "abonnement")}
       ${selecteurTheme}`;
 
@@ -263,9 +281,8 @@ ${zone === "app" ? '<meta name="robots" content="noindex">' : ""}
     <a class="marque" href="${a(zone === "app" ? "app/index.html" : "index.html")}">
       ${sigle}<span>Pierrel <span class="co">&amp; Co</span></span>
     </a>
-    ${zone === "public" ? `<a class="bouton bouton-sobre bouton-bandeau" href="${a("decouvrir.html")}"${actif === "decouvrir" ? ' aria-current="page"' : ""}>Comment ça marche</a>
-    <a class="bouton bouton-bandeau" href="${a("connexion.html")}">Connexion</a>` : ""}
-    ${zone === "app" ? `<div class="cloche-boite">
+    ${zone === "public" ? `<a class="bouton bouton-bandeau" href="${a("connexion.html")}">Connexion</a>` : ""}
+    ${zone === "app" ? `<div class="cloche-boite" data-exige="suivi">
       <button type="button" class="cloche" id="cloche" aria-expanded="false" aria-controls="panneau-avis">
         <span class="cache-visuellement">Nouveaux textes</span>
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"
@@ -367,7 +384,7 @@ ${zone === "public" ? bandeInstallation(a) : ""}
         <ul>
           <li><a href="${a("index.html")}#cabinet">Conseil en organisation et conformité</a></li>
           <li><a href="${a("index.html")}#cabinet">${esc(SITE.zone)}</a></li>
-          <li><a href="${a("index.html")}#cabinet">Un interlocuteur, qui vient sur place</a></li>
+          <li><a href="${a("index.html")}#cabinet">Un interlocuteur unique</a></li>
           <li><a href="${a("abonnement.html")}">Prix affichés, sans devis</a></li>
         </ul>
       </div>`}
@@ -620,7 +637,7 @@ ${rubrique({ etiq: "Dernières traces", aplat: true, contenu: `
   return page({
     titre: `Tableau de bord | ${SITE.nom}`,
     description: "Tableau de bord de la veille réglementaire.",
-    racine: "../", zone: "app", actif: "bord", corps, verrou: true, formule: "veille"
+    racine: "../", zone: "app", actif: "bord", corps, verrou: true, formule: "suivi"
   });
 }
 
@@ -804,7 +821,7 @@ ${parFrequence.map((g) => {
   return page({
     titre: `Mon plan de veille | ${SITE.nom}`,
     description: "Ce qui s'applique chez vous, et à quel rythme le revoir.",
-    racine: "../", zone: "app", actif: "plan", corps, verrou: true, formule: "cadrage",
+    racine: "../", zone: "app", actif: "plan", corps, verrou: true, formule: "suivi",
     donneesPlan: true
   });
 }
@@ -1026,7 +1043,7 @@ ${rubrique({ etiq: "D’où ça vient dans votre veille", aplat: true, contenu: 
   return page({
     titre: `${intitule} | ${code.titre} | ${SITE.nom}`,
     description: `${intitule} — ${m.articles.length} articles du ${code.titre}, texte officiel consolidé.`,
-    racine: "../../", zone: "app", actif: "textes", corps, verrou: true, formule: "cadrage"
+    racine: "../../", zone: "app", actif: "textes", corps, verrou: true, formule: "textes"
   });
 }
 
@@ -1487,7 +1504,7 @@ ${C ? rubrique({ etiq: "Ce qui a changé dans les codes", id: "codes-changements
   return page({
     titre: `Relevé des textes | ${SITE.nom}`,
     description: "Les textes parus qui vous concernent.",
-    racine: "../", zone: "app", actif: "releve", corps, verrou: true, formule: "veille"
+    racine: "../", zone: "app", actif: "releve", corps, verrou: true, formule: "textes"
   });
 }
 
@@ -1515,7 +1532,7 @@ ${rubrique({ etiq: "Tout le registre", aplat: true, contenu: `
   return page({
     titre: `Registre de preuves | ${SITE.nom}`,
     description: "Les traces datées de la veille.",
-    racine: "../", zone: "app", actif: "registre", corps, verrou: true, formule: "preuves"
+    racine: "../", zone: "app", actif: "registre", corps, verrou: true, formule: "complet"
   });
 }
 
@@ -1618,7 +1635,7 @@ function appSecteurs(V, METIERS, NAF) {
     description: NAF
       ? `Les ${codes.length} codes APE, et ce qui s'applique à chacun.`
       : "Les 88 divisions de la nomenclature NAF et leurs obligations.",
-    racine: "../", zone: "app", actif: "secteurs", corps, verrou: true, formule: "cadrage"
+    racine: "../", zone: "app", actif: "secteurs", corps, verrou: true, formule: "textes"
   });
 }
 
@@ -1758,7 +1775,7 @@ ${rubrique({ etiq: T ? "Vérifier à la source" : "Lire le texte officiel", cont
   return page({
     titre: `${ref} | ${SITE.nom}`,
     description: `Ce qu'exige « ${ref} » : à qui ça s'applique, ce qu'il faut tenir, et où lire le texte officiel.`,
-    racine: "../../", zone: "app", actif: "textes", corps, verrou: true, formule: "cadrage"
+    racine: "../../", zone: "app", actif: "textes", corps, verrou: true, formule: "textes"
   });
 }
 
@@ -1811,7 +1828,7 @@ function appTextes(V, TEXTES, parTexte, C, LIENS) {
   return page({
     titre: `Tous les textes | ${SITE.nom}`,
     description: "Les textes de référence de la veille, et ce que chacun exige.",
-    racine: "../", zone: "app", actif: "textes", corps, verrou: true, formule: "cadrage"
+    racine: "../", zone: "app", actif: "textes", corps, verrou: true, formule: "textes"
   });
 }
 
@@ -1928,7 +1945,7 @@ ${p ? rubrique({ etiq: "Le terrain", contenu: `
   return page({
     titre: `${d.l} (NAF ${d.c}) | ${SITE.nom}`,
     description: `Obligations réglementaires de la division NAF ${d.c}, ${d.l}.`,
-    racine: "../../", zone: "app", actif: "secteurs", corps, verrou: true, formule: "cadrage",
+    racine: "../../", zone: "app", actif: "secteurs", corps, verrou: true, formule: "textes",
     attrsBody: ` data-domaines-base="${base.length}"`
   });
 }
@@ -1957,7 +1974,7 @@ function appReglages(V, D, NAF, METIERS) {
     <div class="bascule" role="tablist" aria-label="Réglages" data-bascule style="margin-inline:0">
       <span class="bascule-curseur" aria-hidden="true"></span>
       <button type="button" role="tab" id="onglet-entreprise" aria-selected="true" aria-controls="volet-entreprise">Mon entreprise</button>
-      <button type="button" role="tab" id="onglet-alertes" aria-selected="false" aria-controls="volet-alertes">Mes alertes</button>
+      <button type="button" role="tab" id="onglet-alertes" aria-selected="false" aria-controls="volet-alertes" data-exige="suivi">Mes alertes</button>
     </div>
   </div>
 </section>
@@ -2171,7 +2188,7 @@ function appReglages(V, D, NAF, METIERS) {
     titre: `Réglages | ${SITE.nom}`,
     description: "Mon entreprise et mes alertes.",
     racine: "../", zone: "app", actif: "reglages", corps, verrou: true,
-    formule: "cadrage", donneesPlan: true
+    formule: "textes", donneesPlan: true
   });
 }
 
@@ -2290,14 +2307,12 @@ function encartsDeNous() {
     { titre: "Votre interlocuteur", lignes: [
       `<strong>Clément Pierrel</strong>`,
       `Un interlocuteur unique, pas un abonnement anonyme ni un centre d'appels`,
-      `Il connaît votre site, et il vient dessus`,
+      `Joignable directement, par téléphone ou par courriel`,
       `Le premier échange, d'une heure, est sans engagement`
     ] },
     { titre: "Ce qu'on fait pour vous", lignes: [
-      `<strong>Le cadrage</strong> (${esc(FORMULES.cadrage.prix)}) : une demi-journée chez vous, puis le document écrit — ce qui s'applique, à quel rythme, et qui s'en occupe`,
-      `<strong>La veille tenue</strong> (${esc(FORMULES.veille.prix)}) : on vous prévient dès qu'un texte vous concerne, avec ce qu'il faut faire`,
-      `<strong>Les preuves</strong> (${esc(FORMULES.preuves.prix)}) : le registre, et une revue annuelle sur place`,
-      `Prix hors taxes, affichés sur la <a href="abonnement.html">page des tarifs</a>, sans devis`
+      ...Object.values(FORMULES).map((f) => `<strong>${esc(f.l)}</strong> (${esc(f.prix)}) : ${esc(f.ouvre.replace(/^En plus : /, "en plus, ").replace(/\.$/, ""))}`),
+      `Prix TTC, affichés sur la <a href="abonnement.html">page des tarifs</a>, sans devis`
     ] },
     { titre: "Les audits qu'on prépare", lignes: [
       `<strong>ISO 14001</strong> (environnement) et <strong>ISO 45001</strong> (santé et sécurité)`,
@@ -2467,104 +2482,164 @@ function pageAccueil(V, D, METIERS, ECRANS, C = null, NAF = null, SOURCES = [], 
   const exemples = ["salaries", "chantier", "chimique", "alimentaire"]
     .map((id) => V.declencheurs.filter((q) => q.id === id)[0]).filter(Boolean)
     .map((q) => `« ${esc(q.q.replace(/^Vous /, "vous ").replace(/^Votre /, "votre "))} »`);
+  /* Un exemple chiffré, pris sur le métier montré par défaut dans l'outil. */
+  const CHAQUE = { quotidienne: "chaque jour", hebdomadaire: "chaque semaine", mensuelle: "chaque mois", trimestrielle: "chaque trimestre" };
+  const exempleRythmes = vuDefaut.groupes.filter((g) => g.base.length)
+    .map((g, k) => `${g.base.length}${k ? "" : " à revoir"} ${CHAQUE[g.id] || g.f.l.toLowerCase()}`)
+    .join(", ").replace(/, ([^,]+)$/, " et $1");
+  const gestesSst = (V.domaines.sst ? V.domaines.sst.actions : []).slice(0, 3);
+  const prixListe = Object.values(FORMULES).map((f) => esc(f.montant)).join(", ").replace(/, ([^,]+)$/, " ou $1");
   const faq = [
     { theme: "Le service", questions: [
       ["À quoi sert une veille réglementaire ?",
        `<p><strong>À savoir, avant qu'on vous le demande, quels textes s'appliquent chez vous et ce qu'ils vous obligent à faire.</strong></p>
-        <p>Lois, décrets et arrêtés changent chaque semaine. Lors d'un contrôle, d'un accident ou d'un audit,
-        on vous demandera ce que vous saviez et ce que vous avez fait. La veille, c'est repérer les textes
-        qui vous concernent, comprendre ce qu'ils changent, agir, et garder la trace de tout cela.</p>`],
+        <p>Lois, décrets, arrêtés, normes : les règles qui encadrent une entreprise changent chaque semaine. Personne
+        ne peut tout lire, et pourtant c'est à vous de les appliquer. Lors d'un contrôle de l'inspection du travail,
+        après un accident, ou pendant un audit, la question est toujours la même : qu'est-ce que vous saviez, et
+        qu'est-ce que vous avez fait ?</p>
+        <p>Faire sa veille, c'est quatre gestes, toujours les mêmes :</p>
+        <ul>
+          <li><strong>repérer</strong> les textes qui concernent votre métier, et seulement ceux-là ;</li>
+          <li><strong>comprendre</strong> ce qu'ils changent chez vous ;</li>
+          <li><strong>agir</strong> : mettre à jour un document, former quelqu'un, changer une consigne ;</li>
+          <li><strong>garder la trace</strong> de ce que vous avez fait, et de quand.</li>
+        </ul>
+        <p>Le site fait le premier geste à votre place, vous prépare les deux suivants, et garde le dernier.</p>`],
       ["D'où viennent les textes ?",
        `<p><strong>De ${confirmees.length} sources officielles, relues automatiquement toutes les heures.</strong></p>
-        <p>${esc([...new Set(confirmees.map(nomCourt))].join(", "))}.${C ? ` S'y ajoutent ${C.codes.length} codes
-        (${esc(C.codes.map((c) => c.titre).join(", "))}), relus chaque jour, article par article.` : ""}</p>
-        <p>Chaque texte garde sa date, sa source et le lien direct vers l'original : c'est la source qui fait foi.</p>
-        ${muettes.length ? `<p>${muettes.length} sources ne sont pas encore relevées automatiquement :
+        <p>Le Journal officiel en tête, puis les ministères, les autorités et les organismes publics :
+        ${esc([...new Set(confirmees.map(nomCourt))].join(", "))}.</p>
+        ${C ? `<p>S'y ajoutent ${C.codes.length} codes (${esc(C.codes.map((c) => c.titre).join(", "))}), relus chaque
+        matin, article par article : quand un article change, vous le voyez.</p>` : ""}
+        <p>Rien n'est recopié de mémoire ni résumé à la main : chaque texte garde sa date de parution, sa source
+        et le lien direct vers l'original. En cas de doute, c'est toujours la source officielle qui fait foi.</p>
+        ${muettes.length ? `<p>Pour être complet : ${muettes.length} sources ne sont pas encore relevées automatiquement —
         ${esc(muettes.map((x) => `${nomCourt(x)} (${x.pourquoi || "ne répond pas"})`).join(", "))}.</p>` : ""}`],
       ["Comment savez-vous ce qui me concerne ?",
-       `<p><strong>Par votre métier, puis par vos réponses à quelques questions.</strong></p>
-        <p>Chacune des ${V.divisions.length} familles de métiers est rattachée aux sujets qui la concernent,
-        parmi ${Object.keys(V.domaines).length}. ${V.declencheurs.length} questions simples ajoutent ce qui vient de votre
-        façon de travailler : ${exemples.join(", ")}… Ce qui ne vous concerne pas n'arrive pas.</p>
-        <p>La liste n'est pas garantie complète : le cadrage sert justement à la vérifier avec vous, chez vous.</p>`],
+       `<p><strong>Par votre métier d'abord, puis par vos réponses à quelques questions simples.</strong></p>
+        <p>Chacune des ${V.divisions.length} familles de métiers de la nomenclature officielle est rattachée aux
+        sujets qui la concernent, parmi ${Object.keys(V.domaines).length}. Par exemple, pour les
+        <strong>${esc(divDefaut.l.toLowerCase())}</strong> (électriciens, plombiers, peintres…), cela fait
+        <strong>${vuDefaut.base.length} sujets</strong> : ${esc(exempleRythmes)}.</p>
+        <p>Ensuite, ${V.declencheurs.length} questions ajoutent ce qui vient de votre façon de travailler :
+        ${exemples.join(", ")}… Chaque réponse « oui » ajoute les sujets qui vont avec.</p>
+        <p>Ce qui ne vous concerne pas n'arrive pas. La liste n'est pas pour autant garantie complète : lors du
+        premier échange, Clément Pierrel peut la revoir avec vous.</p>`],
       ["Que se passe-t-il quand un nouveau texte paraît ?",
        `<p><strong>Il arrive dans votre relevé, rangé dans son sujet, avec la marque « Nouveau ».</strong></p>
-        <p>Vous ouvrez sa fiche et vous y trouvez, dans cet ordre : ce que vous devez faire, le texte tel
-        qu'il a été publié, et sa source. Quand c'est traité, vous cochez « Fait » : la date est gardée
-        et le registre la montre à l'auditeur.</p>`],
+        <p>Vous ouvrez sa fiche, et vous y trouvez trois choses, toujours dans cet ordre :</p>
+        <ul>
+          <li><strong>ce que vous devez faire</strong>, en liste et en français courant${gestesSst.length ? ` — pour un texte de
+            santé-sécurité, par exemple : « ${esc(gestesSst[0])} », « ${esc(gestesSst[1] || "")} »` : ""} ;</li>
+          <li><strong>le texte lui-même</strong>, tel qu'il a été publié, pas un résumé ;</li>
+          <li><strong>sa source</strong> : qui l'a publié, quand, et le lien direct.</li>
+        </ul>
+        <p>Quand c'est traité, vous cochez « Fait » : la date est gardée. Avec la formule ${esc(FORMULES.complet.l)},
+        elle va aussi au registre, prête à montrer à l'auditeur.</p>`],
       ["Est-ce que je reçois un courriel à chaque nouveauté ?",
-       `<p><strong>Pas encore automatiquement.</strong></p>
-        <p>L'envoi suppose un serveur qui expédie les courriels, et il n'est pas encore en place. En attendant,
-        le relevé se met à jour toutes les heures dans l'application, et la cloche, en haut de l'écran, compte
-        les textes que vous n'avez pas lus. Vos réglages d'alerte sont gardés pour le jour où l'envoi sera branché.</p>`],
+       `<p><strong>Pas encore : l'envoi automatique par courriel n'est pas en place.</strong></p>
+        <p>Il suppose un serveur qui expédie les courriels, et le site n'en a pas encore. En attendant :</p>
+        <ul>
+          <li>le relevé se met à jour <strong>toutes les heures</strong>, tout seul ;</li>
+          <li>ce qui vient d'arriver porte la marque <strong>« Nouveau »</strong> tant que vous ne l'avez pas lu ;</li>
+          <li>avec les formules ${esc(FORMULES.suivi.l)} et ${esc(FORMULES.complet.l)}, la <strong>cloche</strong>, en haut
+            de l'écran, compte les textes que vous n'avez pas encore lus.</li>
+        </ul>
+        <p>Vos réglages d'alerte (l'adresse, le rythme d'envoi, les revues à rappeler) sont déjà gardés : ils
+        serviront le jour où l'envoi sera branché.</p>`],
       ["Est-ce un conseil juridique ?",
        `<p><strong>Non.</strong></p>
-        <p>Le site dit ce qui s'applique à votre métier et ce qu'il faut faire. Ce que cela implique dans
-        votre cas précis reste à valider par quelqu'un de compétent. En cas de doute, c'est toujours la
-        source officielle qui fait foi.</p>`]
+        <p>Le site vous dit ce qui s'applique à votre métier, ce qui paraît, et les gestes habituels à faire
+        pour chaque texte. Il ne tranche pas un point de droit, et il ne connaît pas les détails de votre
+        situation.</p>
+        <p>Ce qu'un texte implique dans votre cas précis reste à valider par quelqu'un de compétent : un juriste,
+        un avocat, ou votre organisation professionnelle. Et en cas de doute, c'est toujours la source
+        officielle qui fait foi, pas le site.</p>`]
     ] },
     { theme: "Prix et démarrage", questions: [
       ["Combien ça coûte ?",
-       `<p><strong>${esc(FORMULES.cadrage.prix)} pour le cadrage, puis ${esc(FORMULES.veille.prix)} ou ${esc(FORMULES.preuves.prix)}.</strong> Hors taxes, sans devis.</p>
+       `<p><strong>${prixListe} par mois, toutes taxes comprises, selon la formule.</strong> Sans devis.</p>
         <ul>
-          <li><strong>${esc(FORMULES.cadrage.l)}</strong> (${esc(FORMULES.cadrage.prix)}) : une demi-journée chez vous, puis le
-            document écrit — ce qui s'applique, à quel rythme le revoir, et qui s'en occupe. Il vous reste,
-            que vous continuiez ou non.</li>
-          <li><strong>${esc(FORMULES.veille.l)}</strong> (${esc(FORMULES.veille.prix)}) : on vous prévient dès qu'un texte vous
-            concerne, avec ce qu'il change et ce qu'il faut faire. L'application comprise.</li>
-          <li><strong>${esc(FORMULES.preuves.l)}</strong> (${esc(FORMULES.preuves.prix)}) : la veille tenue, plus le registre
-            de preuves et une revue annuelle sur place.</li>
+          ${Object.values(FORMULES).map((f) => `<li><strong>${esc(f.l)}</strong> — ${esc(f.prix)} : ${esc(f.ouvre.replace(/^En plus : /, "en plus de la formule précédente, "))}</li>`).join("\n          ")}
         </ul>
-        <p>Ces montants sont encore une proposition : ils seront confirmés avec vous avant tout engagement.</p>`],
+        <p>Le détail de chaque formule est sur <a href="abonnement.html">la page des tarifs</a>. Le paiement en ligne
+        n'est pas encore branché : pour l'instant, on s'abonne par courriel.</p>`],
       ["Laquelle choisir ?",
-       `<p><strong>Celle qui correspond à votre situation d'aujourd'hui.</strong></p>
+       `<p><strong>Celle qui correspond à ce que vous devez montrer.</strong></p>
         <ul>
-          <li>Vous ne savez pas ce qui vous concerne : le <strong>cadrage</strong>.</li>
-          <li>Vous le savez, mais vous n'avez pas le temps de suivre : la <strong>veille tenue</strong>.</li>
-          <li>Vous préparez un audit ou une certification : la <strong>veille et preuves</strong>.</li>
-        </ul>`],
+          ${Object.values(FORMULES).map((f) => `<li>${esc(f.pour.replace(/\.$/, ""))} : <strong>${esc(f.l)}</strong> (${esc(f.prix)}).</li>`).join("\n          ")}
+        </ul>
+        <p>En cas de doute, commencez par la démonstration : vous voyez exactement les écrans que chaque formule
+        ouvre, et vous changez de formule d'un clic.</p>`],
       ["Mon métier est-il couvert ?",
        `<p><strong>Oui, quel qu'il soit : les ${V.divisions.length} familles de métiers${NAF ? ` et les ${NAF.codes.length} codes APE` : ""} de la nomenclature officielle.</strong></p>
-        <p>Choisissez le vôtre dans <a href="#simulateur">l'outil en haut de page</a>, ou dans
-        <a href="metiers.html">la liste de tous les métiers</a> : vous voyez tout de suite les sujets à
-        suivre et à quel rythme.</p>`],
+        <p>Votre code APE figure sur votre extrait Kbis ou votre avis de situation Insee ; ses deux premiers
+        chiffres sont ceux de votre famille de métiers (43.21A, par exemple, appartient à la famille 43).</p>
+        <p>Choisissez-la dans <a href="#simulateur">l'outil en haut de page</a>, ou dans
+        <a href="metiers.html">la liste de tous les métiers</a> : vous voyez tout de suite les sujets à suivre,
+        et à quel rythme les revoir.</p>`],
       ["Peut-on essayer avant de s'abonner ?",
        `<p><strong>Oui, tout de suite, sans compte et sans mot de passe.</strong></p>
-        <p>L'application est ouverte en démonstration, avec une entreprise et des textes d'essai. Vous
-        choisissez une formule et vous voyez exactement les écrans qu'elle ouvre :
-        <a href="abonnement.html#essayer">essayer la démonstration</a>.</p>`],
+        <p>L'application est ouverte en démonstration, avec une entreprise et des textes d'essai. Vous choisissez
+        une formule, et vous voyez exactement les écrans qu'elle ouvre — ceux qu'elle n'ouvre pas vous le disent.
+        Vous pouvez en changer autant de fois que vous voulez.</p>
+        <p><a href="abonnement.html#essayer">Essayer la démonstration</a>.</p>`],
       ["Comment on démarre ?",
-       `<p><strong>Par un premier échange d'une heure, sans engagement.</strong></p>
-        <p>Avec Clément Pierrel, on définit ensemble ce qui s'applique chez vous. Si vous continuez, le
-        cadrage se fait sur place, puis la veille prend le relais. Pour prendre rendez-vous :
+       `<p><strong>En trois étapes.</strong></p>
+        <ul>
+          <li><strong>Regardez ce qui vous concerne</strong>, avec <a href="#simulateur">l'outil en haut de page</a> : c'est gratuit et sans inscription.</li>
+          <li><strong>Choisissez votre formule</strong> sur <a href="abonnement.html">la page des tarifs</a>, et écrivez-nous avec le bouton « Démarrer un abonnement ».</li>
+          <li><strong>Renseignez votre entreprise</strong> dans les réglages : votre métier et vos réponses. Votre veille se fait dessus, aussitôt.</li>
+        </ul>
+        <p>Vous préférez en parler d'abord ? Le premier échange, d'une heure, est sans engagement :
         <a href="tel:${esc(SITE.telephoneLien)}">${esc(SITE.telephone)}</a> ou
         <a href="mailto:${esc(SITE.courriel)}">${esc(SITE.courriel)}</a>.</p>`]
     ] },
     { theme: "L'outil et vos données", questions: [
       ["Est-ce que ça m'aide pour ma certification ?",
        `<p><strong>Oui pour la partie réglementaire : ISO 14001, ISO 45001, MASE, Qualiopi.</strong></p>
-        <p>Ces référentiels demandent de connaître les exigences légales qui vous concernent et de montrer
-        que vous les suivez. Le site vous donne la liste de ce qui s'applique, les textes qui paraissent, et
-        un registre daté de chaque revue et de chaque décision, qui s'imprime tel quel.</p>
-        <p>Le site ne certifie pas : la décision reste à l'auditeur.</p>`],
+        <p>Ces référentiels demandent tous deux choses : connaître les exigences légales qui vous concernent, et
+        montrer que vous les suivez. Concrètement :</p>
+        <ul>
+          <li><strong>ISO 14001 et ISO 45001</strong> : identifier vos obligations (§ 6.1.3) et évaluer votre
+            conformité, preuve à l'appui (§ 9.1.2) ;</li>
+          <li><strong>MASE</strong> : connaître et suivre la réglementation de vos interventions ;</li>
+          <li><strong>Qualiopi</strong> : une veille légale et réglementaire, et son exploitation (indicateur 23).</li>
+        </ul>
+        <p>Le site vous donne la liste de ce qui s'applique, les textes qui paraissent, et — avec la formule
+        ${esc(FORMULES.complet.l)} — un registre daté de chaque revue et de chaque décision, qui s'imprime tel quel.
+        Le site ne certifie pas : la décision reste à l'auditeur.</p>`],
       ["Où sont mes données ?",
        `<p><strong>Aujourd'hui, uniquement sur votre appareil.</strong></p>
-        <p>Vos réglages, vos chiffres et vos cases « Fait » restent dans votre navigateur : rien n'est envoyé
-        à un serveur. C'est aussi pourquoi l'application est encore en démonstration : de vrais comptes,
-        partagés entre plusieurs personnes, supposent un serveur qui n'est pas encore en place.</p>`],
+        <p>Votre métier, vos réponses, vos chiffres et vos cases « Fait » restent dans votre navigateur : rien
+        n'est envoyé à un serveur, et le site ne pose ni cookie publicitaire ni mesure d'audience.</p>
+        <p>La contrepartie, c'est qu'ils ne passent pas d'un appareil à l'autre : ce que vous cochez sur
+        l'ordinateur ne se retrouve pas sur le téléphone. De vrais comptes, partagés entre plusieurs personnes
+        et plusieurs appareils, supposent un serveur qui n'est pas encore en place.</p>`],
       ["Faut-il installer quelque chose ?",
        `<p><strong>Non : tout marche dans le navigateur, sur ordinateur comme sur téléphone.</strong></p>
-        <p>Si vous le souhaitez, vous pouvez l'ajouter à l'écran d'accueil de votre téléphone. Elle s'ouvre
-        alors comme une application, même sans réseau.</p>`],
+        <p>Si vous le souhaitez, vous pouvez l'ajouter à l'écran d'accueil :</p>
+        <ul>
+          <li><strong>iPhone</strong> : dans Safari, Partager, puis « Sur l'écran d'accueil » ;</li>
+          <li><strong>Android</strong> : dans Chrome, le menu, puis « Ajouter à l'écran d'accueil » ;</li>
+          <li><strong>ordinateur</strong> : dans Chrome ou Edge, l'icône « Installer » de la barre d'adresse.</li>
+        </ul>
+        <p>Elle s'ouvre alors comme une application, et marche même sans réseau — sur un chantier, dans un
+        entrepôt. Ce n'est pas une application de l'App Store : rien à télécharger, pas de compte à créer.</p>`],
       ["Et si une source officielle ne répond pas ?",
        `<p><strong>Rien n'est perdu.</strong></p>
-        <p>Le robot réessaie, et les textes déjà relevés restent affichés tant que la source est muette. Les
-        sources qu'on ne peut pas encore relever sont citées, avec la raison, dans la réponse
-        « D'où viennent les textes ? » ci-dessus.</p>`],
+        <p>Il arrive qu'un site public soit en panne ou lent. Le robot réessaie alors une seconde fois. Si la
+        source reste muette, les textes qu'elle avait déjà donnés restent affichés, et la relève suivante, une
+        heure plus tard, reprend là où elle en était.</p>
+        <p>Les sources qu'on ne peut pas encore relever automatiquement sont citées, avec la raison, dans la
+        réponse « D'où viennent les textes ? » ci-dessus. On ne fait pas comme si elles étaient suivies.</p>`],
       ["Qui est derrière le site ?",
        `<p><strong>${esc(SITE.nom)}, un cabinet de conseil en organisation et conformité installé à ${esc(SITE.ville)}.</strong></p>
-        <p>Votre interlocuteur est Clément Pierrel. Il intervient sur ${esc(SITE.zone)}, connaît votre site et
-        vient dessus. <a href="nous.html">En savoir plus sur nous</a>.</p>`]
+        <p>Votre interlocuteur est Clément Pierrel. Le cabinet accompagne les entreprises de ${esc(SITE.zone)}
+        sur leur conformité réglementaire et la préparation de leurs audits.</p>
+        <p>Vous avez une question sur le site ou sur votre situation ? Un interlocuteur unique, joignable
+        directement : <a href="tel:${esc(SITE.telephoneLien)}">${esc(SITE.telephone)}</a> ou
+        <a href="mailto:${esc(SITE.courriel)}">${esc(SITE.courriel)}</a>. <a href="nous.html">En savoir plus sur nous</a>.</p>`]
     ] }
   ];
 
@@ -2580,6 +2655,7 @@ function pageAccueil(V, D, METIERS, ECRANS, C = null, NAF = null, SOURCES = [], 
     </p>
     <p class="rangee rangee-centre">
       <a class="bouton bouton-accent" href="#simulateur">Voir ce qui me concerne</a>
+      <a class="bouton bouton-sobre" href="decouvrir.html">Comment ça marche</a>
       <a class="bouton bouton-sobre" href="abonnement.html">Les tarifs</a>
     </p>
     <p class="gage">
@@ -2591,8 +2667,7 @@ function pageAccueil(V, D, METIERS, ECRANS, C = null, NAF = null, SOURCES = [], 
          affiche ses prix : on le dit dès le haut, chiffres tirés de FORMULES. -->
     <p class="gage gage-prix">
       <span>Prix affichés, sans devis :</span>
-      <span class="doux">${esc(FORMULES.cadrage.prix.replace(" une fois", ""))} le cadrage, puis
-        ${esc(FORMULES.veille.prix.replace(" par mois", ""))} ou ${esc(FORMULES.preuves.prix)}</span>
+      <span class="doux">${Object.values(FORMULES).map((f) => esc(f.montant)).join(", ").replace(/, ([^,]+)$/, " ou $1")} par mois, TTC</span>
     </p>
 
     <div class="heros-visuel">
@@ -2846,7 +2921,7 @@ ${bandeAvis(AVIS)}
         <span class="numero" aria-hidden="true">4</span>
         <h3>Quelqu'un en face</h3>
         <p>Pierrel &amp; Co est un cabinet de conseil à ${esc(SITE.ville)}, pas un abonnement
-        anonyme. Un interlocuteur unique, qui connaît le site et qui vient dessus.</p>
+        anonyme. Un interlocuteur unique, joignable directement par téléphone ou par courriel.</p>
       </li>
     </ul>
   </div>
@@ -3196,56 +3271,34 @@ function pageAbonnement(V) {
   <div class="enveloppe">
     <div class="heros-texte"><h1>Démarrer un abonnement</h1></div>
     <p class="heros-sous">
-      Trois formules, prix affichés — parce que presque personne ne le fait dans ce
-      métier : les offres comparables sont toutes « sur devis ». Montants hors taxes.
+      Trois formules, par mois, toutes taxes comprises. Le prix est affiché, sans
+      devis : les offres comparables sont presque toutes « sur devis ».
     </p>
   </div>
 </section>
 
 <section class="section">
   <div class="enveloppe">
-    <p class="reserve">
-      <strong>Proposition à valider, et paiement pas encore branché.</strong>
-      Ces montants sont une proposition construite à partir de la revue du marché, pas une
-      grille arrêtée par Clément Pierrel. Et « Démarrer un abonnement » ouvre pour l'instant
-      un courriel : le prélèvement automatique suppose un service de paiement, qui n'est pas
-      encore en place.
-    </p>
-
-    <p class="lecture" style="margin-top:var(--t5)">
-      <strong>Laquelle prendre ?</strong> Vous ne savez pas ce qui vous concerne : le
-      <strong>cadrage</strong>. Vous le savez, mais vous n'avez pas le temps de suivre :
-      la <strong>veille tenue</strong>. Vous passez un audit : la
-      <strong>veille et preuves</strong>.
+    <p class="lecture">
+      <strong>Laquelle prendre ?</strong>
+      ${Object.values(FORMULES).map((f) => `${esc(f.pour.replace(/\.$/, ""))} : <strong>${esc(f.l)}</strong>.`).join(" ")}
     </p>
 
     <div class="formules">
-      <article class="formule" data-paraitre>
-        <span class="etiq">01 — Cadrage</span>
-        <p class="prix"><span class="grand">890 €</span> <span class="etiq">une fois</span></p>
-        <p class="pour">Vous ne savez pas ce qui vous concerne.</p>
-        <p>Une demi-journée chez vous, puis le document écrit : ce qui s'applique, à quel
-        rythme le revoir, et qui s'en occupe. Vous le gardez, que vous continuiez ou non.</p>
-        <a class="bouton bouton-sobre" href="mailto:${esc(SITE.courriel)}?subject=Cadrage">Demander un cadrage</a>
-      </article>
-      <article class="formule" data-paraitre>
-        <span class="etiq">02 — Veille tenue</span>
-        <p class="prix"><span class="grand">180 €</span> <span class="etiq">par mois</span></p>
-        <p class="pour">Vous savez, mais vous n'avez pas le temps de suivre.</p>
-        <p>Le cadrage, puis on vous prévient dès qu'un texte vous concerne, avec ce qu'il
-        change chez vous et ce qu'il faut faire. Accès à l'application. Un établissement,
-        un interlocuteur.</p>
-        <a class="bouton bouton-sobre" href="mailto:${esc(SITE.courriel)}?subject=Démarrer un abonnement — Veille tenue">Démarrer un abonnement</a>
-      </article>
-      <article class="formule mise-en-avant" data-paraitre>
-        <span class="etiq">03 — Veille et preuves</span>
-        <p class="prix"><span class="grand">290 €</span> <span class="etiq">par mois</span></p>
-        <p class="pour">Vous passez un audit.</p>
-        <p>La veille tenue, plus le registre qui garde chaque revue et chaque décision avec sa
-        date, et une revue annuelle sur place. ISO 14001, ISO 45001, MASE, Qualiopi.</p>
-        <a class="bouton bouton-accent" href="mailto:${esc(SITE.courriel)}?subject=Démarrer un abonnement — Veille et preuves">Démarrer un abonnement</a>
-      </article>
+      ${Object.entries(FORMULES).map(([id, f], k) => `<article class="formule${id === "complet" ? " mise-en-avant" : ""}" data-paraitre>
+        <span class="etiq">0${k + 1} — ${esc(f.l)}</span>
+        <p class="prix"><span class="grand">${esc(f.montant)}</span> <span class="etiq">par mois, TTC</span></p>
+        <p class="pour">${esc(f.pour)}</p>
+        <ul class="formule-donne">${f.donne.map((d) => `<li>${esc(d)}</li>`).join("")}</ul>
+        <a class="bouton ${id === "complet" ? "bouton-accent" : "bouton-sobre"}" href="mailto:${esc(SITE.courriel)}?subject=${encodeURIComponent(`Démarrer un abonnement — ${f.l}`)}">Démarrer un abonnement</a>
+      </article>`).join("\n      ")}
     </div>
+
+    <p class="reserve" style="margin-top:var(--t5)">
+      <strong>Le paiement en ligne n'est pas encore branché.</strong>
+      « Démarrer un abonnement » ouvre pour l'instant un courriel à ${esc(SITE.courriel)} :
+      le prélèvement automatique suppose un service de paiement, qui n'est pas encore en place.
+    </p>
   </div>
 </section>
 
@@ -3259,7 +3312,7 @@ function pageAbonnement(V) {
     <div class="essai" id="essai">
       <div class="choix-formules" id="choix-formules">
         ${Object.keys(FORMULES).map((id) => `<label class="choix-formule">
-          <input type="radio" name="formule" value="${esc(id)}"${id === "preuves" ? " checked" : ""}>
+          <input type="radio" name="formule" value="${esc(id)}"${id === "complet" ? " checked" : ""}>
           <span class="corps">
             <span class="titre">${esc(FORMULES[id].l)}</span>
             <span class="prix">${esc(FORMULES[id].prix)}</span>
@@ -3308,8 +3361,7 @@ function pageAbonnement(V) {
     <h2>Un premier échange d'une heure, sans engagement</h2>
     <p class="mentions">
       Décrivez votre activité en trois lignes et ce qui vous inquiète : on vous dira
-      franchement si ${V.divisions.length} fiches de secteur et un registre vous servent,
-      ou si votre sujet est ailleurs.
+      franchement quelle formule vous sert, ou si votre sujet est ailleurs.
     </p>
     <p class="rangee">
       <a class="bouton bouton-accent" href="mailto:${esc(SITE.courriel)}">${esc(SITE.courriel)}</a>
