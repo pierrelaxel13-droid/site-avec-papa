@@ -2954,3 +2954,17 @@ a.defile:hover .avis-appel strong { text-decoration: underline; text-underline-o
 .tableau-admin th { font-size: .8rem; text-transform: uppercase; letter-spacing: .06em; color: var(--encre-douce); }
 .tableau-admin tr:last-child td { border-bottom: 0; }
 .tableau-admin .lien-nu { font: inherit; }
+
+/* --- 33. Les prix : l'année d'abord, le mois à côté ------------------------ */
+.formule .offre-an { margin: calc(-1 * var(--t2)) 0 0; display: flex; flex-wrap: wrap; align-items: center; gap: .5rem; color: var(--encre-douce); }
+.formule .offre-an strong { color: var(--encre); }
+.pastille-offre {
+  display: inline-flex; padding: .2rem .65rem; border-radius: var(--rp);
+  background: var(--accent-clair); color: var(--accent); font-weight: 700; font-size: .85rem;
+}
+.formule .lien-mois { align-self: center; margin-top: calc(-1 * var(--t1)); font-weight: 600; font-size: .95rem; }
+.mention-tva { margin: var(--t4) 0 0; text-align: center; color: var(--encre-douce); font-size: .95rem; }
+.gage-tva { margin-top: calc(-1 * var(--t2)); font-size: .9rem; }
+/* Dans les grands chiffres, l'espace de la police, déjà étroite, disparaissait
+   sous l'interlettrage serré : « 1 490 € » se lisait « 1490 € ». */
+.formule .prix .grand { word-spacing: .14em; }

@@ -41,9 +41,10 @@
 
 /* Mêmes clés, rangs et montants que FORMULES dans build.mjs, qui le vérifie. */
 export const FORMULES = {
-  textes:  { l: "Textes", rang: 1, centimes: 4000 },
-  suivi:   { l: "Textes et suivi", rang: 2, centimes: 5500 },
-  complet: { l: "Veille complète", rang: 3, centimes: 8000 }
+  // Montants en centimes, tels que Stripe les donne : au mois, et à l'année.
+  textes:  { l: "Textes", rang: 1, mois: 5900, an: 59000 },
+  suivi:   { l: "Textes et suivi", rang: 2, mois: 9900, an: 99000 },
+  complet: { l: "Veille complète", rang: 3, mois: 14900, an: 149000 }
 };
 
 const SIX_HEURES = 6 * 3600 * 1000;
@@ -52,7 +53,7 @@ const TOURS = 100000;   // le plafond de PBKDF2 sur Cloudflare Workers
 
 export const rang = (f) => (FORMULES[f] ? FORMULES[f].rang : 0);
 export const formuleDuMontant = (centimes) =>
-  Object.keys(FORMULES).find((id) => FORMULES[id].centimes === centimes) || null;
+  Object.keys(FORMULES).find((id) => FORMULES[id].mois === centimes || FORMULES[id].an === centimes) || null;
 export const accueilDe = (f) => (rang(f) >= 2 ? "/app/" : "/app/releve.html");
 
 /* Quelle formule demande une adresse de l'application. Cloudflare sert aussi

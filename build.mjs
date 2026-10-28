@@ -45,7 +45,11 @@ const SITE = {
   telephoneLien: "",
   /* « Le premier échange d'une heure est sans engagement » : seulement quand
      Clément l'a décidé. false = la promesse n'apparaît nulle part. */
-  premierEchange: false
+  premierEchange: false,
+  /* La TVA. "franchise" : micro-entreprise sous franchise en base, les prix
+     sont nets et portent « TVA non applicable, art. 293 B du CGI ». "ht" : le
+     jour où la TVA est facturée, les prix s'affichent « HT ». */
+  tva: "franchise"
 };
 
 /* « de Istres » ne se dit pas : « d'Istres ». */
@@ -79,32 +83,35 @@ const dateFr = (iso) => new Date(iso + "T12:00:00Z")
   .toLocaleDateString("fr-FR", JOUR).replace(/^1 /, "1er ");
 
 /* --- Les trois formules, et ce que chacune ouvre ---------------------------- */
-/* Grille fixée le 27 octobre 2026 : 40, 55 et 80 € par mois, toutes taxes
-   comprises, sans cadrage sur place. Le rang décide : une page demande un
+/* Grille du 28 octobre 2026 : 59, 99 et 149 € par mois, ou à l'année au prix
+   de dix mois (« 2 mois offerts »), sans cadrage sur place. Les montants sont
+   ici, en euros ; tout le reste (libellés, mention de TVA) en est tiré. Le rang décide : une page demande un
    rang, la session en porte un. C'est la seule règle, et elle est appliquée
    dans le navigateur — donc contournable. Elle décrit le produit, elle ne le
    protège pas. Les mêmes clés et les mêmes rangs sont dans assets/session.js. */
 /* Les liens de paiement Stripe, lus dans contenu/paiement.js par main(). Vide :
    le bouton ouvre un courriel. */
 let PAIEMENT = {};
-const lienPaiement = (id) => PAIEMENT[id] || "";
+const lienPaiement = (id, periode) =>
+  (id === "portail" ? PAIEMENT.portail : PAIEMENT[id] && PAIEMENT[id][periode]) || "";
+const paiementComplet = () => Object.keys(FORMULES).every((id) => lienPaiement(id, "an") && lienPaiement(id, "mois"));
 
 const FORMULES = {
-  textes:  { l: "Textes", rang: 1, montant: "40 €", prix: "40 € par mois",
+  textes:  { l: "Textes", rang: 1, mois: 59, an: 590,
              pour: "Vous voulez savoir ce qui paraît pour votre métier.",
              ouvre: "Les textes de votre métier, chacun avec ce qu'il faut faire, et les 88 fiches de métier.",
              donne: ["Le relevé des textes de votre métier, mis à jour toutes les heures",
                      "Pour chaque texte : ce qu'il faut faire, et le texte lui-même, à côté de sa source",
                      "Les 88 fiches de métier, et les codes relus article par article",
                      "Vos réglages : votre métier, vos réponses, vos chiffres"] },
-  suivi:   { l: "Textes et suivi", rang: 2, montant: "55 €", prix: "55 € par mois",
+  suivi:   { l: "Textes et suivi", rang: 2, mois: 99, an: 990,
              pour: "Vous voulez aussi savoir quoi revoir, et quand.",
              ouvre: "En plus : votre plan de veille, le tableau de bord et les alertes.",
              donne: ["Tout ce que donne la formule Textes",
                      "Votre plan de veille : chaque sujet à son rythme, avec la case « Fait »",
                      "Le tableau de bord : les revues en retard et les textes à analyser",
                      "Les alertes : la cloche qui compte les nouveautés à lire"] },
-  complet: { l: "Veille complète", rang: 3, montant: "80 €", prix: "80 € par mois",
+  complet: { l: "Veille complète", rang: 3, mois: 149, an: 1490,
              pour: "Vous passez un audit ou une certification.",
              ouvre: "Tout, le registre de preuves compris.",
              donne: ["Tout ce que donne la formule Textes et suivi",
@@ -112,6 +119,24 @@ const FORMULES = {
                      "Imprimable tel quel pour l'auditeur",
                      "Pensé pour ISO 14001, ISO 45001, MASE et Qualiopi"] }
 };
+
+/* Les prix, écrits une seule fois. « 1 490 € » : espace insécable avant les
+   milliers et avant le symbole, pour qu'ils ne se coupent jamais en fin de ligne. */
+const TVA = {
+  franchise: { suffixe: "", mention: "TVA non applicable, art. 293 B du CGI" },
+  ht:        { suffixe: " HT", mention: "Prix hors taxes" }
+}[SITE.tva];
+if (!TVA) throw new Error(`SITE.tva doit valoir "franchise" ou "ht", pas « ${SITE.tva} ».`);
+// L'espace fine insécable (U+202F) que donne toLocaleString n'existe pas dans
+// la police du site : elle s'affichait « 1490 ». On met l'insécable ordinaire.
+const eur = (n) => `${n.toLocaleString("fr-FR").replace(/\u202f/g, "\u00a0")}\u00a0€${TVA.suffixe}`;
+for (const [id, f] of Object.entries(FORMULES)) {
+  // « 2 mois offerts » doit rester vrai : l'année coûte dix mois.
+  if (f.an !== f.mois * 10) throw new Error(`FORMULES.${id} : ${f.an} € par an n'est pas dix fois ${f.mois} € (« 2 mois offerts »).`);
+  f.montant = eur(f.mois);                 // « 59 € »
+  f.prix = `${eur(f.mois)} par mois`;      // « 59 € par mois »
+  f.prixAn = `${eur(f.an)} par an`;        // « 590 € par an »
+}
 
 /* --- Le manifeste : ce qui rend l'application installable ------------------- */
 /* Android veut du PNG en 192 et 512, et une icône « maskable » qu'il peut
@@ -2343,8 +2368,8 @@ function encartsDeNous() {
       ...(SITE.premierEchange ? [`Le premier échange, d'une heure, est sans engagement`] : [])
     ] },
     { titre: "Ce qu'on fait pour vous", lignes: [
-      ...Object.values(FORMULES).map((f) => `<strong>${esc(f.l)}</strong> (${esc(f.prix)}) : ${esc(f.ouvre.replace(/^En plus : /, "en plus, ").replace(/\.$/, ""))}`),
-      `Prix TTC, affichés sur la <a href="abonnement.html">page des tarifs</a>, sans devis`
+      ...Object.values(FORMULES).map((f) => `<strong>${esc(f.l)}</strong> (${esc(f.prixAn)} ou ${esc(f.prix)}) : ${esc(f.ouvre.replace(/^En plus : /, "en plus, ").replace(/\.$/, ""))}`),
+      `L'année au prix de dix mois. ${esc(TVA.mention)}. Prix affichés sur la <a href="abonnement.html">page des tarifs</a>, sans devis`
     ] },
     { titre: "Les audits qu'on prépare", lignes: [
       `<strong>ISO 14001</strong> (environnement) et <strong>ISO 45001</strong> (santé et sécurité)`,
@@ -2589,17 +2614,18 @@ function pageAccueil(V, D, METIERS, ECRANS, C = null, NAF = null, SOURCES = [], 
     ] },
     { theme: "Prix et démarrage", questions: [
       ["Combien ça coûte ?",
-       `<p><strong>${prixListe} par mois, toutes taxes comprises, selon la formule.</strong> Sans devis.</p>
+       `<p><strong>${prixListe} par mois selon la formule, ou à l'année avec deux mois offerts.</strong> Sans devis.
+        ${esc(TVA.mention)}.</p>
         <ul>
-          ${Object.values(FORMULES).map((f) => `<li><strong>${esc(f.l)}</strong> — ${esc(f.prix)} : ${esc(f.ouvre.replace(/^En plus : /, "en plus de la formule précédente, "))}</li>`).join("\n          ")}
+          ${Object.values(FORMULES).map((f) => `<li><strong>${esc(f.l)}</strong> — ${esc(f.prixAn)}, ou ${esc(f.prix)} : ${esc(f.ouvre.replace(/^En plus : /, "en plus de la formule précédente, "))}</li>`).join("\n          ")}
         </ul>
-        <p>Le détail de chaque formule est sur <a href="abonnement.html">la page des tarifs</a>. ${Object.keys(FORMULES).every((id) => lienPaiement(id))
-        ? "Le paiement se fait en ligne, par Stripe, et se renouvelle chaque mois."
+        <p>Le détail de chaque formule est sur <a href="abonnement.html">la page des tarifs</a>. ${paiementComplet()
+        ? "Le paiement se fait en ligne, par Stripe, et se renouvelle chaque année ou chaque mois, selon votre choix."
         : "Le paiement en ligne n'est pas encore branché : pour l'instant, on s'abonne par courriel."}</p>`],
       ["Laquelle choisir ?",
        `<p><strong>Celle qui correspond à ce que vous devez montrer.</strong></p>
         <ul>
-          ${Object.values(FORMULES).map((f) => `<li>${esc(f.pour.replace(/\.$/, ""))} : <strong>${esc(f.l)}</strong> (${esc(f.prix)}).</li>`).join("\n          ")}
+          ${Object.values(FORMULES).map((f) => `<li>${esc(f.pour.replace(/\.$/, ""))} : <strong>${esc(f.l)}</strong> (${esc(f.prixAn)}, ou ${esc(f.prix)}).</li>`).join("\n          ")}
         </ul>
         <p>En cas de doute, commencez par la démonstration : vous voyez exactement les écrans que chaque formule
         ouvre, et vous changez de formule d'un clic.</p>`],
@@ -2699,7 +2725,10 @@ function pageAccueil(V, D, METIERS, ECRANS, C = null, NAF = null, SOURCES = [], 
          affiche ses prix : on le dit dès le haut, chiffres tirés de FORMULES. -->
     <p class="gage gage-prix">
       <span>Prix affichés, sans devis :</span>
-      <span class="doux">${Object.values(FORMULES).map((f) => esc(f.montant)).join(", ").replace(/, ([^,]+)$/, " ou $1")} par mois, TTC</span>
+      <span class="doux">${Object.values(FORMULES).map((f) => esc(f.montant)).join(", ").replace(/, ([^,]+)$/, " ou $1")} par mois,
+        ou à l'année avec 2 mois offerts</span>
+    </p>
+    <p class="gage gage-tva"><span class="doux">${esc(TVA.mention)}</span>
     </p>
 
     <div class="heros-visuel">
@@ -3303,8 +3332,8 @@ function pageAbonnement(V) {
   <div class="enveloppe">
     <div class="heros-texte"><h1>Démarrer un abonnement</h1></div>
     <p class="heros-sous">
-      Trois formules, par mois, toutes taxes comprises. Le prix est affiché, sans
-      devis : les offres comparables sont presque toutes « sur devis ».
+      Trois formules, à l'année ou au mois. Le prix est affiché, sans devis : les
+      offres comparables sont presque toutes « sur devis ».
     </p>
   </div>
 </section>
@@ -3319,22 +3348,27 @@ function pageAbonnement(V) {
     <div class="formules">
       ${Object.entries(FORMULES).map(([id, f], k) => `<article class="formule${id === "complet" ? " mise-en-avant" : ""}" data-paraitre>
         <span class="etiq">0${k + 1} — ${esc(f.l)}</span>
-        <p class="prix"><span class="grand">${esc(f.montant)}</span> <span class="etiq">par mois, TTC</span></p>
+        <!-- L'année d'abord : en entreprise, la veille est une ligne de budget annuel. -->
+        <p class="prix"><span class="grand">${esc(eur(f.an))}</span> <span class="etiq">par an</span></p>
+        <p class="offre-an"><span class="pastille-offre">2 mois offerts</span> ou <strong>${esc(f.prix)}</strong></p>
         <p class="pour">${esc(f.pour)}</p>
         <ul class="formule-donne">${f.donne.map((d) => `<li>${esc(d)}</li>`).join("")}</ul>
-        <a class="bouton ${id === "complet" ? "bouton-accent" : "bouton-sobre"}" href="${esc(lienPaiement(id) ||
-          `mailto:${SITE.courriel}?subject=${encodeURIComponent(`Démarrer un abonnement — ${f.l}`)}`)}">Démarrer un abonnement</a>
+        <a class="bouton ${id === "complet" ? "bouton-accent" : "bouton-sobre"}" href="${esc(lienPaiement(id, "an") ||
+          `mailto:${SITE.courriel}?subject=${encodeURIComponent(`Démarrer un abonnement — ${f.l}, à l'année`)}`)}">S'abonner à l'année</a>
+        <a class="lien-mois" href="${esc(lienPaiement(id, "mois") ||
+          `mailto:${SITE.courriel}?subject=${encodeURIComponent(`Démarrer un abonnement — ${f.l}, au mois`)}`)}">ou payer au mois</a>
       </article>`).join("\n      ")}
     </div>
+    <p class="mention-tva">${esc(TVA.mention)}. Prix affichés, sans devis.</p>
 
-    ${Object.keys(FORMULES).every((id) => lienPaiement(id)) ? `<p class="reserve reserve-ok" style="margin-top:var(--t5)">
+    ${paiementComplet() ? `<p class="reserve reserve-ok" style="margin-top:var(--t5)">
       <strong>Paiement en ligne, sécurisé par Stripe.</strong>
-      « Démarrer un abonnement » ouvre la page de paiement de Stripe : par carte, prélevé chaque mois.
+      Les boutons ouvrent la page de paiement de Stripe : par carte, prélevé chaque année ou chaque mois.
       Vos coordonnées bancaires ne passent jamais par ce site.
       ${lienPaiement("portail") ? `Vous pouvez <a href="${esc(lienPaiement("portail"))}">gérer ou résilier votre abonnement</a> à tout moment.` : ""}
     </p>` : `<p class="reserve" style="margin-top:var(--t5)">
       <strong>Le paiement en ligne n'est pas encore branché.</strong>
-      « Démarrer un abonnement » ouvre pour l'instant un courriel à ${esc(SITE.courriel)} :
+      Les boutons ouvrent pour l'instant un courriel à ${esc(SITE.courriel)} :
       le prélèvement automatique suppose un service de paiement, qui n'est pas encore en place.
     </p>`}
   </div>
@@ -3353,7 +3387,7 @@ function pageAbonnement(V) {
           <input type="radio" name="formule" value="${esc(id)}"${id === "complet" ? " checked" : ""}>
           <span class="corps">
             <span class="titre">${esc(FORMULES[id].l)}</span>
-            <span class="prix">${esc(FORMULES[id].prix)}</span>
+            <span class="prix">${esc(FORMULES[id].prixAn)} ou ${esc(FORMULES[id].prix)}</span>
             <span class="ouvre">${esc(FORMULES[id].ouvre)}</span>
           </span>
         </label>`).join("\n")}
@@ -3616,7 +3650,7 @@ function pageAdmin() {
 
 /* Un écran que la formule du compte n'ouvre pas : laquelle il faut. */
 function pageFormuleManquante() {
-  const infos = Object.fromEntries(Object.entries(FORMULES).map(([id, f]) => [id, { l: f.l, prix: f.prix, rang: f.rang }]));
+  const infos = Object.fromEntries(Object.entries(FORMULES).map(([id, f]) => [id, { l: f.l, prix: `${f.prixAn} ou ${f.prix}`, rang: f.rang }]));
   const corps = `
 <section class="heros heros-court">
   <div class="enveloppe">
@@ -3894,7 +3928,7 @@ async function main() {
   const { FORMULES: SERVEUR } = await import("./serveur/compte.mjs");
   for (const [id, f] of Object.entries(FORMULES)) {
     const sv = SERVEUR[id];
-    if (!sv || sv.rang !== f.rang || sv.centimes !== Number(f.montant.replace(/[^0-9]/g, "")) * 100)
+    if (!sv || sv.rang !== f.rang || sv.mois !== f.mois * 100 || sv.an !== f.an * 100)
       throw new Error(`serveur/compte.mjs : la formule « ${id} » ne correspond pas à FORMULES de build.mjs.`);
   }
 
@@ -3920,7 +3954,9 @@ async function main() {
   // Les liens de paiement : publics par nature, mais jamais une clé Stripe.
   if (existsSync(resolve(RACINE, "contenu/paiement.js"))) {
     PAIEMENT = await chargeFichier("contenu/paiement.js", "PAIEMENT") || {};
-    for (const [id, url] of Object.entries(PAIEMENT)) {
+    const liens = Object.entries(PAIEMENT).flatMap(([id, v]) =>
+      typeof v === "string" ? [[id, v]] : Object.entries(v || {}).map(([periode, url]) => [`${id}.${periode}`, url]));
+    for (const [id, url] of liens) {
       if (!url) continue;
       if (/\b(sk|pk|rk)_(live|test)_/.test(url)) throw new Error(`contenu/paiement.js : « ${id} » contient une clé Stripe. Ne mettre que des liens.`);
       const attendu = id === "portail" ? "https://billing.stripe.com/" : "https://buy.stripe.com/";

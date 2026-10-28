@@ -3,12 +3,11 @@
    --------------------------------------------------------------------------
    C'est le SEUL fichier à remplir pour ouvrir l'abonnement payant.
 
-   Pour chaque formule, coller entre les guillemets le lien de paiement créé
-   dans Stripe (Catalogue de produits, puis Liens de paiement). Il commence
-   par https://buy.stripe.com/
+   Pour chaque formule, deux liens de paiement créés dans Stripe (Catalogue de
+   produits, puis Liens de paiement) : l'un pour le prix à l'année, l'autre
+   pour le prix au mois. Ils commencent par https://buy.stripe.com/
 
-   Tant qu'un lien est vide, le bouton « Démarrer un abonnement » de cette
-   formule ouvre un courriel, comme avant. Dès qu'il est rempli, il ouvre la
+   Tant qu'un lien est vide, le bouton correspondant ouvre un courriel. Dès qu'il est rempli, il ouvre la
    page de paiement Stripe, et la page des tarifs dit que le paiement est en
    ligne.
 
@@ -22,8 +21,9 @@
    ========================================================================== */
 
 window.PAIEMENT = {
-  textes:  "",   // Textes — 40 € par mois
-  suivi:   "",   // Textes et suivi — 55 € par mois
-  complet: "",   // Veille complète — 80 € par mois
+  //         à l'année                 au mois
+  textes:  { an: "", /* 590 €/an  */  mois: "" /* 59 €/mois  */ },
+  suivi:   { an: "", /* 990 €/an  */  mois: "" /* 99 €/mois  */ },
+  complet: { an: "", /* 1 490 €/an */ mois: "" /* 149 €/mois */ },
   portail: ""    // Gérer ou résilier son abonnement
 };

@@ -4,9 +4,10 @@
    Imite Cloudflare Pages sur ce poste : sert _site/, passe /app/ par
    functions/app/_middleware.js et /api/… par functions/api/, avec un faux
    stockage KV (en mémoire) et un faux Stripe :
-     - le paiement « cs_test_paye » est un abonnement « Textes et suivi »
-       payé par client@exemple.fr ;
-     - /__abo?montant=8000&statut=active règle l'abonnement de ce client ;
+     - le paiement « cs_test_paye » est un abonnement « Textes et suivi » au
+       mois (99 €), payé par client@exemple.fr ; « cs_test_annuel », une
+       « Veille complète » à l'année (1 490 €), payée par annuel@exemple.fr ;
+     - /__abo?montant=14900&statut=active règle l'abonnement de ce client ;
      - l'administrateur est admin@exemple.fr ; les courriels ne partent pas,
        /__courriels les montre (le lien « nouveau mot de passe » y est).
    Usage :
@@ -47,7 +48,7 @@ const env = { STRIPE_SECRET: "rk_test_faux", ADMIN_COURRIEL: "admin@exemple.fr",
 // Les courriels « envoyés » : /__courriels les montre.
 const courriels = [];
 // Faux Stripe : l'abonnement de cus_1 est réglable par /__abo?montant=
-let montantAbo = 5500, statutAbo = "active";
+let montantAbo = 9900, statutAbo = "active";
 const vraiFetch = globalThis.fetch;
 globalThis.fetch = async (url, opts) => {
   const u = String(url);
@@ -55,8 +56,12 @@ globalThis.fetch = async (url, opts) => {
   if (!u.startsWith("https://api.stripe.com/")) return vraiFetch(url, opts);
   const rep = (o, s = 200) => new Response(JSON.stringify(o), { status: s, headers: { "Content-Type": "application/json" } });
   if (u.includes("/checkout/sessions/cs_test_paye")) return rep({ mode: "subscription", status: "complete", payment_status: "paid",
-    customer: "cus_1", customer_details: { email: "Client@Exemple.fr" }, line_items: { data: [{ price: { unit_amount: 5500 } }] } });
+    customer: "cus_1", customer_details: { email: "Client@Exemple.fr" }, line_items: { data: [{ price: { unit_amount: 9900 } }] } });
+  // Un second client, abonné à l'année (« Veille complète », 1 490 €).
+  if (u.includes("/checkout/sessions/cs_test_annuel")) return rep({ mode: "subscription", status: "complete", payment_status: "paid",
+    customer: "cus_2", customer_details: { email: "annuel@exemple.fr" }, line_items: { data: [{ price: { unit_amount: 149000 } }] } });
   if (u.includes("/checkout/sessions/")) return rep({ error: { message: "No such checkout session" } }, 404);
+  if (u.includes("/subscriptions?customer=cus_2")) return rep({ data: [{ status: "active", items: { data: [{ price: { unit_amount: 149000 } }] } }] });
   if (u.includes("/subscriptions?customer=cus_1")) return rep({ data: [{ status: statutAbo, items: { data: [{ price: { unit_amount: montantAbo } }] } }] });
   return rep({ data: [] });
 };

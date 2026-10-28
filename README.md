@@ -75,15 +75,20 @@ l'entreprise de démonstration.
 
 ### Ouvrir l'abonnement payant
 
-Remplir `contenu/paiement.js` avec les trois liens de paiement Stripe
+Remplir `contenu/paiement.js` avec les six liens de paiement Stripe (un à l'année
+et un au mois par formule)
 (`https://buy.stripe.com/…`) et, si possible, le lien du portail client
 (`https://billing.stripe.com/…`). Rien d'autre : la construction refuse tout
 autre lien, et toute clé Stripe. Tant qu'un lien est vide, le bouton de la
 formule ouvre un courriel. Le paiement ne verrouille pas encore l'application :
 de vrais comptes restent à faire.
 
-La grille, fixée le 27 octobre 2026 : **40, 55 et 80 € par mois, TTC**, sans
-cadrage sur place (`FORMULES` dans build.mjs).
+La grille, fixée le 28 octobre 2026 : **59, 99 et 149 € par mois, ou 590, 990
+et 1 490 € par an** (« 2 mois offerts »), sans cadrage sur place. Sous
+franchise de TVA : « TVA non applicable, art. 293 B du CGI » (`SITE.tva` ;
+mettre "ht" le jour où la TVA est facturée). Montants dans `FORMULES`
+(build.mjs) et, en centimes, dans `serveur/compte.mjs` — la construction
+vérifie qu'ils concordent et que l'année vaut dix mois.
 
 ## Les captures de l'accueil
 
@@ -128,10 +133,10 @@ notification système. Le panneau le dit plutôt que de le laisser croire.
 
 ## Les trois formules
 
-La formule choisie décide des écrans ouverts : **Textes** (40 €) donne le
+La formule choisie décide des écrans ouverts : **Textes** (59 €) donne le
 relevé, les textes, les fiches de secteur et les réglages ; **Textes et suivi**
-(55 €) y ajoute le plan, le tableau de bord et les alertes (la cloche, l'onglet
-« Mes alertes » : `data-exige="suivi"`) ; **Veille complète** (80 €) ouvre le
+(99 €) y ajoute le plan, le tableau de bord et les alertes (la cloche, l'onglet
+« Mes alertes » : `data-exige="suivi"`) ; **Veille complète** (149 €) ouvre le
 registre. Les anciennes clés (cadrage, veille, preuves) restent reconnues. Une page déclare le rang
 qu'elle demande (`data-formule` sur `<body>`), la session en porte un, et
 `assets/session.js` compare.
