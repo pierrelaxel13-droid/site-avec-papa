@@ -119,7 +119,7 @@
    "id": "anses",
    "nom": "ANSES — avis et actualités",
    "entrees": 10,
-   "retenus": 1,
+   "retenus": 2,
    "souci": null
   },
   {
@@ -160,7 +160,7 @@
   {
    "id": "ansm",
    "nom": "ANSM — actualités",
-   "entrees": 0,
+   "entrees": 1,
    "retenus": 0,
    "souci": null
   },
@@ -274,6 +274,29 @@
    ],
    "morceaux": 2,
    "dateTexte": "2026-09-03",
+   "vuLe": "2026-10-28"
+  },
+  {
+   "source": "anses",
+   "sourceNom": "ANSES — avis et actualités",
+   "genre": "actualite",
+   "id": "https://www.anses.fr/fr/document/evolution-valeur-pasteurisatrice-VP40-pour-assainissement-produits-base-viandes-volailles-contaminees-Salmonella-spp",
+   "titre": "Note AST relative à « l’évolution, à la demande des professionnels, de la valeur pasteurisatrice VP40 pour l'assainissement de certains produits élaborés à base de viandes de volailles contaminées par Salmonella spp »",
+   "nature": "Publication officielle",
+   "date": "2026-10-28",
+   "corps": "<span>Note AST relative à « l’évolution, à la demande des professionnels, de la valeur pasteurisatrice VP40 pour l'assainissement de certains produits élaborés à base de viandes de volailles contaminées par Salmonella spp »</span>\n\n \n <div class=\"document__file-wrap\">\n <p class=\"field-label\">Fichier</p>\n <div class=\"document__file field--file\"><a href=\"https://www.anses.fr/system/files/BIORISK-2026-AST-0003.pdf\" target=\"_blank\" rel=\"noreferrer noopener\" title=\"BIORISK-2026-AST-0003.pdf PDF 819.13 Ko (nouvelle fenêtre)\">\n <span>BIORISK-2026-AST-0003.pdf <span class=\"file-info\">(819.13 Ko PDF)</span></span>\n</a>\n</div> </div>\n\n \n\n<span><span>jeremy.bodon@a…</span></span>\n\n<span><time datetime=\"2026-10-28T10:01:44+01:00\" title=\"Mercredi, 28 octobre, 2026 - 10:01\">mer, 28/10/2026 - 10:01</time>\n</span>\n\n \n <div class=\"document__document_subtitle-wrap\">\n <p class=\"field-label\">Sous-titre</p>\n <div class=\"document__document_subtitle field--string-long\">Note AST du 6 août 2026</div> </div>\n\n \n\n \n <div class=\"document__type_document-wrap\">\n <p class=\"field-label\">Type</p>\n <div class=\"document__type_document field--entity-reference\">Avis</div> </div>\n\n \n\n \n <div class=\"document__referral-wrap\">\n <p class=\"field-label\">Numéro de saisine</p>\n <div class=\"document__referral field--string\">2026-AST-0003</div> </div>\n\n \n\n \n <div class=\"document__document_keywords-wrap\">\n <p class=\"field-label\">Mots clés document</p>\n <div class=\"document__document_keywords field--string-long\">Valeur pasteurisatrice ; Salmonella ; mesure de maîtrise ; volaille</div> </div>\n\n \n\n \n <div class=\"document__expert_committee-wrap\">\n <p class=\"field-label\">Comité d'experts</p>\n <div class=\"document__expert_committee field--entity-reference\">Évaluation des risques biologiques dans les aliments</div> </div>\n\n \n\n \n <div class=\"document__signature_date-wrap\">\n <p class=\"field-label\">Date signature</p>\n <div class=\"document__signature_date field--datetime\"><time datetime=\"2026-08-06T12:00:00Z\">Jeudi, 6 août, 2026</time>\n</div> </div>\n\n \n\n \n <div class=\"document__ceo_stamp_date-wrap\">\n <p class=\"field-label\">Date visa DG</p>\n <div class=\"document__ceo_stamp_date field--datetime\"><time datetime=\"2026-10-05T12:00:00Z\">Lundi, 5 octobre, 2026</time>\n</div> </div>\n\n \n\n \n <div class=\"document__online_date-wrap\">\n <p class=\"field-label\">Date de mise en ligne</p>\n <div class=\"document__online_date field--datetime\"><time datetime=\"2026-10-28T12:00:00Z\">Mercredi, 28 octobre, 2026</time>\n</div> </div>\n\n \n\n <div class=\"document__thematique field--entity-reference infobar__item infobar__item--thematique\">\n <div class=\"document__thematique-item\"><a href=\"https://www.anses.fr/fr/thematique/alimentation-et-nutrition-humaine\" hreflang=\"fr\">Alimentation et nutrition humaine</a></div></div>",
+   "lien": "https://www.anses.fr/fr/document/evolution-valeur-pasteurisatrice-VP40-pour-assainissement-produits-base-viandes-volailles-contaminees-Salmonella-spp",
+   "domaines": [
+    {
+     "id": "eau",
+     "nom": "Eau, rejets et milieux aquatiques",
+     "mots": [
+      "assainissement"
+     ]
+    }
+   ],
+   "morceaux": 1,
+   "dateTexte": "",
    "vuLe": "2026-10-28"
   },
   {
@@ -404,6 +427,29 @@
    "vuLe": "2026-10-27"
   },
   {
+   "source": "eurlex-l",
+   "sourceNom": "Journal officiel de l'Union européenne — série L",
+   "genre": "texte",
+   "id": "https://eur-lex.europa.eu/./legal-content/AUTO/?uri=CELEX:32026R2300",
+   "titre": "CELEX:32026R2300: Règlement d’exécution (UE) 2026/2300 de la Commission du 15 octobre 2026 octroyant une autorisation de l’Union pour la famille de produits biocides dénommée Active chlorine based products BPF — CID LINES NV conformément au règlement (UE) no 528/2012 du Parlement européen et du Conseil",
+   "nature": "Texte officiel",
+   "date": "2026-10-27",
+   "corps": "",
+   "lien": "https://eur-lex.europa.eu/./legal-content/AUTO/?uri=CELEX:32026R2300",
+   "domaines": [
+    {
+     "id": "chimie",
+     "nom": "Produits chimiques et risque chimique",
+     "mots": [
+      "produits biocides"
+     ]
+    }
+   ],
+   "morceaux": 0,
+   "dateTexte": "2026-10-15",
+   "vuLe": "2026-10-27"
+  },
+  {
    "source": "jorf",
    "sourceNom": "Journal officiel de la République française",
    "genre": "texte",
@@ -426,29 +472,6 @@
    ],
    "morceaux": 25,
    "dateTexte": "2017-05-06",
-   "vuLe": "2026-10-27"
-  },
-  {
-   "source": "eurlex-l",
-   "sourceNom": "Journal officiel de l'Union européenne — série L",
-   "genre": "texte",
-   "id": "https://eur-lex.europa.eu/./legal-content/AUTO/?uri=OJ:L_202602300",
-   "titre": "OJ:L_202602300: Règlement d’exécution (UE) 2026/2300 de la Commission du 15 octobre 2026 octroyant une autorisation de l’Union pour la famille de produits biocides dénommée Active chlorine based products BPF — CID LINES NV conformément au règlement (UE) no 528/2012 du Parlement européen et du Conseil",
-   "nature": "Texte officiel",
-   "date": "2026-10-27",
-   "corps": "",
-   "lien": "https://eur-lex.europa.eu/./legal-content/AUTO/?uri=OJ:L_202602300",
-   "domaines": [
-    {
-     "id": "chimie",
-     "nom": "Produits chimiques et risque chimique",
-     "mots": [
-      "produits biocides"
-     ]
-    }
-   ],
-   "morceaux": 0,
-   "dateTexte": "2026-10-15",
    "vuLe": "2026-10-27"
   },
   {
@@ -2700,12 +2723,12 @@
    "source": "amf",
    "sourceNom": "AMF — Autorité des marchés financiers",
    "genre": "actualite",
-   "id": "https://www.amf-france.org/fr/actualites-publications/communiques/communiques-de-lamf/la-sec-et-lamf-concluent-un-accord-renforcant-la-cooperation-en-matiere-de-supervision-des#xts=607212&at_medium=RSS feeds&at_campaign=RSS-3&type=RSS",
+   "id": "https://www.amf-france.org/fr/actualites-publications/communiques/communiques-de-lamf/la-sec-et-lamf-concluent-un-accord-renforcant-la-cooperation-en-matiere-de-supervision-des#xts=607212&at_medium=RSS feeds&at_campaign=Actualités et publications&type=RSS",
    "titre": "La SEC et l'AMF concluent un accord renforçant la coopération en matière de supervision des conseillers en investissement et de prestataires de services d'investissement",
    "nature": "Publication officielle",
    "date": "2026-10-20",
    "corps": "Communiqué AMF Coopération Europe &amp; international Gestion d&#039;actifs Supervision Conseil en investissement La SEC et l&#039;AMF concluent un accord renforçant la coopération en matière de supervision des conseillers en investissement et de prestataires de services...",
-   "lien": "https://www.amf-france.org/fr/actualites-publications/communiques/communiques-de-lamf/la-sec-et-lamf-concluent-un-accord-renforcant-la-cooperation-en-matiere-de-supervision-des#xts=607212&at_medium=RSS feeds&at_campaign=RSS-3&type=RSS",
+   "lien": "https://www.amf-france.org/fr/actualites-publications/communiques/communiques-de-lamf/la-sec-et-lamf-concluent-un-accord-renforcant-la-cooperation-en-matiere-de-supervision-des#xts=607212&at_medium=RSS feeds&at_campaign=Actualités et publications&type=RSS",
    "domaines": [
     {
      "id": "finance",
