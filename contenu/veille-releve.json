@@ -14,7 +14,7 @@
    "id": "eurlex-l",
    "nom": "Journal officiel de l'Union européenne — série L",
    "entrees": 100,
-   "retenus": 20,
+   "retenus": 21,
    "souci": null
   },
   {
@@ -50,7 +50,7 @@
    "nom": "URSSAF — actualités employeurs",
    "entrees": 0,
    "retenus": 0,
-   "souci": "injoignable (fetch failed : ECONNRESET) — l'hôte refuse le robot, ou le réseau d'ici le bloque"
+   "souci": "injoignable (fetch failed : UND_ERR_SOCKET) — l'hôte refuse le robot, ou le réseau d'ici le bloque"
   },
   {
    "id": "bofip",
@@ -90,9 +90,9 @@
   {
    "id": "ineris-aida",
    "nom": "Ineris et AIDA — nouveautés",
-   "entrees": 0,
+   "entrees": 10,
    "retenus": 0,
-   "souci": "injoignable (HTTP 403) — l'hôte refuse le robot, ou le réseau d'ici le bloque"
+   "souci": null
   },
   {
    "id": "ademe",
@@ -426,6 +426,29 @@
    ],
    "morceaux": 25,
    "dateTexte": "2017-05-06",
+   "vuLe": "2026-10-27"
+  },
+  {
+   "source": "eurlex-l",
+   "sourceNom": "Journal officiel de l'Union européenne — série L",
+   "genre": "texte",
+   "id": "https://eur-lex.europa.eu/./legal-content/AUTO/?uri=OJ:L_202602300",
+   "titre": "OJ:L_202602300: Règlement d’exécution (UE) 2026/2300 de la Commission du 15 octobre 2026 octroyant une autorisation de l’Union pour la famille de produits biocides dénommée Active chlorine based products BPF — CID LINES NV conformément au règlement (UE) no 528/2012 du Parlement européen et du Conseil",
+   "nature": "Texte officiel",
+   "date": "2026-10-27",
+   "corps": "",
+   "lien": "https://eur-lex.europa.eu/./legal-content/AUTO/?uri=OJ:L_202602300",
+   "domaines": [
+    {
+     "id": "chimie",
+     "nom": "Produits chimiques et risque chimique",
+     "mots": [
+      "produits biocides"
+     ]
+    }
+   ],
+   "morceaux": 0,
+   "dateTexte": "2026-10-15",
    "vuLe": "2026-10-27"
   },
   {
