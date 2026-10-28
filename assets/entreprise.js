@@ -435,13 +435,14 @@
 
     function rendre() {
       var ent = lire(CLE_E);
-      var nom = (ent && ent.nom) || "Maçonnerie Vidal";
+      var nom = (ent && ent.nom) || "votre entreprise";
       var quand = LIBELLES[champs.rythme.value] || "chaque semaine";
       var seuil = champs.seuil.options[champs.seuil.selectedIndex].textContent;
 
       apercu.innerHTML =
         '<div class="courriel-tete">' +
-          '<span class="etiq">De</span><span>veille@pierrel-co.fr</span>' +
+          // L'adresse du cabinet, posée sur <body> par build.mjs : une seule source.
+          '<span class="etiq">De</span><span>' + echappe(document.body.getAttribute("data-courriel") || "") + "</span>" +
           '<span class="etiq">À</span><span>' + echappe(champs.courriel.value.trim() || "vous@entreprise.fr") + "</span>" +
           '<span class="etiq">Objet</span><span><strong>2 textes à analyser — ' + echappe(nom) + "</strong></span>" +
         "</div>" +

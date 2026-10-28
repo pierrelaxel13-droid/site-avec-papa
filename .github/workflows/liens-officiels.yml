@@ -1,0 +1,30 @@
+# ==========================================================================
+# Les liens vers les sites officiels — vérifiés une fois par mois
+# --------------------------------------------------------------------------
+# Construit le site, puis teste chaque lien extérieur (outils/liens-officiels.mjs).
+# Échoue — donc GitHub prévient par courriel — s'il y a au moins un lien mort.
+# Le rapport complet est dans le résumé de l'exécution (onglet Actions).
+# ==========================================================================
+name: Vérifier les liens officiels
+
+on:
+  schedule:
+    - cron: "13 4 2 * *"     # le 2 de chaque mois, 4 h 13 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verifier:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Construire
+        run: node build.mjs
+      - name: Tester les liens
+        run: node outils/liens-officiels.mjs _site

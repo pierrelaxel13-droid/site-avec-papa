@@ -42,8 +42,14 @@ const SITE = {
      numéro. Pour l'ajouter : telephone "04 42 12 34 56", telephoneLien
      "+33442123456" (le même, en format international, sans espaces). */
   telephone: "",
-  telephoneLien: ""
+  telephoneLien: "",
+  /* « Le premier échange d'une heure est sans engagement » : seulement quand
+     Clément l'a décidé. false = la promesse n'apparaît nulle part. */
+  premierEchange: false
 };
+
+/* « de Istres » ne se dit pas : « d'Istres ». */
+const de = (lieu) => (/^[aeiouyéèêh]/i.test(lieu) ? "d'" : "de ") + lieu;
 
 /* Le téléphone, seulement s'il existe. */
 const aTel = () => !!SITE.telephone;
@@ -290,7 +296,7 @@ ${zone === "app" ? '<meta name="robots" content="noindex">' : ""}
 <script src="${a("assets/theme.js")}"></script>
 <script src="${a("assets/amorce.js")}"></script>
 </head>
-<body class="zone-${zone}" data-racine="${racine || "./"}"${formule ? ` data-formule="${esc(formule)}"` : ""}${attrsBody}>
+<body class="zone-${zone}" data-racine="${racine || "./"}" data-courriel="${esc(SITE.courriel)}"${formule ? ` data-formule="${esc(formule)}"` : ""}${attrsBody}>
 
 <a class="evitement" href="#contenu">Aller au contenu</a>
 
@@ -2334,7 +2340,7 @@ function encartsDeNous() {
       `<strong>Clément Pierrel</strong>`,
       `Un interlocuteur unique, pas un abonnement anonyme ni un centre d'appels`,
       `Joignable directement, ${parQuoi()}`,
-      `Le premier échange, d'une heure, est sans engagement`
+      ...(SITE.premierEchange ? [`Le premier échange, d'une heure, est sans engagement`] : [])
     ] },
     { titre: "Ce qu'on fait pour vous", lignes: [
       ...Object.values(FORMULES).map((f) => `<strong>${esc(f.l)}</strong> (${esc(f.prix)}) : ${esc(f.ouvre.replace(/^En plus : /, "en plus, ").replace(/\.$/, ""))}`),
@@ -2548,8 +2554,8 @@ function pageAccueil(V, D, METIERS, ECRANS, C = null, NAF = null, SOURCES = [], 
         <strong>${vuDefaut.base.length} sujets</strong> : ${esc(exempleRythmes)}.</p>
         <p>Ensuite, ${V.declencheurs.length} questions ajoutent ce qui vient de votre façon de travailler :
         ${exemples.join(", ")}… Chaque réponse « oui » ajoute les sujets qui vont avec.</p>
-        <p>Ce qui ne vous concerne pas n'arrive pas. La liste n'est pas pour autant garantie complète : lors du
-        premier échange, Clément Pierrel peut la revoir avec vous.</p>`],
+        <p>Ce qui ne vous concerne pas n'arrive pas. La liste n'est pas pour autant garantie complète :
+        ${SITE.premierEchange ? "lors du premier échange, Clément Pierrel peut la revoir avec vous." : "chaque sujet reste à vérifier pour votre cas."}</p>`],
       ["Que se passe-t-il quand un nouveau texte paraît ?",
        `<p><strong>Il arrive dans votre relevé, rangé dans son sujet, avec la marque « Nouveau ».</strong></p>
         <p>Vous ouvrez sa fiche, et vous y trouvez trois choses, toujours dans cet ordre :</p>
@@ -2617,8 +2623,8 @@ function pageAccueil(V, D, METIERS, ECRANS, C = null, NAF = null, SOURCES = [], 
           <li><strong>Choisissez votre formule</strong> sur <a href="abonnement.html">la page des tarifs</a>, et écrivez-nous avec le bouton « Démarrer un abonnement ».</li>
           <li><strong>Renseignez votre entreprise</strong> dans les réglages : votre métier et vos réponses. Votre veille se fait dessus, aussitôt.</li>
         </ul>
-        <p>Vous préférez en parler d'abord ? Le premier échange, d'une heure, est sans engagement :
-        ${aTel() ? `${lienTel()} ou` : "écrivez à"}
+        <p>Vous préférez en parler d'abord ? ${SITE.premierEchange ? "Le premier échange, d'une heure, est sans engagement :" : "Écrivez-nous :"}
+        ${aTel() ? `${lienTel()} ou` : ""}
         <a href="mailto:${esc(SITE.courriel)}">${esc(SITE.courriel)}</a>.</p>`]
     ] },
     { theme: "L'outil et vos données", questions: [
@@ -2661,7 +2667,7 @@ function pageAccueil(V, D, METIERS, ECRANS, C = null, NAF = null, SOURCES = [], 
         réponse « D'où viennent les textes ? » ci-dessus. On ne fait pas comme si elles étaient suivies.</p>`],
       ["Qui est derrière le site ?",
        `<p><strong>${esc(SITE.nom)}, un cabinet de conseil en organisation et conformité installé à ${esc(SITE.ville)}.</strong></p>
-        <p>Votre interlocuteur est Clément Pierrel. Le cabinet accompagne les entreprises de ${esc(SITE.zone)}
+        <p>Votre interlocuteur est Clément Pierrel. Le cabinet accompagne les entreprises ${esc(de(SITE.zone))}
         sur leur conformité réglementaire et la préparation de leurs audits.</p>
         <p>Vous avez une question sur le site ou sur votre situation ? Un interlocuteur unique, joignable
         directement ${aTel() ? `: ${lienTel()} ou` : "par courriel :"}
@@ -3040,10 +3046,10 @@ ${bandeAvis(AVIS)}
     <span class="marque">${sigle}<span>Pierrel <span class="co">&amp; Co</span></span></span>
     <h2>Conseil en organisation et conformité, à ${esc(SITE.ville)}</h2>
     <p class="mentions">
-      Clément Pierrel accompagne les entreprises de ${esc(SITE.zone)} sur leur organisation et
+      Clément Pierrel accompagne les entreprises ${esc(de(SITE.zone))} sur leur organisation et
       leur conformité réglementaire : définir ce qui les concerne, tenir la veille, garder les preuves,
-      préparation d'audit (ISO 14001, ISO 45001, MASE, Qualiopi). Le premier échange d'une heure
-      est sans engagement.
+      préparation d'audit (ISO 14001, ISO 45001, MASE, Qualiopi).${SITE.premierEchange ? ` Le premier échange d'une heure
+      est sans engagement.` : ""}
     </p>
     <p class="rangee">
       <a class="bouton bouton-accent" href="mailto:${esc(SITE.courriel)}">${esc(SITE.courriel)}</a>
@@ -3390,7 +3396,7 @@ function pageAbonnement(V) {
 <section class="bande-finale" id="cabinet">
   <div class="enveloppe">
     <span class="marque">${sigle}<span>Pierrel <span class="co">&amp; Co</span></span></span>
-    <h2>Un premier échange d'une heure, sans engagement</h2>
+    <h2>${SITE.premierEchange ? "Un premier échange d'une heure, sans engagement" : "Une question avant de vous abonner ?"}</h2>
     <p class="mentions">
       Décrivez votre activité en trois lignes et ce qui vous inquiète : on vous dira
       franchement quelle formule vous sert, ou si votre sujet est ailleurs.
