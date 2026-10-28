@@ -65,6 +65,11 @@ const SITE = {
     hebergeurDonnees: "",      // à l'ouverture des comptes, ex. « Supabase, région Francfort (UE) »
     tribunal: ""               // ex. « le tribunal de commerce d'Aix-en-Provence », avec l'avocat
   },
+  /* Le bloc « Vous êtes consultant QSE ? » de l'accueil. Éteint tant que la
+     page consultants (lot 7) n'existe pas et que la marque produit n'est pas
+     séparée du cabinet (lot 8) : un consultant n'achète pas l'outil d'un
+     confrère. true l'allume — la construction refuse s'il n'y a pas de page. */
+  offreConsultant: false,
   hebergeur: { nom: "GitHub, Inc. (GitHub Pages)", site: "https://github.com",
                adresse: "88 Colin P. Kelly Jr. Street, San Francisco, CA 94107, États-Unis" }
 };
@@ -2539,7 +2544,31 @@ function bandeAvis(AVIS) {
    rencontre le plus. L'index des 88 est dans l'application. */
 const VITRINE_SECTEURS = ["43", "41", "10", "56", "47", "49", "52", "20", "25", "81", "86", "85"];
 
-function pageAccueil(V, D, METIERS, ECRANS, C = null, NAF = null, SOURCES = [], AVIS = []) {
+/* --- La dernière collecte -----------------------------------------------------
+   « Le client voit que ça tourne, et si ça n'a pas tourné, il le voit aussi. »
+   L'heure vient de la dernière exécution RÉUSSIE du robot de relève, que la
+   publication lit chez GitHub (variable COLLECTE_LE, posée par publie.yml) ;
+   les chiffres, du relevé lui-même. Sans COLLECTE_LE (construction sur un
+   poste), on n'a que le jour du relevé, et on n'invente pas d'heure. La page
+   calcule ensuite l'âge : au-delà de 26 heures, elle l'affiche en alerte
+   (assets/app.js, collecte()). Le lot 6 rendra la surveillance rigoureuse. */
+function blocCollecte(JO) {
+  if (!JO) return "";
+  const ok = JO.rapport.filter((r) => !r.souci).length;
+  const iso = process.env.COLLECTE_LE || "";
+  const date = iso ? new Date(iso) : null;
+  const quand = date && !isNaN(date)
+    ? `le ${date.toLocaleDateString("fr-FR", { day: "numeric", month: "long", timeZone: "Europe/Paris" }).replace(/^1 /, "1er ")}
+       à ${date.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit", timeZone: "Europe/Paris" }).replace(":", " h ")}`
+    : `le ${dateFr(JO.releve_le)}`;
+  return `<p class="collecte"${date && !isNaN(date) ? ` data-collecte="${esc(date.toISOString())}"` : ""}>
+      <span class="collecte-point" aria-hidden="true"></span>
+      <span><strong>Dernière collecte réussie <span class="collecte-quand">${quand}</span></strong>
+      · ${ok} sources officielles sur ${JO.rapport.length} ont répondu · ${JO.textes.length} textes retenus</span>
+    </p>`;
+}
+
+function pageAccueil(V, D, METIERS, ECRANS, C = null, NAF = null, SOURCES = [], AVIS = [], JO = null) {
   const nbDomaines = Object.keys(V.domaines).length;
   const defaut = "43";                      // Travaux de construction spécialisés
   const divDefaut = V.divisions.filter((d) => d.c === defaut)[0] || V.divisions[0];
@@ -2724,9 +2753,12 @@ function pageAccueil(V, D, METIERS, ECRANS, C = null, NAF = null, SOURCES = [], 
     <div class="heros-texte">
       <h1>La veille réglementaire de votre métier</h1>
     </div>
+    <!-- Notre meilleur argument, dans le premier écran. -->
+    <p class="heros-accroche">L'écart le plus souvent relevé en audit n'est pas l'absence de veille :
+      c'est la veille faite et jamais écrite.</p>
     <p class="heros-sous">
-      Dites ce que vous faites : vous voyez tout de suite ce qui s'applique chez vous,
-      à quel rythme le revoir, et quoi faire quand un texte paraît.
+      Dites ce que vous faites : vous voyez ce qui s'applique chez vous, quoi faire quand
+      un texte paraît, et chaque revue est datée, prête pour l'auditeur.
     </p>
     <p class="rangee rangee-centre">
       <a class="bouton bouton-accent" href="#simulateur">Voir ce qui me concerne</a>
@@ -2747,6 +2779,7 @@ function pageAccueil(V, D, METIERS, ECRANS, C = null, NAF = null, SOURCES = [], 
     </p>
     <p class="gage gage-tva"><span class="doux">${esc(TVA.mention)}</span>
     </p>
+    ${blocCollecte(JO)}
 
     <div class="heros-visuel">
       ${portable(ECRANS, "bord.png", "Le tableau de bord de l'application : revues en retard, textes à analyser, actions ouvertes.")}
@@ -2942,8 +2975,8 @@ ${bandeAvis(AVIS)}
       image: "registre.png",
       alt: "Le registre de preuves : revues, décisions et actions, chronologiques et datées.",
       titre: "Ce qu'un auditeur demande vraiment",
-      texte: `L'écart le plus souvent relevé en audit n'est pas l'absence de veille : c'est la
-        veille faite et jamais écrite. Tout est daté et conservé, et s'imprime tel quel.`,
+      texte: `Chaque revue, chaque décision, chaque action est datée et conservée. Le jour de
+        l'audit, le registre s'imprime tel quel : la preuve que la veille est faite.`,
       bouton: "En savoir plus sur nous", lien: "nous.html"
     })}
   </div>
@@ -2985,9 +3018,8 @@ ${bandeAvis(AVIS)}
       <li class="raison" data-paraitre>
         <span class="numero" aria-hidden="true">2</span>
         <h3>Vous pouvez le prouver</h3>
-        <p>Ce qu'on reproche le plus souvent en audit, ce n'est pas l'absence de veille :
-        c'est la veille faite et jamais écrite. Chaque revue, chaque décision est datée
-        et conservée. Ça s'imprime tel quel.</p>
+        <p>Une veille qui n'est pas écrite ne compte pas devant l'auditeur. Ici, chaque revue
+        et chaque décision est datée et conservée, et s'imprime telle quelle.</p>
       </li>
       <li class="raison" data-paraitre>
         <span class="numero" aria-hidden="true">3</span>
@@ -3070,7 +3102,21 @@ ${bandeAvis(AVIS)}
      Chaque réponse commence par la réponse elle-même (oui, non, le chiffre),
      puis le détail. Elle dit ce qui est vrai aujourd'hui, y compris ce qui
      n'est pas encore en place. Repliées : on n'ouvre que celle qui intéresse. -->
-<section class="section section-tein" id="questions">
+${SITE.offreConsultant ? `<section class="section">
+  <div class="enveloppe">
+    <div class="bloc-consultant">
+      <h2>Vous êtes consultant QSE ?</h2>
+      <ul>
+        <li>Livrez la veille à vos clients <strong>sous votre marque</strong>.</li>
+        <li>Gagnez <strong>plusieurs heures par mois et par client</strong>.</li>
+        <li>Ajoutez une <strong>ligne de revenu récurrente</strong> à votre facturation.</li>
+      </ul>
+      <p class="rangee"><a class="bouton bouton-accent" href="consultants.html">Découvrir l'offre consultant</a></p>
+    </div>
+  </div>
+</section>
+
+` : ""}<section class="section section-tein" id="questions">
   <div class="enveloppe">
     <h2 class="titre-section">Vos questions</h2>
     <p class="intro titre-section">Les réponses courtes d'abord, le détail ensuite.
@@ -4050,7 +4096,7 @@ async function main() {
     `${process.env.COMMIT_REF || "local"}\n${new Date().toISOString()}\n`);
   console.log(`  cache du worker     pco-${version}`);
 
-  await writeFile(join(SORTIE, "index.html"), pageAccueil(V, D, METIERS, ECRANS, C, NAF, SOURCES, AVIS));
+  await writeFile(join(SORTIE, "index.html"), pageAccueil(V, D, METIERS, ECRANS, C, NAF, SOURCES, AVIS, JO));
   await writeFile(join(SORTIE, "le-site.html"), pageInfos({
     titre: "Le site en détail", h1: "Le site en détail",
     sous: "D'où viennent les textes, ce que vous voyez pour chacun, comment le tri se fait, et ce que vous gardez.",
@@ -4139,6 +4185,8 @@ async function main() {
   console.log(`  relève officielle   ${JO ? JO.textes.length + " entrées, relevées le " + JO.releve_le +
     " (" + JO.rapport.filter((r) => !r.souci).length + " sources ont répondu sur " + JO.rapport.length + ")"
     : "AUCUNE — lancer outils/veille.mjs (tourne toutes les heures dans .github/workflows/releve.yml)"}`);
+  if (SITE.offreConsultant && !existsSync(join(SORTIE, "consultants.html")))
+    throw new Error("SITE.offreConsultant est allumé, mais la page consultants.html n'existe pas : le bloc de l'accueil mènerait nulle part.");
   const aCompleter = champsLegauxManquants(SITE);
   if (aCompleter.length) console.log(`  pages légales       À COMPLÉTER dans SITE.editeur : ${aCompleter.join(", ")}`);
   console.log(`\n_site/ prêt — ${(total / 1024).toFixed(1)} Ko, ` +

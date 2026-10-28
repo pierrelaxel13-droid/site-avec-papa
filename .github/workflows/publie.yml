@@ -30,6 +30,7 @@ on:
 
 permissions:
   contents: read
+  actions: read
   pages: write
   id-token: write
 
@@ -52,6 +53,17 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
+
+      # L'heure de la dernière relève RÉUSSIE, lue chez GitHub : l'accueil
+      # l'affiche (« Dernière collecte réussie … »), et alerte si elle a vieilli.
+      - name: La dernière collecte réussie
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          le=$(gh api "repos/${{ github.repository }}/actions/workflows/releve.yml/runs?status=success&per_page=1" \
+                 --jq '.workflow_runs[0].updated_at' 2>/dev/null || true)
+          echo "dernière relève réussie : ${le:-inconnue}"
+          echo "COLLECTE_LE=$le" >> "$GITHUB_ENV"
 
       - name: Construire
         run: |

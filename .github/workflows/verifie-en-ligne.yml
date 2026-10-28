@@ -92,6 +92,17 @@ jobs:
           done
           exit $faute
 
+      # L'accueil doit dire à quelle heure a eu lieu la dernière collecte
+      # réussie : sans elle, le client ne peut pas voir si le robot tourne.
+      - name: L'heure de la dernière collecte est-elle affichée
+        if: always() && steps.version.outputs.a_jour == 'oui'
+        run: |
+          if curl -sS --max-time 30 "$SITE/" | grep -q 'data-collecte="20'; then
+            echo "  ok      l'accueil affiche l'heure de la dernière collecte réussie"
+          else
+            echo "::warning::L'accueil n'affiche pas l'heure de la dernière collecte (COLLECTE_LE absent à la publication ?)."
+          fi
+
       - name: Ce qu'on a constaté
         if: always()
         run: |

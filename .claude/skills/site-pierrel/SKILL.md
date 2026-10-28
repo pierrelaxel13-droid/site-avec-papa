@@ -264,6 +264,11 @@ qu'il n'y a pas de client.
   en local : `node outils/comptes-local.mjs 8820` (faux Stripe, faux KV).
   Sur GitHub Pages, `/api/` n'existe pas : la connexion le dit (404 attendu
   sur `api/moi`).
+- **Accueil** : l'accroche « la veille faite et jamais écrite » est sous le titre
+  (une seule fois dans la page). « Dernière collecte réussie » (`blocCollecte()`)
+  prend l'heure de la dernière relève réussie dans COLLECTE_LE, posée par
+  publie.yml ; `collecte()` (app.js) l'affiche en alerte après 26 h. Le bloc
+  consultant est éteint (`SITE.offreConsultant`) jusqu'aux lots 7 et 8.
 - **Pages légales** : `legales.mjs` (mentions, confidentialité, CGV), liées
   dans le pied de chaque page. Versions de travail : relecture par un avocat
   obligatoire avant le lancement. Identité dans `SITE.editeur`.

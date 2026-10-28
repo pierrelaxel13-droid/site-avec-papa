@@ -503,6 +503,29 @@
     });
   }
 
+  /* --- La dernière collecte : son âge, et l'alerte si elle est vieille ------
+     L'heure est écrite dans la page à la publication ; ici, on dit « il y a
+     2 h », et au-delà de 26 h on le montre en alerte : un relevé qui ne
+     tourne plus ne doit pas avoir l'air à jour. */
+  function collecte() {
+    $$("[data-collecte]").forEach(function (el) {
+      var t = Date.parse(el.getAttribute("data-collecte"));
+      if (isNaN(t)) return;
+      var heures = (Date.now() - t) / 3600000;
+      var quand = $(".collecte-quand", el);
+      if (quand && heures >= 0 && heures < 24) {
+        quand.textContent = heures < 1 ? "il y a moins d'une heure" : "il y a " + Math.floor(heures) + " h";
+      }
+      if (heures > 26) {
+        el.classList.add("en-retard");
+        var alerte = document.createElement("span");
+        alerte.className = "collecte-alerte";
+        alerte.textContent = "Plus de 26 heures sans collecte réussie : le relevé n'est peut-être pas à jour.";
+        el.appendChild(alerte);
+      }
+    });
+  }
+
   function bascules() {
     $$("[data-bascule]").forEach(function (groupe) {
       var boutons = $$("button", groupe);
@@ -861,6 +884,7 @@
   captures();
   metiersDeLAccueil();
   avis();
+  collecte();
   faits();
   affiner();
   paraitre();

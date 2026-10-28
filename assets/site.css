@@ -546,6 +546,13 @@ html, body, * { scrollbar-width: none; }
   font-size: clamp(1.05rem, .98rem + .6vw, 1.3rem);
   line-height: 1.5;
 }
+/* L'accroche : la phrase qui vend, juste sous le titre. */
+.heros-accroche {
+  max-width: 46ch; margin: var(--t4) auto 0; text-align: center;
+  font-size: clamp(1.15rem, 1.02rem + .8vw, 1.5rem); line-height: 1.4;
+  font-weight: 700; letter-spacing: -.01em; color: var(--encre);
+}
+.heros-accroche + .heros-sous { margin-top: var(--t3); }
 .heros .rangee { margin-top: var(--t5); }
 .heros .bouton { min-height: 3.4rem; padding-inline: 2.2rem; font-size: 1.05rem; }
 
@@ -2995,3 +3002,28 @@ mark.a-decider { background: #E6E1FF; color: #3B1FBF; }
   :root:not([data-theme="light"]) mark.a-completer { background: #4A2E0A; color: #FFD9A8; }
   :root:not([data-theme="light"]) mark.a-decider { background: #2B2260; color: #D6CCFF; }
 }
+
+/* --- 35. Dernière collecte, et bloc consultant ---------------------------------- */
+.collecte {
+  max-width: 60ch; margin: var(--t3) auto 0; text-align: center;
+  font-size: .92rem; line-height: 1.55; color: var(--encre-douce);
+}
+.collecte strong { color: var(--encre); font-weight: 600; }
+.collecte-point { display: inline-block; width: .6rem; height: .6rem; margin-right: .45rem; border-radius: 50%; background: #1F9D55; vertical-align: .05em; }
+/* Plus de 26 heures sans collecte réussie : on le montre, en clair. */
+.collecte.en-retard { color: #9A3412; }
+.collecte.en-retard strong { color: #9A3412; }
+.collecte.en-retard .collecte-point { background: #D9480F; }
+:root[data-theme="dark"] .collecte.en-retard, :root[data-theme="dark"] .collecte.en-retard strong { color: #FDBA74; }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .collecte.en-retard, :root:not([data-theme="light"]) .collecte.en-retard strong { color: #FDBA74; }
+}
+.bloc-consultant {
+  max-width: 46rem; margin: 0 auto; padding: clamp(1.25rem, .9rem + 1.5vw, 2rem);
+  border: 1px solid var(--accent-filet); border-radius: var(--r3); background: var(--carte); text-align: center;
+}
+.bloc-consultant h2 { margin: 0; font-size: clamp(1.35rem, 1.1rem + 1vw, 1.8rem); }
+.bloc-consultant ul { list-style: none; padding: 0; margin: var(--t4) 0 0; display: grid; gap: .45rem; color: var(--encre-douce); }
+.bloc-consultant strong { color: var(--encre); }
+.bloc-consultant .rangee { justify-content: center; margin-top: var(--t4); }
+.collecte-alerte { display: block; margin-top: .3rem; font-weight: 700; }
