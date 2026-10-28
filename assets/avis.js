@@ -1,5 +1,5 @@
 /* ==========================================================================
-   Pierrel & Co — la cloche des nouveaux textes
+   Vigie — la cloche des nouveaux textes
    --------------------------------------------------------------------------
    Ce que la cloche fait vraiment, aujourd'hui : elle compare la date du
    dernier texte lu, gardée dans ce navigateur, aux dates des textes relevés,

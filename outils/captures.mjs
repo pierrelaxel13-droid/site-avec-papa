@@ -1,5 +1,5 @@
 /* ==========================================================================
-   Pierrel & Co — captures de l'application
+   Vigie — captures de l'application
    --------------------------------------------------------------------------
    Les écrans montrés sur la page d'accueil sont de vraies captures de
    l'application, pas des maquettes : elles ne peuvent donc pas mentir sur ce

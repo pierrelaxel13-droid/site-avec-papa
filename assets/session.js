@@ -1,5 +1,5 @@
 /* ==========================================================================
-   Pierrel & Co — la « session » et la formule
+   Vigie — la « session » et la formule
    --------------------------------------------------------------------------
    AVERTISSEMENT, à lire avant de toucher à ce fichier.
 

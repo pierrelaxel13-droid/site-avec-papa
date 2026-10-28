@@ -1,5 +1,5 @@
 /* ==========================================================================
-   Pierrel & Co — l'amorce, avant tout rendu
+   Vigie — l'amorce, avant tout rendu
    --------------------------------------------------------------------------
    Ce fichier tenait dans la page, entre deux balises <script>. Il en est sorti
    pour une seule raison : la politique de sécurité du site interdit désormais

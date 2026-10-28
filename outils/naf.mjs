@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /* ==========================================================================
-   Pierrel & Co — la nomenclature NAF entière
+   Vigie — la nomenclature NAF entière
    --------------------------------------------------------------------------
    Le référentiel de veille raisonne par division : 88 périmètres, un par
    grand secteur. Mais une entreprise ne porte pas une division, elle porte un
@@ -131,7 +131,7 @@ async function main() {
   const groupesUtiles = Object.fromEntries(groupes.map((g) => [g.id, g.label]));
 
   const sortie = `/* ==========================================================================
-   Pierrel & Co — la nomenclature NAF entière
+   Vigie — la nomenclature NAF entière
    --------------------------------------------------------------------------
    ENGENDRÉ PAR outils/naf.mjs — NE PAS MODIFIER À LA MAIN.
 

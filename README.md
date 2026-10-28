@@ -1,4 +1,12 @@
-# Pierrel & Co — veille réglementaire, secteur par secteur
+# Vigie — veille réglementaire, secteur par secteur
+
+**Vigie** est le nom du produit ; **Pierrel & Co** est la société qui l'édite
+(en cours de création) et n'apparaît que dans les pages légales. La caution
+métier est la personne — Clément Pierrel, consultant QSE et HSE en exercice —,
+jamais son cabinet : un consultant n'achète pas l'outil d'un confrère.
+Nom, société et concepteur : `SITE.nom`, `SITE.societe`, `SITE.concepteur`
+(build.mjs) ; le nom aussi dans `NOM` (serveur/compte.mjs), vérifié à la
+construction.
 
 **En ligne : https://pierrelaxel13-droid.github.io/site-avec-papa/**
 GitHub Pages publie la branche `main` à chaque envoi et après chaque relève

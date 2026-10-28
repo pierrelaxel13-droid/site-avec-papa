@@ -5,7 +5,7 @@
    inconnu quelles adresses ont un compte. */
 import {
   lireJson, json, normaliseAdresse, adresseValide, lireCompte, estAdmin,
-  creeJeton, tropDeLiens, envoieCourriel, courrielPossible
+  creeJeton, tropDeLiens, envoieCourriel, courrielPossible, NOM
 } from "../../serveur/compte.mjs";
 
 const REPONSE = "Si un compte existe pour cette adresse, un courriel vient de partir avec un lien valable une heure. Pensez à regarder dans les indésirables.";
@@ -25,7 +25,7 @@ export async function onRequestPost(ctx) {
   try {
     await envoieCourriel(ctx.env, {
       a: adresse,
-      sujet: admin ? "Votre mot de passe administrateur — Pierrel & Co" : "Votre nouveau mot de passe — Pierrel & Co",
+      sujet: admin ? `Votre mot de passe administrateur — ${NOM}` : `Votre nouveau mot de passe — ${NOM}`,
       texte: `Bonjour,\n\nVous avez demandé à choisir un ${admin ? "mot de passe administrateur" : "nouveau mot de passe"} pour ${adresse}. Le lien ci-dessous est valable une heure, et ne sert qu'une fois.\n\nSi vous n'avez rien demandé, ignorez ce courriel : votre mot de passe actuel ne change pas.`,
       lien, bouton: "Choisir mon mot de passe"
     });

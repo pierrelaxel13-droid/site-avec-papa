@@ -1,5 +1,5 @@
 /* ==========================================================================
-   Pierrel & Co — les avis des clients
+   Vigie — les avis des clients
    --------------------------------------------------------------------------
    Ils défilent dans la barre « avis » de l'accueil. On n'y met que de vrais
    avis, reçus par le formulaire « Laisser votre avis » (ils arrivent par

@@ -1,5 +1,5 @@
 /* ==========================================================================
-   Pierrel & Co — choix du thème
+   Vigie — choix du thème
    --------------------------------------------------------------------------
    Trois états : auto (on suit le système), clair, sombre. Le choix est gardé
    dans le navigateur et appliqué avant le premier rendu, sinon la page

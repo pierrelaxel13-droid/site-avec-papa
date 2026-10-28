@@ -1,5 +1,5 @@
 /* ==========================================================================
-   Pierrel & Co — mon entreprise, et mes alertes
+   Vigie — mon entreprise, et mes alertes
    --------------------------------------------------------------------------
    Ce que le visiteur saisit est gardé dans SON navigateur, et nulle part
    ailleurs : il n'y a pas de serveur. Rien n'est transmis, rien n'est partagé
@@ -463,7 +463,7 @@
           (champs.pdf.checked
             ? '<p class="courriel-pj">📎 2 fiches jointes, en PDF, prêtes à classer.</p>'
             : "") +
-          "<p>— Pierrel &amp; Co</p>" +
+          "<p>— " + echappe(document.body.getAttribute("data-nom") || "") + "</p>" +
         "</div>" +
         '<p class="courriel-pied">Envoi ' + echappe(quand) + " · " + echappe(seuil.toLowerCase()) + "</p>";
     }

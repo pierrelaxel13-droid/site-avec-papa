@@ -1,5 +1,5 @@
 /* ==========================================================================
-   Pierrel & Co — les comptes, côté serveur (Cloudflare Pages Functions)
+   Vigie — les comptes, côté serveur (Cloudflare Pages Functions)
    --------------------------------------------------------------------------
    Ce fichier ne tourne que sur Cloudflare, jamais dans le navigateur. Il est
    importé par les fonctions de functions/ ; wrangler l'assemble au déploiement.
@@ -40,6 +40,9 @@
    ========================================================================== */
 
 /* Mêmes clés, rangs et montants que FORMULES dans build.mjs, qui le vérifie. */
+/* Le nom du produit, dans les courriels. Le même que SITE.nom (build.mjs). */
+export const NOM = "Vigie";
+
 export const FORMULES = {
   // Montants en centimes, tels que Stripe les donne : au mois, et à l'année.
   textes:  { l: "Textes", rang: 1, mois: 5900, an: 59000 },
@@ -279,7 +282,7 @@ export async function envoieCourriel(env, { a, sujet, texte, lien, bouton }) {
   if (!courrielPossible(env)) throw new Error("Courriel non configuré");
   const echappe = (t) => String(t).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
   const html = `<div style="font-family:Arial,sans-serif;font-size:16px;line-height:1.5;color:#14142A;max-width:520px">
-<p style="font-weight:bold;font-size:18px">Pierrel &amp; Co</p>
+<p style="font-weight:bold;font-size:18px">${echappe(NOM)}</p>
 ${texte.split("\n\n").map((p) => `<p>${echappe(p)}</p>`).join("")}
 ${lien ? `<p><a href="${echappe(lien)}" style="display:inline-block;background:#4A2BE8;color:#fff;padding:12px 20px;border-radius:999px;text-decoration:none">${echappe(bouton || "Ouvrir")}</a></p>
 <p style="font-size:13px;color:#555">Si le bouton ne marche pas, copiez cette adresse : ${echappe(lien)}</p>` : ""}
@@ -288,7 +291,7 @@ ${lien ? `<p><a href="${echappe(lien)}" style="display:inline-block;background:#
     method: "POST",
     headers: { "api-key": env.BREVO_API_KEY, "Content-Type": "application/json", Accept: "application/json" },
     body: JSON.stringify({
-      sender: { name: "Pierrel & Co", email: env.EXPEDITEUR },
+      sender: { name: NOM, email: env.EXPEDITEUR },
       to: [{ email: a }],
       subject: sujet,
       textContent: texte + (lien ? `\n\n${lien}` : ""),

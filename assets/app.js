@@ -1,5 +1,5 @@
 /* ==========================================================================
-   Pierrel & Co — comportements de page
+   Vigie — comportements de page
    --------------------------------------------------------------------------
    Deux règles tenues partout :
    - sans ce fichier, le site reste complet et lisible. Les décalages de départ
@@ -499,7 +499,7 @@
       ].join("\n");
       merci.hidden = false;
       window.location.href = "mailto:" + adresse + "?subject=" +
-        encodeURIComponent("Mon avis sur Pierrel & Co") + "&body=" + encodeURIComponent(corps);
+        encodeURIComponent("Mon avis sur " + (document.body.getAttribute("data-nom") || "")) + "&body=" + encodeURIComponent(corps);
     });
   }
 

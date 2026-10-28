@@ -1,5 +1,5 @@
 /* ==========================================================================
-   Pierrel & Co — les liens de paiement Stripe
+   Vigie — les liens de paiement Stripe
    --------------------------------------------------------------------------
    C'est le SEUL fichier à remplir pour ouvrir l'abonnement payant.
 

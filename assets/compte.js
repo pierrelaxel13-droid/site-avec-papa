@@ -1,5 +1,5 @@
 /* ==========================================================================
-   Pierrel & Co — les comptes, côté page
+   Vigie — les comptes, côté page
    --------------------------------------------------------------------------
    Trois pages : la connexion, « Bienvenue » (créer son mot de passe après le
    paiement) et « Cet écran n'est pas dans votre formule ». Elles parlent au

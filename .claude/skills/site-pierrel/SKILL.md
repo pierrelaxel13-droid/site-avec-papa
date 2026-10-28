@@ -3,7 +3,14 @@ name: site-pierrel
 description: "Modifier et publier le site Pierrel & Co de ce dépôt (build.mjs, assets/site.css, assets/app.js, assets/theme.js, assets/session.js, contenu/, outils/captures.mjs, netlify.toml). À utiliser pour toute demande de changement de contenu, de mise en page, de style, d'animation, de navigation, de texte, d'accessibilité ou d'impression, et pour prévisualiser ou publier le site. Déclencheurs typiques : « change le texte de l'accueil », « ajoute une section », « l'animation rame », « corrige le menu », « le rendu est cassé sur téléphone », « comment je vois le site », « ajoute une page », « le site ne se met pas à jour »."
 ---
 
-# Le site Pierrel & Co
+# Le site Vigie (dépôt « site-pierrel »)
+
+Le produit s'appelle **Vigie** (`SITE.nom`). Pierrel & Co est l'éditeur
+(`SITE.societe`), cité seulement dans les pages légales, « Qui sommes-nous »
+et la question « Qui est derrière Vigie ? ». Ne jamais présenter le produit
+comme l'outil d'un cabinet de conseil (ni Istres, ni « cabinet ») : c'est ce
+qui ouvre le canal consultant. Logo écrit : `motMarque()`. L'offre consultant
+(`pageConsultants()`, `OFFRE_CONSULTANT`) est allumée par `SITE.offreConsultant`.
 
 **En ligne : https://pierrelaxel13-droid.github.io/site-avec-papa/** —
 GitHub Pages (`.github/workflows/publie.yml`) construit `main` à chaque envoi

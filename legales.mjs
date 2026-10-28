@@ -23,7 +23,7 @@ export function pagesLegales({ page, SITE, FORMULES, TVA, esc, eur }) {
   const decider = `<mark class="a-decider">[À DÉCIDER]</mark>`;
   const nom = esc(SITE.nom);
   const contact = `<a href="mailto:${esc(SITE.courriel)}">${esc(SITE.courriel)}</a>`;
-  const denomination = manque(E.denomination, "dénomination ou nom de l'entrepreneur");
+  const denomination = manque(E.denomination, `${SITE.societe || "dénomination"}, société en cours de création`);
   const avertissement = (vente) => `<p class="reserve legal-statut"><strong>Version de travail.</strong> Ce texte doit être
     relu par un avocat avant l'ouverture des abonnements payants.${vente ? ` Il ne s'applique à aucune vente tant qu'il
     n'est pas finalisé.` : ""}</p>`;

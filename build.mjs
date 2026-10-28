@@ -33,10 +33,14 @@ const RACINE = dirname(fileURLToPath(import.meta.url));
 const SORTIE = resolve(RACINE, "_site");
 
 const SITE = {
-  nom: "Pierrel & Co",
+  /* Le nom du PRODUIT, celui que voient clients et consultants. La société qui
+     l'édite est à part (societe), et n'apparaît que dans les pages légales :
+     un consultant n'achète pas l'outil du cabinet d'un confrère. */
+  nom: "Vigie",
+  societe: "Pierrel & Co",       // l'éditeur — société en cours de création
+  /* La caution métier : la personne, pas son cabinet. */
+  concepteur: "Clément Pierrel",
   bareme: "Veille réglementaire par secteur",
-  ville: "Istres (13800)",
-  zone: "Istres et pourtour de l'étang de Berre",
   courriel: "contact@pierrel-co.fr",
   /* Le téléphone : vide tant qu'on n'a pas le vrai numéro. Vide, aucune ligne
      téléphone n'apparaît nulle part — un faux numéro est pire que pas de
@@ -55,7 +59,7 @@ const SITE = {
      confidentialité et les CGV (legales.mjs). Vide = « [À COMPLÉTER] » visible
      sur ces pages, et listé à chaque construction. */
   editeur: {
-    denomination: "",          // ex. « Pierrel & Associés SAS » ou « Clément Pierrel, EI »
+    denomination: "",          // une fois la société créée, ex. « Pierrel & Co SAS »
     forme: "",                 // ex. « SAS », « entreprise individuelle (micro-entreprise) »
     capital: "",               // pour une société, ex. « 1 000 € »
     adresse: "",               // siège social complet
@@ -65,14 +69,16 @@ const SITE = {
     hebergeurDonnees: "",      // à l'ouverture des comptes, ex. « Supabase, région Francfort (UE) »
     tribunal: ""               // ex. « le tribunal de commerce d'Aix-en-Provence », avec l'avocat
   },
-  /* Le bloc « Vous êtes consultant QSE ? » de l'accueil. Éteint tant que la
-     page consultants (lot 7) n'existe pas et que la marque produit n'est pas
-     séparée du cabinet (lot 8) : un consultant n'achète pas l'outil d'un
-     confrère. true l'allume — la construction refuse s'il n'y a pas de page. */
-  offreConsultant: false,
+  /* L'offre consultant : la page consultants.html, le bloc « Vous êtes
+     consultant QSE ? » de l'accueil et le lien du pied. Allumée depuis que le
+     produit a son propre nom (Vigie). false les retire tous les trois. */
+  offreConsultant: true,
   hebergeur: { nom: "GitHub, Inc. (GitHub Pages)", site: "https://github.com",
                adresse: "88 Colin P. Kelly Jr. Street, San Francisco, CA 94107, États-Unis" }
 };
+
+/* Le logo écrit : le sigle et le nom du produit. Partout le même. */
+const motMarque = () => `${sigle}<span>${esc(SITE.nom)}</span>`;
 
 /* « de Istres » ne se dit pas : « d'Istres ». */
 const de = (lieu) => (/^[aeiouyéèêh]/i.test(lieu) ? "d'" : "de ") + lieu;
@@ -178,8 +184,8 @@ for (const [id, f] of Object.entries(FORMULES)) {
    rogner jusqu'à 20 % du bord sans manger le dessin. assets/icones/ est
    engendré depuis le sigle par outils/icones.mjs. */
 const MANIFESTE = JSON.stringify({
-  name: "Pierrel & Co — veille réglementaire",
-  short_name: "Pierrel & Co",
+  name: "Vigie — veille réglementaire",
+  short_name: "Vigie",
   description: "Votre veille réglementaire tenue et prouvable : plan de veille, relevé des textes, registre de preuves.",
   lang: "fr",
   dir: "ltr",
@@ -288,7 +294,7 @@ function bandeInstallation(a) {
       </ul>
     </div>
     <p class="note-source" style="margin-top:var(--t5)">
-      Pierrel &amp; Co n'est ni sur l'App Store ni sur Google Play : il n'y a pas
+      ${esc(SITE.nom)} n'est ni sur l'App Store ni sur Google Play : il n'y a pas
       d'application à télécharger, mais une application web que le navigateur installe
       lui-même. Rien n'est transmis à une boutique, et il n'y a pas de compte à créer
       pour l'installer.
@@ -349,21 +355,21 @@ ${zone === "app" ? '<meta name="robots" content="noindex">' : ""}
 <link rel="apple-touch-icon" href="${a("assets/icones/icone-apple.png")}">
 <link rel="manifest" href="${a("manifest.webmanifest")}">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="Pierrel &amp; Co">
+<meta name="apple-mobile-web-app-title" content="${esc(SITE.nom)}">
 <link rel="preload" href="${a("assets/polices/plus-jakarta-sans.woff2")}" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="${a("assets/polices.css")}">
 <link rel="stylesheet" href="${a("assets/site.css")}">
 <script src="${a("assets/theme.js")}"></script>
 <script src="${a("assets/amorce.js")}"></script>
 </head>
-<body class="zone-${zone}" data-racine="${racine || "./"}" data-courriel="${esc(SITE.courriel)}"${formule ? ` data-formule="${esc(formule)}"` : ""}${attrsBody}>
+<body class="zone-${zone}" data-racine="${racine || "./"}" data-courriel="${esc(SITE.courriel)}" data-nom="${esc(SITE.nom)}"${formule ? ` data-formule="${esc(formule)}"` : ""}${attrsBody}>
 
 <a class="evitement" href="#contenu">Aller au contenu</a>
 
 <header class="bandeau">
   <div class="enveloppe bandeau-interieur">
     <a class="marque" href="${a(zone === "app" ? "app/index.html" : "index.html")}">
-      ${sigle}<span>Pierrel <span class="co">&amp; Co</span></span>
+      ${motMarque()}
     </a>
     ${zone === "public" ? `<a class="bouton bouton-bandeau" href="${a("connexion.html")}">Connexion</a>` : ""}
     ${zone === "app" ? `<div class="cloche-boite" data-exige="suivi">
@@ -439,8 +445,8 @@ ${zone === "public" ? bandeInstallation(a) : ""}
   <div class="enveloppe">
     <div class="pied-grille">
       <div>
-        <span class="marque">${sigle}<span>Pierrel <span class="co">&amp; Co</span></span></span>
-        <p>${esc(SITE.bareme)}.<br>Conseil en organisation et conformité, ${esc(SITE.ville)}.</p>
+        <span class="marque">${motMarque()}</span>
+        <p>${esc(SITE.bareme)}, pour les PME.<br>Conçu avec un consultant QSE et HSE en exercice.</p>
         <p style="margin-top:var(--t3)">
           <a href="mailto:${esc(SITE.courriel)}">${esc(SITE.courriel)}</a>${aTel() ? `<br>
           ${lienTel()}` : ""}
@@ -468,15 +474,13 @@ ${zone === "public" ? bandeInstallation(a) : ""}
           <li><a href="${a("app/reglages.html")}">Mon entreprise et mes alertes</a></li>
         </ul>
       </div>` : `<div>
-        <h2>Le cabinet</h2>
-        <!-- Les pages publiques servent à nous connaître, pas à entrer : on n'y
-             entre que par « Connexion » ou « Démarrer un abonnement ». La
-             colonne qui menait droit dans l'application dit donc qui nous
-             sommes, et garde le pied symétrique, en quatre colonnes. -->
+        <h2>Qui sommes-nous</h2>
+        <!-- Le produit, pas un cabinet : la caution métier est la personne qui
+             l'a conçu. Quatre lignes, pour garder le pied symétrique. -->
         <ul>
-          <li><a href="${a("index.html")}#cabinet">Conseil en organisation et conformité</a></li>
-          <li><a href="${a("index.html")}#cabinet">${esc(SITE.zone)}</a></li>
-          <li><a href="${a("index.html")}#cabinet">Un interlocuteur unique</a></li>
+          <li><a href="${a("nous.html")}">Conçu avec un consultant QSE en exercice</a></li>
+          <li><a href="${a("le-site.html")}">Sources officielles uniquement</a></li>
+          <li><a href="${a("nous.html")}">Un interlocuteur unique</a></li>
           <li><a href="${a("abonnement.html")}">Prix affichés, sans devis</a></li>
         </ul>
       </div>`}
@@ -2391,23 +2395,23 @@ function encartsDuSite(V, C, NAF, SOURCES) {
 
 function encartsDeNous() {
   return [
-    { titre: "Le cabinet", lignes: [
-      `<strong>${esc(SITE.nom)}</strong>, conseil en organisation et conformité`,
-      `Installé à ${esc(SITE.ville)}`,
-      `Zone d'intervention : ${esc(SITE.zone)}`,
+    { titre: "Le produit", lignes: [
+      `<strong>${esc(SITE.nom)}</strong>, la veille réglementaire par métier, pour les PME`,
+      `Uniquement des sources officielles : Journal officiel, Légifrance, EUR-Lex et sites publics`,
+      `Édité par ${esc(SITE.societe)}${SITE.editeur.denomination ? "" : ", société en cours de création"}`,
       `Joignable ${aTel() ? `au ${lienTel()} et ` : ""}à <a href="mailto:${esc(SITE.courriel)}">${esc(SITE.courriel)}</a>`
     ] },
-    { titre: "Votre interlocuteur", lignes: [
-      `<strong>Clément Pierrel</strong>`,
-      `Un interlocuteur unique, pas un abonnement anonyme ni un centre d'appels`,
-      `Joignable directement, ${parQuoi()}`,
-      ...(SITE.premierEchange ? [`Le premier échange, d'une heure, est sans engagement`] : [])
+    { titre: "Conçu sur le terrain", lignes: [
+      `Avec <strong>${esc(SITE.concepteur)}</strong>, consultant QSE et HSE en exercice`,
+      `La méthode vient de sa pratique : les sujets par métier, leur rythme de revue, les gestes à faire`,
+      `Une fiche qu'il n'a pas encore relue le dit, en tête : « premier jet »`,
+      `Un interlocuteur unique, joignable directement ${parQuoi()}`
     ] },
     { titre: "Ce qu'on fait pour vous", lignes: [
       ...Object.values(FORMULES).map((f) => `<strong>${esc(f.l)}</strong> (${esc(f.prixAn)} ou ${esc(f.prix)}) : ${esc(f.ouvre.replace(/^En plus : /, "en plus, ").replace(/\.$/, ""))}`),
       `L'année au prix de dix mois. ${esc(TVA.mention)}. Prix affichés sur la <a href="abonnement.html">page des tarifs</a>, sans devis`
     ] },
-    { titre: "Les audits qu'on prépare", lignes: [
+    { titre: `Les audits que ${esc(SITE.nom)} prépare`, lignes: [
       `<strong>ISO 14001</strong> (environnement) et <strong>ISO 45001</strong> (santé et sécurité)`,
       `<strong>MASE</strong>, pour les entreprises qui interviennent chez des industriels`,
       `<strong>Qualiopi</strong>, pour les organismes de formation`,
@@ -2532,9 +2536,9 @@ function pageConsultants() {
     <h2 class="titre-section">Vos clients restent les vôtres</h2>
     <div class="deux-colonnes">
       <p class="reserve"><strong>Nous ne démarchons pas vos clients.</strong> Ils vous appartiennent : nous ne les
-        contactons pas et ne leur vendons rien en direct. C'est écrit dans nos conditions consultant.</p>
-      <p class="reserve"><strong>Leurs données ne sont qu'à eux et à vous.</strong> Chaque entreprise est isolée dans la
-        base : elle ne voit que ses données, vous ne voyez que celles de vos clients.</p>
+        contactons pas et ne leur vendons rien en direct. Nous nous y engageons par écrit, dans le contrat consultant.</p>
+      <p class="reserve"><strong>Leurs données ne sont qu'à eux et à vous.</strong> Chaque entreprise sera isolée dans la
+        base : elle ne verra que ses données, et vous, que celles de vos clients.</p>
     </div>
     <p class="note-source" style="text-align:center;margin-top:var(--t4)">L'espace consultant ouvre avec les comptes
       clients, à l'été 2027. Écrivez-nous pour être parmi les premiers équipés.</p>
@@ -2860,12 +2864,12 @@ function pageAccueil(V, D, METIERS, ECRANS, C = null, NAF = null, SOURCES = [], 
         heure plus tard, reprend là où elle en était.</p>
         <p>Les sources qu'on ne peut pas encore relever automatiquement sont citées, avec la raison, dans la
         réponse « D'où viennent les textes ? » ci-dessus. On ne fait pas comme si elles étaient suivies.</p>`],
-      ["Qui est derrière le site ?",
-       `<p><strong>${esc(SITE.nom)}, un cabinet de conseil en organisation et conformité installé à ${esc(SITE.ville)}.</strong></p>
-        <p>Votre interlocuteur est Clément Pierrel. Le cabinet accompagne les entreprises ${esc(de(SITE.zone))}
-        sur leur conformité réglementaire et la préparation de leurs audits.</p>
-        <p>Vous avez une question sur le site ou sur votre situation ? Un interlocuteur unique, joignable
-        directement ${aTel() ? `: ${lienTel()} ou` : "par courriel :"}
+      [`Qui est derrière ${SITE.nom} ?`,
+       `<p><strong>${esc(SITE.nom)} est conçu avec ${esc(SITE.concepteur)}, consultant QSE et HSE en exercice.</strong></p>
+        <p>La méthode — les sujets par métier, leur rythme de revue, les gestes à faire pour chaque texte — vient de sa
+        pratique auprès des entreprises qu'il prépare à leurs audits. Une fiche qu'il n'a pas encore relue le dit, en tête.</p>
+        <p>${esc(SITE.nom)} est édité par ${esc(SITE.societe)}${SITE.editeur.denomination ? "" : ", société en cours de création"}.
+        Une question ? Un interlocuteur unique, joignable directement ${aTel() ? `: ${lienTel()} ou` : "par courriel :"}
         <a href="mailto:${esc(SITE.courriel)}">${esc(SITE.courriel)}</a>. <a href="nous.html">En savoir plus sur nous</a>.</p>`]
     ] }
   ];
@@ -3152,9 +3156,9 @@ ${bandeAvis(AVIS)}
       </li>
       <li class="raison" data-paraitre>
         <span class="numero" aria-hidden="true">4</span>
-        <h3>Quelqu'un en face</h3>
-        <p>Pierrel &amp; Co est un cabinet de conseil à ${esc(SITE.ville)}, pas un abonnement
-        anonyme. Un interlocuteur unique, joignable directement ${parQuoi()}.</p>
+        <h3>Conçu sur le terrain</h3>
+        <p>${esc(SITE.nom)} a été conçu avec un consultant QSE et HSE en exercice, qui prépare des
+        entreprises à leurs audits. Et en face, un interlocuteur unique, joignable directement ${parQuoi()}.</p>
       </li>
     </ul>
   </div>
@@ -3256,15 +3260,14 @@ ${SITE.offreConsultant ? `<section class="section">
   </div>
 </section>
 
-<section class="bande-finale" id="cabinet">
+<section class="bande-finale" id="contact">
   <div class="enveloppe">
-    <span class="marque">${sigle}<span>Pierrel <span class="co">&amp; Co</span></span></span>
-    <h2>Conseil en organisation et conformité, à ${esc(SITE.ville)}</h2>
+    <span class="marque">${motMarque()}</span>
+    <h2>${SITE.premierEchange ? "Un premier échange d'une heure, sans engagement" : "Une question avant de vous abonner ?"}</h2>
     <p class="mentions">
-      Clément Pierrel accompagne les entreprises ${esc(de(SITE.zone))} sur leur organisation et
-      leur conformité réglementaire : définir ce qui les concerne, tenir la veille, garder les preuves,
-      préparation d'audit (ISO 14001, ISO 45001, MASE, Qualiopi).${SITE.premierEchange ? ` Le premier échange d'une heure
-      est sans engagement.` : ""}
+      Écrivez-nous : un interlocuteur unique vous répond. ${esc(SITE.nom)} est conçu avec un consultant
+      QSE et HSE en exercice, pour tenir votre veille, garder vos preuves et préparer vos audits
+      (ISO 14001, ISO 45001, MASE, Qualiopi).
     </p>
     <p class="rangee">
       <a class="bouton bouton-accent" href="mailto:${esc(SITE.courriel)}">${esc(SITE.courriel)}</a>
@@ -3613,9 +3616,9 @@ function pageAbonnement(V) {
   </div>
 </section>
 
-<section class="bande-finale" id="cabinet">
+<section class="bande-finale" id="contact">
   <div class="enveloppe">
-    <span class="marque">${sigle}<span>Pierrel <span class="co">&amp; Co</span></span></span>
+    <span class="marque">${motMarque()}</span>
     <h2>${SITE.premierEchange ? "Un premier échange d'une heure, sans engagement" : "Une question avant de vous abonner ?"}</h2>
     <p class="mentions">
       Décrivez votre activité en trois lignes et ce qui vous inquiète : on vous dira
@@ -3682,7 +3685,7 @@ function pageConnexion() {
 
   return page({
     titre: `Connexion | ${SITE.nom}`,
-    description: "Connexion à l'application de veille réglementaire Pierrel & Co.",
+    description: `Connexion à ${SITE.nom}, la veille réglementaire des PME.`,
     zone: "public", actif: "connexion", corps, scripts: ["assets/compte.js"]
   });
 }
@@ -4111,7 +4114,8 @@ function entetesCloudflare() {
 
 async function main() {
   // Les formules du serveur (serveur/compte.mjs) doivent dire la même chose.
-  const { FORMULES: SERVEUR } = await import("./serveur/compte.mjs");
+  const { FORMULES: SERVEUR, NOM: NOM_SERVEUR } = await import("./serveur/compte.mjs");
+  if (NOM_SERVEUR !== SITE.nom) throw new Error(`serveur/compte.mjs : NOM vaut « ${NOM_SERVEUR} », SITE.nom « ${SITE.nom} » — mettre le même.`);
   for (const [id, f] of Object.entries(FORMULES)) {
     const sv = SERVEUR[id];
     if (!sv || sv.rang !== f.rang || sv.mois !== f.mois * 100 || sv.an !== f.an * 100)
@@ -4229,7 +4233,7 @@ async function main() {
   }));
   await writeFile(join(SORTIE, "nous.html"), pageInfos({
     titre: "Qui sommes-nous", h1: "Qui sommes-nous",
-    sous: `${esc(SITE.nom)}, conseil en organisation et conformité à ${esc(SITE.ville)} : le cabinet, votre interlocuteur, ce qu'on fait pour vous et les audits qu'on prépare.`,
+    sous: `${esc(SITE.nom)}, la veille réglementaire des PME : qui l'a conçu, ce que vous achetez, et les audits qu'il prépare.`,
     encarts: encartsDeNous(),
     suite: `<a class="bouton bouton-accent" href="mailto:${esc(SITE.courriel)}">${esc(SITE.courriel)}</a>
       ${lienTel("bouton bouton-sobre")}

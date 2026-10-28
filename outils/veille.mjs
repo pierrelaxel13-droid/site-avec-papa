@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /* ==========================================================================
-   Pierrel & Co — la relève
+   Vigie — la relève
    --------------------------------------------------------------------------
    Va chercher ce qui paraît sur les sources officielles, en extrait ce qui
    touche un domaine du référentiel, et écrit contenu/veille-releve.json, que

@@ -25,7 +25,7 @@ import { join, resolve, relative } from "node:path";
 
 const RACINE = resolve(process.argv[2] || "_site");
 const PAR_SITE = 2, EN_TOUT = 8, PAUSE_MS = 250, DELAI_MS = 20000;
-const ROBOT = "PierrelCo-verif-liens/1.0 (veille reglementaire ; verification mensuelle des liens)";
+const ROBOT = "Vigie-verif-liens/1.0 (veille reglementaire ; verification mensuelle des liens)";
 
 async function pages(d) {
   const out = [];

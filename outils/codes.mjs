@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /* ==========================================================================
-   Pierrel & Co — le texte des codes, mot pour mot
+   Vigie — le texte des codes, mot pour mot
    --------------------------------------------------------------------------
    Va chercher les codes consolidés, en découpe les morceaux déclarés dans
    contenu/perimetres.js, et écrit contenu/codes.json, que build.mjs publie
