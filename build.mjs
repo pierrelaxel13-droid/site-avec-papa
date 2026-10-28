@@ -37,9 +37,22 @@ const SITE = {
   ville: "Istres (13800)",
   zone: "Istres et pourtour de l'étang de Berre",
   courriel: "contact@pierrel-co.fr",
-  telephone: "04 00 00 00 00",
-  telephoneLien: "+33400000000"
+  /* Le téléphone : vide tant qu'on n'a pas le vrai numéro. Vide, aucune ligne
+     téléphone n'apparaît nulle part — un faux numéro est pire que pas de
+     numéro. Pour l'ajouter : telephone "04 42 12 34 56", telephoneLien
+     "+33442123456" (le même, en format international, sans espaces). */
+  telephone: "",
+  telephoneLien: ""
 };
+
+/* Le téléphone, seulement s'il existe. */
+const aTel = () => !!SITE.telephone;
+const lienTel = (classe = "") => aTel()
+  ? `<a${classe ? ` class="${classe}"` : ""} href="tel:${esc(SITE.telephoneLien)}">${esc(SITE.telephone)}</a>` : "";
+const parQuoi = () => (aTel() ? "par téléphone ou par courriel" : "par courriel");
+/* Garde-fou : un numéro de remplissage (« 04 00 00 00 00 ») arrête la construction. */
+if (/^0\d( 00){4}$|^\+33\d0{8}$/.test(SITE.telephone) || /0{8}$/.test(SITE.telephoneLien))
+  throw new Error("SITE.telephone ressemble à un numéro de remplissage : mettre le vrai, ou laisser vide.");
 
 async function chargeFichier(chemin, cle) {
   const source = await readFile(resolve(RACINE, chemin), "utf8");
@@ -363,8 +376,8 @@ ${zone === "public" ? bandeInstallation(a) : ""}
         <span class="marque">${sigle}<span>Pierrel <span class="co">&amp; Co</span></span></span>
         <p>${esc(SITE.bareme)}.<br>Conseil en organisation et conformité, ${esc(SITE.ville)}.</p>
         <p style="margin-top:var(--t3)">
-          <a href="mailto:${esc(SITE.courriel)}">${esc(SITE.courriel)}</a><br>
-          <a href="tel:${esc(SITE.telephoneLien)}">${esc(SITE.telephone)}</a>
+          <a href="mailto:${esc(SITE.courriel)}">${esc(SITE.courriel)}</a>${aTel() ? `<br>
+          ${lienTel()}` : ""}
         </p>
       </div>
       <div>
@@ -2315,12 +2328,12 @@ function encartsDeNous() {
       `<strong>${esc(SITE.nom)}</strong>, conseil en organisation et conformité`,
       `Installé à ${esc(SITE.ville)}`,
       `Zone d'intervention : ${esc(SITE.zone)}`,
-      `Joignable au <a href="tel:${esc(SITE.telephoneLien)}">${esc(SITE.telephone)}</a> et à <a href="mailto:${esc(SITE.courriel)}">${esc(SITE.courriel)}</a>`
+      `Joignable ${aTel() ? `au ${lienTel()} et ` : ""}à <a href="mailto:${esc(SITE.courriel)}">${esc(SITE.courriel)}</a>`
     ] },
     { titre: "Votre interlocuteur", lignes: [
       `<strong>Clément Pierrel</strong>`,
       `Un interlocuteur unique, pas un abonnement anonyme ni un centre d'appels`,
-      `Joignable directement, par téléphone ou par courriel`,
+      `Joignable directement, ${parQuoi()}`,
       `Le premier échange, d'une heure, est sans engagement`
     ] },
     { titre: "Ce qu'on fait pour vous", lignes: [
@@ -2410,6 +2423,10 @@ function questionsSimulateur(declencheurs) {
    le bouton ouvre directement la messagerie. La piste est écrite deux fois
    pour boucler sans à-coup ; la copie est cachée aux lecteurs d'écran. */
 function bandeAvis(AVIS) {
+  /* Pas encore d'avis : pas de section du tout. Des emplacements vides
+     « Laissez votre avis » inquiètent plus qu'ils ne rassurent. Elle revient
+     d'elle-même au premier avis ajouté dans contenu/temoignages.js. */
+  if (!AVIS.length) return "";
   const etoiles = (n) => `<span class="etoiles" aria-label="${n} sur 5">${"★".repeat(n)}${"☆".repeat(5 - n)}</span>`;
   /* « Laisser votre avis » est écrit dans la bande elle-même, et revient
      entre les avis : c'est ce qui défile en premier. */
@@ -2419,12 +2436,7 @@ function bandeAvis(AVIS) {
         <q>${esc(a.texte)}</q>
         <span class="avis-qui">— ${esc([a.nom, a.entreprise, a.ville].filter(Boolean).join(", "))}</span></li>`]
         .concat(k % 3 === 2 || k === AVIS.length - 1 ? [appel] : []))
-    : [appel,
-       `<li class="avis-item">Vous êtes client ? Dites-nous ce que vous en pensez</li>`,
-       appel,
-       `<li class="avis-item">Votre avis paraîtra ici, avec votre accord</li>`,
-       appel,
-       `<li class="avis-item">Pas encore d'avis publié : soyez le premier</li>`];
+    : [];
   const piste = (cache) => `<ul class="defile-piste"${cache ? ' aria-hidden="true"' : ""}>${items.join("")}</ul>`;
   const sujet = encodeURIComponent(`Mon avis sur ${SITE.nom}`);
   return `<section class="bande-avis" aria-labelledby="titre-avis">
@@ -2606,7 +2618,7 @@ function pageAccueil(V, D, METIERS, ECRANS, C = null, NAF = null, SOURCES = [], 
           <li><strong>Renseignez votre entreprise</strong> dans les réglages : votre métier et vos réponses. Votre veille se fait dessus, aussitôt.</li>
         </ul>
         <p>Vous préférez en parler d'abord ? Le premier échange, d'une heure, est sans engagement :
-        <a href="tel:${esc(SITE.telephoneLien)}">${esc(SITE.telephone)}</a> ou
+        ${aTel() ? `${lienTel()} ou` : "écrivez à"}
         <a href="mailto:${esc(SITE.courriel)}">${esc(SITE.courriel)}</a>.</p>`]
     ] },
     { theme: "L'outil et vos données", questions: [
@@ -2652,7 +2664,7 @@ function pageAccueil(V, D, METIERS, ECRANS, C = null, NAF = null, SOURCES = [], 
         <p>Votre interlocuteur est Clément Pierrel. Le cabinet accompagne les entreprises de ${esc(SITE.zone)}
         sur leur conformité réglementaire et la préparation de leurs audits.</p>
         <p>Vous avez une question sur le site ou sur votre situation ? Un interlocuteur unique, joignable
-        directement : <a href="tel:${esc(SITE.telephoneLien)}">${esc(SITE.telephone)}</a> ou
+        directement ${aTel() ? `: ${lienTel()} ou` : "par courriel :"}
         <a href="mailto:${esc(SITE.courriel)}">${esc(SITE.courriel)}</a>. <a href="nous.html">En savoir plus sur nous</a>.</p>`]
     ] }
   ];
@@ -2935,7 +2947,7 @@ ${bandeAvis(AVIS)}
         <span class="numero" aria-hidden="true">4</span>
         <h3>Quelqu'un en face</h3>
         <p>Pierrel &amp; Co est un cabinet de conseil à ${esc(SITE.ville)}, pas un abonnement
-        anonyme. Un interlocuteur unique, joignable directement par téléphone ou par courriel.</p>
+        anonyme. Un interlocuteur unique, joignable directement ${parQuoi()}.</p>
       </li>
     </ul>
   </div>
@@ -3035,7 +3047,7 @@ ${bandeAvis(AVIS)}
     </p>
     <p class="rangee">
       <a class="bouton bouton-accent" href="mailto:${esc(SITE.courriel)}">${esc(SITE.courriel)}</a>
-      <a class="bouton bouton-sobre" href="tel:${esc(SITE.telephoneLien)}">${esc(SITE.telephone)}</a>
+      ${lienTel("bouton bouton-sobre")}
     </p>
   </div>
 </section>`;
@@ -3385,7 +3397,7 @@ function pageAbonnement(V) {
     </p>
     <p class="rangee">
       <a class="bouton bouton-accent" href="mailto:${esc(SITE.courriel)}">${esc(SITE.courriel)}</a>
-      <a class="bouton bouton-sobre" href="tel:${esc(SITE.telephoneLien)}">${esc(SITE.telephone)}</a>
+      ${lienTel("bouton bouton-sobre")}
     </p>
   </div>
 </section>`;
@@ -3992,7 +4004,7 @@ async function main() {
     sous: `${esc(SITE.nom)}, conseil en organisation et conformité à ${esc(SITE.ville)} : le cabinet, votre interlocuteur, ce qu'on fait pour vous et les audits qu'on prépare.`,
     encarts: encartsDeNous(),
     suite: `<a class="bouton bouton-accent" href="mailto:${esc(SITE.courriel)}">${esc(SITE.courriel)}</a>
-      <a class="bouton bouton-sobre" href="tel:${esc(SITE.telephoneLien)}">${esc(SITE.telephone)}</a>
+      ${lienTel("bouton bouton-sobre")}
       <a class="bouton bouton-sobre" href="abonnement.html">Les tarifs</a>`
   }));
   await writeFile(join(SORTIE, "metiers.html"), pageMetiers(V, NAF));
