@@ -2968,3 +2968,30 @@ a.defile:hover .avis-appel strong { text-decoration: underline; text-underline-o
 /* Dans les grands chiffres, l'espace de la police, déjà étroite, disparaissait
    sous l'interlettrage serré : « 1 490 € » se lisait « 1490 € ». */
 .formule .prix .grand { word-spacing: .14em; }
+
+/* --- 34. Les pages légales ----------------------------------------------------- */
+.legal { max-width: 50rem; }
+.legal-statut { margin: 0 0 var(--t3); }
+.legal-maj { color: var(--encre-douce); font-size: .92rem; margin: 0 0 var(--t4); }
+.legal-sommaire { padding: var(--t3) var(--t4); border: 1px solid var(--filet); border-radius: var(--r2); background: var(--carte); }
+.legal-sommaire ol { margin: 0; padding-left: 1.3rem; display: grid; gap: .3rem; }
+@media (min-width: 46rem) { .legal-sommaire ol { grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: var(--t5); } }
+.legal-article { margin-top: var(--t6); scroll-margin-top: 6rem; }
+.legal-article h2 { font-size: clamp(1.2rem, 1.05rem + .5vw, 1.45rem); margin: 0 0 var(--t3); }
+.legal-article p, .legal-article li { line-height: 1.65; color: var(--encre-douce); }
+.legal-article strong { color: var(--encre); }
+.legal-article ul, .legal-article ol { padding-left: 1.3rem; display: grid; gap: .5rem; }
+.legal-article p + p, .legal-article ul + p, .legal-article p + ul, .legal-article p + ol { margin-top: var(--t3); }
+.legal-cle { font-weight: 700; color: var(--accent) !important; }
+/* Ce qui reste à fournir, ou à trancher : visible d'un coup d'œil. */
+mark.a-completer, mark.a-decider {
+  padding: .05rem .35rem; border-radius: .3rem; font-weight: 700; font-size: .92em;
+  background: #FDE7C8; color: #7A3E00;
+}
+mark.a-decider { background: #E6E1FF; color: #3B1FBF; }
+:root[data-theme="dark"] mark.a-completer { background: #4A2E0A; color: #FFD9A8; }
+:root[data-theme="dark"] mark.a-decider { background: #2B2260; color: #D6CCFF; }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) mark.a-completer { background: #4A2E0A; color: #FFD9A8; }
+  :root:not([data-theme="light"]) mark.a-decider { background: #2B2260; color: #D6CCFF; }
+}

@@ -11,6 +11,15 @@ Site statique engendré, sans dépendance ni framework. La porte d'entrée est l
 **secteur** : une page par division de la nomenclature NAF, avec ce qui s'y
 applique, à quel rythme le revoir, et les pièges du métier.
 
+## Les pages légales
+
+`legales.mjs` écrit les mentions légales, la politique de confidentialité et
+les CGV. **Versions de travail, à faire relire par un avocat avant tout
+abonnement payant.** L'identité de l'éditeur se remplit dans `SITE.editeur`
+(build.mjs) : chaque champ vide s'affiche « [À COMPLÉTER] » et la
+construction liste ce qui manque. Les « [À DÉCIDER] » (durées, préavis) se
+tranchent dans `legales.mjs` même.
+
 ## Deux zones
 
 ```sh

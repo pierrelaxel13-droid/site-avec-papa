@@ -27,6 +27,7 @@ import { existsSync, readFileSync } from "node:fs";
 import { createHash } from "node:crypto";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { pagesLegales, champsLegauxManquants } from "./legales.mjs";
 
 const RACINE = dirname(fileURLToPath(import.meta.url));
 const SORTIE = resolve(RACINE, "_site");
@@ -49,7 +50,23 @@ const SITE = {
   /* La TVA. "franchise" : micro-entreprise sous franchise en base, les prix
      sont nets et portent « TVA non applicable, art. 293 B du CGI ». "ht" : le
      jour où la TVA est facturée, les prix s'affichent « HT ». */
-  tva: "franchise"
+  tva: "franchise",
+  /* L'identité légale de l'éditeur, pour les mentions légales, la politique de
+     confidentialité et les CGV (legales.mjs). Vide = « [À COMPLÉTER] » visible
+     sur ces pages, et listé à chaque construction. */
+  editeur: {
+    denomination: "",          // ex. « Pierrel & Associés SAS » ou « Clément Pierrel, EI »
+    forme: "",                 // ex. « SAS », « entreprise individuelle (micro-entreprise) »
+    capital: "",               // pour une société, ex. « 1 000 € »
+    adresse: "",               // siège social complet
+    siret: "",
+    immatriculation: "",       // ex. « RCS Salon-de-Provence » ou « Registre national des entreprises »
+    directeurPublication: "",  // le représentant légal
+    hebergeurDonnees: "",      // à l'ouverture des comptes, ex. « Supabase, région Francfort (UE) »
+    tribunal: ""               // ex. « le tribunal de commerce d'Aix-en-Provence », avec l'avocat
+  },
+  hebergeur: { nom: "GitHub, Inc. (GitHub Pages)", site: "https://github.com",
+               adresse: "88 Colin P. Kelly Jr. Street, San Francisco, CA 94107, États-Unis" }
 };
 
 /* « de Istres » ne se dit pas : « d'Istres ». */
@@ -458,12 +475,12 @@ ${zone === "public" ? bandeInstallation(a) : ""}
     <div class="pied-bas">
       <p class="pied-legal">
         <span>© ${new Date().getFullYear()} ${esc(SITE.nom)} — tous droits réservés</span>
-        <a href="${a("abonnement.html")}">Tarifs</a>
+        <a href="${a("mentions-legales.html")}">Mentions légales</a>
+        <a href="${a("confidentialite.html")}">Confidentialité</a>
+        <a href="${a("cgv.html")}">CGV</a>
         <a href="mailto:${esc(SITE.courriel)}">Contact</a>
       </p>
       <p>
-        Éditeur : ${esc(SITE.nom)}, Clément Pierrel, ${esc(SITE.ville)}.
-        SIRET : à compléter. Hébergement : GitHub Pages, GitHub, Inc., 88 Colin P. Kelly Jr. Street, San Francisco, CA 94107, États-Unis.
         Aucun cookie, aucune mesure d'audience, aucune requête vers un service tiers.
         Le service fournit un cadre méthodologique, pas un conseil juridique.
       </p>
@@ -4050,6 +4067,8 @@ async function main() {
       <a class="bouton bouton-sobre" href="abonnement.html">Les tarifs</a>`
   }));
   await writeFile(join(SORTIE, "metiers.html"), pageMetiers(V, NAF));
+  for (const [fichier, html] of pagesLegales({ page, SITE, FORMULES, TVA, esc, eur }))
+    await writeFile(join(SORTIE, fichier), html);
   await writeFile(join(SORTIE, "abonnement.html"), pageAbonnement(V));
   await writeFile(join(SORTIE, "decouvrir.html"), pageDecouvrir(V, ECRANS, C, NAF, SOURCES));
   await writeFile(join(SORTIE, "connexion.html"), pageConnexion());
@@ -4120,6 +4139,8 @@ async function main() {
   console.log(`  relève officielle   ${JO ? JO.textes.length + " entrées, relevées le " + JO.releve_le +
     " (" + JO.rapport.filter((r) => !r.souci).length + " sources ont répondu sur " + JO.rapport.length + ")"
     : "AUCUNE — lancer outils/veille.mjs (tourne toutes les heures dans .github/workflows/releve.yml)"}`);
+  const aCompleter = champsLegauxManquants(SITE);
+  if (aCompleter.length) console.log(`  pages légales       À COMPLÉTER dans SITE.editeur : ${aCompleter.join(", ")}`);
   console.log(`\n_site/ prêt — ${(total / 1024).toFixed(1)} Ko, ` +
     `${V.divisions.length + Object.keys(parTexte).length + (C ? C.morceaux.length : 0) + 11} pages, ` +
     `${Object.keys(V.domaines).length} domaines, ${Object.keys(PIEGES).length} secteurs avec pièges.`);

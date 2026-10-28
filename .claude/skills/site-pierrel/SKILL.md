@@ -264,6 +264,9 @@ qu'il n'y a pas de client.
   en local : `node outils/comptes-local.mjs 8820` (faux Stripe, faux KV).
   Sur GitHub Pages, `/api/` n'existe pas : la connexion le dit (404 attendu
   sur `api/moi`).
+- **Pages légales** : `legales.mjs` (mentions, confidentialité, CGV), liées
+  dans le pied de chaque page. Versions de travail : relecture par un avocat
+  obligatoire avant le lancement. Identité dans `SITE.editeur`.
 - **Les formules** (28 octobre 2026) : Textes 59 €, Textes et suivi 99 €,
   Veille complète 149 € par mois, ou dix mois à l'année (« 2 mois offerts »,
   l'annuel est affiché en premier). Franchise de TVA : mention art. 293 B

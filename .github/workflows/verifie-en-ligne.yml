@@ -65,6 +65,7 @@ jobs:
         run: |
           faute=0
           for p in / /decouvrir.html /le-site.html /nous.html /metiers.html \
+                   /mentions-legales.html /confidentialite.html /cgv.html \
                    /abonnement.html /connexion.html /app/index.html \
                    /app/releve.html /app/secteurs.html /assets/site.css \
                    /assets/amorce.js; do
