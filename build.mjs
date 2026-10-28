@@ -142,6 +142,19 @@ const FORMULES = {
                      "Pensé pour ISO 14001, ISO 45001, MASE et Qualiopi"] }
 };
 
+/* --- L'offre consultant ----------------------------------------------------
+   Un consultant QSE livre la veille à ses clients ; on facture par client
+   suivi, au mois, selon le nombre de clients équipés. Chaque client a la
+   formule complète. Marque blanche (logo, nom, couleurs, exports PDF) dès 6. */
+const OFFRE_CONSULTANT = {
+  paliers: [
+    { de: 3, a: 5, mois: 49, blanche: false },
+    { de: 6, a: 15, mois: 42, blanche: true },
+    { de: 16, a: null, mois: 35, blanche: true }
+  ],
+  equivalent: "complet"   // la formule que chaque client final reçoit
+};
+
 /* Les prix, écrits une seule fois. « 1 490 € » : espace insécable avant les
    milliers et avant le symbole, pour qu'ils ne se coupent jamais en fin de ligne. */
 const TVA = {
@@ -439,6 +452,7 @@ ${zone === "public" ? bandeInstallation(a) : ""}
           <li><a href="${a("index.html")}">Le produit</a></li>
           <li><a href="${a("decouvrir.html")}">Comment ça marche</a></li>
           <li><a href="${a("abonnement.html")}">S'abonner et voir les tarifs</a></li>
+          ${SITE.offreConsultant ? `<li><a href="${a("consultants.html")}">Offre consultants QSE</a></li>` : ""}
           ${lienPaiement("portail") ? `<li><a href="${esc(lienPaiement("portail"))}">Gérer ou résilier mon abonnement</a></li>` : ""}
           <li><a href="${a("connexion.html")}">Connexion</a></li>
         </ul>
@@ -2427,6 +2441,115 @@ function pageInfos({ titre, h1, sous, encarts, suite }) {
   return page({ titre: `${titre} | ${SITE.nom}`, description: sous.replace(/<[^>]+>/g, "").replace(/&amp;/g, "&"), zone: "public", corps });
 }
 
+/* La page de vente pour les consultants QSE. Elle n'est écrite que si
+   SITE.offreConsultant est allumé (après le choix du nom du produit). */
+function pageConsultants() {
+  const O = OFFRE_CONSULTANT, direct = FORMULES[O.equivalent];
+  const palier = O.paliers[1];                         // le palier de 6 à 15 clients
+  const marge = direct.mois - palier.mois;
+  const exemple = 10;
+  const corps = `
+<section class="heros heros-court">
+  <div class="enveloppe">
+    <div class="heros-texte"><h1>Livrez la veille réglementaire à vos clients, sous votre marque</h1></div>
+    <p class="heros-sous">Vous suivez des PME en QSE. ${esc(SITE.nom)} tient leur veille ; vous la livrez sous votre nom,
+      vous gagnez du temps sur chaque client, et vous ajoutez une ligne de revenu récurrente à votre facturation.</p>
+    <p class="rangee rangee-centre">
+      <a class="bouton bouton-accent" href="mailto:${esc(SITE.courriel)}?subject=${encodeURIComponent("Offre consultant")}">En parler</a>
+      <a class="bouton bouton-sobre" href="#grille">Voir la grille</a>
+    </p>
+  </div>
+</section>
+
+<section class="section">
+  <div class="enveloppe">
+    <h2 class="titre-section">Ce que vous y gagnez</h2>
+    <ul class="raisons">
+      <li class="raison" data-paraitre>
+        <span class="numero" aria-hidden="true">1</span>
+        <h3>Votre marque, pas la nôtre</h3>
+        <p>À partir de ${O.paliers.find((p) => p.blanche).de} clients, l'espace de vos clients et leurs exports PDF portent
+        votre logo, votre nom et vos couleurs. Pour eux, c'est votre outil.</p>
+      </li>
+      <li class="raison" data-paraitre>
+        <span class="numero" aria-hidden="true">2</span>
+        <h3>Des heures gagnées, chaque mois, par client</h3>
+        <p>Le relevé des textes, le tri par métier, le rythme de revue de chaque sujet et le registre daté sont tenus
+        pour vous. Votre temps va à ce qui se facture : l'analyse et l'accompagnement.</p>
+      </li>
+      <li class="raison" data-paraitre>
+        <span class="numero" aria-hidden="true">3</span>
+        <h3>Un revenu récurrent</h3>
+        <p>Chaque client équipé est une ligne mensuelle de plus sur votre facture, à votre prix. Vous l'achetez
+        ${esc(eur(palier.mois))} ; en direct, votre client paierait ${esc(eur(direct.mois))}.</p>
+      </li>
+      <li class="raison" data-paraitre>
+        <span class="numero" aria-hidden="true">4</span>
+        <h3>Une vue sur tous vos clients</h3>
+        <p>Un seul espace pour voir vos clients et ce qui est en retard chez chacun : les revues à faire, les textes
+        à analyser, les actions ouvertes.</p>
+      </li>
+    </ul>
+  </div>
+</section>
+
+<section class="section section-tein" id="grille">
+  <div class="enveloppe">
+    <h2 class="titre-section">La grille, par client suivi</h2>
+    <p class="intro titre-section">Un prix par client et par mois, dégressif. Chaque client a la formule
+    « ${esc(direct.l)} ». Prix affichés, sans devis.</p>
+    <div class="formules">
+      ${O.paliers.map((p) => `<article class="formule${p === palier ? " mise-en-avant" : ""}" data-paraitre>
+        <span class="etiq">${p.a ? `De ${p.de} à ${p.a} clients` : `${p.de} clients et plus`}</span>
+        <p class="prix"><span class="grand">${esc(eur(p.mois))}</span> <span class="etiq">par client et par mois</span></p>
+        <ul class="formule-donne">
+          <li>La formule ${esc(direct.l)} pour chaque client</li>
+          <li>La vue consultant : tous vos clients, et leurs retards</li>
+          <li>${p.blanche ? "Votre marque : logo, nom, couleurs, exports PDF" : "Sans marque blanche (dès 6 clients)"}</li>
+        </ul>
+      </article>`).join("\n      ")}
+    </div>
+    <p class="mention-tva">${esc(TVA.mention)}.</p>
+  </div>
+</section>
+
+<section class="section">
+  <div class="enveloppe">
+    <h2 class="titre-section">Votre marge, en clair</h2>
+    <div class="deux-colonnes">
+      <p class="reserve"><strong>Par client.</strong> En direct, la formule ${esc(direct.l)} coûte ${esc(direct.prix)}.
+        Vous l'achetez ${esc(eur(palier.mois))} de ${palier.de} à ${palier.a} clients : si vous la refacturez au prix
+        public, la différence — ${esc(eur(marge))} par client et par mois — est pour vous. Vous fixez votre prix.</p>
+      <p class="reserve"><strong>Exemple, ${exemple} clients.</strong> Vous nous payez ${esc(eur(palier.mois * exemple))} par mois.
+        Au prix public, vos clients paieraient ${esc(eur(direct.mois * exemple))} : ${esc(eur(marge * exemple))} par mois
+        de marge, avant votre propre accompagnement.</p>
+    </div>
+  </div>
+</section>
+
+<section class="section section-tein">
+  <div class="enveloppe">
+    <h2 class="titre-section">Vos clients restent les vôtres</h2>
+    <div class="deux-colonnes">
+      <p class="reserve"><strong>Nous ne démarchons pas vos clients.</strong> Ils vous appartiennent : nous ne les
+        contactons pas et ne leur vendons rien en direct. C'est écrit dans nos conditions consultant.</p>
+      <p class="reserve"><strong>Leurs données ne sont qu'à eux et à vous.</strong> Chaque entreprise est isolée dans la
+        base : elle ne voit que ses données, vous ne voyez que celles de vos clients.</p>
+    </div>
+    <p class="note-source" style="text-align:center;margin-top:var(--t4)">L'espace consultant ouvre avec les comptes
+      clients, à l'été 2027. Écrivez-nous pour être parmi les premiers équipés.</p>
+    <p class="rangee rangee-centre" style="margin-top:var(--t4)">
+      <a class="bouton bouton-accent" href="mailto:${esc(SITE.courriel)}?subject=${encodeURIComponent("Offre consultant")}">En parler</a>
+    </p>
+  </div>
+</section>`;
+  return page({
+    titre: `Offre consultant QSE | ${SITE.nom}`,
+    description: "Livrez la veille réglementaire à vos clients sous votre marque : prix par client, dégressif, marque blanche dès 6 clients.",
+    zone: "public", corps
+  });
+}
+
 /* Tous les métiers, rangés par grand secteur d'activité. Un clic choisit le
    métier dans l'outil de l'accueil, qui dit tout de suite ce qui s'applique. */
 function pageMetiers(V, NAF) {
@@ -4113,6 +4236,7 @@ async function main() {
       <a class="bouton bouton-sobre" href="abonnement.html">Les tarifs</a>`
   }));
   await writeFile(join(SORTIE, "metiers.html"), pageMetiers(V, NAF));
+  if (SITE.offreConsultant) await writeFile(join(SORTIE, "consultants.html"), pageConsultants());
   for (const [fichier, html] of pagesLegales({ page, SITE, FORMULES, TVA, esc, eur }))
     await writeFile(join(SORTIE, fichier), html);
   await writeFile(join(SORTIE, "abonnement.html"), pageAbonnement(V));

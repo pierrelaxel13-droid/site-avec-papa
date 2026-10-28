@@ -476,7 +476,7 @@ window.VEILLE = (function () {
       obligations: ["Assurance décennale et RC pro en cours", "Respect des DTU et règles de l'art", "Attestations thermiques et environnementales", "Réception des travaux et lever des réserves"],
       impacts: ["juridique", "financier", "operationnel"],
       sources: [
-        { nom: "RT-Bâtiment / RE2020", url: "https://www.rt-batiment.fr" },
+        { nom: "RE2020 — site officiel du ministère", url: "https://rt-re-batiment.developpement-durable.gouv.fr" },
         { nom: "CSTB", url: "https://www.cstb.fr" },
         { nom: "Boutique AFNOR — DTU et normes", url: "https://www.boutique.afnor.org" }
       ]
