@@ -1,13 +1,13 @@
 {
  "licence": "Textes officiels de la République française — Licence Ouverte. Publications des autorités citées, reproduites avec leur source et leur date.",
- "releve_le": "2026-10-27",
- "depuis": "2026-10-13",
+ "releve_le": "2026-10-28",
+ "depuis": "2026-10-14",
  "rapport": [
   {
    "id": "jorf",
    "nom": "Journal officiel de la République française",
-   "entrees": 137441,
-   "retenus": 11571,
+   "entrees": 135517,
+   "retenus": 11312,
    "souci": null
   },
   {
@@ -50,7 +50,7 @@
    "nom": "URSSAF — actualités employeurs",
    "entrees": 0,
    "retenus": 0,
-   "souci": "injoignable (fetch failed : UND_ERR_SOCKET) — l'hôte refuse le robot, ou le réseau d'ici le bloque"
+   "souci": "injoignable (fetch failed : ECONNRESET) — l'hôte refuse le robot, ou le réseau d'ici le bloque"
   },
   {
    "id": "bofip",
@@ -63,7 +63,7 @@
    "id": "cnil",
    "nom": "CNIL — actualités",
    "entrees": 10,
-   "retenus": 3,
+   "retenus": 2,
    "souci": null
   },
   {
@@ -90,9 +90,9 @@
   {
    "id": "ineris-aida",
    "nom": "Ineris et AIDA — nouveautés",
-   "entrees": 10,
+   "entrees": 0,
    "retenus": 0,
-   "souci": null
+   "souci": "injoignable (HTTP 403) — l'hôte refuse le robot, ou le réseau d'ici le bloque"
   },
   {
    "id": "ademe",
@@ -154,13 +154,13 @@
    "id": "has",
    "nom": "Haute Autorité de santé",
    "entrees": 50,
-   "retenus": 1,
+   "retenus": 0,
    "souci": null
   },
   {
    "id": "ansm",
    "nom": "ANSM — actualités",
-   "entrees": 1,
+   "entrees": 0,
    "retenus": 0,
    "souci": null
   },
@@ -180,6 +180,102 @@
   }
  ],
  "textes": [
+  {
+   "source": "jorf",
+   "sourceNom": "Journal officiel de la République française",
+   "genre": "texte",
+   "id": "JORFARTI000055021015",
+   "titre": "Arrêté du 23 octobre 2026 relatif à l'affectation, en vue de l'accomplissement d'un parcours de consolidation des compétences, de praticiens associés candidats à la profession de médecin dans la spécialité « médecine générale » en application des dispositions du B du IV de l'article 83 de la loi n° 2006-1640 du 21 décembre 2006 de financement de la sécurité sociale pour 2007",
+   "nature": "Article",
+   "date": "2026-10-28",
+   "corps": "En vue de l'accomplissement d'un parcours de consolidation des compétences sous statut de praticien associé, la personne dont le nom suit est affectée comme suit :\nM. LABED Toufik, né le 24 mars 1962 à Biskra (Algérie), est affecté au sein du service des urgences, agréé pour la formation des internes du DES de médecine générale, du centre hospitalier Léon Binet de Provins pour une durée de 3 mois à temps plein, à compter du 5 octobre 2026.\n\nLe présent arrêté sera publié au Journal officiel de la République française.\n\nLa ministre de la santé, des familles, de l'autonomie et des personnes handicapées,\nVu le code de la santé publique, notamment les dispositions de son article L. 4111-2 (I) ;\nVu le B du IV de l'article 83 de la loi n° 2006-1640 du 21 décembre 2006 de financement de la sécurité sociale pour 2007 modifiée ;\nVu la loi n° 2019-774 du 24 juillet 2019 modifiée relative à l'organisation et à la transformation du système de santé ;\nVu le décret n° 2020-1017 du 7 août 2020 portant application du IV et du V de l'article 83 de la loi n° 2006-1640 du 21 décembre 2006 de financement de la sécurité sociale pour 2007 et relatif à l'exercice des professions de médecin, chirurgien-dentiste, sage-femme et pharmacien par les titulaires de diplômes obtenus hors de l'Union européenne et de l'Espace économique européen ;\nVu le décret n° 2021-365 du 29 mars 2021 portant création du statut des praticiens associés ;\nVu l'avis de la commission nationale d'autorisation d'exercice en date du 28 avril 2026,\nArrête :",
+   "nota": "",
+   "lien": "https://www.legifrance.gouv.fr/jorf/id/JORFARTI000055021015",
+   "domaines": [
+    {
+     "id": "paie",
+     "nom": "Paie, cotisations et protection sociale",
+     "mots": [
+      "securite sociale"
+     ]
+    }
+   ],
+   "morceaux": 3,
+   "dateTexte": "2026-10-23",
+   "vuLe": "2026-10-28"
+  },
+  {
+   "source": "jorf",
+   "sourceNom": "Journal officiel de la République française",
+   "genre": "texte",
+   "id": "JORFARTI000055020786",
+   "titre": "Décret n° 2026-1000 du 26 octobre 2026 relatif à l'utilisation du traitement automatisé de données à caractère personnel dénommé Espace numérique sécurisé des agents publics (ENSAP) pour les élections professionnelles dans la fonction publique",
+   "nature": "Article",
+   "date": "2026-10-28",
+   "corps": "Aux premier et neuvième alinéas du a de l'article 1 er du décret du 21 novembre 2022 susvisé, après les mots : « fonction publique », les mots : « de l'Etat » sont supprimés.\n\nLe ministre de l'action et des comptes publics est chargé de l'exécution du présent décret, qui sera publié au Journal officiel de la République française.\n\nPublics concernés : agents des collectivités territoriales et leurs établissements publics, agents des établissements ou services mentionnés à l'article L. 5 du code général de la fonction publique.\n \nObjet : le décret permet l'utilisation de la plateforme dénommée Espace numérique sécurisé des agents publics (ENSAP) pour la participation aux élections professionnelles dans les fonctions publiques territoriale et hospitalière.\n \nEntrée en vigueur : le décret entre en vigueur le lendemain de sa publication.\n \nApplication : le présent décret est un texte autonome.",
+   "nota": "",
+   "lien": "https://www.legifrance.gouv.fr/jorf/id/JORFARTI000055020786",
+   "domaines": [
+    {
+     "id": "rgpd",
+     "nom": "Données personnelles (RGPD)",
+     "mots": [
+      "donnees a caractere personnel"
+     ]
+    }
+   ],
+   "morceaux": 3,
+   "dateTexte": "2026-10-26",
+   "vuLe": "2026-10-28"
+  },
+  {
+   "source": "jorf",
+   "sourceNom": "Journal officiel de la République française",
+   "genre": "texte",
+   "id": "JORFARTI000055020103",
+   "titre": "Décret n° 2026-996 du 26 octobre 2026 modifiant le décret n° 2023-935 du 10 octobre 2023 autorisant la création d'un traitement automatisé de données à caractère personnel dénommé « Système informatisé de suivi de politiques pénales prioritaires » (SISPoPP)",
+   "nature": "Article",
+   "date": "2026-10-28",
+   "corps": "L'article 1 er du décret du 10 octobre 2023 susvisé est ainsi modifié :\n1° Après le quatrième alinéa, sont insérés trois alinéas ainsi rédigés :\n\n \n\n « - la lutte contre les violences sexuelles ;\n « - la lutte contre les infractions portant atteinte aux personnes commises en milieu scolaire et périscolaire ;\n « - la lutte contre les discriminations à raison de l'appartenance ou de la non-appartenance, vraie ou supposée, de la victime à une prétendue race, une ethnie, une nation, une religion déterminée ou à raison de son sexe, son orientation sexuelle ou son identité de genre vraie ou supposée. » ;\n\n \n\n2° Au huitième alinéa, devenu le onzième, les mots : « les trafics de stupéfiants » sont remplacés par les mots : « la criminalité organisée ».\n\nL'article 3 du même décret est ainsi modifié :\n1° Au treizième alinéa du I, après le mot : « incarcération, », sont insérés les mots : « numéro d'écrou » ;\n2° Au II :\na) Après le septième alinéa, il est inséré un alinéa ainsi rédigé :\n« f) Informations relatives aux faits : fondement de l'infraction à caractère discriminatoire. » ;\nb) Au seizième alinéa, devenu le dix-septième, après les mots : « de la décision », sont insérés les mots : « et numéros de procédure civile ».\n\nL'article 5 du même décret est ainsi modifié :\n1° Au troisième alinéa de l'article 5 du même décret, après les mots : « l'enregistrement initial », sont insérés les mots : « ou à compter de la fin du suivi du dossier dans le cadre d'une instance de concertation de lutte contre la radicalisation violente ou de lutte contre la criminalité organisée, » ;\n2° Il est ajouté un septième alinéa ainsi rédigé :\n« Lorsqu'il est mis fin au caractère prioritaire d'une politique pénale ou lorsque son champ est modifié, les données collectées relatives à cette suppression ou à cette modification sont supprimées dans les meilleurs délais. »\n\nL'article 6 du même décret est ainsi modifié :\n1° Au 1° du I, les mots : « exerçant dans le tribunal judiciaire concerné » sont remplacés par les mots : « des juridictions judiciaires » ;\n2° Au 4° du I, les mots : « juristes assistants » sont remplacés par les mots : « attachés de justice » ;\n3° Au II, les mots : « relatif à l'arrondissement judiciaire de la cour d'appel au sein duquel ils exercent leurs fonctions, » sont supprimés ;\n4° Le 3° du III est abrogé et le 4° devient le 3°.\n\nLe tableau figurant en annexe du décret du 10 octobre 2023 susvisé est remplacé par le tableau figurant en annexe du présent décret.\n\nLe garde des sceaux, ministre de la justice, est chargé de l'exécution du présent décret, qui sera publié au Journal officiel de la République française.\n\nANNEXE\n\n \n \n\n \n \n \n \n \n\nLutte contre les violences intra-familiales \n \n\nLutte contre les violences sexuelles \n \n\nLutte contre les infractions commises en milieu scolaire ou périscolaire \n \n\nLutte contre les infractions commises lors ou en marge des évènements de nature à entraîner un danger grave et imminent pour la sécurité, l'ordre ou la santé public \n \n\nLutte contre les atteintes aux personnes dépositaires de l'autorité publique ou aux personnes chargées d'une mission de service public \n \n\nLutte contre les infractions commises sur un périmètre géographique déterminé et suivies dans le cadre des instances partenariales auxquelles participent les magistrats \n \n\nLutte contre la criminalité organisée \n \n\nLutte contre les atteintes à l'environnement \n \n\nPrévention de la radicalisation violente \n \n\nLutte contre les discriminations \n \n \n \n\nARTICLE 3 - II \n \n \n \n\nMis en cause \n \n \n \n\nDonnées relatives à la situation familiale \n \n\nPersonnes physiques \n \n\nsituation de famille (marié, concubin, partenaire lié par un pacte civil de solidarité, divorcé, veuf, célibataire) \n \n\nx \n \n\nx \n \n\nx \n \n \n \n\nx \n \n\nx \n \n \n\nx \n \n \n \n \n\nnombre d'enfants \n \n\nx \n \n\nx \n \n\nx \n \n \n \n\nx \n \n\nx \n \n \n\nx \n \n \n \n \n\nidentités et lien de filiation, \n \n\nx \n \n\nx \n \n\nx \n \n \n \n\nx \n \n\nx \n \n \n\nx \n \n \n \n \n\nexercice de l'autorité parentale \n \n\nx \n \n\nx \n \n\nx \n \n \n \n\nx \n \n\nx \n \n \n\nx \n \n \n \n \n\nlieu de résidence des enfants \n \n\nx \n \n\nx \n \n\nx \n \n \n \n\nx \n \n\nx \n \n \n\nx \n \n \n \n \n\nlieu de scolarisation des enfants \n \n\nx \n \n\nx \n \n\nx \n \n \n \n\nx \n \n\nx \n \n \n\nx \n \n \n \n \n\nexistence d'un suivi en assistance éducative (état, mesures en cours, dates d'audience) \n \n\nx \n \n\nx \n \n\nx \n \n \n \n\nx \n \n\nx \n \n \n\nx \n \n \n \n \n\ndésignation d'un administrateur ad hoc \n \n\nx \n \n\nx \n \n\nx \n \n \n \n\nx \n \n\nx \n \n \n\nx \n \n \n \n \n\nexistence d'une procédure devant le juge aux affaires familiales (état, décision, date d'audience) \n \n\nx \n \n\nx \n \n\nx \n \n \n \n \n \n \n\nx \n \n \n \n \n\nDonnées relatives à la situation professionnelle \n \n\nPersonnes physiques \n \n\nsituation au regard de l'emploi (en activité, sans activité, retraité) \n \n\nx \n \n\nx \n \n\nx \n \n\nx \n \n\nx \n \n\nx \n \n\nx \n \n\nx \n \n\nx \n \n\nx \n \n \n \n\nprofession \n \n\nx \n \n\nx \n \n\nx \n \n\nx \n \n\nx \n \n\nx \n \n\nx \n \n\nx \n \n\nx \n \n\nx \n \n \n \n\nemployeur \n \n\nx \n \n\nx \n \n\nx \n \n\nx \n \n\nx \n \n\nx \n \n\nx \n \n\nx \n \n\nx \n \n\nx \n \n \n \n\nadresse professionnelle \n \n\nx \n \n\nx \n \n\nx \n \n\nx \n \n\nx \n \n\nx \n \n\nx \n \n\nx \n \n\nx \n \n\nx \n \n \n \n\nInformations relatives aux armes \n \n\nPersonnes physiques \n \n\nexistence d'une inscription au fichier national des personnes interdites d'acquisition et de détention d'armes (FINIADA) \n \n\nx \n \n\nx \n \n\nx \n \n\nx \n \n\nx \n \n\nx \n \n\nx \n \n \n\nx \n \n\nx \n \n \n \n\ndétention d'armes \n \n\nx \n \n\nx \n \n\nx \n \n\nx \n \n\nx \n \n\nx \n \n\nx \n \n \n\nx \n \n\nx \n \n \n \n\nDonnées relatives au patrimoine \n \n \n\nnuméros de comptes bancaires \n \n \n \n \n \n \n\nx \n \n\nx \n \n\nx \n \n\nx \n \n \n \n \n\nbiens mobiliers et immobiliers \n \n \n \n \n \n \n\nx \n \n\nx \n \n\nx \n \n\nx \n \n \n \n \n\nrevenus \n \n \n \n \n \n \n\nx \n \n\nx \n \n\nx \n \n\nx \n \n \n \n \n\nInformations relatives à la prise en charge pluridisciplinaire de la personne, portées à la connaissance de l'autorité judiciaire \n \n\nPersonnes physiques \n \n\nexistence d'une expertise psychiatrique ou psychologique déjà réalisée \n \n\nx \n \n\nx \n \n\nx \n \n\nx \n \n\nx \n \n\nx \n \n\nx \n \n\nx \n \n\nx \n \n\nx \n \n \n \n\nsuivi médical, psychiatrique ou psychologique antérieur ou en cours \n \n\nx \n \n\nx \n \n\nx \n \n \n\nx \n \n\nx \n \n\nx \n \n \n\nx \n \n\nx \n \n \n \n\nantécédents d'hospitalisation sans consentement \n \n\nx \n \n\nx \n \n\nx \n \n \n\nx \n \n\nx \n \n\nx \n \n \n\nx \n \n\nx \n \n \n \n\nnécessité d'un suivi médical, psychologique ou psychiatrique \n \n\nx \n \n\nx \n \n\nx \n \n \n\nx \n \n\nx \n \n\nx \n \n \n\nx \n \n\nx \n \n \n \n\naddictions \n \n\nx \n \n\nx \n \n\nx \n \n \n\nx \n \n\nx \n \n\nx \n \n \n\nx \n \n\nx \n \n \n \n\nInformations relatives aux enquêtes, infractions, condamnations ou mesures de sûreté \n \n \n\ninformations relatives aux infractions : fondement de l'infraction à caractère discriminatoire \n \n \n \n \n \n \n \n \n \n \n\nx \n \n \n \n\nDonnées et informations issues des procédures civiles pertinentes \n \n \n\nDate de la décision, numéros de procédure civile \n \n\nx \n \n\nx \n \n\nx \n \n \n \n\nx \n \n\nx \n \n \n\nx \n \n \n \n \n\nDécision prononcée : mesure prononcée, dates du début et de la fin de la mesure \n \n\nx \n \n\nx \n \n\nx \n \n \n \n\nx \n \n\nx \n \n \n\nx \n \n \n \n \n\nVictime \n \n \n \n\nDonnées relatives à la situation familiale : \n \n\nPersonnes physiques \n \n\nsituation de famille (marié, concubin, partenaire lié par un pacte civil de solidarité, divorcé, veuf, célibataire) \n \n\nx \n \n\nx \n \n\nx \n \n \n \n \n \n \n \n\nx \n \n \n \n\nnombre d'enfants \n \n\nx \n \n\nx \n \n\nx \n \n \n \n \n \n \n \n\nx \n \n \n \n\nidentités et lien de filiation \n \n\nx \n \n\nx \n \n\nx \n \n \n \n \n \n \n \n\nx \n \n \n \n\nexercice de l'autorité parentale \n \n\nx \n \n\nx \n \n\nx \n \n \n \n \n \n \n \n\nx \n \n \n \n\nlieu de résidence des enfants \n \n\nx \n \n\nx \n \n\nx \n \n \n \n \n \n \n \n\nx \n \n \n \n\nlieu de scolarisation des enfants \n \n\nx \n \n\nx \n \n\nx \n \n \n \n \n \n \n \n\nx \n \n \n \n\nexistence d'un suivi en assistance éducative (état, mesures en cours, dates d'audience) \n \n\nx \n \n\nx \n \n\nx \n \n \n \n \n \n \n \n\nx \n \n \n \n\ndésignation d'un administrateur ad hoc \n \n\nx \n \n\nx \n \n\nx \n \n \n \n \n \n \n \n\nx \n \n \n \n\nexistence d'une procédure devant le juge aux affaires familiales (état, décision, date d'audience) \n \n\nx \n \n\nx \n \n\nx \n \n \n \n \n \n \n \n\nx \n \n \n \n\nDonnées relatives à la situation professionnelle \n \n\nPersonnes physiques \n \n\nsituation au regard de l'emploi (en activité, sans activité, retraité) \n \n\nx \n \n\nx \n \n\nx \n \n\nx \n \n\nx \n \n\nx \n \n\nx \n \n\nx \n \n\nx \n \n\nx \n \n \n \n\nprofession \n \n\nx \n \n\nx \n \n\nx \n \n\nx \n \n\nx \n \n\nx \n \n\nx \n \n\nx \n \n\nx \n \n\nx \n \n \n \n\nemployeur \n \n\nx \n \n\nx \n \n\nx \n \n\nx \n \n\nx \n \n\nx \n \n\nx \n \n\nx \n \n\nx \n \n\nx \n \n \n \n\nadresse professionnelle \n \n\nx \n \n\nx \n \n\nx \n \n\nx \n \n\nx \n \n\nx \n \n\nx \n \n\nx \n \n\nx \n \n\nx \n \n \n \n\nDonnées relatives aux mesures de protection prises par l'autorité judiciaire dans le cadre de procédures pénales ; \n \n \n\nType de mesures, dates de début et de fin de mesures \n \n\nx \n \n\nx \n \n\nx \n \n \n\nx \n \n \n \n \n\nx \n \n \n \n \n\nDonnées relatives aux mesures de protection prises par l'autorité judiciaire indépendamment d'une procédure pénale, notamment dans le cadre d'une ordonnance de protection \n \n \n\nType de mesures, dates de début et defin de mesures \n \n\nx \n \n\nx \n \n\nx \n \n \n \n \n \n \n \n \n \n \n\nDonnées et informations issues des procédures civiles pertinentes \n \n \n\nDate de la décision, numéros de procédure civile \n \n\nx \n \n\nx \n \n\nx \n \n \n \n \n \n \n \n\nx \n \n \n \n \n\nDécision prononcée : mesure prononcée, dates du début et de la fin de la mesure \n \n\nx \n \n\nx \n \n\nx \n \n \n \n \n \n \n \n\nx \n \n \n \n\nAutres \n \n \n \n\nAgents intervenants dans le cadre de la situation suivie \n \n \n\nNom de naissance ou d'usage et prénoms \n \n\nx \n \n\nx \n \n\nx \n \n\nx \n \n\nx \n \n\nx \n \n\nx \n \n\nx \n \n\nx \n \n\nx \n \n \n \n\ncorps et/ou grade \n \n\nx \n \n\nx \n \n\nx \n \n\nx \n \n\nx \n \n\nx \n \n\nx \n \n\nx \n \n\nx \n \n\nx \n \n \n \n\nfonction \n \n\nx \n \n\nx \n \n\nx \n \n\nx \n \n\nx \n \n\nx \n \n\nx \n \n\nx \n \n\nx \n \n\nx \n \n \n \n\nservice \n \n\nx \n \n\nx \n \n\nx \n \n\nx \n \n\nx \n \n\nx \n \n\nx \n \n\nx \n \n\nx \n \n\nx \n \n \n \n\ncoordonnées téléphoniques \n \n\nx \n \n\nx \n \n\nx \n \n\nx \n \n\nx \n \n\nx \n \n\nx \n \n\nx \n \n\nx \n \n\nx \n \n \n \n\nadresse électronique \n \n\nx \n \n\nx \n \n\nx \n \n\nx \n \n\nx \n \n\nx \n \n\nx \n \n\nx \n \n\nx \n \n\nx \n \n \n \n\nDonnées d'identification des utilisateurs du traitement \n \n \n\nidentité de la personne \n \n\nx \n \n\nx \n \n\nx \n \n\nx \n \n\nx \n \n\nx \n \n\nx \n \n\nx \n \n\nx \n \n\nx \n \n \n \n\nnuméro d'identifiant unique de l'agent permettant l'accès à l'applicatif \n \n\nx \n \n\nx \n \n\nx \n \n\nx \n \n\nx \n \n\nx \n \n\nx \n \n\nx \n \n\nx \n \n\nx \n \n \n \n\nARTICLE 3 - IV \n \n \n \n\nMis en cause \n \n \n \n\ndonnées relatives aux opinions politiques \n \n \n \n \n \n \n\nx \n \n\nx \n \n \n \n \n\nx \n \n \n \n \n\ndonnées relatives à l'appartenance syndicale \n \n \n \n \n \n \n\nx \n \n\nx \n \n \n \n \n\nx \n \n \n \n \n\ndonnées concernant la vie sexuelle ou l'orientation sexuelle d'une personne physique \n \n \n \n\nx \n \n\nx \n \n \n \n \n \n \n \n\nx \n \n\nx \n \n \n \n\ndonnées relatives aux convictions religieuses \n \n \n \n\nx \n \n\nx \n \n \n\nx \n \n \n \n \n \n\nx \n \n\nx \n \n \n \n\ndonnées de santé \n \n \n \n\nx \n \n\nx \n \n \n\nx \n \n\nx \n \n\nx \n \n\nx \n \n\nx \n \n\nx \n \n \n \n \n\ndonnées révélant l'origine raciale ou ethnique \n \n \n \n\nx \n \n\nx \n \n \n\nx \n \n\nx \n \n\nx \n \n\nx \n \n\nx \n \n\nx \n \n\nx \n \n \n \n\nDonnées génétiques et biométriques \n \n \n \n\nx \n \n\nx \n \n \n\nx \n \n\nx \n \n\nx \n \n\nx \n \n\nx \n \n\nx \n \n \n \n \n\nVictime \n \n \n \n\ndonnées relatives aux opinions politiques \n \n \n \n \n \n \n\nx \n \n\nx \n \n \n \n \n \n \n \n \n\ndonnées relatives à l'appartenance syndicale \n \n \n \n \n \n \n\nx \n \n \n \n \n \n \n \n \n \n\ndonnées concernant la vie sexuelle ou l'orientation sexuelle d'une personne physique \n \n \n \n\nx \n \n\nx \n \n\nx \n \n \n \n \n \n \n\nx \n \n\nx \n \n \n \n\ndonnées relatives aux convictions religieuses \n \n \n \n\nx \n \n\nx \n \n\nx \n \n \n \n \n \n \n\nx \n \n\nx \n \n \n \n\ndonnées de santé \n \n \n \n\nx \n \n\nx \n \n\nx \n \n\nx \n \n\nx \n \n\nx \n \n\nx \n \n\nx \n \n\nx \n \n \n \n \n\ndonnées révélant l'origine raciale ou ethnique \n \n \n \n\nx \n \n\nx \n \n\nx \n \n\nx \n \n\nx \n \n\nx \n \n\nx \n \n\nx \n \n\nx \n \n\nx \n \n \n \n\nDonnées génétiques et biométriques\n\nDécret n° 2026-996 du 26 octobre 2026 modifiant le décret n° 2023-935 du 10 octobre 2023 autorisant la création d'un traitement automatisé de données à caractère personnel dénommé « Système informatisé de suivi de politiques pénales prioritaires » (SISPoPP)\n\nPublics concernés : personnels des services judiciaires.\n \nObjet : modification du décret autorisant la création d'un traitement automatisé de données à caractère personnel dénommé « Système informatisé de suivi de politiques pénales prioritaires » (SISPoPP).\n \nEntrée en vigueur : le décret entre en vigueur le lendemain de sa publication.\n \nApplication : le présent décret est un texte autonome.",
+   "nota": "",
+   "lien": "https://www.legifrance.gouv.fr/jorf/id/JORFARTI000055020103",
+   "domaines": [
+    {
+     "id": "rgpd",
+     "nom": "Données personnelles (RGPD)",
+     "mots": [
+      "donnees a caractere personnel"
+     ]
+    }
+   ],
+   "morceaux": 9,
+   "dateTexte": "2026-10-26",
+   "vuLe": "2026-10-28"
+  },
+  {
+   "source": "jorf",
+   "sourceNom": "Journal officiel de la République française",
+   "genre": "texte",
+   "id": "JORFARTI000055021084",
+   "titre": "Délibération n° 2026-091 du 3 septembre 2026 portant avis sur un projet de décret modifiant le décret n° 2023-935 du 10 octobre 2023 autorisant la création d'un traitement automatisé de données à caractère personnel dénommé « Système informatisé de suivi de politiques pénales prioritaires » (SISPoPP)",
+   "nature": "Article",
+   "date": "2026-10-28",
+   "corps": "N° de demande d'avis : 26012549 \n \n\nThématiques : politiques pénales prioritaires, parquet, coordination \n \n \n \n\nOrganisme(s) à l'origine de la saisine : ministère de la justice \n \n\nFondement de la saisine : articles 89 et suivants de la loi du 6 janvier 1978 modifiée \n \n \n\n \n \n \n\nL'essentiel :\n1. L'intégration au traitement SISPoPP de nouvelles politiques pénales prioritaires s'inscrit dans la politique du garde des sceaux. La CNIL attire l'attention du ministère sur le fait qu'il sera nécessaire de supprimer les données du traitement et mettre à jour le décret en conséquence lorsque certaines de ces politiques pénales seront dépriorisées.\n2. La CNIL recommande également d'encadrer les futures interconnexions avec d'autres traitements, notamment Cassiopée et GENESIS, afin de s'assurer que ne seront transmises que les catégories de données entrant dans le champ de SISPoPP.\n3. Elle considère également qu'au regard de l'importante quantité de données contenues dans le traitement, de leur sensibilité et de leur impact potentiel pour les personnes concernées, le ministère devra assurer une forte sécurisation du traitement notamment grâce à la mise en place d'un système robuste et en temps réel de traçabilité des consultations ainsi que des modalités d'authentification forte pour les accédants ne disposant pas d'une carte agent.\n\n \n\nLa Commission nationale de l'informatique et des libertés,\nVu la loi n° 78-17 du 6 janvier 1978 modifiée relative à l'informatique, aux fichiers et aux libertés (« loi informatique et libertés »), notamment ses articles 89 et suivants ;\nAprès avoir entendu le rapport de M. Vincent Lesclous, commissaire, et les observations de M. Damien Milic, commissaire du Gouvernement,\nAdopte la délibération suivante :\n\n \n\nI. - La saisine\nA. - Le contexte\n\n \n\nLe ministre de la justice conduit la politique pénale déterminée par le Gouvernement et, à cet effet, adresse aux parquets des instructions fixant les infractions à l'encontre desquelles une attention particulière doit être portée. Les modalités de mise en œuvre de ces politiques pénales dites « prioritaires » sont ensuite déclinées localement.\nLes juridictions, en particulier les parquets, ont exprimé le besoin de bénéficier d'un outil de pilotage des politiques pénales prioritaires pour centraliser les informations et les pièces de procédures pertinentes pour le suivi des situations et à la prise de décision, par personne et non exclusivement par procédure.\nA cette fin, le traitement de données à caractère personnel dénommé « Système informatisé de suivi de politiques pénales prioritaires » (SISPoPP) est mis en œuvre, sous la responsabilité du ministère de la justice (direction des affaires criminelles et des grâces - DACG) dans le ressort de chaque tribunal judiciaire et cour d'appel. Il permet aux utilisateurs de disposer d'informations complètes en leur évitant de consulter systématiquement les différents traitements et documents concernant la personne pour reconstituer sa situation.\nCet applicatif ne peut être utilisé que pour les politiques pénales prioritaires limitativement énumérées dans le décret autorisant le traitement. La DACG sélectionne, parmi l'ensemble des politiques pénales prioritaires, celles qui figurent au traitement SISPoPP.\nCompte tenu des priorités fixées par le garde des sceaux, notamment dans la circulaire de politique pénale générale du 27 janvier 2025 et dans la circulaire du 23 mai 2026 relative au traitement judiciaire des violences sexuelles et sexistes commises sur les mineurs en milieu scolaire ou périscolaire, le ministère souhaite faire évoluer la liste des politiques pénales prioritaires prévues par le décret autorisant le traitement.\n\n \n\nB. - L'objet de la saisine\n\n \n\nLa CNIL est saisie d'un projet de décret modifiant le décret n° 2023-935 du 10 octobre 2023 autorisant la création d'un traitement automatisé de données à caractère personnel dénommé « SISPoPP ».\nEn premier lieu, ce projet prévoit d'intégrer au traitement trois nouvelles politiques pénales prioritaires, à savoir la lutte contre les violences sexuelles, contre les infractions commises en milieu scolaire et périscolaire et contre les discriminations. Il prévoit également d'étendre la politique prioritaire de lutte contre le trafic de stupéfiants à la lutte contre l'ensemble de la criminalité organisée.\nEn second lieu, ce projet fixe un nouveau point de départ pour le calcul de la durée de conservation des données relatives aux personnes signalées à l'autorité judiciaire et à l'encontre desquelles aucune procédure judiciaire n'est engagée.\nLes autres modifications prévues concernent les catégories de données collectées, ainsi que de nouvelles interconnexions du traitement.\n\n \n\nII. - L'avis de la CNIL\nA. - Sur le périmètre du traitement\n\n \n\nL'ajout de nouvelles politiques pénales prioritaires dans le champ du traitement SISPoPP, correspondant aux orientations définies par le garde des sceaux, n'appelle pas en soi d'observations de la part de la CNIL.\nCependant, le projet dont la CNIL est saisie démontre que ce traitement SISPoPP est susceptible d'intégrer un nombre croissant de politiques pénales prioritaires alors qu'il s'agit d'ores et déjà d'un traitement de grande ampleur, regroupant un volume important de données, dont certaines sensibles, et ouvert à un nombre particulièrement élevé d'accédants et de destinataires, de surcroît interconnecté avec d'autres traitements tout aussi lourds.\nA cet égard, la CNIL considère, en premier lieu, que, dans l'hypothèse où des politiques pénales seraient dépriorisées, la conservation des données correspondantes ne serait plus nécessaire au regard des finalités poursuivies, quand bien même la politique pénale concernée continuerait à être appliquée sans priorisation. Dès lors, ces données devraient être supprimées n'ayant plus de base légale, et le décret autorisant le traitement modifié, afin de tenir compte de la dépriorisation des politiques pénales concernées.\nLa CNIL rappelle que dans sa délibération n° 2023-055 du 15 juin 2023, elle avait appelé le ministère à clarifier la rédaction du décret à cet égard. Elle ne peut, en l'état du texte, que réitérer cette recommandation.\nEn second lieu, la CNIL appelle l'attention du ministère sur l'importance de la charge que représentera la nécessaire gestion actualisée de cet ensemble de données et donc sur la nécessité d'accompagner l'extension du champ de SISPoPP de moyens techniques et humains suffisants pour en garantir la sécurité, la pertinence au regard de ses finalités et la régularité vis-à-vis des prescriptions des textes applicables.\n\n \n\nB. - Sur les catégories de données\n\n \n\nLe projet de décret prévoit que le traitement puisse collecter une nouvelle catégorie de données à savoir « les informations relatives aux faits », et plus précisément le « fondement de l'infraction à caractère discriminatoire ».\nLe ministère précise que cette nouvelle catégorie est nécessaire pour établir l'intention de l'auteur et caractériser l'élément matériel de l'infraction qui inclut le fondement de la discrimination. Il ajoute que ce champ ne sera pas requêtable et ne permettra pas d'effectuer des recherches ni des statistiques à partir de cette catégorie de données.\nLa CNIL observe que ce champ impliquera nécessairement la collecte de données sensibles au sens de l'article 6 de la loi « informatique et libertés » (informations révélant notamment les opinions politiques, les convictions religieuses ou philosophiques ou encore des données concernant l'orientation sexuelle).\nLa CNIL recommande, dès lors, que la doctrine d'emploi diffusée auprès des utilisateurs du traitement apporte des précisions sur le bon usage de ce champ qui devra être limité aux données strictement nécessaires à la qualification de la discrimination.\n\n \n\nC. - Sur les durées de conservation des données\n\n \n\nEn premier lieu, pour les personnes faisant l'objet d'une procédure judiciaire, le projet de décret prévoit une durée de conservation maximale de trois ans à compter de la dernière actualisation de la fiche de suivi de la personne concernée, c'est-à-dire la dernière modification enregistrée. A l'issue de ce délai, la fiche et ses données seront automatiquement effacées.\nLa CNIL rappelle que dans sa délibération précédente, elle recommandait, concernant cette durée de conservation de trois ans à compter de la dernière actualisation de la fiche de suivi, la mise en œuvre de garanties particulières pour les personnes mineures, notamment afin d'adapter les durées de conservation des données les concernant conformément à sa doctrine constante sur le sujet.\nEn l'absence de prise en compte de cette demande dans le texte, elle ne peut que réitérer cette observation en insistant sur la nécessité de prévoir un régime spécifique pour les données concernant les mineurs, en l'état de cette durée significative de conservation de trois ans.\nEn deuxième lieu, pour les personnes faisant l'objet d'un signalement à l'autorité judiciaire et à l'encontre desquelles aucune procédure judiciaire n'est ouverte, les données sont conservées pour une durée de trois mois à compter de l'enregistrement initial.\nEn dernier lieu, pour les personnes faisant l'objet d'un suivi dans le cadre d'une instance de concertation, le projet de décret modificatif prévoit que le point de départ du calcul du délai de conservation des données court à compter de la fin du suivi du dossier.\nLe ministère estime que les situations examinées dans le cadre des instances de concertation justifient ce nouveau point de départ pour le calcul des durées de conservation, afin de déterminer les suites qu'il convient d'apporter à ces situations. Le ministère précise que ces instances de concertation, telles que « les groupes d'évaluation départementaux » (structures de suivi de la radicalisation), peuvent rester saisies des situations pendant de nombreux mois.\nLa CNIL observe que, dans le cas où le suivi est en cours dans une instance de concertation, les données n'ont aucun délai maximal de conservation. Elle considère dès lors que, dans cette hypothèse, la doctrine d'emploi du traitement devrait prévoir une révision périodique du dossier.\n\n \n\nD. - Sur les accédants et les destinataires\n\n \n\nLe projet de décret ne prévoit pas de nouvelles catégories d'accédants ou de destinataires par rapport au cadre déjà existant.\nA l'occasion de la première saisine de 2023, la CNIL avait recommandé de modifier les actes règlementaires des traitements mis en relation avec SISPoPP (Cassiopée, GENESIS, ainsi que les dispositifs de bracelet anti-rapprochement BAR et le téléphone grave danger TGD) afin, notamment, de rendre leurs utilisateurs accédants des données qu'ils contiennent.\nLes modifications en question ont été effectuées par le ministère de la justice en ce qui concerne Cassiopée et GENESIS. En ce qui concerne le BAR et le TGD, le ministère précise que les personnels de juridictions n'ayant pas accès à ces traitements mais étant simplement destinataires, le cadre juridique existant est suffisant pour permettre leur mise en relation avec SISPoPP.\nLa CNIL prend acte de ces précisions et accueille favorablement les modifications règlementaires relatives à GENESIS et Cassiopée.\nEn outre, la CNIL relève que la doctrine d'emploi prévoit une revue des habilitations accordées, à l'initiative des procureurs. Elle estime que cette obligation devrait être expressément prévue par le projet de décret.\n\n \n\nE. - Sur les mises en relation\n\n \n\nLe ministère précise qu'une interconnexion effective de SISPoPP avec Cassiopée et GENESIS est prévue d'ici fin 2026 ou début 2027. Cette interconnexion est justifiée par la nécessité de diminuer les gestes métier impliqués par les mises en relations manuelles entre ces traitements, notamment au regard de l'importante charge de saisine des juridictions. Cette interconnexion permettra notamment de récupérer automatiquement les dates de condamnation dans Cassiopée et les dates de sortie de détention dans GENESIS.\nLa CNIL estime que cette interconnexion est légitime et justifiée au regard des finalités du traitement. Elle considère toutefois qu'au regard de l'importante quantité de données contenues dans GENESIS, il sera nécessaire d'exclure de la collecte les catégories de données n'ayant aucun rapport avec les finalités de SISPoPP, et de prendre acte de cette limitation dans l'AIPD qui devrait préciser les catégories de données interconnectées avec SISPoPP. En outre, les AIPD de Cassiopée et GENESIS pourraient utilement mentionner la modalité de l'interconnexion avec SISPoPP, ce que le ministère s'engage à faire.\n\n \n\nF. - Sur les mesures de sécurité\n\n \n\nS'agissant de l'utilisation d'une authentification multifacteur des accédants au traitement SISPoPP, la CNIL prend acte de la confirmation du ministère concernant la mise en œuvre d'une authentification par carte agent au plus tard au 31 décembre 2026.\nLa CNIL prend également acte de la confirmation du ministère du fait que les accédants externes (notamment les associations d'aide aux victimes) mentionnés au titre du décret, et ne possédant pas de carte agent, n'auront un accès effectif au traitement SISPoPP qu'après déploiement d'une solution technique d'authentification présentant un niveau de sécurité équivalent.\nDu fait des nombreux accédants au traitement, le ministère confirme qu'une vérification de la cohérence des droits délivrés avec les habilitations octroyées sera réalisée mensuellement.\nLa CNIL prend acte de l'ambition du ministère de mettre en œuvre, à moyen terme, une mesure technique et organisationnelle d'analyse en temps réel des journaux d'évènements. Le ministère s'engage à mettre à jour l'AIPD qui prévoira la mise en œuvre de cette mesure. La CNIL rappelle sa recommandation, déjà formulée à de nombreuses reprises, à l'égard de plusieurs traitements relevant du ministère de la justice, sur le déploiement d'une mesure technique de surveillance active des journaux applicatifs, en vue de permettre la détection immédiate d'actions malveillantes au sein du traitement. Cette exigence s'impose d'autant plus que le traitement SISPoPP concerne un nombre particulièrement élevé de données à caractère personnel dont la divulgation serait susceptible d'avoir d'importantes conséquences sur la sécurité des personnes concernées ou de tiers et la bonne fin d'opérations de sécurité publique ou d'enquêtes. La CNIL estime que le déploiement de cette mesure devrait être priorisé en l'état du nombre croissant de violations de données dans des fichiers de service public.\nDans le cadre de sa volonté de faire migrer les rapprochements manuels vers des solutions d'interconnexions plus fiables et plus sécurisées, le ministère pourra prendre en compte la recommandation technique relative à l'utilisation des interfaces de programmation applicatives (API) pour le partage sécurisé de données à caractère personnel. La CNIL rappelle également le besoin de mettre en œuvre des solutions de gestion d'intégrité et de qualité des données adéquates au sein de SISPoPP.\nLes autres dispositions du projet de décret n'appellent pas d'observations.\n\nLa présidente,\n\n M.-L. DENIS",
+   "nota": "",
+   "lien": "https://www.legifrance.gouv.fr/jorf/id/JORFARTI000055021084",
+   "domaines": [
+    {
+     "id": "rgpd",
+     "nom": "Données personnelles (RGPD)",
+     "mots": [
+      "donnees a caractere personnel"
+     ]
+    }
+   ],
+   "morceaux": 2,
+   "dateTexte": "2026-09-03",
+   "vuLe": "2026-10-28"
+  },
   {
    "source": "jorf",
    "sourceNom": "Journal officiel de la République française",
@@ -3946,76 +4042,6 @@
    "morceaux": 38,
    "dateTexte": "2023-04-14",
    "vuLe": "2026-10-14"
-  },
-  {
-   "source": "has",
-   "sourceNom": "Haute Autorité de santé",
-   "genre": "actualite",
-   "id": "https://www.has-sante.fr/jcms/p_4584190/fr/certification-des-etablissements-de-sante-la-commission-de-la-has-renouvelee-pour-moitie-au-service-de-l-amelioration-continue-de-la-qualite-et-de-la-securite-des-soins",
-   "titre": "Certification des établissements de santé : la commission de la HAS renouvelée pour moitié, au service de l’amélioration continue de la qualité et de la sécurité des soins",
-   "nature": "Publication officielle",
-   "date": "2026-10-13",
-   "corps": "<html>\n <head></head>\n <body>\n <div class=\"wysiwyg feed\">\n <p>La Haute Autorité de santé (HAS) renouvelle la composition de la commission de certification des établissements de santé (CCES), instance essentielle à la démarche de certification des établissements de santé. Depuis le 20 septembre 2026, neuf nouveaux membres ont rejoint la commission et dix membres ont vu leur mandat renouvelé pour une durée de trois ans. Médecins, pharmaciens, cadres de santé, directeurs d&apos;établissements et représentants des usagers contribueront aux travaux de cette instance au service de l’amélioration continue de la qualité et de la sécurité des soins.</p>\n </div>\n </body>\n</html>",
-   "lien": "https://www.has-sante.fr/jcms/p_4584190/fr/certification-des-etablissements-de-sante-la-commission-de-la-has-renouvelee-pour-moitie-au-service-de-l-amelioration-continue-de-la-qualite-et-de-la-securite-des-soins",
-   "domaines": [
-    {
-     "id": "sanitaire",
-     "nom": "Santé, médico-social et autorisations d'activité",
-     "mots": [
-      "etablissements de sante"
-     ]
-    }
-   ],
-   "morceaux": 1,
-   "dateTexte": "",
-   "vuLe": "2026-10-13"
-  },
-  {
-   "source": "jorf",
-   "sourceNom": "Journal officiel de la République française",
-   "genre": "texte",
-   "id": "JORFARTI000042533005",
-   "titre": "Décret n° 2020-1410 du 17 novembre 2020 modifiant la composition de la Commission nationale de la négociation collective maritime, de l'emploi et de la formation professionnelle et adaptant diverses dispositions réglementaires relatives aux gens de mer",
-   "nature": "Article",
-   "date": "2026-10-13",
-   "corps": "Le décret du 27 juillet 2015 susvisé est ainsi modifié : \n1° Au 3° de l'article 4, après le mot : « maritime » sont insérés les mots : «, de l'emploi et de la formation professionnelle » ; \n2° Dans l'intitulé du titre II, après le mot : « maritime » sont insérés les mots : «, de l'emploi et de la formation professionnelle » ; \n3° Au I de l'article 7, après le mot : « maritime » sont insérés les mots : «, de l'emploi et de la formation professionnelle » ; \n4° A l'article 8 : \na) Le premier alinéa est remplacé par les dispositions suivantes : \n« I.-La Commission nationale de la négociation collective maritime, de l'emploi et de la formation professionnelle comprend : » ; \nb) Il est ajouté un II ainsi rédigé : \n« II.-Lorsque la commission mentionnée au I est consultée sur les projets de loi, d'ordonnance et de décret relatifs à l'emploi, l'orientation et la formation professionnelles maritimes, elle s'adjoint également : \n« 1° Un autre représentant de la direction des affaires maritimes, au titre de la formation professionnelle et de l'emploi maritimes ; \n« 2° Le représentant du ministre chargé de l'éducation nationale ; \n« 3° Le représentant du ministre chargé de l'enseignement supérieur ; \n« 4° Trois membres titulaires et trois membres suppléants représentants des régions littorales et des collectivités ultramarines, dont au moins un représentant les collectivités ultramarines, désignés par le président de l'association Régions de France ; \n« 5° Un représentant titulaire et un représentant suppléant des départements littoraux, désigné par le président de l'association des départements de France. » ; \n5° Aux articles 13,14,15,17 et 22, après le mot : « maritime » sont insérés les mots : «, de l'emploi et de la formation professionnelle » ; \n6° L'article 16 est abrogé.\n\nLe décret du 28 septembre 2015 susvisé est ainsi modifié : \n1° Au 1° de l'article 1er, après les mots : « Saint-Martin » sont insérés les mots : «, Wallis-et-Futuna » ; \n2° Au 2° de l'article 1er, le mot : « initiale » est supprimé ; \n3° A l'article 4, à la fin du 2°, les mots : « de la mer. » sont remplacés par les mots : « de la mer ; » et il est ajouté un 3° ainsi rédigé : « 3° A Wallis-et-Futuna : par le chef du service des affaires maritimes ou, lorsque le port de gestion administrative du navire sur la liste d'équipage duquel le gens de mer doit être inscrit ne se situe pas dans le ressort de celui-ci, par le directeur départemental des territoires et de la mer territorialement compétent. » ; \n4° Après l'article 6, il est inséré un article 6-1 ainsi rédigé : \n\n \n\n« Art. 6-1.-Le présent décret est applicable à Wallis-et-Futuna dans sa rédaction résultant du décret n° 2020-1410 du 17 novembre 2020 modifiant la composition de la Commission nationale de la négociation collective maritime, de l'emploi et de la formation professionnelle et adaptant diverses dispositions réglementaires relatives aux gens de mer. »\n\nLe décret du 3 décembre 2015 susvisé est ainsi modifié :\n1° A l'article 18, il est ajouté un alinéa ainsi rédigé : \n« III.-Des honoraires sont alloués aux médecins désignés par le président du collège médical maritime dans les conditions prévues au II. Leur montant est fixé par arrêté du ministre chargé des gens de mer. » ; \n2° A l'article 20, les mots : « Pendant une durée de cinq ans à compter de la publication du présent décret, » sont remplacés par les mots : « Jusqu'au 31 décembre 2024, » ; \n3° Au premier alinéa de l'article 28, après les mots : « Wallis-et-Futuna » sont insérés les mots : «, dans sa rédaction résultant du décret n° 2020-1410 du 17 novembre 2020 modifiant la composition de la Commission nationale de la négociation collective maritime, de l'emploi et de la formation professionnelle et adaptant diverses dispositions réglementaires relatives aux gens de mer, » ; \n4° Au premier alinéa de l'article 29, après les mots : « antarctiques françaises » sont insérés les mots : «, dans sa rédaction résultant du décret n° 2020-1410 du 17 novembre 2020 modifiant la composition de la Commission nationale de la négociation collective maritime, de l'emploi et de la formation professionnelle et adaptant diverses dispositions réglementaires relatives aux gens de mer, ».\n\nLe code de la sécurité sociale est ainsi modifié : \n1° A l'article D. 311-1, il est ajouté un 28° ainsi rédigé : \n« 28° Les médecins habilités par le ministre chargé des gens de mer et les médecins membres des collèges médicaux maritimes mentionnés à l'article 6 et au III de l'article 18 du décret n° 2015-1574 du 3 décembre 2015 relatif au service de santé des gens de mer, au titre des frais et honoraires versés en application de ces articles. » ; \n2° Au deuxième alinéa de l'article D. 311-3, les mots : « 21° et 27° de l'article D. 311-1 » sont remplacés par les mots : « 21°, 27° et 28° de l'article D. 311-1 ».\n\nLe code du travail est ainsi modifié : \n1° Les articles R. 742-8-1 à R. 742-8-11 sont abrogés ; \n2° Les articles D. 742-3 à D. 742-11sont abrogés.\n\nLa ministre de la transition écologique, le ministre de l'éducation nationale, de la jeunesse et des sports, le ministre des outre-mer, la ministre de la mer, la ministre de l'enseignement supérieur, de la recherche et de l'innovation et le ministre délégué auprès de la ministre de la transition écologique, chargé des transports, sont chargés, chacun en ce qui le concerne, de l'exécution du présent décret, qui sera publié au Journal officiel de la République française.\n\nDécret n° 2020-1410 du 17 novembre 2020 modifiant la composition de la Commission nationale de la négociation collective maritime, de l'emploi et de la formation professionnelle et adaptant diverses dispositions réglementaires relatives aux gens de mer \n Décret n° 2020-1410 du 17 novembre 2020 modifiant la composition de la Commission nationale de la négociation collective maritime, de l'emploi et de la formation professionnelle et adaptant diverses dispositions réglementaires relatives aux gens de mer\n\nPublics concernés : gens de mer, organisations professionnelles et syndicales représentatives des branches maritimes.\n \nObjet : modification de la composition de la Commission nationale de la négociation collective maritime, du champ d'application des dispositions en matière d'identification des gens de mer.\n \nEntrée en vigueur : le décret entre en vigueur le lendemain de sa publication\n .\n \nNotice : en premier lieu, le décret met en conformité et actualise la composition de la Commission nationale de la négociation collective afin d'y intégrer les membres nécessaires à l'extension de son champ de compétence à l'emploi, à l'orientation et à la formation professionnelle dans le domaine maritime. Il adapte, en deuxième lieu, le champ d'application des dispositions en matière d'identification des gens de mer afin de prendre en compte la diversification des parcours de formation et de l'accès aux professions entrant dans la catégorie des gens de mer.\n \nEn troisième lieu, le texte adapte le fonctionnement du service de santé des gens de mer en autorisant la désignation, au sein des collèges médicaux maritimes, des médecins libéraux.\n \nEnfin, en dernier lieu, le décret abroge des dispositions du code du travail relatives aux sections des gens de mer au sein des comités d'hygiène, de sécurité et des conditions de travail dans les entreprises d'armement ainsi que celles relatives aux comités d'entreprise.\n \nRéférences : le décret est pris à la fois pour application de l'article 139 de la loi n° 2019-1428 du 24 décembre 2019 d'orientation des mobilités et pour modification du décret n° 2015-1191 relatif à l'identification des gens de mer et du décret n° 2015-918 du 27 juillet 2015 relatif aux conventions et accords collectifs des gens de mer et à la composition et au fonctionnement de la Commission nationale de la négociation collective maritime.",
-   "nota": "",
-   "lien": "https://www.legifrance.gouv.fr/jorf/id/JORFARTI000042533005",
-   "domaines": [
-    {
-     "id": "enseignement",
-     "nom": "Enseignement, formation et certification qualité",
-     "mots": [
-      "formation professionnelle"
-     ]
-    }
-   ],
-   "morceaux": 8,
-   "dateTexte": "2020-11-17",
-   "vuLe": "2026-10-13"
-  },
-  {
-   "source": "cnil",
-   "sourceNom": "CNIL — actualités",
-   "genre": "actualite",
-   "id": "https://www.cnil.fr/fr/cepd-declaration-lunettes-connectees",
-   "titre": "Le CEPD publie une déclaration sur les enjeux de protection des données liés aux lunettes connectées",
-   "nature": "Publication officielle",
-   "date": "2026-10-13",
-   "corps": "Lors de sa dernière plénière, le CEPD a adopté une déclaration sur les lunettes connectées et publié le rapport intitulé « Le regard connecté. Une sociologie des usages et des défis liés aux lunettes connectées », élaboré dans le cadre du programme de réserve d’experts (Support Pool of Expert).",
-   "lien": "https://www.cnil.fr/fr/cepd-declaration-lunettes-connectees",
-   "domaines": [
-    {
-     "id": "rgpd",
-     "nom": "Données personnelles (RGPD)",
-     "mots": [
-      "protection des donnees"
-     ]
-    }
-   ],
-   "morceaux": 1,
-   "dateTexte": "",
-   "vuLe": "2026-10-13"
   },
   {
    "source": "jorf",
