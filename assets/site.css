@@ -3027,3 +3027,35 @@ mark.a-decider { background: #E6E1FF; color: #3B1FBF; }
 .bloc-consultant strong { color: var(--encre); }
 .bloc-consultant .rangee { justify-content: center; margin-top: var(--t4); }
 .collecte-alerte { display: block; margin-top: .3rem; font-weight: 700; }
+
+/* --- 36. Page consultant : dessin, étapes, calcul de marge -------------------- */
+@media (min-width: 64rem) { .etapes.etapes-trois { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+.dessin .d-retard { fill: #FBE3C4; stroke: #D97706; stroke-width: 1.2; }
+.dessin .d-retard-t { fill: #9A3412; font-size: 12.5px; font-weight: 700; }
+.dessin .d-faire-t { fill: var(--accent); font-size: 12.5px; font-weight: 700; }
+.dessin .d-fait-p { fill: var(--vert); font-size: 12.5px; font-weight: 700; }
+:root[data-theme="dark"] .dessin .d-retard { fill: #3D2408; stroke: #F59E0B; }
+:root[data-theme="dark"] .dessin .d-retard-t { fill: #FDBA74; }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .dessin .d-retard { fill: #3D2408; stroke: #F59E0B; }
+  :root:not([data-theme="light"]) .dessin .d-retard-t { fill: #FDBA74; }
+}
+.calcul {
+  max-width: 46rem; margin: var(--t5) auto 0; padding: clamp(1.25rem, .9rem + 1.5vw, 2rem);
+  border: 1px solid var(--accent-filet); border-radius: var(--r3); background: var(--carte); box-shadow: var(--ombre-1);
+}
+.calcul-choix { display: flex; justify-content: space-between; align-items: baseline; gap: var(--t3); font-weight: 700; }
+.calcul-choix output { font-size: clamp(2rem, 1.5rem + 2vw, 2.75rem); color: var(--accent); font-variant-numeric: tabular-nums; }
+.calcul input[type=range] { width: 100%; margin: var(--t3) 0 var(--t4); accent-color: var(--accent); height: 2rem; }
+.calcul-res { margin: 0; display: grid; gap: .25rem; }
+.calcul-res > div { display: flex; justify-content: space-between; align-items: baseline; gap: var(--t3); padding: .65rem 0; border-bottom: 1px solid var(--filet); }
+.calcul-res dt { color: var(--encre-douce); }
+.calcul-res dd { margin: 0; font-weight: 700; color: var(--encre); text-align: right; white-space: nowrap; }
+.calcul-res .calcul-marge { border-bottom: 0; }
+.calcul-res .calcul-marge dt { color: var(--encre); font-weight: 700; }
+.calcul-res .calcul-marge dd { color: var(--vert); font-size: 1.2rem; white-space: normal; }
+.calcul-blanche { margin: var(--t3) 0 0; text-align: center; font-weight: 600; color: var(--accent); }
+@media (max-width: 30rem) {
+  .calcul-res > div { flex-direction: column; gap: .15rem; }
+  .calcul-res dd { text-align: left; }
+}

@@ -504,6 +504,7 @@ ${zone === "public" ? bandeInstallation(a) : ""}
         <a href="mailto:${esc(SITE.courriel)}">Contact</a>
       </p>
       <p>
+        ${esc(SITE.nom)} est édité par ${esc(SITE.societe)}.
         Aucun cookie, aucune mesure d'audience, aucune requête vers un service tiers.
         Le service fournit un cadre méthodologique, pas un conseil juridique.
       </p>
@@ -2447,6 +2448,53 @@ function pageInfos({ titre, h1, sous, encarts, suite }) {
 
 /* La page de vente pour les consultants QSE. Elle n'est écrite que si
    SITE.offreConsultant est allumé (après le choix du nom du produit). */
+/* La vue consultant, dessinée : sa marque en haut, ses clients, et ce qui est
+   en retard chez chacun. Des clients sans nom (« Entreprise A »…) : c'est une
+   illustration, pas une capture, et la légende le dit. */
+function dessinVueConsultant() {
+  const clients = [
+    ["Entreprise A", "2 revues en retard", "retard"], ["Entreprise B", "À jour", "fait"],
+    ["Entreprise C", "3 textes à analyser", "faire"], ["Entreprise D", "À jour", "fait"],
+    ["Entreprise E", "1 revue en retard", "retard"], ["Entreprise F", "1 texte à analyser", "faire"]
+  ];
+  const pastille = (x, y, texte, genre, w) => `<rect class="${genre === "retard" ? "d-retard" : genre === "fait" ? "d-fait" : "d-encart-faire"}" x="${x}" y="${y}" width="${w}" height="26" rx="13"/>
+    <text class="${genre === "retard" ? "d-retard-t" : genre === "fait" ? "d-fait-p" : "d-faire-t"}" x="${x + w / 2}" y="${y + 17}" text-anchor="middle">${texte}</text>`;
+  const large = `<svg class="dessin" viewBox="0 0 640 400" role="img"
+    aria-label="Illustration de la vue consultant : votre logo et votre nom en haut, puis la liste de vos clients, chacun avec ce qui est en retard ou à analyser.">
+    <rect class="d-carte" x="8" y="8" width="624" height="384" rx="18"/>
+    <rect class="d-pastille" x="32" y="30" width="96" height="40" rx="10" stroke-dasharray="5 4"/>
+    <text class="d-petit" x="80" y="55" text-anchor="middle">Votre logo</text>
+    <text class="d-titre" x="146" y="47">Votre nom</text>
+    <text class="d-petit" x="146" y="65">Veille réglementaire de vos clients</text>
+    <text class="d-titre" x="32" y="108">Mes clients</text>
+    <text class="d-petit" x="608" y="108" text-anchor="end">6 équipés</text>
+    ${clients.map(([n, t, g], k) => `<line class="d-repere" x1="32" x2="608" y1="${124 + k * 44}" y2="${124 + k * 44}"/>
+    <text class="d-titre" x="32" y="${152 + k * 44}">${n}</text>
+    ${pastille(398, 133 + k * 44, t, g, 210)}`).join("")}
+  </svg>`;
+  const etroit = `<svg class="dessin" viewBox="0 0 340 470" role="img"
+    aria-label="Illustration de la vue consultant sur téléphone : votre marque, puis vos clients et leurs retards.">
+    <rect class="d-carte" x="6" y="6" width="328" height="458" rx="16"/>
+    <rect class="d-pastille" x="22" y="22" width="80" height="34" rx="9" stroke-dasharray="5 4"/>
+    <text class="d-petit" x="62" y="44" text-anchor="middle">Votre logo</text>
+    <text class="d-titre" x="114" y="44">Votre nom</text>
+    <text class="d-titre" x="22" y="88">Mes clients</text>
+    ${clients.map(([n, t, g], k) => `<line class="d-repere" x1="22" x2="318" y1="${100 + k * 60}" y2="${100 + k * 60}"/>
+    <text class="d-titre" x="22" y="${124 + k * 60}">${n}</text>
+    ${pastille(150, 106 + k * 60, t, g, 168)}`).join("")}
+  </svg>`;
+  return `<figure class="dessin-cadre"><div class="dessin-large">${large}</div><div class="dessin-etroit">${etroit}</div>
+    <figcaption>Illustration de la vue consultant, qui ouvre avec les comptes clients.</figcaption></figure>`;
+}
+
+/* Le calcul de marge : servi tout fait pour 10 clients (lisible sans
+   JavaScript), puis recalculé par la page quand le curseur bouge
+   (assets/app.js, calculMarge()). */
+function calculMarge(O, direct, n) {
+  const p = O.paliers.find((x) => n >= x.de && (!x.a || n <= x.a)) || O.paliers[0];
+  return { p, paye: p.mois * n, public: direct.mois * n, marge: (direct.mois - p.mois) * n };
+}
+
 function pageConsultants() {
   const O = OFFRE_CONSULTANT, direct = FORMULES[O.equivalent];
   const palier = O.paliers[1];                         // le palier de 6 à 15 clients
@@ -2462,6 +2510,36 @@ function pageConsultants() {
       <a class="bouton bouton-accent" href="mailto:${esc(SITE.courriel)}?subject=${encodeURIComponent("Offre consultant")}">En parler</a>
       <a class="bouton bouton-sobre" href="#grille">Voir la grille</a>
     </p>
+  </div>
+</section>
+
+<section class="section">
+  <div class="enveloppe deux-temps">
+    <div>
+      <h2>Tous vos clients, d'un coup d'œil</h2>
+      <p class="lecture">Une seule vue pour vos clients : qui est à jour, qui a des revues en retard, qui a des
+        textes à analyser. Vous savez où intervenir avant que votre client ne vous appelle.</p>
+      <p class="lecture" style="margin-top:var(--t3)">Et pour eux, c'est votre outil : votre logo, votre nom, vos
+        couleurs, jusque sur les exports PDF qu'ils montrent à l'auditeur.</p>
+    </div>
+    ${dessinVueConsultant()}
+  </div>
+</section>
+
+<section class="section section-tein">
+  <div class="enveloppe">
+    <h2 class="titre-section">Comment ça se passe</h2>
+    <ol class="etapes etapes-trois">
+      ${[
+        ["Vous équipez vos clients", "Pour chacun, vous ouvrez un espace : son métier, ses réponses à quelques questions. Sa veille se fait dessus, aussitôt."],
+        ["Ils voient votre marque", `Dès ${O.paliers.find((p) => p.blanche).de} clients, l'interface et les exports portent votre logo et votre nom. Vous facturez vos clients à votre prix.`],
+        ["Vous suivez tout", "Votre vue liste vos clients et ce qui est en retard chez chacun. Le registre de chaque client est prêt pour son audit."]
+      ].map(([t, d], k) => `<li class="etape">
+        <span class="etape-num">${k + 1}</span>
+        <h3>${esc(t)}</h3>
+        <p>${esc(d)}</p>
+      </li>`).join("")}
+    </ol>
   </div>
 </section>
 
@@ -2520,14 +2598,26 @@ function pageConsultants() {
 <section class="section">
   <div class="enveloppe">
     <h2 class="titre-section">Votre marge, en clair</h2>
-    <div class="deux-colonnes">
-      <p class="reserve"><strong>Par client.</strong> En direct, la formule ${esc(direct.l)} coûte ${esc(direct.prix)}.
-        Vous l'achetez ${esc(eur(palier.mois))} de ${palier.de} à ${palier.a} clients : si vous la refacturez au prix
-        public, la différence — ${esc(eur(marge))} par client et par mois — est pour vous. Vous fixez votre prix.</p>
-      <p class="reserve"><strong>Exemple, ${exemple} clients.</strong> Vous nous payez ${esc(eur(palier.mois * exemple))} par mois.
-        Au prix public, vos clients paieraient ${esc(eur(direct.mois * exemple))} : ${esc(eur(marge * exemple))} par mois
-        de marge, avant votre propre accompagnement.</p>
-    </div>
+    <p class="intro titre-section">Déplacez le curseur : votre nombre de clients, ce que vous nous payez, et ce qui
+    vous reste si vous refacturez au prix public. Vous restez libre de votre prix.</p>
+    ${(() => {
+      const n = 10, c = calculMarge(O, direct, n);
+      return `<div class="calcul" data-paliers="${esc(JSON.stringify(O.paliers))}" data-direct="${direct.mois}" data-suffixe="${esc(TVA.suffixe)}">
+      <label class="calcul-choix" for="nb-clients">
+        <span>Nombre de clients équipés</span>
+        <output id="nb-sortie" for="nb-clients">${n}</output>
+      </label>
+      <input type="range" id="nb-clients" min="${O.paliers[0].de}" max="40" step="1" value="${n}">
+      <dl class="calcul-res">
+        <div><dt>Votre prix par client</dt><dd data-calcul="prix">${esc(eur(c.p.mois))} par mois</dd></div>
+        <div><dt>Vous nous payez</dt><dd data-calcul="paye">${esc(eur(c.paye))} par mois</dd></div>
+        <div><dt>Au prix public (${esc(eur(direct.mois))}), vos clients paieraient</dt><dd data-calcul="public">${esc(eur(c.public))} par mois</dd></div>
+        <div class="calcul-marge"><dt>Ce qui vous reste</dt><dd data-calcul="marge">${esc(eur(c.marge))} par mois, soit ${esc(eur(c.marge * 12))} par an</dd></div>
+      </dl>
+      <p class="calcul-blanche" data-calcul="blanche">${c.p.blanche ? "Marque blanche incluse : votre logo, votre nom, vos couleurs." : `Marque blanche à partir de ${O.paliers.find((p) => p.blanche).de} clients.`}</p>
+    </div>`;
+    })()}
+    <p class="mention-tva">${esc(TVA.mention)}. Exemple de calcul : votre propre prix de revente est libre.</p>
   </div>
 </section>
 

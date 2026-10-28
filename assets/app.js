@@ -526,6 +526,34 @@
     });
   }
 
+  /* --- Le calcul de marge de la page consultant ----------------------------
+     Les paliers et le prix public viennent de la page (data-*, posés par
+     build.mjs depuis OFFRE_CONSULTANT et FORMULES) : rien n'est recopié ici. */
+  function calculMarge() {
+    var boite = $(".calcul");
+    if (!boite) return;
+    var paliers = [], direct = Number(boite.getAttribute("data-direct")), suffixe = boite.getAttribute("data-suffixe") || "";
+    try { paliers = JSON.parse(boite.getAttribute("data-paliers")); } catch (e) { return; }
+    var curseur = $("#nb-clients", boite), sortie = $("#nb-sortie", boite);
+    var eur = function (n) { return n.toLocaleString("fr-FR").replace(/\u202f/g, "\u00a0") + "\u00a0€" + suffixe; };
+    var ecrit = function (cle, texte) { var el = $('[data-calcul="' + cle + '"]', boite); if (el) el.textContent = texte; };
+    var premiereBlanche = paliers.filter(function (p) { return p.blanche; })[0];
+    function maj() {
+      var n = Number(curseur.value);
+      var p = paliers.filter(function (x) { return n >= x.de && (!x.a || n <= x.a); })[0] || paliers[0];
+      var marge = (direct - p.mois) * n;
+      sortie.textContent = n;
+      ecrit("prix", eur(p.mois) + " par mois");
+      ecrit("paye", eur(p.mois * n) + " par mois");
+      ecrit("public", eur(direct * n) + " par mois");
+      ecrit("marge", eur(marge) + " par mois, soit " + eur(marge * 12) + " par an");
+      ecrit("blanche", p.blanche ? "Marque blanche incluse : votre logo, votre nom, vos couleurs."
+        : "Marque blanche à partir de " + (premiereBlanche ? premiereBlanche.de : 6) + " clients.");
+    }
+    curseur.addEventListener("input", maj);
+    maj();
+  }
+
   function bascules() {
     $$("[data-bascule]").forEach(function (groupe) {
       var boutons = $$("button", groupe);
@@ -885,6 +913,7 @@
   metiersDeLAccueil();
   avis();
   collecte();
+  calculMarge();
   faits();
   affiner();
   paraitre();
