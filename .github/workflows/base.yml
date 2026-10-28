@@ -1,0 +1,101 @@
+# ==========================================================================
+# Vigie — la base de données (Supabase)
+# --------------------------------------------------------------------------
+# À chaque changement dans supabase/ :
+#   1. « tester »   rejoue TOUTES les migrations sur une base PostgreSQL vide,
+#                   puis les tests d'isolation (supabase/tests/isolation.sql).
+#   2. « appliquer » (seulement si 1 a réussi, sur main) applique à Supabase
+#                   les migrations qui n'y sont pas encore, une par une, chacune
+#                   dans une transaction ; puis rejoue les tests d'isolation SUR
+#                   Supabase (dans une transaction annulée : aucune trace).
+#
+# Secret nécessaire (Settings → Secrets and variables → Actions) :
+#   SUPABASE_DB_URL  l'adresse « Session pooler » de la base, mot de passe
+#                    compris. Tant qu'il manque, l'étape 2 ne fait rien et le dit.
+#
+# Pour changer le schéma : ne jamais modifier une migration déjà appliquée ;
+# en ajouter une nouvelle, datée, dans supabase/migrations/.
+# ==========================================================================
+name: Base de données
+
+on:
+  push:
+    branches: [main]
+    paths: ["supabase/**", ".github/workflows/base.yml"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: base-de-donnees
+  cancel-in-progress: false      # ne jamais couper une migration en cours
+
+jobs:
+  tester:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_PASSWORD: essai
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U postgres" --health-interval 5s --health-timeout 5s --health-retries 10
+    env:
+      PGHOST: localhost
+      PGUSER: postgres
+      PGPASSWORD: essai
+      PGDATABASE: postgres
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+      - name: Imiter Supabase sur la base vide
+        run: psql -v ON_ERROR_STOP=1 -q -f supabase/tests/emulation-supabase.sql
+      - name: Appliquer toutes les migrations, dans l'ordre
+        run: |
+          for f in $(ls supabase/migrations/*.sql | sort); do
+            echo "→ $f"
+            psql -v ON_ERROR_STOP=1 -q -1 -f "$f"
+          done
+      - name: Les tests d'isolation
+        run: psql -v ON_ERROR_STOP=1 -q -o /dev/null -f supabase/tests/isolation.sql 2>&1 | sed 's/^psql:[^ ]* NOTICE:  //'
+        shell: bash -o pipefail {0}
+
+  appliquer:
+    needs: tester
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    env:
+      SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+    steps:
+      - name: Supabase est-il configuré
+        id: pret
+        run: |
+          if [ -z "$SUPABASE_DB_URL" ]; then
+            echo "::notice::Le secret SUPABASE_DB_URL n'existe pas encore : rien n'est appliqué à Supabase."
+            echo "pret=non" >> "$GITHUB_OUTPUT"
+          else
+            echo "pret=oui" >> "$GITHUB_OUTPUT"
+          fi
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        if: steps.pret.outputs.pret == 'oui'
+      - name: Appliquer les migrations nouvelles
+        if: steps.pret.outputs.pret == 'oui'
+        run: |
+          psql "$SUPABASE_DB_URL" -v ON_ERROR_STOP=1 -q -c "
+            create schema if not exists prive;
+            create table if not exists prive.migrations (nom text primary key, appliquee_le timestamptz not null default now());
+            alter table prive.migrations enable row level security;"
+          for f in $(ls supabase/migrations/*.sql | sort); do
+            nom=$(basename "$f")
+            deja=$(psql "$SUPABASE_DB_URL" -tA -c "select 1 from prive.migrations where nom = '$nom'")
+            if [ "$deja" = "1" ]; then echo "  déjà appliquée : $nom"; continue; fi
+            echo "→ application : $nom"
+            # La migration et son inscription, dans UNE transaction : tout ou rien.
+            { cat "$f"; echo; echo "insert into prive.migrations (nom) values ('$nom');"; } \
+              | psql "$SUPABASE_DB_URL" -v ON_ERROR_STOP=1 -q -1
+          done
+      - name: Les tests d'isolation, sur Supabase (transaction annulée)
+        if: steps.pret.outputs.pret == 'oui'
+        run: psql "$SUPABASE_DB_URL" -v ON_ERROR_STOP=1 -q -o /dev/null -f supabase/tests/isolation.sql 2>&1 | sed 's/^psql:[^ ]* NOTICE:  //'
+        shell: bash -o pipefail {0}

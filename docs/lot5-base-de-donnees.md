@@ -105,6 +105,9 @@ Comment l'immuabilité est garantie, en trois couches :
 2. **Un déclencheur dans la base** refuse toute modification ou suppression,
    **même avec la clé service** — y compris par nous. Une erreur de notre part
    ne peut pas réécrire l'histoire d'un client.
+   Limite honnête : le **propriétaire de la base** (avec le mot de passe de la
+   base) pourrait, en le faisant exprès, désactiver ce déclencheur. C'est la
+   couche 3 qui le rendrait visible.
 3. **La chaîne d'empreintes** : chaque entrée contient l'empreinte de la
    précédente. Si une ligne était altérée par un moyen détourné, la chaîne se
    casserait, et une vérification le montrerait. On peut imprimer l'empreinte de
@@ -141,15 +144,21 @@ création**. Une table sans règle ne montre rien à personne. Les règles :
 | commun (`sujets`, `textes`…) | tout connecté | personne | personne | personne |
 | `entreprises` | ses membres ; son consultant **si** `acces_consultant` | par une fonction contrôlée | admin de l'entreprise | personne |
 | `membres_entreprise` | membres de l'entreprise | admin, par invitation | admin | admin (pas soi-même s'il est le dernier) |
-| `reponses`, `plan_sujets` | membres ; consultant autorisé | admin, membre | admin, membre | personne (on retire un sujet par une entrée `plan`) |
-| `registre` | membres ; consultant autorisé | admin, membre | **personne, jamais** | **personne, jamais** |
+| `reponses`, `plan_sujets` | membres ; consultant autorisé | admin, membre ; consultant autorisé | admin, membre ; consultant autorisé | personne (on retire un sujet par une entrée `plan`) |
+| `registre` | membres ; consultant autorisé | admin, membre ; consultant autorisé | **personne, jamais** | **personne, jamais** |
 | `consultants` | ses membres ; les entreprises qu'il suit (pour le thème) | par une fonction contrôlée | admin du cabinet | personne |
 | `abonnements` | membres concernés | personne (Stripe seul) | personne | personne |
 
 Points clés :
 
 - **Une entreprise choisit si son consultant la voit** (`acces_consultant`).
-  Sans son accord, le consultant ne voit rien, même s'il l'a créée.
+  Sans son accord, le consultant ne voit rien. Exception logique : quand
+  c'est le consultant qui crée l'entreprise pour son client, l'accès est
+  ouvert d'emblée ; l'entreprise peut le couper à tout moment.
+- **Le consultant autorisé peut aussi écrire** (revues, qualifications,
+  actions) chez ses clients : c'est son travail. Chaque entrée porte son nom.
+- **Un lecteur ne peut rien écrire**, ni la formule « Textes » (le registre
+  et le plan commencent à la formule « Suivi »).
 - **Un consultant ne voit jamais les entreprises d'un autre consultant.**
 - **L'administrateur (toi) ne lit pas les registres** depuis l'application :
   il voit la liste des entreprises et leurs abonnements, rien de plus. Le
