@@ -58,7 +58,8 @@ jobs:
             psql -v ON_ERROR_STOP=1 -q -1 -f "$f"
           done
       - name: Les tests d'isolation
-        run: psql -v ON_ERROR_STOP=1 -q -o /dev/null -f supabase/tests/isolation.sql 2>&1 | sed 's/^psql:[^ ]* NOTICE:  //'
+        run: |
+          psql -v ON_ERROR_STOP=1 -q -o /dev/null -f supabase/tests/isolation.sql 2>&1 | sed 's/^psql:[^ ]* NOTICE:  //'
         shell: bash -o pipefail {0}
 
   appliquer:
@@ -97,5 +98,6 @@ jobs:
           done
       - name: Les tests d'isolation, sur Supabase (transaction annulée)
         if: steps.pret.outputs.pret == 'oui'
-        run: psql "$SUPABASE_DB_URL" -v ON_ERROR_STOP=1 -q -o /dev/null -f supabase/tests/isolation.sql 2>&1 | sed 's/^psql:[^ ]* NOTICE:  //'
+        run: |
+          psql "$SUPABASE_DB_URL" -v ON_ERROR_STOP=1 -q -o /dev/null -f supabase/tests/isolation.sql 2>&1 | sed 's/^psql:[^ ]* NOTICE:  //'
         shell: bash -o pipefail {0}
