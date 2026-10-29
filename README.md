@@ -103,6 +103,12 @@ données » les applique.
   démo de Maçonnerie Vidal avec un bandeau consultant. Pas encore : la marque blanche (logo,
   couleurs), et inviter des collègues dans le cabinet.
 
+- **Les nouveaux textes** : un texte relevé par le robot est « nouveau » pour
+  une personne s'il touche son plan, est arrivé après le début de son suivi,
+  et qu'elle ne l'a pas encore ouvert. La cloche le compte, le relevé le marque
+  « Nouveau », le tableau de bord le dit en haut ; ce qui est ouvert est gardé
+  dans son profil (tous ses appareils).
+
 **Pas encore fait** : l'envoi automatique des courriels (invitations,
 alertes) — il attend Brevo et le nom de domaine —, et l'abonnement
 réellement relié à Stripe. En attendant, l'administrateur donne une formule depuis

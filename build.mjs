@@ -534,7 +534,7 @@ ${zone === "public" && installation ? bandeInstallation(a) : ""}
   </div>
 </footer>
 
-${donneesPlan ? `<script src="${a("assets/plan-data.js")}"></script>` : ""}
+${donneesPlan || zone === "app" ? `<script src="${a("assets/plan-data.js")}"></script>` : ""}
 ${zone === "app" ? `<script src="${a("assets/vigie.js")}"></script>
 <script src="${a("assets/magasin.js")}"></script>` : ""}
 <script src="${a("assets/app.js")}"></script>
@@ -718,6 +718,19 @@ function appTableauBord(V, D, C, LIENS) {
   const fiche = ficheDeLEntreprise(V, D);
   const corps = enTeteApp(D, "Tableau de bord",
     "Ce qui attend une décision, ce qui arrive, et ce qui est en retard.", fiche) + `
+<!-- Les nouveaux textes du plan, pas encore ouverts : rempli par assets/avis.js. -->
+<section class="rubrique bord-nouveaux" id="bord-nouveaux" hidden>
+  <div class="enveloppe">
+    <h2 id="bord-nouveaux-titre">Nouveaux textes</h2>
+    <p class="lecture">Parus depuis le début de votre suivi, dans les sujets de votre plan, et que vous n'avez pas
+    encore ouverts.</p>
+    <ul class="liste-nouveaux" id="bord-nouveaux-liste"></ul>
+    <p class="rangee" style="margin-top:var(--t4)">
+      <a class="bouton bouton-accent" href="releve.html">Voir le relevé</a>
+      <button type="button" class="bouton bouton-sobre" id="bord-tout-lu">Tout marquer comme lu</button>
+    </p>
+  </div>
+</section>
 <!-- Le jeu d'essai : caché dans un vrai compte (assets/espace.js montre le vrai). -->
 <div data-demo>
 
@@ -1259,6 +1272,11 @@ function listeDeTextes(V, C, LIENS, TEXTES, entrees) {
    existe, l'application sert ces textes-là, avec leur contenu intégral. Quand
    il n'existe pas, elle sert le jeu d'essai — et le dit. Jamais l'un déguisé
    en l'autre. */
+/* La clé d'un texte relevé : la même pour la case « Fait », le registre, la
+   cloche et ce que l'abonné a déjà ouvert (assets/avis.js). */
+const cleJO = (t) => `jo:${t.id && !/^http/.test(t.id) ? t.id : slug(t.titre).slice(0, 80)}`;
+const ancreJO = (t) => `t-${slug(cleJO(t)).slice(0, 90)}`;
+
 function ligneJO(V, t, i, releveLe = "") {
   const noms = t.domaines.map((d) => d.nom);
   const droit = t.genre === "texte";
@@ -1276,12 +1294,14 @@ function ligneJO(V, t, i, releveLe = "") {
      texte qui vient de paraître — nous ne l'inventons donc pas, nous disons la
      date qu'il porte, et nous marquons ce qui est arrivé depuis la dernière
      relève. */
-  const neuf = Boolean(releveLe) && vu === releveLe;
-  const idFait = `jo:${t.id && !/^http/.test(t.id) ? t.id : slug(t.titre).slice(0, 80)}`;
+  /* « Nouveau » se dit par personne, pas à la construction : un texte est
+     nouveau pour qui ne l'a pas encore ouvert (assets/avis.js pose la marque). */
+  const neuf = false;
+  const idFait = cleJO(t);
 
   /* data-domaines, data-date, data-premier : de quoi le ranger dans le plan
      d'une autre entreprise sans rien recalculer (assets/entreprise.js). */
-  return `<li class="ligne-releve statut-${droit ? "attente" : "neutre"}${neuf ? " est-neuf" : ""}" data-domaines="${esc(t.domaines.map((d) => d.id).join(" "))}" data-date="${esc(quand)}"${neuf ? " data-neuf" : ""}${actions.length ? ` data-premier="${esc(actions[0])}"` : ""}>
+  return `<li class="ligne-releve statut-${droit ? "attente" : "neutre"}${neuf ? " est-neuf" : ""}" id="${ancreJO(t)}" data-cle="${esc(idFait)}" data-domaines="${esc(t.domaines.map((d) => d.id).join(" "))}" data-date="${esc(quand)}"${neuf ? " data-neuf" : ""}${actions.length ? ` data-premier="${esc(actions[0])}"` : ""}>
   <details>
     <summary>
       <span class="mono date">${esc(dateFr(quand))}</span>
@@ -1556,8 +1576,6 @@ function appReleve(V, D, JO, C, LIENS, SOURCES = []) {
      pas encore relever sont dites à part, avec leur raison. */
   const muettes = officiel
     ? JO.rapport.filter((r) => r.souci && confirmees.some((c) => c.id === r.id)) : [];
-  const neufsJO = officiel
-    ? JO.textes.filter((t) => (t.vuLe || t.date) === JO.releve_le).length : 0;
 
   /* Une carte par famille : combien de textes, combien de nouveaux, le plus
      récent, et ce qu'il faut faire en premier. C'est ce qu'on voit en
@@ -1635,8 +1653,7 @@ function appReleve(V, D, JO, C, LIENS, SOURCES = []) {
   <div class="enveloppe">
   ${officiel ? `
   ${cartesCategories([
-    ...groupesJO.map((g) => carteFamille(g, "jo-", (t) => t.dateTexte || t.date, domaineJO,
-                                         (t) => (t.vuLe || t.date) === JO.releve_le)),
+    ...groupesJO.map((g) => carteFamille(g, "jo-", (t) => t.dateTexte || t.date, domaineJO, null)),
     ...carteCodes])}
   ${aSavoir("Comment ce relevé est fait", commentFait)}
   <div data-demo>${aSavoir("Exemple : le parcours complet d'un texte", `<p class="lecture">
@@ -4363,7 +4380,7 @@ function pageAdmin() {
 /* Le relevé complet est engendré dans deux pages seulement ; la cloche, elle,
    vit sur tous les écrans. On en extrait donc le strict nécessaire — moins de
    deux kilo-octets — plutôt que de charger le référentiel partout. */
-function donneesAvis(V, D, C) {
+function donneesAvis(V, D, C, JO) {
   /* Un article de code qui bouge est une alerte, au même titre qu'un texte qui
      paraît : c'est ce que l'abonné paie. La cloche les mélange, triés par date. */
   /* La date de l'avis est celle où nous l'avons vu, pas celle où l'article a
@@ -4378,6 +4395,7 @@ function donneesAvis(V, D, C) {
   };
 
   const codes = !C ? [] : (C.changements || []).map((c) => ({
+    k: `code:${c.morceau}:${c.num}:${C.preleve}`, v: `${C.preleve}T00:00:00Z`,
     d: C.preleve,
     t: `Article ${c.num} — ${c.codeTitre || "code suivi"}`,
     q: (c.quoi === "modifie"
@@ -4389,18 +4407,26 @@ function donneesAvis(V, D, C) {
     s: "a-analyser", p: 1
   }));
 
-  const avis = D.releve.map((x) => {
-    const dom = V.domaines[x.domaine];
-    const ref = dom && dom.textes.length ? dom.textes[0] : "";
+  /* Les textes officiels relevés : la cloche ne garde que ceux du plan de
+     l'entreprise (ds : leurs sujets), vus par le robot après le début du suivi
+     (v : première vue) et pas encore ouverts. Chacun mène à sa ligne du relevé. */
+  const textes = !(JO && JO.textes) ? [] : JO.textes.map((t) => {
+    const actions = t.domaines.flatMap((x) => (V.domaines[x.id] || {}).actions || []);
     return {
-      d: x.date, t: x.titre, q: x.quoi,
-      dom: dom ? dom.nom : x.domaine,
-      u: ref ? `texte/${slug(ref)}.html` : "",
-      s: x.statut, p: x.priorite === "haute" ? 1 : 0, e: 1   // e : jeu d'essai
+      k: cleJO(t), v: t.vuA || `${t.vuLe || t.date}T00:00:00Z`, d: t.dateTexte || t.date,
+      t: String(t.titre).slice(0, 180), q: actions.length ? `En premier : ${actions[0]}` : "À connaître, rien à faire.",
+      dom: t.domaines.slice(0, 2).map((x) => x.nom).join(" · "), ds: t.domaines.map((x) => x.id),
+      u: `releve.html#${ancreJO(t)}`
     };
-  }).concat(codes).sort((a, b) => (a.d < b.d ? 1 : -1));
+  });
+  const avis = textes.concat(codes).sort((a, b) => (a.v < b.v ? 1 : a.v > b.v ? -1 : (a.d < b.d ? 1 : -1)));
+  /* La démonstration : le plan de Maçonnerie Vidal, et « depuis » une semaine
+     avant la dernière relève, pour qu'il y ait quelque chose à montrer. */
+  const fin = JO && JO.releve_le ? JO.releve_le : new Date().toISOString().slice(0, 10);
+  const depuis = new Date(Date.parse(fin + "T00:00:00Z") - 7 * 86400000).toISOString().slice(0, 19) + "Z";
   return "/* Engendré par build.mjs — ne pas modifier à la main. */\n" +
-         "window.AVIS = " + JSON.stringify(avis) + ";\n";
+         "window.AVIS = " + JSON.stringify(avis) + ";\n" +
+         "window.AVIS_DEMO = " + JSON.stringify({ plan: planDe(V, D.entreprise).liste, depuis }) + ";\n";
 }
 
 /* --- Les données du simulateur --------------------------------------------- */
@@ -4670,7 +4696,7 @@ async function main() {
 
   const plan = donneesPlan(V, METIERS);
   await writeFile(join(SORTIE, "assets", "plan-data.js"), plan);
-  const avis = donneesAvis(V, D, C);
+  const avis = donneesAvis(V, D, C, JO);
   await writeFile(join(SORTIE, "assets", "avis-data.js"), avis);
 
   // Le manifeste et le service worker vivent à la racine : un worker servi

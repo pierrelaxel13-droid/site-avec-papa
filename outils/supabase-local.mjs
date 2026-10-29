@@ -105,6 +105,8 @@ select 'null'`,
 select 'null'`,
   espace_alertes: (a) => `select public.espace_alertes(${json(a.choix)}) \\g /dev/null
 select 'null'`,
+  espace_lus: (a) => `select public.espace_lus(${json(a.lus)}) \\g /dev/null
+select 'null'`,
   verifier_registre: (a) => `select coalesce(json_agg(t), '[]') from public.verifier_registre(${litteral(a.e)}) t`,
   mes_entreprises: () => "select coalesce(json_agg(t), '[]') from public.mes_entreprises() t",
   mes_acces: () => "select coalesce(json_agg(t), '[]') from public.mes_acces() t",

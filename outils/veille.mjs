@@ -727,6 +727,15 @@ async function main() {
   for (const a of alertes) console.log(`  ${a.niveau === "grave" ? "GRAVE" : "attention"} : ${a.quoi}`);
   propres.sort((a, b) => (a.vuLe < b.vuLe ? 1 : (a.vuLe > b.vuLe ? -1 : (a.titre < b.titre ? -1 : 1))));
 
+  /* vuA : l'heure exacte où la relève a vu ce texte pour la PREMIÈRE fois.
+     C'est elle qui dit « nouveau » à l'abonné (assets/avis.js) : un texte
+     relevé à 15 h est nouveau pour celui qui est passé à 14 h. Un texte déjà
+     là la garde ; un texte d'avant ce champ prend le début de son jour ; à la
+     toute première relève, rien n'est « nouveau ». */
+  const PREMIERE = new Map(AVANT.map((t) => [t.id, t.vuA || `${t.vuLe || t.date}T00:00:00Z`]));
+  const MAINTENANT = new Date().toISOString().slice(0, 19) + "Z";
+  for (const t of propres) t.vuA = PREMIERE.get(t.id) || (AVANT.length ? MAINTENANT : `${t.vuLe}T00:00:00Z`);
+
   await writeFile(SORTIE, JSON.stringify({
     licence: "Textes officiels de la République française — Licence Ouverte. " +
              "Publications des autorités citées, reproduites avec leur source et leur date.",

@@ -301,6 +301,14 @@ qu'il n'y a pas de client.
   dans un compte, `suivrePlan()` / `suivreReleve()` refont le tri. Jamais
   d'`hidden` pour cacher un hors-périmètre : un outil qui lit la source le
   verrait. Test : `node outils/perimetre.test.mjs` (lancé par publie.yml).
+- **Les nouveaux textes** (assets/avis.js) : nouveau = dans le plan, vu par le
+  robot (`vuA`, posé par outils/veille.mjs à la première vue) après
+  `lus.depuis`, et pas encore ouvert (`lus.ids`). « pco-lus » est gardé par
+  magasin.js : profil du compte (`espace_lus`), ou navigateur pour la démo
+  (`AVIS_DEMO` : plan de Vidal, depuis une semaine). Trois endroits : la cloche,
+  la marque « Nouveau » des lignes du relevé (+ cartes), le bloc
+  `#bord-nouveaux` du tableau de bord. Ouvrir un texte le dit lu. Pas de
+  courriel tant que Brevo n'est pas là.
 - **Accueil** : l'accroche « la veille faite et jamais écrite » est sous le titre
   (une seule fois dans la page). « Dernière collecte réussie » (`blocCollecte()`)
   prend l'heure de la dernière relève réussie dans COLLECTE_LE, posée par

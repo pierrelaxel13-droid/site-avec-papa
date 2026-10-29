@@ -9,7 +9,7 @@
      appareil, et chaque case « Fait » est une entrée datée du registre.
 
    Les clés : "pco-entreprise" (les réglages), "pco-alertes", "pco-faits"
-   ({ clé: "AAAA-MM-JJ" }).
+   ({ clé: "AAAA-MM-JJ" }), "pco-lus" (les textes déjà ouverts, avis.js).
 
    Dans un compte, les données arrivent après la page : le code qui en a
    besoin attend avec MAGASIN.quandPret(fonction).
@@ -55,6 +55,7 @@
     var appel = cle === "pco-entreprise"
       ? V.rpc("espace_reglages", { e: M.espace.id, nouveaux: o })
       : cle === "pco-alertes" ? V.rpc("espace_alertes", { choix: o })
+      : cle === "pco-lus" ? V.rpc("espace_lus", { lus: o })
       : Promise.resolve({ erreur: "Rien à enregistrer sous « " + cle + " »." });
     return appel.then(function (r) {
       if (!r.ok) return r;
@@ -146,6 +147,7 @@
             rang: d.rang, ecrit: !!d.ecrit, entreprise: d.entreprise, cabinet: e.cabinet || null };
           memoire["pco-entreprise"] = reglagesDepuis(d.entreprise || {}, d.reponses);
           memoire["pco-alertes"] = (d.profil && d.profil.alertes) || null;
+          memoire["pco-lus"] = (d.profil && d.profil.lus) || null;
           memoire["pco-faits"] = d.faits || {};
           memoire.qualifications = d.qualifications || {};
           memoire.actions = d.actions || [];

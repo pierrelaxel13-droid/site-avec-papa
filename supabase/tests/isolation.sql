@@ -431,12 +431,23 @@ select tests.ok((select prive.empreinte_registre(r) <> prive.empreinte_registre(
 select public.espace_alertes('{"rythme": "hebdomadaire", "courriel": "a_admin@test.fr"}');
 select tests.ok((public.espace_lire('00000000-0000-0000-0000-00000000a000') -> 'profil' -> 'alertes' ->> 'rythme') = 'hebdomadaire',
   'les réglages d''alerte sont gardés');
+-- Les textes ouverts : chacun les siens.
+select public.espace_lus('{"depuis": "2026-10-29T14:00:00Z", "ids": ["jo:JORFTEXT000000000001"]}');
+select tests.ok((public.espace_lire('00000000-0000-0000-0000-00000000a000') -> 'profil' -> 'lus' -> 'ids' ->> 0) = 'jo:JORFTEXT000000000001',
+  'les textes ouverts sont gardés dans son profil');
+select tests.ok((public.espace_lire('00000000-0000-0000-0000-00000000a000') -> 'profil' -> 'alertes' ->> 'rythme') = 'hebdomadaire',
+  'sans effacer ses alertes');
+select tests.refuse($$select public.espace_lus('{"ids": "pas une liste"}')$$, 'des lectures mal formées sont refusées');
+select tests.refuse(format('select public.espace_lus(%L)', jsonb_build_object('ids', (select jsonb_agg(repeat('x', 100)) from generate_series(1, 1000))))::text,
+  'et des lectures démesurées aussi');
 reset role;
 
 select tests.qui('00000000-0000-0000-0000-0000000000a2', 'a_lecteur@test.fr');
 set local role authenticated;
 select tests.ok((public.espace_lire('00000000-0000-0000-0000-00000000a000') -> 'profil' -> 'alertes') is null,
   'a_lecteur ne reçoit pas les alertes d''a_admin');
+select tests.ok((public.espace_lire('00000000-0000-0000-0000-00000000a000') -> 'profil' -> 'lus') is null,
+  'ni ce qu''il a lu');
 select tests.refuse($$select public.espace_reglages('00000000-0000-0000-0000-00000000a000', '{"naf": "10"}')$$, 'un lecteur ne change pas les réglages');
 select tests.refuse($$select public.espace_fait('00000000-0000-0000-0000-00000000a000', 'plan:t_sst', 'x', 't_sst', true)$$, 'ni ne coche « Fait »');
 reset role;

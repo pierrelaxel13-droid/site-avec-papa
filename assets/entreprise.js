@@ -325,13 +325,9 @@
       var plusRecent = lignes.slice().sort(function (a, b) {
         return a.getAttribute("data-date") < b.getAttribute("data-date") ? 1 : -1;
       })[0];
-      var neufs = lignes.filter(function (l) { return l.hasAttribute("data-neuf"); }).length;
       var compte = carte.querySelector(".carte-compte");
       if (compte) compte.textContent = lignes.length ? textes(lignes.length) : "Rien qui vous concerne";
-      var tete = carte.querySelector(".carte-tete");
-      var marque = carte.querySelector(".carte-tete .marque-neuf");
-      if (neufs && !marque && tete) { marque = document.createElement("span"); marque.className = "marque-neuf"; tete.appendChild(marque); }
-      if (marque) { marque.hidden = !neufs; marque.textContent = neufs + " nouveau" + (neufs > 1 ? "x" : ""); }
+      // « N nouveaux » sur la carte : par personne, assets/avis.js.
       var cl = carte.querySelectorAll(".carte-ligne");
       var precision = famille.querySelector(".precision");
       if (cl[0]) cl[0].textContent = plusRecent ? "Le plus récent : " + jourFr(plusRecent.getAttribute("data-date")) : (precision ? precision.textContent : "");

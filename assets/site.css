@@ -3156,3 +3156,15 @@ mark.a-decider { background: #E6E1FF; color: #3B1FBF; }
 .liste-ecartes { list-style: none; margin: var(--t3) 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: .4rem; }
 .liste-ecartes li { padding: .3rem .8rem; border: 1px solid var(--filet); border-radius: var(--rp); color: var(--encre-douce); font-size: .92rem; }
 .plan-ecartes, .releve-ecartes { margin-top: var(--t5); }
+
+/* Le tableau de bord : les nouveaux textes du plan, pas encore ouverts. */
+.bord-nouveaux h2 { color: var(--accent); }
+.liste-nouveaux { list-style: none; margin: var(--t4) 0 0; padding: 0; display: grid; gap: var(--t2); }
+.liste-nouveaux a {
+  display: grid; gap: .2rem; padding: var(--t3) var(--t4);
+  border: 1px solid var(--filet); border-left: 3px solid var(--accent); border-radius: var(--r2);
+  background: var(--carte); color: var(--encre-douce); text-decoration: none;
+}
+.liste-nouveaux a:hover { border-color: var(--accent); }
+.liste-nouveaux .avis-titre { font-size: 1rem; overflow-wrap: anywhere; }
+.liste-nouveaux .avis-separateur { padding: .4rem 0; background: none; border: 0; }

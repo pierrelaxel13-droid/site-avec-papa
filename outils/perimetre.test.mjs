@@ -67,8 +67,8 @@ ok(new RegExp(`id="plan-total">${liste.length}<`).test(plan), "plan : « Domaine
 /* --- Relevé --- */
 const releve = readFileSync(`${SITE}/demo/releve.html`, "utf8");
 const visibleReleve = lu(releve);
-const lignes = [...visibleReleve.matchAll(/<li class="ligne-releve[^"]*" data-domaines="([^"]*)"/g)].map((m) => m[1].split(" "));
-const toutes = [...releve.matchAll(/<li class="ligne-releve[^"]*" data-domaines="([^"]*)"/g)].length;
+const lignes = [...visibleReleve.matchAll(/<li class="ligne-releve[^"]*"[^>]*data-domaines="([^"]*)"/g)].map((m) => m[1].split(" "));
+const toutes = [...releve.matchAll(/<li class="ligne-releve[^"]*"[^>]*data-domaines="([^"]*)"/g)].length;
 ok(lignes.length > 0, `relevé : ${lignes.length} textes rangés, sur ${toutes} relevés`);
 ok(lignes.every((d) => d.some((id) => liste.includes(id))), "relevé : chaque texte rangé touche un sujet du plan");
 const sujets = [...visibleReleve.matchAll(/data-sujet-releve="([^"]+)"/g)].map((m) => m[1]).filter((id) => PLAN.d[id]);
