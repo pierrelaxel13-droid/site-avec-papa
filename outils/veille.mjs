@@ -44,6 +44,7 @@ import { fileURLToPath } from "node:url";
 import { execFile } from "node:child_process";
 import { promisify } from "node:util";
 import { controle } from "./controles.mjs";
+import { rattache, dateDuTitre, ficheAncienne } from "./tri.mjs";
 
 const execFileP = promisify(execFile);
 const RACINE = resolve(dirname(fileURLToPath(import.meta.url)), "..");
@@ -75,8 +76,6 @@ async function charge(chemin, cle) {
   return faux[cle];
 }
 
-const sansAccent = (s) => s.normalize("NFD").replace(/[̀-ͯ]/g, "");
-const normalise = (s) => sansAccent(String(s)).toLowerCase().replace(/\s+/g, " ");
 
 /* --- Réseau ---------------------------------------------------------------- */
 /* Un échec n'est jamais masqué : on remonte le code, et le programme continue
@@ -208,62 +207,6 @@ function lisTexteDila(xml) {
   };
 }
 
-/* --- Rattachement aux domaines ---------------------------------------------
-   Première version : un mot-clé n'importe où dans le titre ou le corps. Sur
-   une vraie journée du Journal officiel, ça retenait 13 625 entrées sur
-   42 200 — autant dire tout. Parce que tout acte commence par « Vu le code du
-   travail ; Vu le code de la sécurité sociale », et qu'un nom de code dans les
-   visas ne dit rien du sujet.
-
-   Deuxième version, celle-ci, réglée sur une vraie relève :
-
-   1. LE TITRE SEUL. Un texte qui vous concerne le dit dans son titre. Le corps
-      ne sert qu'à lire, pas à trier.
-   2. LE SUJET, PAS LE FONDEMENT. On écarte les mots-clés qui nomment un code,
-      une loi, un règlement : ils désignent le fondement juridique, que tout
-      acte cite. Restent les sujets — amiante, échafaudage, déchets, carrières.
-   3. PAS LES ACTES INDIVIDUELS. Nominations, agréments, listes de prix de
-      spécialités pharmaceutiques, avis de concours : ce sont des décisions
-      particulières, pas de la réglementation.
-
-   Sur la même journée : 234 textes retenus, et ils parlent d'empoussièrement
-   amiante, de cahiers des charges REP, de plafonds de sécurité sociale. */
-
-/* Un mot-clé qui nomme un texte plutôt qu'un sujet. */
-const MOT_FAIBLE = /^(code |loi |reglement|directive|convention|accord |arrete|decret)/;
-
-/* Les séries administratives du Journal officiel : du droit individuel. */
-const ACTE_INDIVIDUEL = new RegExp([
-  "specialites? pharmaceutiques",
-  "avis relatif aux prix",
-  "liste des (titres|medicaments|produits|specialites)",
-  "appel au mecenat",
-  "avis d.appel",
-  "avis de (vacance|concours)",
-  "portant (nomination|agrement|extension|delegation|renouvellement|cessation" +
-    "|inscription|radiation|habilitation|designation|titularisation|promotion)",
-  "^decision n",
-  "liste des candidats",
-  "tableau d.avancement",
-  "medaille",
-  "legion d.honneur",
-  "ordre national",
-  "cours des monnaies"
-].join("|"), "i");
-
-function rattache(V, titre, corps) {
-  const foin = normalise(titre);
-  if (ACTE_INDIVIDUEL.test(foin)) return [];
-  const touches = [];
-  for (const [id, d] of Object.entries(V.domaines)) {
-    const mots = (d.motsCles || []).map(normalise)
-      .filter((m) => m.length > 4 && !MOT_FAIBLE.test(m));
-    const trouves = mots.filter((m) => foin.includes(m));
-    if (trouves.length) touches.push({ id, nom: d.nom, mots: trouves.slice(0, 3) });
-  }
-  return touches;
-}
-
 /* --- Fondre les morceaux d'un même texte ------------------------------------
    Les archives du Journal officiel donnent un fichier par ARTICLE et par
    SECTION, pas un par texte : un décret de 2013 est arrivé en 1 482 morceaux,
@@ -301,22 +244,6 @@ function fond(entrees) {
   });
 }
 
-/* La date du texte, lue dans son titre — « Arrêté du 14 août 2012 ». Les
-   archives datent de leur jour de parution, qui n'est pas celui du texte quand
-   il y est republié. Mieux vaut la vraie date, et dire quand on l'a vu. */
-const MOIS = ["janvier", "fevrier", "mars", "avril", "mai", "juin", "juillet",
-              "aout", "septembre", "octobre", "novembre", "decembre"];
-
-function dateDuTitre(titre) {
-  const m = normalise(titre).match(/\bdu (\d{1,2})(?:er)? ([a-z]+) (\d{4})\b/);
-  if (!m) return "";
-  const mois = MOIS.indexOf(m[2]);
-  if (mois === -1) return "";
-  const a = Number(m[3]);
-  if (a < 1800 || a > 2100) return "";
-  return `${a}-${String(mois + 1).padStart(2, "0")}-${String(Number(m[1])).padStart(2, "0")}`;
-}
-
 /* --- Relève d'une source par flux ------------------------------------------ */
 /* Une entrée sans date — le BOFiP n'en met pas — n'en reçoit pas une
    inventée : elle prend le jour où la relève l'a vue pour la première fois, et
@@ -346,7 +273,7 @@ async function relevéFlux(V, s, depuis) {
   const retenus = [];
   for (const e of entrees) {
     if (e.date && e.date < depuis) continue;
-    const domaines = rattache(V, e.titre, e.corps);
+    const domaines = rattache(V, e.titre, s.id);
     if (!domaines.length) continue;
     retenus.push({
       source: s.id, sourceNom: s.nom, genre: s.genre,
@@ -392,7 +319,7 @@ async function relevéDila(V, s, depuis) {
 
   await mkdir(TRAVAIL, { recursive: true });
   const retenus = [];
-  let entrees = 0;
+  let entrees = 0, anciennes = 0;
   for (const a of archives) {
     const url = new URL(a.lien, s.url).href;
     const fichier = join(TRAVAIL, a.lien.split("/").pop());
@@ -406,7 +333,8 @@ async function relevéDila(V, s, depuis) {
         const t = lisTexteDila(await readFile(x, "utf8"));
         if (!t || !t.corps) continue;
         entrees++;
-        const domaines = rattache(V, t.titre, t.corps);
+        if (ficheAncienne(t.titre, t.date, a.date)) { anciennes++; continue; }
+        const domaines = rattache(V, t.titre, s.id);
         if (!domaines.length) continue;
         retenus.push({
           source: s.id, sourceNom: s.nom, genre: "texte",
@@ -420,6 +348,7 @@ async function relevéDila(V, s, depuis) {
       console.log(`      ${a.date} : ${diagnostic(e)}`);
     }
   }
+  if (anciennes) console.log(`      ${anciennes} fiches d'anciens textes renvoyées par les archives : écartées`);
   return { entrees, retenus, derniere: archives[0].date };
 }
 
@@ -658,6 +587,15 @@ async function main() {
 
   console.log(`Relève depuis le ${depuis}, sur ${SOURCES.length} sources.\n`);
   await chargeDejaVus();
+  /* Le relevé précédent, repassé au tri d'aujourd'hui : ce que le tri écarte
+     désormais n'est pas « perdu », et ne doit être ni repris ni compté comme
+     une chute par les contrôles (outils/controles.mjs). */
+  const avantBrut = AVANT.length;
+  AVANT = AVANT
+    .filter((t) => !(t.source === "jorf" && ficheAncienne(t.titre, t.date, t.vuLe || t.date)))
+    .map((t) => ({ ...t, domaines: rattache(V, t.titre, t.source) }))
+    .filter((t) => t.domaines.length);
+  if (AVANT.length < avantBrut) console.log(`Relevé précédent : ${avantBrut - AVANT.length} textes écartés par le tri actuel.\n`);
   await rm(TRAVAIL, { recursive: true, force: true });
 
   const tout = [];

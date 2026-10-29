@@ -53,14 +53,35 @@ signale, le robot ne garde que ce qu'il retrouve sur Légifrance / le JO). Et,
 plus sûr encore pour une deuxième source du Journal officiel : **l'API
 officielle de Légifrance (PISTE)**, gratuite, sur inscription.
 
-## 3. Petites choses en attente
+## 3. Le tri des textes par sujet (fait en partie le 29 octobre)
+
+Fait (outils/tri.mjs, testé par outils/tri.test.mjs) : les anciens textes
+renvoyés par les archives du JO sont écartés ; sept familles d'actes
+individuels de plus ; « transition écologique » ne suffit plus ; un rappel de
+produit ne va que dans les sujets « produits ». Relevé : 172 → 58 textes ;
+Maçonnerie Vidal : 90 → 20.
+
+**À valider par Clément** :
+
+- Écarter les textes sur les **fonctionnaires** (fonction publique, agents
+  publics, militaires, magistrats, praticiens hospitaliers) : nos clients sont
+  des entreprises privées. Pas fait tant qu'il n'a pas dit oui.
+- **Relire les mots-clés de chaque sujet** (assets/referentiel.js, motsCles) :
+  il reste du bruit, par ex. une loi sur la rétention administrative rangée en
+  santé-sécurité (« prévention des risques »), un fonds réparti entre
+  départements rangé en paie.
+- **Les rappels de produits** (RappelConso) : faut-il les mettre au relevé des
+  métiers de l'alimentation et du commerce ? Aujourd'hui, presque aucun n'y
+  entre (le titre est le nom du produit).
+
+## 4. Petites choses en attente
 
 - **Une source retrouvée** : la relève du 29 octobre a trouvé un flux qui
   répond pour une des 6 sources muettes (voir
   `contenu/sources-decouverte.txt`). À vérifier, puis l'ajouter dans
   `contenu/sources.js` (`confirme: true`).
 
-## 4. Côté Axel (rien d'urgent)
+## 5. Côté Axel (rien d'urgent)
 
 - Créer le secret GitHub **`SAUVEGARDE_PHRASE`** (au moins 20 caractères, gardée
   en lieu sûr, copie à Clément) : la sauvegarde hebdomadaire démarre alors.

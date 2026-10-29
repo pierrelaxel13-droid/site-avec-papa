@@ -66,6 +66,7 @@ jobs:
         run: |
           echo "DEBUT=$(date -u +%Y-%m-%dT%H:%M:%SZ)" >> "$GITHUB_ENV"
           node outils/controles.test.mjs
+          node outils/tri.test.mjs
 
       # La Haute Autorité de santé envoie son certificat sans le certificat
       # intermédiaire qui le relie à une autorité reconnue. Un navigateur va le
