@@ -152,8 +152,9 @@ export function pagesLegales({ page, SITE, FORMULES, TVA, esc, eur }) {
           <li>hébergement de la base de données et des comptes — ${manque(E.hebergeurDonnees, "prestataire et région d'hébergement, dans l'Union européenne")} ;</li>
           <li>paiement — Stripe Payments Europe Ltd (Irlande) ;</li>
           <li>envoi des courriels du service (alertes, mot de passe oublié) — Brevo (France) ;</li>
-          <li>hébergement du site public — ${esc(SITE.hebergeur.nom)} (États-Unis), qui ne reçoit aucune donnée
-            de votre espace client.</li>
+          <li>hébergement du site public, et garde des sauvegardes de la base — ${esc(SITE.hebergeur.nom)}
+            (États-Unis). Les sauvegardes sont chiffrées (AES-256) avant de lui être confiées, et la clé ne lui
+            est jamais donnée : il ne peut pas les lire. Il ne reçoit aucune autre donnée de votre espace client.</li>
         </ul>
         <p>Chaque prestataire est lié par un contrat qui encadre le traitement des données. Les transferts hors
         de l'Union européenne, s'il y en a, sont encadrés par les garanties prévues par le RGPD.</p>` },
@@ -164,8 +165,7 @@ export function pagesLegales({ page, SITE, FORMULES, TVA, esc, eur }) {
             elles sont ensuite supprimées. Votre registre est votre document d'audit : exportez-le avant.</li>
           <li><strong>Factures :</strong> dix ans, comme l'exige le Code de commerce.</li>
           <li><strong>Journaux de connexion :</strong> un an.</li>
-          <li><strong>Sauvegardes :</strong> ${decider} <em>proposition : effacées par rotation au bout de
-            30 jours</em>.</li>
+          <li><strong>Sauvegardes :</strong> une par semaine, chiffrée, effacée au bout de 30 jours.</li>
           <li><strong>Échanges avec les prospects :</strong> trois ans après le dernier contact.</li>
         </ul>` },
       { t: "Cookies", c: `

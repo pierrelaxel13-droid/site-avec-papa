@@ -71,3 +71,37 @@ formule** (essai, paiement par virement…) — sans SQL. Un abonnement payé ch
 Stripe n'y est jamais touché ; chaque action est inscrite dans
 `prive.journal_admin`. L'entreprise de l'administrateur est tout ouverte.
 L'administrateur ne voit jamais les registres, plans ou réponses des clients.
+
+## Les sauvegardes
+
+Chaque lundi, l'action **« Sauvegarde »** (`outils/sauvegarde.sh`) :
+1. copie la base (schémas `public` et `prive`, et les comptes `auth.users`) ;
+2. la **chiffre** (AES-256, gpg) avec la phrase du secret `SAUVEGARDE_PHRASE`,
+   avant qu'elle quitte la machine ;
+3. la **restaure dans une base vide** et vérifie : mêmes nombres de lignes, et
+   la chaîne d'empreintes de chaque registre intacte. Sinon, l'action échoue ;
+4. garde l'archive chiffrée **30 jours** dans GitHub (Actions → Sauvegarde →
+   l'exécution → *Artifacts*).
+
+**La phrase de passe** n'est que dans le secret GitHub et dans ton
+gestionnaire de mots de passe. Sans elle, aucune sauvegarde ne se relit — par
+personne, toi compris. Ne la change pas sans garder l'ancienne : les archives
+de moins de 30 jours en ont besoin.
+
+**Restaurer** (après un incident) :
+
+```sh
+gpg --decrypt vigie-sauvegarde-AAAA-MM-JJ.tar.gpg | tar -xf -   # demande la phrase
+```
+
+- `base.dump` (entreprises, registres, réglages…) : `pg_restore -d "$BASE"
+  --no-owner base.dump`. **C'est ce que l'action essaie chaque semaine**, dans
+  une base vide, et vérifie.
+- `comptes.dump` (adresses et mots de passe chiffrés) : à remettre **avant**
+  `base.dump` dans le projet Supabase, en suivant la méthode de Supabase pour
+  les données de `auth` (« Migrating within Supabase », avec
+  `session_replication_role = replica`). **Cette étape-là n'est pas testée
+  automatiquement** : à valider le jour où on en a besoin, sur un projet
+  d'essai d'abord.
+- Comparer ensuite `chiffres.json` avec la base restaurée, et rejouer l'action
+  « Base de données ».

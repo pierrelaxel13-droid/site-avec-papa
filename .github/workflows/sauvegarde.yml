@@ -1,0 +1,69 @@
+# ==========================================================================
+# Vigie — la sauvegarde chiffrée de la base, chaque semaine
+# --------------------------------------------------------------------------
+# outils/sauvegarde.sh : copie la base (entreprises, registres, comptes), la
+# chiffre AES-256 AVANT qu'elle quitte la machine, puis la restaure dans une
+# base vide et vérifie qu'elle est identique (mêmes chiffres, registres
+# intacts). L'archive chiffrée est gardée 30 jours ici, dans GitHub
+# (Actions → Sauvegarde → l'exécution → « Artifacts »).
+#
+# Secrets : SUPABASE_DB_URL (la base) et SAUVEGARDE_PHRASE (la phrase de
+# passe du chiffrement). Cette phrase n'est QUE là et dans ton gestionnaire de
+# mots de passe : sans elle, aucune sauvegarde ne peut être relue — par
+# personne, toi compris. Restaurer : voir supabase/README.md.
+# ==========================================================================
+name: Sauvegarde
+
+on:
+  schedule:
+    - cron: "17 3 * * 1"     # chaque lundi, 3 h 17 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: sauvegarde
+  cancel-in-progress: false
+
+jobs:
+  sauvegarder:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      SOURCE: ${{ secrets.SUPABASE_DB_URL }}
+      PHRASE: ${{ secrets.SAUVEGARDE_PHRASE }}
+    steps:
+      - name: Les secrets sont-ils là
+        run: |
+          [ -n "$SOURCE" ] || { echo "::error::Le secret SUPABASE_DB_URL manque."; exit 1; }
+          [ -n "$PHRASE" ] || { echo "::error::Le secret SAUVEGARDE_PHRASE manque : sans phrase de passe, pas de chiffrement, donc pas de sauvegarde."; exit 1; }
+          [ "${#PHRASE}" -ge 20 ] || { echo "::error::SAUVEGARDE_PHRASE est trop courte : au moins 20 caractères."; exit 1; }
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+      - name: Les outils PostgreSQL de la même version que Supabase
+        run: |
+          MAJ=$(psql "$SOURCE" -tAc "show server_version_num" | cut -c1-2)
+          echo "Supabase tourne sur PostgreSQL $MAJ"
+          if [ ! -x "/usr/lib/postgresql/$MAJ/bin/pg_dump" ]; then
+            sudo /usr/share/postgresql-common/pgdg/apt.postgresql.org.sh -y > /dev/null
+            sudo apt-get install -y -qq "postgresql-client-$MAJ" > /dev/null
+          fi
+          echo "/usr/lib/postgresql/$MAJ/bin" >> "$GITHUB_PATH"
+          echo "MAJ=$MAJ" >> "$GITHUB_ENV"
+      - name: Une base vide, pour l'essai de restauration
+        run: |
+          docker run -d --name essai -e POSTGRES_PASSWORD=essai -p 5433:5432 "postgres:$MAJ" > /dev/null
+          for i in $(seq 1 60); do pg_isready -q -h localhost -p 5433 && break; sleep 1; done
+      - name: Sauvegarder, chiffrer, restaurer, vérifier
+        env:
+          CIBLE_TEST: postgresql://postgres:essai@localhost:5433/postgres
+        run: |
+          outils/sauvegarde.sh sauvegarde | tee resultat.txt
+          echo "::notice title=Sauvegarde::$(tail -1 resultat.txt)"
+      - name: Garder l'archive chiffrée, 30 jours
+        uses: actions/upload-artifact@v4
+        with:
+          name: vigie-sauvegarde-${{ github.run_number }}
+          path: sauvegarde/vigie-sauvegarde-*.tar.gpg*
+          retention-days: 30
+          if-no-files-found: error
