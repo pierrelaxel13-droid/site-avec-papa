@@ -75,9 +75,27 @@ jobs:
           if [ -z "$SUPABASE_DB_URL" ]; then
             echo "::notice::Le secret SUPABASE_DB_URL n'existe pas encore : rien n'est appliqué à Supabase."
             echo "pret=non" >> "$GITHUB_OUTPUT"
-          else
-            echo "pret=oui" >> "$GITHUB_OUTPUT"
+            exit 0
           fi
+          # Vérifie l'adresse sans jamais l'afficher : seuls l'hôte et
+          # l'utilisateur (qui ne sont pas secrets) apparaissent.
+          u="$SUPABASE_DB_URL"
+          case "$u" in postgresql://*|postgres://*) ;; *)
+            echo "::error::SUPABASE_DB_URL doit commencer par postgresql:// — copier l'adresse « Session pooler » en entier."; exit 1;; esac
+          case "$u" in *"["*|*"]"*)
+            echo "::error::SUPABASE_DB_URL contient encore des crochets : remplacer [YOUR-PASSWORD], crochets compris, par le mot de passe."; exit 1;; esac
+          if [ "$(printf '%s' "$u" | tr -cd '@' | wc -c)" -ne 1 ]; then
+            echo "::error::Le mot de passe contient un caractère spécial (@, :, /, #, ?) qui casse l'adresse. Le plus simple : en générer un nouveau, lettres et chiffres seulement."; exit 1; fi
+          hote=$(printf '%s' "$u" | sed -E 's#^[^@]*@##; s#[/?].*$##')
+          utilisateur=$(printf '%s' "$u" | sed -E 's#^[a-z]+://##; s#:.*$##')
+          echo "Hôte : $hote — utilisateur : $utilisateur"
+          case "$hote" in db.*)
+            echo "::error::C'est l'adresse « Direct connection », que GitHub ne peut pas joindre. Prendre l'adresse « Session pooler » (hôte en …pooler.supabase.com)."; exit 1;; esac
+          if ! erreur=$(PGCONNECT_TIMEOUT=20 psql "$u" -tA -c 'select 1' 2>&1 >/dev/null); then
+            propre=$(printf '%s' "$erreur" | sed -E 's#://[^ ]*#://…#g' | tr '\n' ' ')
+            echo "::error::Connexion à Supabase impossible (hôte $hote, utilisateur $utilisateur) : $propre"; exit 1
+          fi
+          echo "pret=oui" >> "$GITHUB_OUTPUT"
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
         if: steps.pret.outputs.pret == 'oui'
       - name: Appliquer les migrations nouvelles
