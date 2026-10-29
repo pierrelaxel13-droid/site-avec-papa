@@ -66,7 +66,7 @@ const SITE = {
     siret: "",
     immatriculation: "",       // ex. « RCS Salon-de-Provence » ou « Registre national des entreprises »
     directeurPublication: "",  // le représentant légal
-    hebergeurDonnees: "",      // à l'ouverture des comptes, ex. « Supabase, région Francfort (UE) »
+    hebergeurDonnees: "Supabase, Inc. (États-Unis), base de données hébergée en Irlande (Union européenne)",
     tribunal: ""               // ex. « le tribunal de commerce d'Aix-en-Provence », avec l'avocat
   },
   /* L'offre consultant : la page consultants.html, le bloc « Vous êtes
