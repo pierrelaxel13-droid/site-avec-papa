@@ -3018,6 +3018,18 @@ a.defile:hover .avis-appel strong { text-decoration: underline; text-underline-o
 /* Un vrai compte : rien du jeu d'essai ne reste à l'écran. */
 .espace-compte [data-demo] { display: none !important; }
 
+/* « Votre équipe », dans Mon compte. */
+.equipe-outils { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem var(--t3); margin-top: .3rem; }
+.equipe-outils select, #form-inviter select {
+  min-height: 2.75rem; padding: 0 .75rem; border-radius: var(--r2); border: 1px solid var(--filet);
+  background: var(--carte); color: var(--encre); font: inherit; max-width: 100%;
+}
+.equipe-outils .lien-nu { font: inherit; text-decoration: underline; }
+#i-lien { width: 100%; min-height: 2.75rem; padding: 0 .75rem; margin-top: var(--t3); border-radius: var(--r2);
+  border: 1px solid var(--filet); background: var(--carte); color: var(--encre); font: inherit; font-size: .9rem; }
+#invitation-lien { margin-top: var(--t4); }
+#invitation-lien a.bouton-sobre { color: var(--encre); }
+
 /* --- 33. Les prix : l'année d'abord, le mois à côté ------------------------ */
 .formule .offre-an { margin: calc(-1 * var(--t2)) 0 0; display: flex; flex-wrap: wrap; align-items: center; gap: .5rem; color: var(--encre-douce); }
 .formule .offre-an strong { color: var(--encre); }

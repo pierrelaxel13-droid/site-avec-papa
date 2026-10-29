@@ -28,6 +28,7 @@ const URL_SB = process.env.SUPABASE_URL || "https://denpxyqbvjcwsbxjtqpd.supabas
 const SECRETE = process.env.SUPABASE_SECRET_KEY || "";
 const BASE = process.env.SUPABASE_DB_URL || "";
 const ADRESSE = `essai-auto-${Date.now()}@example.com`;
+const COLLEGUE = ADRESSE.replace("@", "-collegue@");
 const MDP = randomBytes(18).toString("base64url");
 
 const lignes = [];
@@ -48,14 +49,17 @@ async function admin(methode, chemin, corps) {
   return { statut: 401, j: { msg: "clé secrète refusée" } };
 }
 
-let uid = "";
+let uid = "", uidCollegue = "";
 async function nettoyer() {
   if (!uid) return;
   try {
     sql(`select prive.purger_entreprise(m.entreprise_id) from public.membres_entreprise m where m.user_id = ${litteral(uid)}`);
-    const r = await admin("DELETE", `users/${uid}`);
-    if (r.statut >= 300) sql(`delete from auth.users where id = ${litteral(uid)}`);
-    ok(sql(`select count(*) from auth.users where id = ${litteral(uid)}`) === "0", "nettoyage : le compte d'essai et son entreprise sont effacés");
+    for (const id of [uid, uidCollegue].filter(Boolean)) {
+      const r = await admin("DELETE", `users/${id}`);
+      if (r.statut >= 300) sql(`delete from auth.users where id = ${litteral(id)}`);
+    }
+    ok(sql(`select count(*) from auth.users where id in (${[uid, uidCollegue].filter(Boolean).map(litteral).join(", ")})`) === "0",
+      "nettoyage : les comptes d'essai et leur entreprise sont effacés");
   } catch (e) {
     ok(false, "nettoyage : " + String(e.message || e).slice(0, 200));
   }
@@ -78,9 +82,9 @@ async function essai() {
     p.on("pageerror", (e) => erreurs.push(String(e)));
     return p;
   };
-  const connecter = async (p) => {
+  const connecter = async (p, qui = ADRESSE) => {
     await p.goto(SITE + "connexion.html");
-    await p.fill("#courriel", ADRESSE); await p.fill("#motdepasse", MDP);
+    await p.fill("#courriel", qui); await p.fill("#motdepasse", MDP);
     await p.click("#form-connexion button[type=submit]");
   };
   const pret = (p) => p.waitForFunction(() => window.MAGASIN && window.MAGASIN.pret, null, { timeout: 30000 });
@@ -172,6 +176,29 @@ async function essai() {
     const [dl] = await Promise.all([p.waitForEvent("download"), p.click("#registre-csv")]);
     const csv = (await import("node:fs")).readFileSync(await dl.path(), "utf8");
     ok(csv.charCodeAt(0) === 0xfeff && csv.trim().split("\r\n").length === 7, "le registre se télécharge pour un tableur (6 entrées, accents gardés)");
+
+    // 6 ter. Inviter un collègue : il rejoint l'entreprise, puis il est retiré.
+    const c = await admin("POST", "users", { email: COLLEGUE, password: MDP, email_confirm: true });
+    uidCollegue = c.j && c.j.id || "";
+    await p.goto(SITE + "compte/");
+    await p.waitForSelector("#form-inviter:not([hidden])", { timeout: 30000 });
+    await p.fill("#i-courriel", COLLEGUE);
+    await p.click("#form-inviter button[type=submit]");
+    await p.waitForSelector("#invitation-lien:not([hidden])", { timeout: 30000 });
+    const lienInv = await p.locator("#i-lien").inputValue();
+    const col = await contexte({ width: 390, height: 844 }, "dark");
+    await connecter(col, COLLEGUE);
+    await col.waitForURL(/compte\//, { timeout: 30000 });
+    await col.goto(lienInv);
+    await col.waitForFunction(() => /Vous avez rejoint/.test(document.querySelector("#invitation-titre")?.textContent || ""), null, { timeout: 30000 });
+    ok(sql(`select role from public.membres_entreprise where entreprise_id = ${litteral(e)} and user_id = ${litteral(uidCollegue)}`) === "membre",
+      "un collègue invité ouvre le lien et rejoint l'entreprise, comme membre");
+    await p.reload();
+    const ligneCol = p.locator("#equipe-liste li", { hasText: COLLEGUE });
+    await ligneCol.locator("button").click();
+    await ligneCol.locator("button", { hasText: "Confirmer" }).click();
+    await p.waitForFunction((x) => !document.querySelector("#equipe-liste").innerText.includes(x), COLLEGUE, { timeout: 30000 });
+    ok(sql(`select count(*) from public.membres_entreprise where user_id = ${litteral(uidCollegue)}`) === "0", "l'administrateur le retire de l'équipe");
 
     // 7. L'administration lui est refusée.
     await p.goto(SITE + "compte/admin.html");

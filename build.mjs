@@ -3982,6 +3982,41 @@ function pageMonCompte() {
           </form>
         </div>
 
+        <div class="carte-connexion" id="compte-equipe" hidden>
+          <h2>Votre équipe</h2>
+          <ul class="admin-comptes" id="equipe-liste"></ul>
+          <div id="equipe-attente" hidden>
+            <p class="etiq" style="margin-top:var(--t4)">Invitations en attente</p>
+            <ul class="admin-comptes" id="equipe-invitations"></ul>
+          </div>
+          <form id="form-inviter" method="post" novalidate hidden>
+            <p class="etiq" style="margin-top:var(--t4)">Inviter quelqu'un</p>
+            <div class="champ">
+              <label for="i-courriel">Son adresse électronique</label>
+              <input type="email" id="i-courriel" autocomplete="off" inputmode="email" spellcheck="false" required>
+            </div>
+            <div class="champ">
+              <label for="i-role">Ce qu'elle pourra faire</label>
+              <select id="i-role">
+                <option value="membre">Membre — cocher les revues, décider sur les textes</option>
+                <option value="lecteur">Lecteur — consulter seulement</option>
+                <option value="admin">Administrateur — tout, y compris les réglages et l'équipe</option>
+              </select>
+            </div>
+            <p class="rangee"><button type="submit" class="bouton bouton-sobre">Créer l'invitation</button></p>
+            <p class="etat-compte" id="etat-inviter" role="status"></p>
+          </form>
+          <div class="reserve reserve-ok" id="invitation-lien" hidden>
+            <p><strong>Envoyez-lui ce lien.</strong> Il est valable 7 jours et ne sert qu'une fois ; elle y créera
+            son compte avec l'adresse <b id="i-pour"></b>.</p>
+            <input type="text" id="i-lien" readonly aria-label="Le lien d'invitation">
+            <p class="rangee" style="margin-top:var(--t3)">
+              <button type="button" class="bouton bouton-accent" id="i-copier">Copier le lien</button>
+              <a class="bouton bouton-sobre" id="i-mail" href="#">Écrire le courriel</a>
+            </p>
+          </div>
+        </div>
+
         <details class="carte-connexion repli-compte">
           <summary>Changer mon mot de passe</summary>
           <form id="form-motdepasse" method="post" novalidate>
@@ -4019,6 +4054,34 @@ function pageMonCompte() {
   </div>
 </section>`;
   return page({ titre: `Mon compte | ${SITE.nom}`, description: `Votre compte ${SITE.nom}.`,
+    racine: "../", zone: "public", corps, scripts: ["assets/compte.js"], installation: false });
+}
+
+/* Le lien d'invitation mène ici (compte/invitation.html#jeton=…). Le jeton
+   est après le « # » : il ne part dans aucune requête et n'apparaît dans
+   aucun journal de serveur. */
+function pageInvitation() {
+  const corps = `
+<section class="heros heros-court">
+  <div class="enveloppe">
+    <div class="heros-texte"><h1>Invitation</h1></div>
+    <p class="heros-sous etat-compte" id="etat-invitation" role="status">Lecture de l'invitation…</p>
+  </div>
+</section>
+<section class="section">
+  <div class="enveloppe">
+    <div class="connexion connexion-seule">
+      ${comptesFermes()}
+      <div class="carte-connexion" id="invitation-carte" hidden>
+        <p class="etiq">Vigie — veille réglementaire</p>
+        <h2 id="invitation-titre"></h2>
+        <p id="invitation-texte"></p>
+        <p class="rangee" id="invitation-actions" style="margin-top:var(--t4)"></p>
+      </div>
+    </div>
+  </div>
+</section>`;
+  return page({ titre: `Invitation | ${SITE.nom}`, description: `Rejoindre une entreprise sur ${SITE.nom}.`,
     racine: "../", zone: "public", corps, scripts: ["assets/compte.js"], installation: false });
 }
 
@@ -4428,6 +4491,7 @@ async function main() {
   await writeFile(join(SORTIE, "compte", "creer.html"), pageCreer());
   await writeFile(join(SORTIE, "compte", "oubli.html"), pageOubli());
   await writeFile(join(SORTIE, "compte", "admin.html"), pageAdmin());
+  await writeFile(join(SORTIE, "compte", "invitation.html"), pageInvitation());
 
   await writeFile(join(SORTIE, "app", "index.html"), appTableauBord(V, D, C, LIENS));
   await writeFile(join(SORTIE, "app", "plan.html"), appPlan(V, D, C, LIENS));

@@ -92,6 +92,17 @@ select 'null'`,
   espace_qualifier: (a) => `select to_json(public.espace_qualifier(${litteral(a.e)}, ${litteral(a.quoi)}, ${litteral(a.intitule)}, ${litteral(a.statut)}, ${litteral(a.note)}))`,
   espace_action: (a) => `select to_json(public.espace_action(${litteral(a.e)}, ${litteral(a.quoi)}, ${litteral(a.intitule)}, ${litteral(a.echeance)}, ${litteral(a.note)}))`,
   espace_action_faite: (a) => `select to_json(public.espace_action_faite(${litteral(a.e)}, ${Number(a.action) || 0}))`,
+  inviter: (a) => `select to_json(public.inviter(${litteral(a.courriel)}, ${litteral(a.role || "membre")}::public.role_membre, ${litteral(a.entreprise)}::uuid, null))`,
+  accepter_invitation: (a) => `select public.accepter_invitation(${litteral(a.jeton)}) \\g /dev/null
+select 'null'`,
+  invitation_infos: (a) => `select coalesce(public.invitation_infos(${litteral(a.jeton)}), 'null'::json)`,
+  espace_membres: (a) => `select public.espace_membres(${litteral(a.e)})`,
+  espace_role: (a) => `select public.espace_role(${litteral(a.e)}, ${litteral(a.membre)}, ${litteral(a.nouveau_role)}::public.role_membre) \\g /dev/null
+select 'null'`,
+  espace_retirer: (a) => `select public.espace_retirer(${litteral(a.e)}, ${litteral(a.membre)}) \\g /dev/null
+select 'null'`,
+  annuler_invitation: (a) => `select public.annuler_invitation(${litteral(a.invitation)}) \\g /dev/null
+select 'null'`,
   espace_alertes: (a) => `select public.espace_alertes(${json(a.choix)}) \\g /dev/null
 select 'null'`,
   verifier_registre: (a) => `select coalesce(json_agg(t), '[]') from public.verifier_registre(${litteral(a.e)}) t`,

@@ -70,6 +70,13 @@
   }
   if (V && V.ouvert) entete();
 
+  /* Une invitation ouverte avant d'avoir un compte : son jeton attend ici le
+     temps de créer le compte et de confirmer l'adresse. */
+  var CLE_INVITATION = "vigie-invitation";
+  function invitationEnAttente() { try { return window.localStorage.getItem(CLE_INVITATION) || ""; } catch (e) { return ""; } }
+  function oublierInvitation() { try { window.localStorage.removeItem(CLE_INVITATION); } catch (e) { /* rien */ } }
+  var ROLES = { admin: "administrateur", membre: "membre", lecteur: "lecteur" };
+
   /* Sans adresse de projet Supabase, rien ne peut marcher : on le dit. */
   if (!V || !V.ouvert) {
     var fermee = $("[data-comptes-fermes]");
@@ -125,6 +132,11 @@
   var fc = $("#form-creer");
   if (fc) {
     var etatC = $("#etat-creer");
+    var prerempli = new URLSearchParams(window.location.search).get("courriel");
+    if (prerempli) {
+      $("#c-courriel").value = prerempli;
+      dire(etatC, "Vous avez été invité : créez votre compte avec cette adresse, puis confirmez-la.");
+    }
     fc.addEventListener("submit", function (e) {
       e.preventDefault();
       var adresse = $("#c-courriel").value.trim();
@@ -203,10 +215,112 @@
           ouvrir.hidden = true; tarifs.hidden = false;
         }
         boite.hidden = false;
+        equipe(e);
       });
     };
 
+    /* --- Votre équipe ------------------------------------------------------- */
+    var equipe = function (e) {
+      var admin = e.role === "admin";
+      V.rpc("espace_membres", { e: e.entreprise_id }).then(function (r) {
+        if (!r.ok) return;
+        var d = r.donnees || {};
+        var liste = $("#equipe-liste");
+        liste.textContent = "";
+        (d.membres || []).forEach(function (m) {
+          var li = document.createElement("li");
+          li.className = "admin-compte";
+          var t = document.createElement("span"); t.className = "admin-courriel";
+          t.textContent = m.courriel + (m.moi ? " (vous)" : "");
+          li.appendChild(t);
+          var det = document.createElement("span"); det.className = "admin-details";
+          det.textContent = ROLES[m.role] + " · depuis le " + new Date(m.depuis).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" });
+          li.appendChild(det);
+          if (admin && !m.moi) {
+            var outils = document.createElement("span"); outils.className = "equipe-outils";
+            var choix = document.createElement("select");
+            choix.setAttribute("aria-label", "Rôle de " + m.courriel);
+            ["membre", "lecteur", "admin"].forEach(function (k) { choix.appendChild(new Option(ROLES[k], k)); });
+            choix.value = m.role;
+            choix.addEventListener("change", function () {
+              det.textContent = "Enregistrement…";
+              V.rpc("espace_role", { e: e.entreprise_id, membre: m.id, nouveau_role: choix.value }).then(function (x) {
+                if (!x.ok) { det.textContent = x.erreur; choix.value = m.role; return; }
+                equipe(e);
+              });
+            });
+            var retirer = bouton("Retirer", function () {
+              if (!retirer.hasAttribute("data-sur")) {
+                retirer.setAttribute("data-sur", ""); retirer.textContent = "Confirmer : retirer " + m.courriel; return;
+              }
+              V.rpc("espace_retirer", { e: e.entreprise_id, membre: m.id }).then(function (x) {
+                if (!x.ok) { det.textContent = x.erreur; return; }
+                equipe(e);
+              });
+            });
+            outils.appendChild(choix); outils.appendChild(retirer);
+            li.appendChild(outils);
+          }
+          liste.appendChild(li);
+        });
+        var attente = d.invitations || [];
+        $("#equipe-attente").hidden = !attente.length;
+        var ul = $("#equipe-invitations");
+        ul.textContent = "";
+        attente.forEach(function (i) {
+          var li = document.createElement("li");
+          li.className = "admin-compte";
+          var t = document.createElement("span"); t.className = "admin-courriel"; t.textContent = i.courriel; li.appendChild(t);
+          var det = document.createElement("span"); det.className = "admin-details";
+          det.textContent = ROLES[i.role] + " · invitation valable jusqu'au " + new Date(i.expire_le).toLocaleDateString("fr-FR", { day: "numeric", month: "long" });
+          li.appendChild(det);
+          li.appendChild(bouton("Annuler l'invitation", function () {
+            V.rpc("annuler_invitation", { invitation: i.id }).then(function () { equipe(e); });
+          }));
+          ul.appendChild(li);
+        });
+        $("#form-inviter").hidden = !admin;
+        $("#compte-equipe").hidden = false;
+      });
+    };
+
+    var fi = $("#form-inviter");
+    fi.addEventListener("submit", function (ev) {
+      ev.preventDefault();
+      var etatI = $("#etat-inviter"), adresse = $("#i-courriel").value.trim().toLowerCase(), role = $("#i-role").value;
+      if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(adresse)) { dire(etatI, "Entrez une adresse électronique valable."); return; }
+      dire(etatI, "Création…");
+      V.mesEntreprises().then(function (m) {
+        var e = m.ok && m.entreprises[0];
+        if (!e) { dire(etatI, "Nommez d'abord votre entreprise."); return; }
+        V.rpc("inviter", { courriel: adresse, role: role, entreprise: e.entreprise_id }).then(function (r) {
+          if (!r.ok) { dire(etatI, r.erreur); return; }
+          dire(etatI, "");
+          var adresseLien = V.pageDuSite("compte/invitation.html") + "#jeton=" + encodeURIComponent(r.donnees);
+          $("#i-lien").value = adresseLien;
+          $("#i-pour").textContent = adresse;
+          var moi = (V.utilisateur() || {}).courriel || "";
+          $("#i-mail").href = "mailto:" + encodeURIComponent(adresse) +
+            "?subject=" + encodeURIComponent("Invitation à rejoindre « " + e.denomination + " » sur Vigie") +
+            "&body=" + encodeURIComponent("Bonjour,\n\n" + (moi ? moi + " vous invite" : "Vous êtes invité") +
+              " à rejoindre « " + e.denomination + " » sur Vigie, notre outil de veille réglementaire, comme " +
+              ROLES[role] + ".\n\nPour accepter, ouvrez ce lien (valable 7 jours) :\n" + adresseLien +
+              "\n\nVous y créerez votre compte avec cette adresse : " + adresse + ".\n");
+          $("#invitation-lien").hidden = false;
+          $("#i-courriel").value = "";
+          equipe(e);
+        });
+      });
+    });
+    $("#i-copier").addEventListener("click", function () {
+      var champ = $("#i-lien"), b = $("#i-copier");
+      var fini = function () { b.textContent = "Lien copié"; };
+      if (navigator.clipboard) navigator.clipboard.writeText(champ.value).then(fini, function () { champ.select(); });
+      else { champ.select(); try { document.execCommand("copy"); fini(); } catch (e) { /* le texte reste sélectionné */ } }
+    });
+
     var montrer = function (s) {
+      if (invitationEnAttente()) { window.location.replace(vers("compte/invitation.html")); return; }
       $("#compte-adresse").textContent = s.utilisateur.courriel;
       principal.hidden = false;
       dire(etatM, "");
@@ -299,6 +413,65 @@
     $("#compte-sortir").addEventListener("click", function () {
       V.deconnecter().then(function () { window.location.href = vers("connexion.html"); });
     });
+  }
+
+  /* --- La page d'invitation ---------------------------------------------------- */
+  var carteInv = $("#invitation-carte");
+  if (carteInv) {
+    var etatInv = $("#etat-invitation");
+    var h = new URLSearchParams(window.location.hash.replace(/^#/, ""));
+    if (h.get("jeton")) {
+      try { window.localStorage.setItem(CLE_INVITATION, h.get("jeton")); } catch (e) { /* tant pis : il faudra rouvrir le lien */ }
+      if (window.history && window.history.replaceState) window.history.replaceState(null, "", window.location.pathname);
+    }
+    var jeton = invitationEnAttente();
+    var titre = $("#invitation-titre"), texte = $("#invitation-texte"), actions = $("#invitation-actions");
+    var bouton2 = function (href, libelle, classe) { var a = lien(href, libelle); a.className = "bouton " + classe; return a; };
+    if (!jeton) {
+      dire(etatInv, "");
+      titre.textContent = "Ce lien est incomplet";
+      texte.textContent = "Ouvrez le lien tel que vous l'avez reçu, en entier. S'il ne marche toujours pas, demandez-en un nouveau à la personne qui vous a invité.";
+      carteInv.hidden = false;
+    } else {
+      V.rpcPublic("invitation_infos", { jeton: jeton }).then(function (r) {
+        dire(etatInv, "");
+        carteInv.hidden = false;
+        var i = r.ok && r.donnees;
+        if (!i || !i.valide) {
+          oublierInvitation();
+          titre.textContent = "Cette invitation n'est plus valable";
+          texte.textContent = "Elle a déjà servi, a été annulée, ou a dépassé ses 7 jours. Demandez-en une nouvelle à la personne qui vous l'a envoyée.";
+          actions.appendChild(bouton2(vers("connexion.html"), "Se connecter", "bouton-sobre"));
+          return;
+        }
+        titre.textContent = "Rejoindre « " + i.entreprise + " »";
+        V.session().then(function (s) {
+          if (!s) {
+            texte.textContent = "Vous êtes invité comme " + ROLES[i.role] + ". Pour accepter, créez votre compte avec l'adresse " +
+              i.courriel + " — ou connectez-vous, si vous en avez déjà un.";
+            actions.appendChild(bouton2(vers("compte/creer.html?courriel=" + encodeURIComponent(i.courriel)), "Créer mon compte", "bouton-accent"));
+            actions.appendChild(bouton2(vers("connexion.html?retour=compte/invitation.html"), "J'ai déjà un compte", "bouton-sobre"));
+            return;
+          }
+          if (s.utilisateur.courriel.toLowerCase() !== String(i.courriel).toLowerCase()) {
+            texte.textContent = "Vous êtes connecté avec " + s.utilisateur.courriel + ", mais l'invitation est pour " + i.courriel +
+              ". Déconnectez-vous, puis connectez-vous ou créez votre compte avec la bonne adresse.";
+            actions.appendChild(bouton("Se déconnecter", function () { V.deconnecter().then(function () { window.location.reload(); }); }));
+            actions.appendChild(bouton("Ignorer cette invitation", function () { oublierInvitation(); window.location.href = vers("compte/"); }));
+            return;
+          }
+          texte.textContent = "Un instant…";
+          V.rpc("accepter_invitation", { jeton: jeton }).then(function (x) {
+            if (!x.ok) { texte.textContent = x.erreur; return; }
+            oublierInvitation();
+            titre.textContent = "Vous avez rejoint « " + i.entreprise + " »";
+            texte.textContent = "Vous y êtes " + ROLES[i.role] + ". Vous voyez maintenant son plan de veille et son registre.";
+            actions.appendChild(bouton2(vers("app/index.html"), "Ouvrir l'espace", "bouton-accent"));
+            actions.appendChild(bouton2(vers("compte/"), "Mon compte", "bouton-sobre"));
+          });
+        });
+      });
+    }
   }
 
   /* --- L'administration du service --------------------------------------------

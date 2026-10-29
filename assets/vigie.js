@@ -215,6 +215,14 @@
     });
   }
 
+  /* Une fonction ouverte aux visiteurs (ex. ce que dit un lien d'invitation) :
+     sans jeton de connexion. La base dit elle-même ce qu'elle autorise. */
+  function rpcPublic(nom, args) {
+    return appel("/rest/v1/rpc/" + nom, { corps: args || {} }).then(function (r) {
+      return r.ok ? { ok: true, donnees: r.j } : erreur(r);
+    });
+  }
+
   /* Lire une table, avec la syntaxe de Supabase (PostgREST) :
      lire("registre", "entreprise_id=eq.…&order=id.desc"). Les règles de la
      base ne rendent que ce que la personne a le droit de voir. */
@@ -255,7 +263,7 @@
     utilisateur: function () { var s = lire(); return s ? s.utilisateur : null; },
     connecter: connecter, inscrire: inscrire, renvoyer: renvoyer, oubli: oubli,
     changer: changer, deconnecter: deconnecter, arrivee: arrivee,
-    rpc: rpc, lire: lireTable, mesEntreprises: mesEntreprises, creerEntreprise: creerEntreprise,
+    rpc: rpc, rpcPublic: rpcPublic, lire: lireTable, mesEntreprises: mesEntreprises, creerEntreprise: creerEntreprise,
     suisAdministrateur: suisAdministrateur, adminVue: adminVue, adminAbonnement: adminAbonnement,
     pageDuSite: pageDuSite
   };

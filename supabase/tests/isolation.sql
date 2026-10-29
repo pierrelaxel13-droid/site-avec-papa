@@ -300,6 +300,7 @@ select prive.purger_entreprise('00000000-0000-0000-0000-00000000d000');
 select tests.ok(not exists (select 1 from public.entreprises where id = '00000000-0000-0000-0000-00000000d000'), 'la purge efface l''entreprise D');
 select tests.ok(not exists (select 1 from public.registre where entreprise_id = '00000000-0000-0000-0000-00000000d000'), 'et tout son registre');
 select tests.ok(exists (select 1 from prive.purges where entreprise_id = '00000000-0000-0000-0000-00000000d000'), 'et la purge est journalisée');
+select tests.ok(coalesce(current_setting('vigie.purge', true), '') = '', 'et les protections sont remises aussitôt');
 reset role;
 
 -- =========================================================================
@@ -489,6 +490,55 @@ set local role authenticated;
 select tests.refuse($$select public.espace_qualifier('00000000-0000-0000-0000-00000000b000', 'jo:X1', 'x', 'applicable', null)$$, 'formule Textes : pas de qualification');
 select tests.refuse($$select public.espace_action_faite('00000000-0000-0000-0000-00000000a000',
   (select max(id) from public.registre))$$, 'ni de clôture chez une autre entreprise');
+reset role;
+
+-- =========================================================================
+-- 12. L'équipe : voir, inviter, changer un rôle, retirer
+-- =========================================================================
+select tests.qui('00000000-0000-0000-0000-0000000000a1', 'a_admin@test.fr');
+set local role authenticated;
+select tests.ok((select (public.espace_membres('00000000-0000-0000-0000-00000000a000') -> 'membres')::text like '%a_lecteur@test.fr%'),
+  'l''admin voit les personnes de son entreprise, avec leur adresse');
+select set_config('tests.jeton2', public.inviter('collegue@test.fr', 'membre', '00000000-0000-0000-0000-00000000a000'), true);
+select tests.ok((select json_array_length(public.espace_membres('00000000-0000-0000-0000-00000000a000') -> 'invitations')) = 1,
+  'et l''invitation en attente');
+select tests.refuse($$select public.espace_membres('00000000-0000-0000-0000-00000000b000')$$, 'mais pas l''équipe d''une autre entreprise');
+reset role;
+select set_config('request.jwt.claims', '', true);
+set local role anon;
+select tests.ok((select (public.invitation_infos(current_setting('tests.jeton2')) ->> 'courriel') = 'collegue@test.fr'
+                    and (public.invitation_infos(current_setting('tests.jeton2')) ->> 'valide')::boolean),
+  'avec le lien, même sans compte, on sait pour qui est l''invitation');
+select tests.ok(public.invitation_infos('faux-jeton') is null, 'un faux lien ne dit rien');
+reset role;
+
+select tests.qui('00000000-0000-0000-0000-0000000000a2', 'a_lecteur@test.fr');
+set local role authenticated;
+select tests.ok((select json_array_length(public.espace_membres('00000000-0000-0000-0000-00000000a000') -> 'invitations')) = 0,
+  'un lecteur voit l''équipe, pas les invitations');
+select tests.refuse($$select public.inviter('x@test.fr', 'admin', '00000000-0000-0000-0000-00000000a000')$$, 'un lecteur n''invite pas');
+select tests.refuse($$select public.espace_role('00000000-0000-0000-0000-00000000a000', '00000000-0000-0000-0000-0000000000a2', 'admin')$$,
+  'ni ne se nomme administrateur');
+select tests.refuse($$select public.espace_retirer('00000000-0000-0000-0000-00000000a000', '00000000-0000-0000-0000-0000000000a1')$$,
+  'ni ne retire quelqu''un');
+reset role;
+
+select tests.qui('00000000-0000-0000-0000-0000000000a1', 'a_admin@test.fr');
+set local role authenticated;
+select public.espace_role('00000000-0000-0000-0000-00000000a000', '00000000-0000-0000-0000-0000000000a2', 'membre');
+select tests.ok((select role from public.membres_entreprise where user_id = '00000000-0000-0000-0000-0000000000a2') = 'membre',
+  'l''admin fait d''un lecteur un membre');
+select tests.refuse($$select public.espace_role('00000000-0000-0000-0000-00000000a000', '00000000-0000-0000-0000-0000000000a1', 'lecteur')$$,
+  'le dernier admin ne peut pas se rétrograder');
+select tests.refuse($$select public.espace_retirer('00000000-0000-0000-0000-00000000a000', '00000000-0000-0000-0000-0000000000a1')$$,
+  'ni partir en laissant l''entreprise sans admin');
+select public.annuler_invitation((select id from public.invitations where courriel = 'collegue@test.fr'));
+select tests.ok((public.invitation_infos(current_setting('tests.jeton2'))) is null, 'une invitation annulée ne vaut plus rien');
+select public.espace_retirer('00000000-0000-0000-0000-00000000a000', '00000000-0000-0000-0000-0000000000a2');
+reset role;
+select tests.qui('00000000-0000-0000-0000-0000000000a2', 'a_lecteur@test.fr');
+set local role authenticated;
+select tests.ok(tests.compte($$select 1 from public.mes_entreprises()$$) = 0, 'la personne retirée n''a plus accès à l''entreprise');
 reset role;
 
 do $$ begin raise notice 'TOUS LES TESTS D''ISOLATION SONT PASSÉS'; end $$;

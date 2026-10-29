@@ -78,8 +78,15 @@ données » les applique.
   parcours sur le vrai site et la vraie base après chaque mise en ligne, avec
   un compte d'essai qu'elle efface ensuite.
 
-**Pas encore fait** : inviter un collègue depuis le site, l'envoi des
-courriels d'alerte, et l'abonnement réellement relié à Stripe. En attendant, l'administrateur donne une formule depuis
+- **L'équipe** (Mon compte, « Votre équipe ») : l'administrateur invite par
+  un lien personnel (`compte/invitation.html#jeton=…`, 7 jours, un seul
+  usage) qu'il envoie lui-même — « Copier le lien » ou « Écrire le courriel ».
+  Il change les rôles (membre, lecteur, administrateur) et retire quelqu'un ;
+  la base garde toujours au moins un administrateur.
+
+**Pas encore fait** : l'envoi automatique des courriels (invitations,
+alertes) — il attend Brevo et le nom de domaine —, et l'abonnement
+réellement relié à Stripe. En attendant, l'administrateur donne une formule depuis
 `compte/admin.html`.
 
 **Essayer sur un poste**, sans toucher au vrai Supabase : l'imitation
