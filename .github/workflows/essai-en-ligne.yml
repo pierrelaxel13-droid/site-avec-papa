@@ -1,0 +1,48 @@
+# ==========================================================================
+# Vigie — l'essai de bout en bout, sur le vrai site et la vraie base
+# --------------------------------------------------------------------------
+# Un vrai navigateur joue le parcours d'un client (outils/essai-en-ligne.mjs)
+# avec un compte d'essai créé pour l'occasion, puis efface tout.
+# QUAND : après chaque mise en ligne vérifiée, et à la demande (Actions →
+# « Essai en ligne » → Run workflow). Le résultat est dans le résumé de
+# l'action, une ligne par vérification.
+# Secrets : SUPABASE_SECRET_KEY (créer le compte d'essai), SUPABASE_DB_URL
+# (vérifier la base, puis nettoyer).
+# ==========================================================================
+name: Essai en ligne
+
+on:
+  workflow_run:
+    workflows: ["Vérifier le site en ligne"]
+    types: [completed]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: essai-en-ligne
+  cancel-in-progress: false
+
+jobs:
+  essai:
+    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: 22
+      - name: Un navigateur (Chromium, par Playwright)
+        run: |
+          mkdir -p /tmp/pw && cd /tmp/pw
+          npm init -y > /dev/null
+          npm install --no-audit --no-fund playwright@1.48.2
+          npx playwright install --with-deps chromium
+      - name: Le parcours d'un client, puis le nettoyage
+        env:
+          SUPABASE_SECRET_KEY: ${{ secrets.SUPABASE_SECRET_KEY }}
+          SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+          PLAYWRIGHT_DOSSIER: /tmp/pw
+        run: node outils/essai-en-ligne.mjs

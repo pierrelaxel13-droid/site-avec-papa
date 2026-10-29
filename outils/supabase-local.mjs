@@ -255,6 +255,25 @@ createServer(async (req, res) => {
     res.writeHead(303, { Location: verifie(url.searchParams) });
     return res.end();
   }
+  // L'administration des comptes (clé secrète) : ce dont l'essai en ligne a besoin.
+  if (url.pathname.startsWith("/auth/v1/admin/users")) {
+    if (!/^sb_secret_/.test(req.headers.apikey || "")) return repond(401, { message: "Invalid API key" });
+    let t = ""; for await (const m of req) t += m;
+    if (req.method === "POST") {
+      const b = JSON.parse(t || "{}"), a = (b.email || "").toLowerCase(), sel = randomBytes(16);
+      const c = { id: randomUUID(), courriel: a, cree: new Date().toISOString(), confirme: b.email_confirm ? new Date().toISOString() : null,
+                  sel, empreinte: empreinte(b.password, sel) };
+      comptes.set(a, c);
+      await sql(`insert into auth.users (id, email, email_confirmed_at) values (${litteral(c.id)}, ${litteral(a)}, now())`, SYSTEME);
+      return repond(200, utilisateur(c));
+    }
+    if (req.method === "DELETE") {
+      const id = url.pathname.split("/").pop(), c = parId(id);
+      if (c) comptes.delete(c.courriel);
+      await sql(`delete from auth.users where id = ${litteral(id)}`, SYSTEME);
+      return repond(200, {});
+    }
+  }
   if (req.headers.apikey !== CLE) return repond(401, { message: "Invalid API key" });
   let texte = "";
   for await (const morceau of req) texte += morceau;
