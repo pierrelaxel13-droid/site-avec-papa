@@ -83,7 +83,15 @@ commit;
   });
 }
 const litteral = (v) => v === null || v === undefined ? "null" : `'${String(v).replace(/'/g, "''")}'`;
+const json = (v) => `${litteral(JSON.stringify(v ?? {}))}::jsonb`;
 const RPC = {
+  espace_lire: (a) => `select public.espace_lire(${litteral(a.e)})`,
+  espace_reglages: (a) => `select public.espace_reglages(${litteral(a.e)}, ${json(a.nouveaux)}) \\g /dev/null
+select 'null'`,
+  espace_fait: (a) => `select to_json(public.espace_fait(${litteral(a.e)}, ${litteral(a.quoi)}, ${litteral(a.intitule)}, ${litteral(a.sujet)}, ${a.fait ? "true" : "false"}))`,
+  espace_alertes: (a) => `select public.espace_alertes(${json(a.choix)}) \\g /dev/null
+select 'null'`,
+  verifier_registre: (a) => `select coalesce(json_agg(t), '[]') from public.verifier_registre(${litteral(a.e)}) t`,
   mes_entreprises: () => "select coalesce(json_agg(t), '[]') from public.mes_entreprises() t",
   suis_administrateur: () => "select to_json(public.suis_administrateur())",
   admin_vue: () => "select public.admin_vue()",
@@ -189,9 +197,31 @@ function verifie(q) {
     `&refresh_token=${s.refresh_token}&token_type=bearer&type=${l.type}`;
 }
 
-async function rest(chemin, corps, porteur) {
+/* Lire une table comme PostgREST : select, filtres « col=eq.valeur », order, limit. */
+function lecture(table, q) {
+  const nom = /^[a-z_]+$/;
+  if (!nom.test(table)) return null;
+  const cols = (q.get("select") || "*").split(",");
+  if (!cols.every((c) => c === "*" || nom.test(c))) return null;
+  const ou = [];
+  for (const [k, v] of q) {
+    if (["select", "order", "limit"].includes(k)) continue;
+    const m = v.match(/^eq\.(.*)$/);
+    if (!nom.test(k) || !m) return null;
+    ou.push(`${k} = ${litteral(m[1])}`);
+  }
+  const ordre = (q.get("order") || "").match(/^([a-z_]+)\.(asc|desc)$/);
+  const limite = Number(q.get("limit")) || 0;
+  return `select coalesce(json_agg(t), '[]') from (select ${cols.join(", ")} from public.${table}` +
+    `${ou.length ? " where " + ou.join(" and ") : ""}${ordre ? ` order by ${ordre[1]} ${ordre[2]}` : ""}` +
+    `${limite ? " limit " + limite : ""}) t`;
+}
+
+async function rest(chemin, corps, porteur, q) {
   const nom = chemin.replace("/rest/v1/rpc/", "");
-  if (!RPC[nom]) return [404, { code: "PGRST202", message: `Could not find the function public.${nom}`, details: null, hint: null }];
+  const table = chemin.startsWith("/rest/v1/rpc/") ? null : chemin.replace("/rest/v1/", "");
+  const requete = table ? lecture(table, q) : RPC[nom] && RPC[nom](corps || {});
+  if (!requete) return [404, { code: "PGRST202", message: `Non imité : ${chemin}`, details: null, hint: null }];
   let claims = null;
   if (porteur && porteur !== CLE) {
     const j = jetons.get(porteur);
@@ -199,7 +229,7 @@ async function rest(chemin, corps, porteur) {
     const c = parId(j.id);
     claims = { sub: c.id, email: c.courriel, role: "authenticated" };
   }
-  const r = await sql(RPC[nom](corps || {}), claims);
+  const r = await sql(requete, claims);
   if (r.code) {
     const m = r.err.match(/ERROR:\s+([0-9A-Z]{5}): (.*)/);
     const code = m ? m[1] : "XX000";
@@ -234,7 +264,7 @@ createServer(async (req, res) => {
   try {
     const [statut, j] = url.pathname.startsWith("/auth/v1/")
       ? await auth(url.pathname, url.searchParams, req.method === "GET" ? null : corps || {}, porteur)
-      : url.pathname.startsWith("/rest/v1/rpc/") ? await rest(url.pathname, corps, porteur)
+      : url.pathname.startsWith("/rest/v1/") ? await rest(url.pathname, corps, porteur, url.searchParams)
       : [404, { message: "Non imité ici" }];
     repond(statut, j);
   } catch (e) {

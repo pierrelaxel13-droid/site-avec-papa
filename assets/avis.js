@@ -17,6 +17,9 @@
 
   var CLE = "pco-avis-lus";
   var avis = window.AVIS || [];
+  /* Dans un vrai compte, les avis du jeu d'essai (e) n'ont rien à faire là :
+     restent les vrais changements des codes suivis. */
+  if (window.MAGASIN && window.MAGASIN.mode === "compte") avis = avis.filter(function (x) { return !x.e; });
   var cloche = document.getElementById("cloche");
   if (!cloche || !avis.length) return;
 

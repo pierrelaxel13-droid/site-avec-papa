@@ -57,15 +57,20 @@ données » les applique.
 - **`/app/`** demande une session (sinon : la connexion) et ouvre selon la
   formule payée par l'entreprise (`mes_entreprises()` dans la base).
   `/demo/` en est la copie ouverte à tous, avec le jeu d'essai.
+- **Les données d'un compte sont dans la base**, plus dans le navigateur
+  (`assets/magasin.js`) : les réglages, les alertes, et chaque case « Fait »,
+  qui est une entrée datée du registre (la décocher ajoute une correction).
+  Dans un compte, tout ce qui vient du jeu d'essai porte `data-demo` et est
+  caché ; `assets/espace.js` montre le vrai (tableau de bord, registre et sa
+  chaîne d'empreintes, dates de revue). Sans donnée, une phrase le dit.
 - **`compte/admin.html`** : l'administration, pour l'administrateur seul (une
   ligne dans `prive.administrateurs`, voir `supabase/README.md`) — les
   entreprises, leurs comptes, donner ou retirer une formule. Jamais les registres.
 - **Ce qui protège les données**, ce sont les règles de la base (RLS), pas les
   pages : elles sont publiques, comme le code du site.
 
-**Pas encore fait** : les données propres à chaque client (l'espace montre
-encore l'entreprise de démonstration), et l'abonnement réellement relié à
-Stripe. En attendant, l'administrateur donne une formule depuis
+**Pas encore fait** : les décisions et actions sur un texte (qualification,
+échéances), l'export du registre, et l'abonnement réellement relié à Stripe. En attendant, l'administrateur donne une formule depuis
 `compte/admin.html`.
 
 **Essayer sur un poste**, sans toucher au vrai Supabase : l'imitation

@@ -1,7 +1,7 @@
 # ==========================================================================
 # Vigie — la base de données (Supabase)
 # --------------------------------------------------------------------------
-# À chaque changement dans supabase/ :
+# À chaque changement dans supabase/ (ou du référentiel : les 44 domaines) :
 #   1. « tester »   rejoue TOUTES les migrations sur une base PostgreSQL vide,
 #                   puis les tests d'isolation (supabase/tests/isolation.sql).
 #   2. « appliquer » (seulement si 1 a réussi, sur main) applique à Supabase
@@ -21,7 +21,7 @@ name: Base de données
 on:
   push:
     branches: [main]
-    paths: ["supabase/**", ".github/workflows/base.yml"]
+    paths: ["supabase/**", ".github/workflows/base.yml", "assets/referentiel.js", "outils/sujets-sql.mjs"]
   workflow_dispatch:
 
 permissions:
@@ -57,6 +57,8 @@ jobs:
             echo "→ $f"
             psql -v ON_ERROR_STOP=1 -q -1 -f "$f"
           done
+      - name: Les 44 domaines du référentiel
+        run: node outils/sujets-sql.mjs | psql -v ON_ERROR_STOP=1 -q -1
       - name: Les tests d'isolation
         run: |
           psql -v ON_ERROR_STOP=1 -q -o /dev/null -f supabase/tests/isolation.sql 2>&1 | sed 's/^psql:[^ ]* NOTICE:  //'
@@ -114,6 +116,9 @@ jobs:
             { cat "$f"; echo; echo "insert into prive.migrations (nom) values ('$nom');"; } \
               | psql "$SUPABASE_DB_URL" -v ON_ERROR_STOP=1 -q -1
           done
+      - name: Les domaines du référentiel, sur Supabase
+        if: steps.pret.outputs.pret == 'oui'
+        run: node outils/sujets-sql.mjs | psql "$SUPABASE_DB_URL" -v ON_ERROR_STOP=1 -1
       - name: Les tests d'isolation, sur Supabase (transaction annulée)
         if: steps.pret.outputs.pret == 'oui'
         run: |

@@ -308,16 +308,24 @@
 
   /* --- Fait, ou pas fait -------------------------------------------------
      Chaque texte qui demande un geste porte un bouton « Marquer comme fait ».
-     L'état est gardé dans ce navigateur, avec sa date. Le titre de la fiche
+     L'état est gardé avec sa date : dans le navigateur pour la démonstration,
+     dans le registre de la base pour un vrai compte (assets/magasin.js). Le titre de la fiche
      porte alors la marque « Fait », et la carte de la catégorie compte
      « 3 faits sur 24 ». Une revue du plan se refait à son rythme : passé le
      délai, elle redevient à faire, et le bouton le dit. */
   var CLE_FAITS = "pco-faits";
   function lireFaits() {
+    if (window.MAGASIN) return window.MAGASIN.lire(CLE_FAITS) || {};
     try { return JSON.parse(localStorage.getItem(CLE_FAITS)) || {}; } catch (e) { return {}; }
   }
-  function ecrireFaits(f) {
+  /* Cocher ou décocher : rend une promesse { ok } ou { erreur }. */
+  function marquer(id, intitule, fait) {
+    var sujet = id.indexOf("plan:") === 0 ? id.slice(5) : null;
+    if (window.MAGASIN) return window.MAGASIN.fait(id, intitule, sujet, fait);
+    var f = lireFaits();
+    if (fait) f[id] = aujourdhui(); else delete f[id];
     try { localStorage.setItem(CLE_FAITS, JSON.stringify(f)); } catch (e) { /* navigation privée */ }
+    return Promise.resolve({ ok: true });
   }
   function dateLongue(iso) {
     try { return new Date(iso + "T12:00:00").toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" }); }
@@ -378,13 +386,20 @@
     }
 
     blocs.forEach(function (b) {
-      $(".bouton-fait", b).addEventListener("click", function () {
-        var f = lireFaits();
+      var bouton = $(".bouton-fait", b);
+      bouton.addEventListener("click", function () {
         var id = b.getAttribute("data-fait");
-        if (etatFait(id, Number(b.getAttribute("data-periode") || 0), f).fait) delete f[id];
-        else f[id] = aujourdhui();
-        ecrireFaits(f);
-        peindre();
+        var deja = etatFait(id, Number(b.getAttribute("data-periode") || 0), lireFaits()).fait;
+        // Ce que le registre retiendra : l'intitulé posé à la construction.
+        var intitule = b.getAttribute("data-objet") || document.title.split(" | ")[0];
+        bouton.disabled = true;
+        $(".fait-quand", b).textContent = "Enregistrement…";
+        marquer(id, intitule, !deja).then(function (r) {
+          bouton.disabled = false;
+          peindre();
+          if (!r.ok) $(".fait-quand", b).textContent = r.erreur;
+          else try { window.dispatchEvent(new Event("pco-faits")); } catch (e) { /* vieux navigateur */ }
+        });
       });
     });
     /* Le plan change de périmètre après les réglages : les comptes suivent. */
@@ -896,6 +911,12 @@
     window.addEventListener("afterprint", nettoie);
   }
 
+  /* « Imprimer », « Enregistrer en PDF » : la page entière. Un onclick écrit
+     dans le HTML serait refusé par la politique de sécurité (script-src 'self'). */
+  document.addEventListener("click", function (e) {
+    if (e.target.closest && e.target.closest("[data-imprimer]")) window.print();
+  });
+
   window.PCO_THEME && window.PCO_THEME.brancher();
   imprimerFiche();
   serviceWorker();
@@ -914,7 +935,7 @@
   avis();
   collecte();
   calculMarge();
-  faits();
+  if (window.MAGASIN) window.MAGASIN.quandPret(faits); else faits();
   affiner();
   paraitre();
 })();

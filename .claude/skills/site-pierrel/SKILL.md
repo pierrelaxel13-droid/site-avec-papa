@@ -277,6 +277,14 @@ qu'il n'y a pas de client.
   `connect-src` de `POLITIQUE`. Essayer en local : `outils/supabase-local.mjs`
   (imitation, mode d'emploi en tête) + `VIGIE_SUPABASE=http://localhost:8830
   node build.mjs`. Le schéma : `supabase/` (voir son README).
+- **Les données d'un compte** : `assets/magasin.js` (navigateur pour `/demo/`,
+  base pour `/app/` ; `MAGASIN.quandPret`, `lire`, `ecrire`, `fait`). Tout ce
+  qui vient du jeu d'essai D dans une page de l'application doit porter
+  `data-demo` (caché dans un compte, `.espace-compte`) ; le vrai est montré par
+  `assets/espace.js` dans les blocs `data-compte`. Un nouveau bouton « Fait »
+  prend `objet` (ce que le registre retiendra). Les formulaires de compte n'ont
+  pas d'attribut `name` et sont en `method="post"` : rien ne doit pouvoir finir
+  dans l'adresse.
 - **Accueil** : l'accroche « la veille faite et jamais écrite » est sous le titre
   (une seule fois dans la page). « Dernière collecte réussie » (`blocCollecte()`)
   prend l'heure de la dernière relève réussie dans COLLECTE_LE, posée par

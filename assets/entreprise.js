@@ -1,11 +1,9 @@
 /* ==========================================================================
    Vigie — mon entreprise, et mes alertes
    --------------------------------------------------------------------------
-   Ce que le visiteur saisit est gardé dans SON navigateur, et nulle part
-   ailleurs : il n'y a pas de serveur. Rien n'est transmis, rien n'est partagé
-   entre appareils, et tout disparaît s'il vide les données du site. C'est
-   écrit sur la page, au-dessus du formulaire, avant qu'il n'y tape quoi que
-   ce soit.
+   Où c'est gardé, c'est assets/magasin.js qui le décide : dans la
+   démonstration, dans le navigateur (rien n'est transmis) ; dans un vrai
+   compte, dans la base, et on le retrouve sur tous ses appareils.
 
    Le calcul du périmètre est celui du simulateur de l'accueil, sur les mêmes
    données (assets/plan-data.js) : un métier décrit ici et décrit là-bas doit
@@ -18,25 +16,28 @@
   var CLE_E = "pco-entreprise";
   var CLE_A = "pco-alertes";
 
-  function lire(cle) {
-    try {
-      var v = window.localStorage.getItem(cle);
-      return v ? JSON.parse(v) : null;
-    } catch (e) { return null; }
-  }
-  function ecrire(cle, o) {
-    try { window.localStorage.setItem(cle, JSON.stringify(o)); return true; }
-    catch (e) { return false; }   // navigation privée, stockage plein
-  }
-  function effacer(cle) {
-    try { window.localStorage.removeItem(cle); } catch (e) { /* sans effet */ }
-  }
+  /* Sans magasin (une page hors de l'application), le navigateur. */
+  var MAG = window.MAGASIN || {
+    mode: "demo", espace: null,
+    quandPret: function (fn) { fn(); },
+    lire: function (cle) { try { var v = window.localStorage.getItem(cle); return v ? JSON.parse(v) : null; } catch (e) { return null; } },
+    ecrire: function (cle, o) {
+      try { window.localStorage.setItem(cle, JSON.stringify(o)); return Promise.resolve({ ok: true }); }
+      catch (e) { return Promise.resolve({ erreur: "Impossible d'enregistrer : le stockage du navigateur est refusé ou plein." }); }
+    },
+    effacer: function (cle) { try { window.localStorage.removeItem(cle); } catch (e) { /* sans effet */ } }
+  };
+  var COMPTE = MAG.mode === "compte";
+  function lire(cle) { return MAG.lire(cle); }
+  function ecrire(cle, o) { return MAG.ecrire(cle, o); }
+  function effacer(cle) { MAG.effacer(cle); }
 
   window.PCO_ENTREPRISE = {
     lu: function () { return lire(CLE_E); },
     ecrire: function (o) { return ecrire(CLE_E, o); },
     effacer: function () { effacer(CLE_E); },
-    alertes: function () { return lire(CLE_A); }
+    alertes: function () { return lire(CLE_A); },
+    perimetre: function (naf, contexte) { return perimetre(naf, contexte); }
   };
 
   var P = window.PLAN;
@@ -85,12 +86,23 @@
     if (!garde) return;
     var pose = function (id, valeur) {
       var e = document.getElementById(id);
-      if (e && valeur) e.textContent = valeur;
+      if (!e) return;
+      if (valeur) { e.textContent = valeur; return; }
+      /* Dans un compte, rien du jeu d'essai ne doit rester : ce qui n'est pas
+         encore renseigné le dit, ou disparaît. */
+      if (!COMPTE) return;
+      if (id === "tete-naf" || id === "tete-nom") e.textContent = "à compléter";
+      else if (e.closest("li")) e.closest("li").hidden = true;
     };
     pose("tete-nom", garde.nom);
     pose("tete-naf", garde.naf);
     pose("tete-ville", garde.ville);
     pose("tete-effectif", garde.effectif);
+    var depuis = document.getElementById("tete-depuis");
+    if (COMPTE && depuis && MAG.espace && MAG.espace.entreprise && MAG.espace.entreprise.cree_le) {
+      depuis.textContent = new Date(MAG.espace.entreprise.cree_le)
+        .toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" });
+    }
   }
 
   /* --- « Mon plan » suit « Mon entreprise » ---------------------------------
@@ -345,6 +357,12 @@
       }).join("");
     }
 
+    // Dans un compte, seul l'administrateur de l'entreprise change ses réglages.
+    if (COMPTE && MAG.espace && MAG.espace.role !== "admin") {
+      $$("input, select, textarea, button", form).forEach(function (c) { c.disabled = true; });
+      etat.textContent = "Seul l'administrateur de votre entreprise peut changer ces réglages.";
+    }
+
     // Ce qui a déjà été enregistré reprend sa place.
     var garde = lire(CLE_E);
     if (garde) {
@@ -393,13 +411,26 @@
           return p;
         })()
       };
-      var ok = ecrire(CLE_E, o);
-      etat.textContent = ok
-        ? "Enregistré. Votre plan suit maintenant ces informations."
-        : "Impossible d'enregistrer : le stockage du navigateur est refusé ou plein.";
+      /* Ce que le registre retiendra si le plan change : en clair, pas en codes. */
+      var opt = champs.naf.options[champs.naf.selectedIndex];
+      var noms = o.contexte.map(function (id) {
+        var q = P.q.filter(function (x) { return x.id === id; })[0];
+        return q ? q.q : id;
+      });
+      o.resume = "Code APE " + (opt ? opt.textContent.trim() : o.naf) + ". Situations retenues : " +
+        (noms.length ? noms.join(" ; ") : "aucune") + ".";
+      etat.textContent = "Enregistrement…";
+      ecrire(CLE_E, o).then(function (r) {
+        if (!r.ok) { etat.textContent = r.erreur; return; }
+        etat.textContent = COMPTE
+          ? "Enregistré dans votre compte. Votre plan suit maintenant ces informations, sur tous vos appareils."
+          : "Enregistré. Votre plan suit maintenant ces informations.";
+        try { window.dispatchEvent(new Event("pco-plan")); } catch (e) { /* vieux navigateur */ }
+      });
     });
 
     $("#e-reinit").addEventListener("click", function () {
+      if (COMPTE) return;
       effacer(CLE_E);
       coches = {};
       champs.nom.value = ""; champs.ville.value = "";
@@ -482,16 +513,18 @@
 
     form.addEventListener("submit", function (e) {
       e.preventDefault();
-      var ok = ecrire(CLE_A, {
+      etat.textContent = "Enregistrement…";
+      ecrire(CLE_A, {
         courriel: champs.courriel.value.trim(),
         rythme: champs.rythme.value,
         seuil: champs.seuil.value,
         revues: champs.revues.checked,
         pdf: champs.pdf.checked
+      }).then(function (r) {
+        etat.textContent = !r.ok ? r.erreur : COMPTE
+          ? "Réglages enregistrés dans votre compte. Aucun courriel ne part encore : leur envoi n'est pas en place."
+          : "Réglages gardés dans ce navigateur. Aucun courriel ne part : l'envoi suppose un serveur, qui n'est pas en place.";
       });
-      etat.textContent = ok
-        ? "Réglages gardés dans ce navigateur. Aucun courriel ne part : l'envoi suppose un serveur, qui n'est pas en place."
-        : "Impossible d'enregistrer : le stockage du navigateur est refusé ou plein.";
     });
   }
 
@@ -506,9 +539,11 @@
     }
   }
 
-  suivreEnTete();
-  suivrePlan();
-  ecranEntreprise();
-  ecranAlertes();
-  bandeauEntreprise();
+  MAG.quandPret(function () {
+    suivreEnTete();
+    suivrePlan();
+    ecranEntreprise();
+    ecranAlertes();
+    bandeauEntreprise();
+  });
 })();

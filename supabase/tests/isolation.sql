@@ -375,6 +375,82 @@ select public.creer_entreprise('Entreprise de l''administrateur (essai)');
 select tests.ok((select bool_and(rang = 3) from public.mes_entreprises()), 'l''entreprise de l''administrateur est tout ouverte');
 reset role;
 
+-- =========================================================================
+-- 10. L'espace : réglages, cases « Fait », alertes
+-- =========================================================================
+select tests.qui('00000000-0000-0000-0000-0000000000a1', 'a_admin@test.fr');
+set local role authenticated;
+select tests.ok((select (public.espace_lire('00000000-0000-0000-0000-00000000a000') -> 'entreprise' ->> 'denomination') = 'Entreprise A (essai)'
+                   and (public.espace_lire('00000000-0000-0000-0000-00000000a000') ->> 'ecrit')::boolean),
+  'a_admin lit son espace, et peut y écrire');
+select tests.refuse($$select public.espace_lire('00000000-0000-0000-0000-00000000b000')$$, 'mais pas celui de B');
+select public.espace_reglages('00000000-0000-0000-0000-00000000a000',
+  '{"nom": "Entreprise A bis (essai)", "naf": "43.21A", "effectif": "25", "ville": "Istres",
+    "responsable": "Mme Martin", "contexte": ["salaries"], "plus": {"siret": "12345678900011"}}');
+select tests.ok((select naf = '43.21A' and effectif = 25 and implantation = 'Istres' and denomination = 'Entreprise A bis (essai)'
+                    and reglages ->> 'responsable' = 'Mme Martin' and not reglages ? 'contexte'
+                 from public.entreprises where id = '00000000-0000-0000-0000-00000000a000'),
+  'les réglages sont enregistrés (colonnes et reste du formulaire)');
+select tests.ok((select valeur from public.reponses where entreprise_id = '00000000-0000-0000-0000-00000000a000' and declencheur = 'salaries'),
+  'les situations cochées vont dans les réponses');
+select tests.ok(tests.compte($$select 1 from public.registre where entreprise_id = '00000000-0000-0000-0000-00000000a000' and genre = 'plan'$$) = 1,
+  'le changement de plan est inscrit au registre');
+select public.espace_reglages('00000000-0000-0000-0000-00000000a000',
+  '{"nom": "Entreprise A bis (essai)", "naf": "43.21A", "effectif": "25", "contexte": ["salaries"]}');
+select tests.ok(tests.compte($$select 1 from public.registre where entreprise_id = '00000000-0000-0000-0000-00000000a000' and genre = 'plan'$$) = 1,
+  'les mêmes réglages enregistrés deux fois : pas de nouvelle ligne');
+select public.espace_reglages('00000000-0000-0000-0000-00000000a000', '{"naf": "43.21A", "contexte": []}');
+select tests.ok(not (select valeur from public.reponses where entreprise_id = '00000000-0000-0000-0000-00000000a000' and declencheur = 'salaries'),
+  'une situation décochée passe à « non »');
+select tests.refuse($$select public.espace_reglages('00000000-0000-0000-0000-00000000a000', '{"naf": "4321A"}')$$, 'un code APE mal formé est refusé');
+
+-- Les cases « Fait ».
+select tests.ok(public.espace_fait('00000000-0000-0000-0000-00000000a000', 'plan:t_sst', 'Revue : Santé et sécurité', 't_sst', true) = current_date,
+  'cocher « Fait » inscrit une revue datée d''aujourd''hui');
+select tests.ok((select sujet_id = 't_sst' and genre = 'revue' and auteur_nom = 'a_admin@test.fr' from public.registre where cle = 'plan:t_sst' order by id desc limit 1),
+  'avec son domaine et son auteur');
+select tests.ok((public.espace_lire('00000000-0000-0000-0000-00000000a000') -> 'faits' ->> 'plan:t_sst') = current_date::text,
+  'la case est cochée à la relecture');
+select public.espace_fait('00000000-0000-0000-0000-00000000a000', 'plan:t_sst', 'Revue : Santé et sécurité', 't_sst', false);
+select tests.ok((public.espace_lire('00000000-0000-0000-0000-00000000a000') -> 'faits' -> 'plan:t_sst') is null,
+  'décocher : la case n''est plus cochée…');
+select tests.ok(tests.compte($$select 1 from public.registre where cle = 'plan:t_sst'$$) = 2
+                and exists (select 1 from public.registre where cle = 'plan:t_sst' and genre = 'correction' and corrige_id is not null),
+  '… et rien n''est effacé : une correction s''ajoute');
+select tests.ok(public.espace_fait('00000000-0000-0000-0000-00000000a000', 'jo:JORFARTI000055024139', 'Arrêté d''essai', null, true) is not null,
+  'un texte du Journal officiel se coche aussi (sans domaine)');
+select tests.refuse($$select public.espace_fait('00000000-0000-0000-0000-00000000a000', 'n''importe quoi', 'x', null, true)$$, 'une clé mal formée est refusée');
+select tests.ok((select bool_and(empreinte = prive.empreinte_registre(r)) from public.registre r where cle is not null),
+  'les nouvelles entrées portent une empreinte juste');
+select tests.ok((select prive.empreinte_registre(r) <> prive.empreinte_registre(jsonb_populate_record(r, '{"cle": "plan:autre"}'))
+                 from public.registre r where cle is not null limit 1),
+  'et changer la clé changerait l''empreinte');
+
+-- Les alertes : chacun les siennes.
+select public.espace_alertes('{"rythme": "hebdomadaire", "courriel": "a_admin@test.fr"}');
+select tests.ok((public.espace_lire('00000000-0000-0000-0000-00000000a000') -> 'profil' -> 'alertes' ->> 'rythme') = 'hebdomadaire',
+  'les réglages d''alerte sont gardés');
+reset role;
+
+select tests.qui('00000000-0000-0000-0000-0000000000a2', 'a_lecteur@test.fr');
+set local role authenticated;
+select tests.ok((public.espace_lire('00000000-0000-0000-0000-00000000a000') -> 'profil' -> 'alertes') is null,
+  'a_lecteur ne reçoit pas les alertes d''a_admin');
+select tests.refuse($$select public.espace_reglages('00000000-0000-0000-0000-00000000a000', '{"naf": "10"}')$$, 'un lecteur ne change pas les réglages');
+select tests.refuse($$select public.espace_fait('00000000-0000-0000-0000-00000000a000', 'plan:t_sst', 'x', 't_sst', true)$$, 'ni ne coche « Fait »');
+reset role;
+
+select tests.qui('00000000-0000-0000-0000-0000000000b1', 'b_admin@test.fr');
+set local role authenticated;
+select tests.refuse($$select public.espace_fait('00000000-0000-0000-0000-00000000b000', 'plan:t_sst', 'x', 't_sst', true)$$,
+  'formule Textes : pas de registre, donc pas de case « Fait »');
+reset role;
+
+select set_config('request.jwt.claims', '', true);
+set local role anon;
+select tests.refuse($$select public.espace_lire('00000000-0000-0000-0000-00000000a000')$$, 'un visiteur ne lit aucun espace');
+reset role;
+
 do $$ begin raise notice 'TOUS LES TESTS D''ISOLATION SONT PASSÉS'; end $$;
 
 rollback;

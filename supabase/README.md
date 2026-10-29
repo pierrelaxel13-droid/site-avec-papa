@@ -10,9 +10,11 @@ Les choix sont expliqués dans `docs/lot5-base-de-donnees.md`.
 | `migrations/*.sql` | le schéma, en étapes datées, appliquées une fois chacune, dans l'ordre |
 | `tests/isolation.sql` | les vérifications d'isolation : chacun voit et fait ce qu'il doit, et rien d'autre ; le registre ne se modifie jamais |
 | `tests/emulation-supabase.sql` | imite Supabase sur un PostgreSQL vide, **pour les tests seulement** |
+| `../outils/sujets-sql.mjs` | les 44 domaines du référentiel → la table `sujets` (ajoute ou modifie, ne supprime jamais) |
 
 L'action **« Base de données »** (`.github/workflows/base.yml`) teste puis
-applique, toute seule, à chaque envoi qui touche ce dossier.
+applique, toute seule, à chaque envoi qui touche ce dossier ou le référentiel
+(`assets/referentiel.js` : les domaines sont recopiés dans `sujets`).
 
 ## Changer le schéma
 

@@ -67,6 +67,7 @@
 
     if (assez) {
       verrou.remove();
+      document.body.classList.remove("verrouille");   // posée pendant la vérification du compte
     } else {
       document.body.classList.add("verrouille");
       if (active) {

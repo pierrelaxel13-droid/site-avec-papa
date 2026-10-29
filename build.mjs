@@ -438,8 +438,7 @@ ${zone === "app" ? `<p class="bandeau-demo" data-mode="demo">
 <p class="bandeau-demo" data-mode="compte" hidden>
   <strong>Votre espace.</strong>
   <span data-formule-compte></span>
-  Pour l'instant, l'entreprise, le tableau de bord et le registre affichés sont encore ceux
-  de la démonstration : vos propres données arrivent bientôt. Les textes, eux, sont les vrais.
+  Vos réglages, vos cases « Fait » et votre registre sont enregistrés dans votre compte.
   <a href="${a("compte/")}">Mon compte</a>
 </p>` : ""}
 
@@ -536,12 +535,15 @@ ${zone === "public" && installation ? bandeInstallation(a) : ""}
 </footer>
 
 ${donneesPlan ? `<script src="${a("assets/plan-data.js")}"></script>` : ""}
+${zone === "app" ? `<script src="${a("assets/vigie.js")}"></script>
+<script src="${a("assets/magasin.js")}"></script>` : ""}
 <script src="${a("assets/app.js")}"></script>
 ${zone === "app" ? `<script src="${a("assets/avis-data.js")}"></script>
 <script src="${a("assets/entreprise.js")}"></script>
 <script src="${a("assets/avis.js")}"></script>` : ""}
-${zone === "app" || scripts.includes("assets/compte.js") ? `<script src="${a("assets/vigie.js")}"></script>` : ""}
+${zone !== "app" && scripts.includes("assets/compte.js") ? `<script src="${a("assets/vigie.js")}"></script>` : ""}
 ${zone === "app" || verrou || actif === "abonnement" ? `<script src="${a("assets/session.js")}"></script>` : ""}
+${zone === "app" ? `<script src="${a("assets/espace.js")}"></script>` : ""}
 ${scripts.map((f) => `<script src="${a(f)}"></script>`).join("\n")}
 </body>
 </html>
@@ -585,8 +587,9 @@ function perimetre(V, code) {
    marque « Fait » une fois coché, et la carte de la catégorie compte. Pour un
    sujet du plan, c'est la revue qui est faite, et elle se refait à son rythme
    (« periode », en jours). C'est gardé dans ce navigateur (app.js). */
-function boutonFait(id, { periode = 0, libelle = "Marquer comme fait" } = {}) {
-  return `<div class="bloc-fait" data-fait="${esc(id)}"${periode ? ` data-periode="${periode}"` : ""} data-libelle="${esc(libelle)}">
+/* objet : ce que le registre d'un vrai compte retiendra quand on coche. */
+function boutonFait(id, { periode = 0, libelle = "Marquer comme fait", objet = "" } = {}) {
+  return `<div class="bloc-fait" data-fait="${esc(id)}"${periode ? ` data-periode="${periode}"` : ""} data-libelle="${esc(libelle)}"${objet ? ` data-objet="${esc(objet)}"` : ""}>
     <button type="button" class="bouton-fait" aria-pressed="false">
       <span class="fait-case" aria-hidden="true"></span><span class="fait-texte">${esc(libelle)}</span>
     </button>
@@ -604,7 +607,7 @@ function blocDomaine(C, LIENS, id, d, origine, lienSecteur = "", racine = "", fa
     ${fait ? marqueFait(`plan:${id}`) : ""}
   </div>
   <p class="bloc-domaine-resume">${esc(d.resume)}</p>
-  ${fait ? boutonFait(`plan:${id}`, { periode: JOURS_DE[d.frequence] || 31, libelle: "Marquer la revue comme faite" }) : ""}
+  ${fait ? boutonFait(`plan:${id}`, { periode: JOURS_DE[d.frequence] || 31, libelle: "Marquer la revue comme faite", objet: `Revue « ${d.nom} »` }) : ""}
   <div class="bloc-domaine-corps">
     <div>
       <span class="etiq">Ce qu'il faut faire</span>
@@ -667,7 +670,7 @@ function enTeteApp(D, titre, chapeau, lienNaf = "") {
       <li><a href="${lienNaf || "secteurs.html"}">NAF <span id="tete-naf">${esc(D.entreprise.nafComplet)}</span></a></li>
       <li><a href="reglages.html" title="Modifier dans Réglages"><span id="tete-ville">${esc(D.entreprise.ville)}</span></a></li>
       <li><a href="reglages.html" title="Modifier dans Réglages"><span id="tete-effectif">${esc(D.entreprise.effectif)}</span> salariés</a></li>
-      <li><a href="registre.html" title="Voir le registre de preuves">Suivi depuis ${esc(D.entreprise.depuis)}</a></li>
+      <li><a href="registre.html" title="Voir le registre de preuves">Suivi depuis <span id="tete-depuis">${esc(D.entreprise.depuis)}</span></a></li>
     </ul>
     <h1>${esc(titre)}</h1>
     ${chapeau ? `<p class="chapeau">${chapeau}</p>` : ""}
@@ -690,6 +693,8 @@ function appTableauBord(V, D, C, LIENS) {
   const fiche = ficheDeLEntreprise(V, D);
   const corps = enTeteApp(D, "Tableau de bord",
     "Ce qui attend une décision, ce qui arrive, et ce qui est en retard.", fiche) + `
+<!-- Le jeu d'essai : caché dans un vrai compte (assets/espace.js montre le vrai). -->
+<div data-demo>
 
 ${rubrique({ etiq: "À traiter", contenu: `
   <dl class="compteurs compteurs-liens">
@@ -721,7 +726,7 @@ ${aAnalyser.length ? rubrique({ etiq: "Ce qu'il faut faire maintenant", contenu:
       <p class="titre">${marqueFait(`essai:${slug(t.titre)}`)}${esc(t.titre)}</p>
       <p class="meta etiq">${esc(d.nom)}${t.priorite === "haute" ? " · prioritaire" : ""}</p>
       <ul class="a-faire">${(d.actions || []).slice(0, 3).map((a) => `<li>${esc(a)}</li>`).join("")}</ul>
-      ${boutonFait(`essai:${slug(t.titre)}`)}
+      ${boutonFait(`essai:${slug(t.titre)}`, { objet: t.titre })}
       <p class="note-source">
         <a href="texte/${slug(ref)}.html">${esc(ref)}</a> ·
         <a class="lien-officiel" href="${esc(L.url)}" target="_blank" rel="noopener"
@@ -754,12 +759,14 @@ ${rubrique({ etiq: "Dernières traces", aplat: true, contenu: `
   <ul class="liste-registre" style="margin-top:var(--t4)">
     ${D.registre.slice(0, 4).map((r) => ligneRegistre(r)).join("")}
   </ul>
-  <p style="margin-top:var(--t4)"><a class="lien-fleche" href="registre.html">Voir tout le registre ${fleche}</a></p>` })}`;
+  <p style="margin-top:var(--t4)"><a class="lien-fleche" href="registre.html">Voir tout le registre ${fleche}</a></p>` })}
+</div>
+<div id="bord-compte" data-compte hidden></div>`;
 
   return page({
     titre: `Tableau de bord | ${SITE.nom}`,
     description: "Tableau de bord de la veille réglementaire.",
-    racine: "../", zone: "app", actif: "bord", corps, verrou: true, formule: "suivi"
+    racine: "../", zone: "app", actif: "bord", corps, verrou: true, formule: "suivi", donneesPlan: true
   });
 }
 
@@ -788,7 +795,7 @@ function ligneReleve(V, C, LIENS, t, racine = "") {
         <section class="encart encart-faire">
           <h4 class="encart-titre"><span class="numero-encart" aria-hidden="true">1</span>Ce que vous devez faire</h4>
           <ul class="a-faire">${(d.actions || []).map((a) => `<li>${esc(a)}</li>`).join("")}</ul>
-          ${boutonFait(idFait)}
+          ${boutonFait(idFait, { objet: t.titre })}
           <p class="rangee">
             <button type="button" class="bouton bouton-sobre imprimer-fiche">${imprimante} Enregistrer en PDF</button>
           </p>
@@ -887,7 +894,7 @@ function appPlan(V, D, C, LIENS) {
     .filter((g) => g.ids.length);
 
   const corps = enTeteApp(D, "Mon plan de veille",
-    `Ce qui s'applique chez ${esc(D.entreprise.nom)} : ${total} sujets à suivre. Choisissez un rythme de revue : vous ne verrez que ses sujets.`,
+    `Ce qui s'applique chez <span id="plan-chez">${esc(D.entreprise.nom)}</span> : <span data-plan-total>${total}</span> sujets à suivre. Choisissez un rythme de revue : vous ne verrez que ses sujets.`,
     ficheDeLEntreprise(V, D)) + `
 
 <section class="rubrique">
@@ -901,9 +908,10 @@ function appPlan(V, D, C, LIENS) {
       compteAttr: ` data-compte-frequence="${esc(g.id)}"`,
       classe: n ? "" : "carte-vide",
       attrs: n ? "" : ' aria-disabled="true" tabindex="-1"',
-      marque: ech && ech.retard ? "En retard" : "",
+      marque: ech && ech.retard ? "En retard" : "", marqueAttr: " data-demo",
       lignes: [esc(g.f.d),
-               ech ? `Prochaine revue : ${esc(dateFr(ech.prochaine))}` : ""].filter(Boolean)
+               ech ? `<span data-demo>Prochaine revue : ${esc(dateFr(ech.prochaine))}</span>` : "",
+               `<span data-compte hidden data-prochaine="${esc(g.id)}"></span>`].filter(Boolean)
     };
   }))}
   ${aSavoir("Ce qui a servi à faire ce plan", `
@@ -927,7 +935,7 @@ ${parFrequence.map((g) => {
     const ech = D.echeances.filter((e) => e.frequence === g.id)[0];
     const dedans = g.ids.filter((id) => base.includes(id) || ajoutes.has(id));
     return rubrique({ etiq: g.f.l, id: `frequence-${g.id}`, contenu: `
-      <p class="lecture">${esc(g.f.d)}${ech ? ` Prochaine revue : <strong>${esc(dateFr(ech.prochaine))}</strong>${ech.retard ? " — en retard." : "."}` : ""}</p>
+      <p class="lecture">${esc(g.f.d)}${ech ? `<span data-demo> Prochaine revue : <strong>${esc(dateFr(ech.prochaine))}</strong>${ech.retard ? " — en retard." : "."}</span>` : ""}</p>
       <nav class="dedans" aria-label="Ce qu'il y a à ce rythme">
         <p class="etiq">À ce rythme</p>
         <ul>${g.ids.map((id) => `<li data-sujet-plan="${esc(id)}"${dedans.includes(id) ? "" : " hidden"}><a href="#domaine-${esc(id)}"><span>${esc(V.domaines[id].nom)}</span></a></li>`).join("")}</ul>
@@ -1146,7 +1154,7 @@ ${rubrique({ etiq: "Le texte, mot pour mot", contenu: `
   ici en entier. Vous n’avez pas à aller le chercher ailleurs.</p>
   <ul class="articles" style="margin-top:var(--t5)">${m.articles.map(articleDeLoi).join("")}</ul>
   <p class="rangee" style="margin-top:var(--t5)">
-    <button type="button" class="bouton bouton-sobre" onclick="window.print()">${imprimante} Enregistrer en PDF</button>
+    <button type="button" class="bouton bouton-sobre" data-imprimer>${imprimante} Enregistrer en PDF</button>
   </p>
   ${noteDeSource(C)}` })}
 
@@ -1248,7 +1256,7 @@ function ligneJO(V, t, i, releveLe = "") {
           <h4 class="encart-titre"><span class="numero-encart" aria-hidden="true">1</span>Ce que vous devez faire</h4>
           ${actions.length
             ? `<ul class="a-faire">${actions.map((a) => `<li>${esc(a)}</li>`).join("")}</ul>
-               ${boutonFait(idFait)}`
+               ${boutonFait(idFait, { objet: `Texte traité : ${t.titre}` })}`
             : `<p>Rien à faire de votre côté : ce texte est à connaître, pas à appliquer.</p>`}
           <p class="rangee">
             <button type="button" class="bouton bouton-sobre imprimer-fiche">${imprimante} Enregistrer en PDF</button>
@@ -1428,7 +1436,7 @@ function cartesCategories(cartes) {
       const large = reste && i >= n - reste ? 6 / reste : 6 / cols;
       const dedans = `
         <span class="carte-tete"><span class="carte-nom">${esc(c.nom)}</span>${
-          c.marque ? `<span class="marque-neuf">${esc(c.marque)}</span>` : ""}</span>
+          c.marque ? `<span class="marque-neuf"${c.marqueAttr || ""}>${esc(c.marque)}</span>` : ""}</span>
         <span class="carte-compte"${c.compteAttr || ""}>${esc(c.compte)}</span>
         ${c.id ? `<span class="carte-faits" data-faits-de="${esc(c.id)}" hidden></span>` : ""}
         ${(c.lignes || []).map((l) => `<span class="carte-ligne">${l}</span>`).join("")}`;
@@ -1572,11 +1580,11 @@ function appReleve(V, D, JO, C, LIENS, SOURCES = []) {
                                          (t) => (t.vuLe || t.date) === JO.releve_le)),
     ...carteCodes])}
   ${aSavoir("Comment ce relevé est fait", commentFait)}
-  ${aSavoir("Exemple : le parcours complet d'un texte", `<p class="lecture">
+  <div data-demo>${aSavoir("Exemple : le parcours complet d'un texte", `<p class="lecture">
     Des textes de démonstration, conservés pour montrer le cycle complet : analyse,
     décision, trace.</p>
     ${statutsDemo}
-    ${groupes.filter((g) => g.textes.length).map((g) => familleDemo(g, false)).join("")}`)}
+    ${groupes.filter((g) => g.textes.length).map((g) => familleDemo(g, false)).join("")}`)}</div>
   ${(() => { let n = 0; return groupesJO.filter((g) => g.textes.length).map((g) => `
   <section class="famille-releve" id="jo-famille-${esc(g.id)}" data-categorie>
     <h3>${esc(g.cl.l)} <span class="etiq">${g.textes.length} texte${g.textes.length > 1 ? "s" : ""}</span></h3>
@@ -1636,7 +1644,7 @@ function appRegistre(V, D) {
   const corps = enTeteApp(D, "Registre de preuves",
     "Les revues faites, les décisions prises, les actions menées — avec leurs dates. C'est ce qu'un auditeur demande, et ce qui manque le plus souvent.",
     ficheDeLEntreprise(V, D)) + `
-
+<div data-demo>
 ${rubrique({ etiq: "Actions ouvertes", contenu: ouvertes.length ? `
   <ul class="liste-registre">${ouvertes.map((r) => ligneRegistre(r)).join("")}</ul>` :
   "<p>Aucune action ouverte.</p>" })}
@@ -1648,8 +1656,10 @@ ${rubrique({ etiq: "Tout le registre", aplat: true, contenu: `
     ${D.registre.map((r) => ligneRegistre(r)).join("")}
   </ul>
   <p class="rangee" style="margin-top:var(--t5)">
-    <button type="button" class="bouton bouton-sobre" onclick="window.print()">Imprimer le registre</button>
-  </p>` })}`;
+    <button type="button" class="bouton bouton-sobre" data-imprimer>Imprimer le registre</button>
+  </p>` })}
+</div>
+<div id="registre-compte" data-compte hidden></div>`;
 
   return page({
     titre: `Registre de preuves | ${SITE.nom}`,
@@ -1811,7 +1821,7 @@ ${rubrique({ etiq: "Ce que ce texte exige", contenu: `
   <p class="rangee" style="margin-top:var(--t5)">
     <a class="bouton bouton-accent" href="${esc(L.url)}" target="_blank" rel="noopener">
       ${esc(intituleDuLien(L))} ${sortant}</a>
-    <button type="button" class="bouton bouton-sobre" onclick="window.print()">${imprimante} Enregistrer en PDF</button>
+    <button type="button" class="bouton bouton-sobre" data-imprimer>${imprimante} Enregistrer en PDF</button>
   </p>` })}
 
 ${rubrique({ etiq: "Où il s'applique", aplat: true, contenu: `
@@ -1862,7 +1872,7 @@ ${T ? rubrique({ etiq: "Le texte, mot pour mot", contenu: `
            <span class="code">${esc(m.articles[0].num)} → ${esc(m.articles[m.articles.length - 1].num)}</span></a></li>`).join("")}
        </ul>`}
   <p class="rangee" style="margin-top:var(--t5)">
-    <button type="button" class="bouton bouton-sobre" onclick="window.print()">${imprimante} Enregistrer en PDF</button>
+    <button type="button" class="bouton bouton-sobre" data-imprimer>${imprimante} Enregistrer en PDF</button>
   </p>
   ${noteDeSource(C)}` }) : ""}
 
@@ -2207,7 +2217,7 @@ function appReglages(V, D, NAF, METIERS) {
         </div>
         <p class="rangee reglage-large">
           <button type="submit" class="bouton bouton-accent">Enregistrer</button>
-          <button type="button" class="bouton bouton-sobre" id="e-reinit">Tout effacer et revenir à l'exemple</button>
+          <button type="button" class="bouton bouton-sobre" id="e-reinit" data-demo>Tout effacer et revenir à l'exemple</button>
         </p>
         <p class="etiq reglage-large" id="e-etat" role="status"></p>
       </form>
@@ -3762,6 +3772,10 @@ const comptesFermes = () => `<p class="reserve" data-comptes-fermes hidden>
           Écrivez-nous à <a href="mailto:${esc(SITE.courriel)}">${esc(SITE.courriel)}</a>.
         </p>`;
 
+/* Les formulaires de compte : aucun champ ne porte de « name », et l'envoi est
+   en « post ». Si le script ne tournait pas, le navigateur enverrait le
+   formulaire lui-même : ainsi, rien — surtout pas un mot de passe — ne peut
+   finir dans l'adresse de la page ni dans l'historique. */
 function pageConnexion() {
   const corps = `
 <section class="heros">
@@ -3770,7 +3784,7 @@ function pageConnexion() {
     <p class="heros-sous">Pas encore de compte ? <a href="compte/creer.html">Créez-le</a> en une minute.</p>
 
     <div class="connexion connexion-seule">
-      <form class="carte-connexion" id="form-connexion" novalidate>
+      <form class="carte-connexion" id="form-connexion" method="post" novalidate>
         <h2>Se connecter à votre espace</h2>
         ${comptesFermes()}
         <div class="reserve" id="connexion-deja" hidden></div>
@@ -3778,13 +3792,13 @@ function pageConnexion() {
         <div id="connexion-champs">
           <div class="champ">
             <label for="courriel">Adresse électronique</label>
-            <input type="email" id="courriel" name="courriel" autocomplete="username"
+            <input type="email" id="courriel" autocomplete="username"
                    inputmode="email" placeholder="prenom@entreprise.fr" spellcheck="false" required>
           </div>
 
           <div class="champ">
             <label for="motdepasse">Mot de passe</label>
-            <input type="password" id="motdepasse" name="motdepasse" autocomplete="current-password" required>
+            <input type="password" id="motdepasse" autocomplete="current-password" required>
           </div>
 
           <p class="rangee" style="margin-top:var(--t4)">
@@ -3825,7 +3839,7 @@ function pageCreer() {
 <section class="section">
   <div class="enveloppe">
     <div class="connexion connexion-seule">
-      <form class="carte-connexion" id="form-creer" novalidate>
+      <form class="carte-connexion" id="form-creer" method="post" novalidate>
         <h2>Vos identifiants</h2>
         ${comptesFermes()}
         <div id="creer-champs">
@@ -3878,7 +3892,7 @@ function pageOubli() {
 <section class="section">
   <div class="enveloppe">
     <div class="connexion connexion-seule">
-      <form class="carte-connexion" id="form-oubli" novalidate>
+      <form class="carte-connexion" id="form-oubli" method="post" novalidate>
         <h2>Recevoir un lien</h2>
         ${comptesFermes()}
         <div class="champ">
@@ -3917,7 +3931,7 @@ function pageMonCompte() {
       ${comptesFermes()}
       <p class="reserve annonce-compte" id="compte-annonce" role="status" hidden></p>
 
-      <form class="carte-connexion" id="compte-nouveau" novalidate hidden>
+      <form class="carte-connexion" id="compte-nouveau" method="post" novalidate hidden>
         <h2>Choisir votre nouveau mot de passe</h2>
         <div class="champ">
           <label for="n-courriel">Adresse électronique</label>
@@ -3952,7 +3966,7 @@ function pageMonCompte() {
             </p>
           </div>
 
-          <form id="form-entreprise" novalidate hidden>
+          <form id="form-entreprise" method="post" novalidate hidden>
             <p><strong>Dernière étape : le nom de votre entreprise.</strong>
             C'est elle qui portera l'abonnement, le plan de veille et le registre ; vous en serez l'administrateur.</p>
             <div class="champ">
@@ -3968,7 +3982,7 @@ function pageMonCompte() {
 
         <details class="carte-connexion repli-compte">
           <summary>Changer mon mot de passe</summary>
-          <form id="form-motdepasse" novalidate>
+          <form id="form-motdepasse" method="post" novalidate>
             <div class="champ">
               <label for="m-motdepasse">Nouveau mot de passe <span class="aide">au moins 10 caractères</span></label>
               <input type="password" id="m-motdepasse" autocomplete="new-password" minlength="10" required>
@@ -3984,7 +3998,7 @@ function pageMonCompte() {
 
         <details class="carte-connexion repli-compte">
           <summary>Changer mon adresse électronique</summary>
-          <form id="form-adresse" novalidate>
+          <form id="form-adresse" method="post" novalidate>
             <div class="champ">
               <label for="a-courriel">Nouvelle adresse</label>
               <input type="email" id="a-courriel" autocomplete="email" inputmode="email" spellcheck="false" required>
@@ -4076,7 +4090,7 @@ function donneesAvis(V, D, C) {
       d: x.date, t: x.titre, q: x.quoi,
       dom: dom ? dom.nom : x.domaine,
       u: ref ? `texte/${slug(ref)}.html` : "",
-      s: x.statut, p: x.priorite === "haute" ? 1 : 0
+      s: x.statut, p: x.priorite === "haute" ? 1 : 0, e: 1   // e : jeu d'essai
     };
   }).concat(codes).sort((a, b) => (a.d < b.d ? 1 : -1));
   return "/* Engendré par build.mjs — ne pas modifier à la main. */\n" +
@@ -4362,7 +4376,8 @@ async function main() {
      sans amorce.js ni les données des alertes, un changement de l'un d'eux
      restait servi dans son ancienne version. */
   const habillage = ["site.css", "polices.css", "app.js", "theme.js", "amorce.js",
-                     "session.js", "entreprise.js", "avis.js", "referentiel.js", "compte.js", "vigie.js"];
+                     "session.js", "entreprise.js", "avis.js", "referentiel.js", "compte.js", "vigie.js",
+                     "magasin.js", "espace.js"];
   const empreinte = createHash("sha256");
   for (const f of habillage) empreinte.update(await readFile(join(SORTIE, "assets", f)));
   empreinte.update(plan);

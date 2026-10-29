@@ -215,6 +215,18 @@
     });
   }
 
+  /* Lire une table, avec la syntaxe de Supabase (PostgREST) :
+     lire("registre", "entreprise_id=eq.…&order=id.desc"). Les règles de la
+     base ne rendent que ce que la personne a le droit de voir. */
+  function lireTable(table, requete) {
+    return session().then(function (s) {
+      if (!s) return { erreur: MESSAGES.session_not_found, code: "session_not_found" };
+      return appel("/rest/v1/" + table + "?" + (requete || ""), { jeton: s.jeton }).then(function (r) {
+        return r.ok ? { ok: true, donnees: r.j } : erreur(r);
+      });
+    });
+  }
+
   /* Où la personne connectée est membre, avec quel rôle, et le rang de ce que
      l'entreprise a payé (0 rien, 1 Textes, 2 Textes et suivi, 3 complète). */
   function mesEntreprises() {
@@ -243,7 +255,7 @@
     utilisateur: function () { var s = lire(); return s ? s.utilisateur : null; },
     connecter: connecter, inscrire: inscrire, renvoyer: renvoyer, oubli: oubli,
     changer: changer, deconnecter: deconnecter, arrivee: arrivee,
-    rpc: rpc, mesEntreprises: mesEntreprises, creerEntreprise: creerEntreprise,
+    rpc: rpc, lire: lireTable, mesEntreprises: mesEntreprises, creerEntreprise: creerEntreprise,
     suisAdministrateur: suisAdministrateur, adminVue: adminVue, adminAbonnement: adminAbonnement,
     pageDuSite: pageDuSite
   };
