@@ -72,7 +72,7 @@ async function essai() {
   const nav = await chromium.launch();
   const erreurs = [];
   const contexte = async (vue, theme) => {
-    const ctx = await nav.newContext({ viewport: vue, colorScheme: theme });
+    const ctx = await nav.newContext({ viewport: vue, colorScheme: theme, acceptDownloads: true });
     const p = await ctx.newPage();
     p.on("console", (m) => { if (m.type() === "error") erreurs.push(m.text()); });
     p.on("pageerror", (e) => erreurs.push(String(e)));
@@ -147,6 +147,31 @@ async function essai() {
     await p.goto(SITE + "app/index.html"); await pret(p);
     await p.waitForFunction(() => (document.querySelector("#bord-n-registre")?.textContent || "…") !== "…", null, { timeout: 30000 });
     ok((await p.locator("#bord-n-registre").textContent()) === "3", "tableau de bord : 3 entrées au registre");
+
+    // 6 bis. Décider sur un texte du relevé, en tirer une action, la clore, télécharger le registre.
+    await p.goto(SITE + "app/releve.html"); await pret(p);
+    await p.locator("a.carte-categorie:not(.carte-vide)").first().click();
+    const ligne = p.locator(".ligne-releve:visible", { has: p.locator(".qualifier") }).first();
+    await ligne.locator("summary").click();
+    const q = ligne.locator(".qualifier");
+    const cleTexte = await q.getAttribute("data-cle");
+    await q.locator('[data-statut="applicable"]').click();
+    await q.locator(".qualifier-action:not([hidden])").waitFor({ timeout: 30000 });
+    await q.locator(".qa-objet").fill("Action d'essai automatique");
+    await q.locator(".qualifier-action button[type=submit]").click();
+    await q.locator(".qualifier-actions li").waitFor({ timeout: 30000 });
+    ok(sql(`select string_agg(genre || ':' || statut, ',' order by id) from public.registre where entreprise_id = ${litteral(e)} and cle = ${litteral(cleTexte)}`)
+       === "qualification:applicable,action:ouverte", "un texte qualifié « s'applique », et son action ouverte, sont au registre");
+    await p.goto(SITE + "app/index.html"); await pret(p);
+    await p.locator("#bord-actions [data-faite]").click();
+    await p.waitForFunction(() => !document.querySelector("#bord-actions"), null, { timeout: 30000 });
+    ok(sql(`select count(*) from public.registre where entreprise_id = ${litteral(e)} and genre = 'action' and statut = 'faite'`) === "1",
+      "tableau de bord : « C'est fait » clôt l'action au registre");
+    await p.goto(SITE + "app/registre.html"); await pret(p);
+    await p.waitForFunction(() => /Registre intact/.test(document.querySelector("#registre-chaine")?.textContent || ""), null, { timeout: 30000 });
+    const [dl] = await Promise.all([p.waitForEvent("download"), p.click("#registre-csv")]);
+    const csv = (await import("node:fs")).readFileSync(await dl.path(), "utf8");
+    ok(csv.charCodeAt(0) === 0xfeff && csv.trim().split("\r\n").length === 7, "le registre se télécharge pour un tableur (6 entrées, accents gardés)");
 
     // 7. L'administration lui est refusée.
     await p.goto(SITE + "compte/admin.html");

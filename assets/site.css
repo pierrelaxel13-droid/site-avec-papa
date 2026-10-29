@@ -2986,6 +2986,35 @@ a.defile:hover .avis-appel strong { text-decoration: underline; text-underline-o
 .admin-courriel { font-weight: 600; overflow-wrap: anywhere; }
 .admin-comptes .lien-nu { justify-self: start; font: inherit; font-size: .92rem; text-decoration: underline; }
 
+/* Qualifier un texte : trois choix, puis l'action qui en découle. */
+.qualifier { margin-top: var(--t4); padding-top: var(--t4); border-top: 1px solid var(--filet); }
+.qualifier-choix { display: flex; flex-wrap: wrap; gap: .5rem; margin-top: var(--t2); }
+.choix-qualif {
+  font: inherit; font-weight: 600; font-size: .95rem; cursor: pointer;
+  min-height: 2.75rem; padding: .45rem 1rem; border-radius: var(--rp);
+  border: 1px solid var(--filet-controle); background: var(--carte); color: var(--encre);
+}
+.choix-qualif:hover:not(:disabled) { border-color: var(--accent); }
+.choix-qualif[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: #fff; }
+.choix-qualif:disabled { opacity: .55; cursor: not-allowed; }
+.qualifier-etat { margin: var(--t3) 0 0; color: var(--encre-douce); font-size: .92rem; }
+.qualifier-actions { list-style: none; margin: var(--t3) 0 0; padding: 0; display: grid; gap: .4rem; }
+.qualifier-actions li { display: flex; flex-wrap: wrap; justify-content: space-between; gap: .5rem; }
+.qualifier-actions .lien-nu, .echeance-action .lien-nu { font: inherit; font-weight: 600; text-decoration: underline; }
+.qualifier-action { margin-top: var(--t4); }
+.qualifier-autre { margin: var(--t3) 0 0; }
+.qualifier-autre .lien-nu { font: inherit; text-decoration: underline; }
+.qualifier-action label { display: grid; gap: .3rem; font-weight: 600; }
+.marque-qualif {
+  display: inline-block; margin-right: .45rem; padding: .05rem .55rem;
+  border-radius: var(--rp); background: var(--accent-clair); color: var(--accent);
+  font-size: .78rem; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; vertical-align: .12em;
+}
+.marque-qualif[data-statut="sans_objet"] { background: var(--carte-pale); color: var(--encre-douce); }
+.marque-qualif[data-statut="a_suivre"] { background: var(--ambre-fond); color: var(--ambre); }
+.echeance-action { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem var(--t3); padding: var(--t3) var(--t4); color: var(--encre-douce); }
+.echeance-action .objet-action { margin-right: auto; color: var(--encre); font-weight: 600; }
+
 /* Un vrai compte : rien du jeu d'essai ne reste à l'écran. */
 .espace-compte [data-demo] { display: none !important; }
 

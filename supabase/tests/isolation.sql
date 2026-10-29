@@ -451,6 +451,46 @@ set local role anon;
 select tests.refuse($$select public.espace_lire('00000000-0000-0000-0000-00000000a000')$$, 'un visiteur ne lit aucun espace');
 reset role;
 
+-- =========================================================================
+-- 11. Qualifier un texte, ouvrir une action, la clore
+-- =========================================================================
+select tests.qui('00000000-0000-0000-0000-0000000000a1', 'a_admin@test.fr');
+set local role authenticated;
+select tests.ok(public.espace_qualifier('00000000-0000-0000-0000-00000000a000', 'jo:JORFARTI000000000001', 'Arrêté d''essai', 'a_suivre', null) = current_date,
+  'qualifier un texte « à suivre »');
+select public.espace_qualifier('00000000-0000-0000-0000-00000000a000', 'jo:JORFARTI000000000001', 'Arrêté d''essai', 'applicable', 'Concerne nos échafaudages.');
+select tests.ok((public.espace_lire('00000000-0000-0000-0000-00000000a000') -> 'qualifications' -> 'jo:JORFARTI000000000001' ->> 'statut') = 'applicable',
+  'changer d''avis : la dernière qualification fait foi');
+select tests.ok(tests.compte($$select 1 from public.registre where cle = 'jo:JORFARTI000000000001' and genre = 'qualification'$$) = 2,
+  'et la première reste au registre');
+select tests.refuse($$select public.espace_qualifier('00000000-0000-0000-0000-00000000a000', 'jo:X1', 'x', 'peut-etre', null)$$, 'une qualification inconnue est refusée');
+select tests.ok(public.espace_action('00000000-0000-0000-0000-00000000a000', 'jo:JORFARTI000000000001', 'Mettre à jour le DUERP',
+  current_date + 30, null) is not null, 'ouvrir une action avec son échéance');
+select tests.refuse($$select public.espace_action('00000000-0000-0000-0000-00000000a000', 'jo:X1', 'x', null, null)$$, 'une action sans échéance est refusée');
+select tests.ok((select json_array_length(public.espace_lire('00000000-0000-0000-0000-00000000a000') -> 'actions')) = 1
+                and (public.espace_lire('00000000-0000-0000-0000-00000000a000') -> 'actions' -> 0 ->> 'echeance') = (current_date + 30)::text,
+  'elle est dans les actions ouvertes, avec son échéance');
+select tests.ok(public.espace_action_faite('00000000-0000-0000-0000-00000000a000',
+  (select id from public.registre where genre = 'action' and objet = 'Mettre à jour le DUERP')) = current_date, 'la dire faite');
+select tests.ok((select json_array_length(public.espace_lire('00000000-0000-0000-0000-00000000a000') -> 'actions')) = 0,
+  'elle n''est plus ouverte');
+select tests.refuse($$select public.espace_action_faite('00000000-0000-0000-0000-00000000a000',
+  (select id from public.registre where genre = 'action' and objet = 'Mettre à jour le DUERP'))$$, 'on ne la clôt pas deux fois');
+select tests.ok(tests.compte($$select 1 from public.registre where genre = 'action' and entreprise_id = '00000000-0000-0000-0000-00000000a000'$$) = 2,
+  'l''ouverture et la clôture restent toutes deux au registre');
+reset role;
+
+select tests.qui('00000000-0000-0000-0000-0000000000a2', 'a_lecteur@test.fr');
+set local role authenticated;
+select tests.refuse($$select public.espace_qualifier('00000000-0000-0000-0000-00000000a000', 'jo:X1', 'x', 'applicable', null)$$, 'un lecteur ne qualifie pas');
+reset role;
+select tests.qui('00000000-0000-0000-0000-0000000000b1', 'b_admin@test.fr');
+set local role authenticated;
+select tests.refuse($$select public.espace_qualifier('00000000-0000-0000-0000-00000000b000', 'jo:X1', 'x', 'applicable', null)$$, 'formule Textes : pas de qualification');
+select tests.refuse($$select public.espace_action_faite('00000000-0000-0000-0000-00000000a000',
+  (select max(id) from public.registre))$$, 'ni de clôture chez une autre entreprise');
+reset role;
+
 do $$ begin raise notice 'TOUS LES TESTS D''ISOLATION SONT PASSÉS'; end $$;
 
 rollback;

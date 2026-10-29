@@ -1242,7 +1242,7 @@ function ligneJO(V, t, i, releveLe = "") {
     <summary>
       <span class="mono date">${esc(dateFr(quand))}</span>
       <span class="corps">
-        <span class="titre">${actions.length ? marqueFait(idFait) : ""}${neuf ? `<span class="marque-neuf">Nouveau</span> ` : ""}${esc(t.titre)}</span>
+        <span class="titre">${actions.length ? marqueFait(idFait) : ""}${actions.length ? `<span class="marque-qualif" data-qualif="${esc(idFait)}" hidden></span>` : ""}${neuf ? `<span class="marque-neuf">Nouveau</span> ` : ""}${esc(t.titre)}</span>
         <span class="quoi">${esc(String(t.corps || "").slice(0, 180).replace(/\s+\S*$/, ""))}…</span>
         <span class="meta etiq">${esc(t.sourceNom)} · ${esc(noms.join(" · "))}${
           quand !== vu ? ` · relevé le ${esc(dateFr(vu))}` : ""}</span>
@@ -1256,7 +1256,9 @@ function ligneJO(V, t, i, releveLe = "") {
           <h4 class="encart-titre"><span class="numero-encart" aria-hidden="true">1</span>Ce que vous devez faire</h4>
           ${actions.length
             ? `<ul class="a-faire">${actions.map((a) => `<li>${esc(a)}</li>`).join("")}</ul>
-               ${boutonFait(idFait, { objet: `Texte traité : ${t.titre}` })}`
+               <div data-demo>${boutonFait(idFait, { objet: `Texte traité : ${t.titre}` })}</div>
+               <div class="qualifier" data-compte hidden data-cle="${esc(idFait)}" data-objet="${esc(t.titre)}"
+                    data-action="${esc(actions[0])}"></div>`
             : `<p>Rien à faire de votre côté : ce texte est à connaître, pas à appliquer.</p>`}
           <p class="rangee">
             <button type="button" class="bouton bouton-sobre imprimer-fiche">${imprimante} Enregistrer en PDF</button>

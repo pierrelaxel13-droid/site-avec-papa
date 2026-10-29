@@ -89,6 +89,9 @@ const RPC = {
   espace_reglages: (a) => `select public.espace_reglages(${litteral(a.e)}, ${json(a.nouveaux)}) \\g /dev/null
 select 'null'`,
   espace_fait: (a) => `select to_json(public.espace_fait(${litteral(a.e)}, ${litteral(a.quoi)}, ${litteral(a.intitule)}, ${litteral(a.sujet)}, ${a.fait ? "true" : "false"}))`,
+  espace_qualifier: (a) => `select to_json(public.espace_qualifier(${litteral(a.e)}, ${litteral(a.quoi)}, ${litteral(a.intitule)}, ${litteral(a.statut)}, ${litteral(a.note)}))`,
+  espace_action: (a) => `select to_json(public.espace_action(${litteral(a.e)}, ${litteral(a.quoi)}, ${litteral(a.intitule)}, ${litteral(a.echeance)}, ${litteral(a.note)}))`,
+  espace_action_faite: (a) => `select to_json(public.espace_action_faite(${litteral(a.e)}, ${Number(a.action) || 0}))`,
   espace_alertes: (a) => `select public.espace_alertes(${json(a.choix)}) \\g /dev/null
 select 'null'`,
   verifier_registre: (a) => `select coalesce(json_agg(t), '[]') from public.verifier_registre(${litteral(a.e)}) t`,

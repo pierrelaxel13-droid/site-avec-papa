@@ -284,7 +284,9 @@ qu'il n'y a pas de client.
   `assets/espace.js` dans les blocs `data-compte`. Un nouveau bouton « Fait »
   prend `objet` (ce que le registre retiendra). Les formulaires de compte n'ont
   pas d'attribut `name` et sont en `method="post"` : rien ne doit pouvoir finir
-  dans l'adresse.
+  dans l'adresse. Les textes du relevé : dans un compte, la case « Fait » cède
+  la place au bloc `.qualifier` (espace.js : décision, action, échéance).
+  Après un changement de l'espace : relancer l'action « Essai en ligne ».
 - **Accueil** : l'accroche « la veille faite et jamais écrite » est sous le titre
   (une seule fois dans la page). « Dernière collecte réussie » (`blocCollecte()`)
   prend l'heure de la dernière relève réussie dans COLLECTE_LE, posée par

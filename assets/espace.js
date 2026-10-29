@@ -22,6 +22,9 @@
   var JOURS = { quotidienne: 1, hebdomadaire: 7, mensuelle: 31, trimestrielle: 92 };
   var GENRES = { revue: "Revue", qualification: "Qualification", decision: "Décision",
                  action: "Action", plan: "Plan de veille", correction: "Correction" };
+  var STATUTS = { applicable: "S'applique chez nous", a_suivre: "À suivre", sans_objet: "Ne nous concerne pas",
+                  ouverte: "à faire", faite: "faite" };
+  var COURTS = { applicable: "S'applique", a_suivre: "À suivre", sans_objet: "Sans objet" };
 
   function echappe(s) {
     return String(s == null ? "" : s).replace(/&/g, "&amp;").replace(/</g, "&lt;")
@@ -63,7 +66,7 @@
 
   /* Les entrées du registre, des plus récentes aux plus anciennes. */
   function registre(limite) {
-    return V.lire("registre", "select=id,genre,objet,detail,statut,date_effet,echeance,corrige_id,enregistre_le,auteur_nom" +
+    return V.lire("registre", "select=id,genre,objet,detail,statut,date_effet,echeance,corrige_id,enregistre_le,auteur_nom,empreinte" +
       "&entreprise_id=eq." + M.espace.id + "&order=id.desc" + (limite ? "&limit=" + limite : ""));
   }
   function ligne(r, annulees) {
@@ -72,7 +75,9 @@
       '<span class="mono date">' + echappe(jour(r.date_effet)) + "</span>" +
       '<span class="corps"><span class="titre">' + echappe(r.objet) + "</span>" +
       (r.detail ? '<span class="quoi">' + echappe(r.detail) + "</span>" : "") +
-      '<span class="meta etiq">' + echappe(GENRES[r.genre] || r.genre) + " · " + echappe(r.auteur_nom || "") +
+      '<span class="meta etiq">' + echappe(GENRES[r.genre] || r.genre) +
+      (r.statut ? " · " + echappe(STATUTS[r.statut] || r.statut) : "") +
+      (r.echeance ? " · pour le " + echappe(jour(r.echeance)) : "") + " · " + echappe(r.auteur_nom || "") +
       (annulee ? " · annulée le " + echappe(jour(annulee)) : "") + "</span></span>" +
       '<svg class="chevron" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>' +
       '</summary><div class="detail"><dl class="detail-champs">' +
@@ -80,6 +85,8 @@
       "<div><dt class=\"etiq\">Date</dt><dd>" + echappe(jour(r.date_effet)) + "</dd></div>" +
       "<div><dt class=\"etiq\">Par</dt><dd>" + echappe(r.auteur_nom || "—") + "</dd></div>" +
       "<div><dt class=\"etiq\">Inscrite le</dt><dd>" + echappe(heure(r.enregistre_le)) + "</dd></div>" +
+      (r.statut ? "<div><dt class=\"etiq\">Décision</dt><dd>" + echappe(STATUTS[r.statut] || r.statut) + "</dd></div>" : "") +
+      (r.echeance ? "<div><dt class=\"etiq\">Échéance</dt><dd>" + echappe(jour(r.echeance)) + "</dd></div>" : "") +
       "<div><dt class=\"etiq\">N°</dt><dd>" + echappe(r.id) + "</dd></div>" +
       '</dl><p class="note-source">Une ligne du registre ne se modifie pas après coup : une ' +
       "correction s'ajoute à la suite, avec sa propre date, et celle-ci reste.</p></div></details></li>";
@@ -93,23 +100,31 @@
   /* --- Le tableau de bord ---------------------------------------------------- */
   function tableauDeBord(hote) {
     var plan = etatDuPlan();
+    var html = "";
     if (!plan) {
-      hote.innerHTML = rubrique("Pour commencer",
+      html = rubrique("Pour commencer",
         '<p class="lecture">Votre tableau de bord se remplit à partir de votre plan de veille, et votre plan se fait ' +
         "à partir de votre code APE et de quelques questions sur votre situation.</p>" +
         '<p class="rangee" style="margin-top:var(--t4)"><a class="bouton bouton-accent" href="reglages.html">Renseigner mon entreprise</a></p>');
-      return;
+      plan = [];
     }
     var aFaire = plan.filter(function (x) { return x.aFaire; });
     var aJour = plan.length - aFaire.length;
     var suivantes = plan.filter(function (x) { return !x.aFaire; })
       .sort(function (a, b) { return a.prochaine < b.prochaine ? -1 : 1; }).slice(0, 6);
-    var html = rubrique("Où vous en êtes",
+    if (plan.length) html += rubrique("Où vous en êtes",
       '<dl class="compteurs compteurs-liens">' +
       "<div" + (aFaire.length ? ' class="alerte"' : "") + '><dt class="etiq">Revues à faire</dt><dd><span class="grand">' +
         aFaire.length + '</span><a class="lien-carte" href="plan.html"><span class="cache-visuellement">Voir le plan de veille</span></a></dd></div>' +
       '<div><dt class="etiq">Revues à jour</dt><dd><span class="grand">' + aJour + "</span>" +
         '<span class="precision">sur ' + plan.length + ' domaines suivis</span><a class="lien-carte" href="plan.html"><span class="cache-visuellement">Voir le plan de veille</span></a></dd></div>' +
+      (function () {
+        var ouv = M.actions(), auj = new Date().toISOString().slice(0, 10);
+        var retard = ouv.filter(function (a) { return a.echeance < auj; }).length;
+        return "<div" + (retard ? ' class="alerte"' : "") + '><dt class="etiq">Actions ouvertes</dt><dd><span class="grand">' + ouv.length + "</span>" +
+          (retard ? '<span class="precision">dont ' + retard + " en retard</span>" : "") +
+          '<a class="lien-carte" href="#bord-actions"><span class="cache-visuellement">Voir les actions</span></a></dd></div>';
+      })() +
       '<div><dt class="etiq">Entrées au registre</dt><dd><span class="grand" id="bord-n-registre">…</span>' +
         '<a class="lien-carte" href="registre.html"><span class="cache-visuellement">Voir le registre</span></a></dd></div>' +
       "</dl>");
@@ -130,8 +145,28 @@
           '</span><span class="mono">' + echappe(jour(x.prochaine)) + "</span></a></li>";
       }).join("") + "</ul>", true);
     }
+    var ouvertes = M.actions();
+    if (ouvertes.length) {
+      var auj = new Date().toISOString().slice(0, 10);
+      html += '<div id="bord-actions">' + rubrique("Actions à mener",
+        '<p class="lecture">Ce que vos décisions sur les textes ont mis à faire, par échéance.</p>' +
+        '<ul class="liste-echeances" style="margin-top:var(--t4)">' + ouvertes.map(function (a) {
+          return '<li' + (a.echeance < auj ? ' class="retard"' : "") + '><div class="echeance-action"><span class="objet-action">' + echappe(a.objet) +
+            '</span><span class="mono">pour le ' + echappe(jour(a.echeance)) + (a.echeance < auj ? " — en retard" : "") + "</span>" +
+            '<button type="button" class="lien-nu" data-faite="' + a.id + '">C\'est fait</button></div></li>';
+        }).join("") + "</ul>") + "</div>";
+    }
     html += '<div id="bord-traces"></div>';
     hote.innerHTML = html;
+    if (!hote.hasAttribute("data-ecoute")) hote.setAttribute("data-ecoute", ""), hote.addEventListener("click", function (e) {
+      var f = e.target.closest("[data-faite]");
+      if (!f) return;
+      f.disabled = true; f.textContent = "Enregistrement…";
+      M.actionFaite(Number(f.getAttribute("data-faite"))).then(function (r) {
+        if (!r.ok) { f.textContent = r.erreur; return; }
+        tableauDeBord(hote);
+      });
+    });
 
     registre(6).then(function (r) {
       var n = $("#bord-n-registre");
@@ -164,7 +199,10 @@
         "s'ajoute, elle ne remplace pas. " + l.length + " entrée" + (l.length > 1 ? "s" : "") + ".</p>" +
         '<p class="reserve" id="registre-chaine" style="margin-top:var(--t4)">Vérification de la chaîne…</p>' +
         '<ul class="liste-registre" style="margin-top:var(--t4)">' + l.map(function (x) { return ligne(x, a); }).join("") + "</ul>" +
-        '<p class="rangee" style="margin-top:var(--t5)"><button type="button" class="bouton bouton-sobre" data-imprimer>Imprimer le registre</button></p>');
+        '<p class="rangee" style="margin-top:var(--t5)">' +
+        '<button type="button" class="bouton bouton-sobre" data-imprimer>Imprimer ou enregistrer en PDF</button>' +
+        '<button type="button" class="bouton bouton-sobre" id="registre-csv">Télécharger pour un tableur (CSV)</button></p>');
+      $("#registre-csv").addEventListener("click", function () { exporter(l.slice().reverse()); });
       V.rpc("verifier_registre", { e: M.espace.id }).then(function (v) {
         var p = $("#registre-chaine"), x = v.ok && v.donnees && v.donnees[0];
         if (!x) { p.textContent = "La vérification n'a pas pu se faire : " + (v.erreur || "réponse vide") + "."; return; }
@@ -178,6 +216,98 @@
         }
       });
     });
+  }
+
+  /* Le registre en CSV, pour Excel ou LibreOffice : point-virgule, UTF-8 avec
+     BOM (sinon Excel casse les accents), du plus ancien au plus récent, avec
+     l'empreinte de chaque ligne — de quoi montrer à un auditeur que rien n'a
+     bougé. */
+  function exporter(liste) {
+    var champ = function (v) { var t = String(v == null ? "" : v); return /[";\n\r]/.test(t) ? '"' + t.replace(/"/g, '""') + '"' : t; };
+    var nom = ((M.lire("pco-entreprise") || {}).nom || "entreprise");
+    var lignes = [["N°", "Date", "Nature", "Objet", "Détail", "Décision ou état", "Échéance", "Corrige le n°",
+                   "Par", "Inscrite le", "Empreinte"]].concat(liste.map(function (r) {
+      return [r.id, r.date_effet, GENRES[r.genre] || r.genre, r.objet, r.detail, STATUTS[r.statut] || r.statut || "",
+              r.echeance || "", r.corrige_id || "", r.auteur_nom, r.enregistre_le, r.empreinte];
+    }));
+    var texte = "\ufeff" + lignes.map(function (l) { return l.map(champ).join(";"); }).join("\r\n") + "\r\n";
+    var a = document.createElement("a");
+    a.href = URL.createObjectURL(new Blob([texte], { type: "text/csv;charset=utf-8" }));
+    a.download = "registre-" + nom.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") +
+      "-" + new Date().toISOString().slice(0, 10) + ".csv";
+    document.body.appendChild(a); a.click(); a.remove();
+    window.setTimeout(function () { URL.revokeObjectURL(a.href); }, 1000);
+  }
+
+  /* --- Qualifier un texte du relevé, et en tirer une action ------------------------ */
+  function dansUnMois() { var d = new Date(); d.setDate(d.getDate() + 30); return d.toISOString().slice(0, 10); }
+  function qualifier(bloc) {
+    var cle = bloc.getAttribute("data-cle"), objet = bloc.getAttribute("data-objet");
+    var ecrit = M.espace && M.espace.ecrit;
+    bloc.innerHTML = '<p class="etiq">Votre décision</p>' +
+      '<div class="qualifier-choix" role="group" aria-label="Ce texte, chez vous">' +
+      ["applicable", "a_suivre", "sans_objet"].map(function (s) {
+        return '<button type="button" class="choix-qualif" data-statut="' + s + '" aria-pressed="false"' + (ecrit ? "" : " disabled") + ">" +
+          echappe(STATUTS[s]) + "</button>";
+      }).join("") + "</div>" +
+      '<p class="qualifier-etat" role="status"></p>' +
+      '<ul class="qualifier-actions"></ul>' +
+      '<p class="qualifier-autre" hidden><button type="button" class="lien-nu">Ajouter une autre action</button></p>' +
+      '<form class="qualifier-action" novalidate hidden>' +
+        '<p class="etiq">L\'action qui en découle</p>' +
+        '<div class="champ"><label>Ce qu\'il faut faire<input type="text" maxlength="500" class="qa-objet"></label></div>' +
+        '<div class="champ"><label>Pour le<input type="date" class="qa-echeance"></label></div>' +
+        '<p class="rangee"><button type="submit" class="bouton bouton-sobre">Ajouter l\'action</button></p>' +
+      "</form>";
+    var etat = $(".qualifier-etat", bloc), form = $(".qualifier-action", bloc), autre = false;
+    $(".qa-objet", form).value = bloc.getAttribute("data-action") || "";
+    $(".qa-echeance", form).value = dansUnMois();
+
+    function peindre() {
+      var q = M.qualifications()[cle];
+      $$(".choix-qualif", bloc).forEach(function (b) { b.setAttribute("aria-pressed", q && q.statut === b.getAttribute("data-statut") ? "true" : "false"); });
+      etat.textContent = !ecrit ? (M.espace && M.espace.rang < 2
+          ? "Qualifier les textes fait partie de la formule « Textes et suivi »."
+          : "Vous êtes en lecture seule : l'administrateur ou un membre de votre entreprise décide.")
+        : q ? "« " + STATUTS[q.statut] + " » — décidé le " + jour(q.le) + ", inscrit au registre." : "Pas encore décidé.";
+      var ouvertes = M.actions().filter(function (a) { return a.cle === cle; });
+      $(".qualifier-actions", bloc).innerHTML = ouvertes.map(function (a) {
+        return '<li><span>' + echappe(a.objet) + ' — <strong>pour le ' + echappe(jour(a.echeance)) + "</strong></span>" +
+          '<button type="button" class="lien-nu" data-faite="' + a.id + '">C\'est fait</button></li>';
+      }).join("");
+      // Une action déjà ouverte : le formulaire se replie, un lien le rouvre.
+      var possible = ecrit && q && q.statut === "applicable";
+      form.hidden = !(possible && (!ouvertes.length || autre));
+      $(".qualifier-autre", bloc).hidden = !(possible && ouvertes.length && !autre);
+      var marque = document.querySelector('[data-qualif="' + cle + '"]');
+      if (marque) { marque.hidden = !q; marque.textContent = q ? COURTS[q.statut] : ""; marque.setAttribute("data-statut", q ? q.statut : ""); }
+    }
+    bloc.addEventListener("click", function (e) {
+      var b = e.target.closest(".choix-qualif");
+      if (b && b.getAttribute("aria-pressed") !== "true") {
+        etat.textContent = "Enregistrement…";
+        M.qualifier(cle, objet, b.getAttribute("data-statut")).then(function (r) { peindre(); if (!r.ok) etat.textContent = r.erreur; });
+      }
+      if (e.target.closest(".qualifier-autre")) { autre = true; peindre(); $(".qa-objet", form).focus(); return; }
+      var f = e.target.closest("[data-faite]");
+      if (f) {
+        f.disabled = true;
+        M.actionFaite(Number(f.getAttribute("data-faite"))).then(function (r) { peindre(); if (!r.ok) etat.textContent = r.erreur; });
+      }
+    });
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
+      var quoi = $(".qa-objet", form).value.trim(), quand = $(".qa-echeance", form).value;
+      if (!quoi || !quand) { etat.textContent = "Dites ce qu'il faut faire, et pour quand."; return; }
+      etat.textContent = "Enregistrement…";
+      M.ouvrirAction(cle, quoi, quand).then(function (r) {
+        if (r.ok) autre = false;
+        peindre();
+        if (!r.ok) etat.textContent = r.erreur;
+        else etat.textContent = "Action ajoutée au registre, pour le " + jour(quand) + ".";
+      });
+    });
+    peindre();
   }
 
   /* --- Le plan : les vraies dates de revue, par rythme --------------------------- */
@@ -255,5 +385,6 @@
     if (bord) tableauDeBord(bord);
     var reg = $("#registre-compte");
     if (reg) pageRegistre(reg);
+    $$(".qualifier[data-cle]").forEach(qualifier);
   });
 })();

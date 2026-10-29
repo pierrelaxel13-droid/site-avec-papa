@@ -87,6 +87,35 @@
       });
   };
 
+  /* Qualifier un texte, ouvrir une action, la dire faite (un compte seulement :
+     la démonstration n'a pas de registre). Rendent { ok } ou { erreur }. */
+  M.qualifications = function () { return copie(memoire.qualifications) || {}; };
+  M.actions = function () { return copie(memoire.actions) || []; };
+  M.qualifier = function (cle, intitule, statut, note) {
+    return V.rpc("espace_qualifier", { e: M.espace.id, quoi: cle, intitule: intitule, statut: statut, note: note || null })
+      .then(function (r) {
+        if (!r.ok) return r;
+        memoire.qualifications = memoire.qualifications || {};
+        memoire.qualifications[cle] = { statut: statut, le: r.donnees, note: note || null };
+        return { ok: true };
+      });
+  };
+  M.ouvrirAction = function (cle, intitule, echeance, note) {
+    return V.rpc("espace_action", { e: M.espace.id, quoi: cle, intitule: intitule, echeance: echeance, note: note || null })
+      .then(function (r) {
+        if (!r.ok) return r;
+        (memoire.actions = memoire.actions || []).push({ id: r.donnees, cle: cle, objet: intitule, echeance: echeance, note: note || null });
+        return { ok: true, id: r.donnees };
+      });
+  };
+  M.actionFaite = function (id) {
+    return V.rpc("espace_action_faite", { e: M.espace.id, action: id }).then(function (r) {
+      if (!r.ok) return r;
+      memoire.actions = (memoire.actions || []).filter(function (a) { return a.id !== id; });
+      return { ok: true };
+    });
+  };
+
   /* Les réglages tels que le formulaire les connaît, depuis la base. */
   function reglagesDepuis(en, reponses) {
     var rg = en.reglages || {};
@@ -116,6 +145,8 @@
           memoire["pco-entreprise"] = reglagesDepuis(d.entreprise || {}, d.reponses);
           memoire["pco-alertes"] = (d.profil && d.profil.alertes) || null;
           memoire["pco-faits"] = d.faits || {};
+          memoire.qualifications = d.qualifications || {};
+          memoire.actions = d.actions || [];
           document.body.classList.add("espace-compte");
           ouvrir();
         });

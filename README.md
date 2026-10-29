@@ -69,8 +69,17 @@ données » les applique.
 - **Ce qui protège les données**, ce sont les règles de la base (RLS), pas les
   pages : elles sont publiques, comme le code du site.
 
-**Pas encore fait** : les décisions et actions sur un texte (qualification,
-échéances), l'export du registre, et l'abonnement réellement relié à Stripe. En attendant, l'administrateur donne une formule depuis
+- **Décider sur un texte** (relevé) : « S'applique chez nous », « À suivre »,
+  « Ne nous concerne pas » ; s'il s'applique, une action avec son échéance,
+  close d'un « C'est fait » (relevé ou tableau de bord). Tout au registre.
+- **Le registre s'exporte** : impression ou PDF, et CSV pour un tableur (avec
+  l'empreinte de chaque ligne).
+- **`outils/essai-en-ligne.mjs`** : l'action « Essai en ligne » joue tout ce
+  parcours sur le vrai site et la vraie base après chaque mise en ligne, avec
+  un compte d'essai qu'elle efface ensuite.
+
+**Pas encore fait** : inviter un collègue depuis le site, l'envoi des
+courriels d'alerte, et l'abonnement réellement relié à Stripe. En attendant, l'administrateur donne une formule depuis
 `compte/admin.html`.
 
 **Essayer sur un poste**, sans toucher au vrai Supabase : l'imitation
