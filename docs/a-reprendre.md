@@ -2,23 +2,30 @@
 
 Ce qui est mis de côté, au 29 octobre 2026, pour la prochaine session.
 
-## 1. Lot 7 — l'espace des consultants (marque blanche)
+## 1. Lot 7 — fait le 29 octobre (sauf la marque blanche)
 
-À trancher avec Clément avant de construire :
+Fait : le compte consultant, « Mon cabinet » (ses clients, leurs actions
+ouvertes et en retard, leur dernière trace), créer l'espace d'un client,
+inviter son responsable, entrer chez lui ; le client coupe ou rouvre l'accès ;
+l'abonnement consultant s'ouvre depuis l'Administration.
 
-1. **Ce que le consultant voit** : la liste de ses clients, et pour chacun le
-   plan, le registre, les retards ? Autre chose ?
-2. **Ce qu'il peut faire chez un client** : regarder seulement, ou aussi cocher
-   et décider à sa place ? (La base le permet déjà, si le client l'autorise.)
-3. **La marque blanche** : logo, couleur, nom affiché ? Les courriels plus tard ?
-4. **Qui crée l'espace du client** : le consultant, ou le client qui choisit
-   ensuite son consultant ?
-5. **Le prix** : on garde 49 / 42 / 35 € par client, marque blanche dès 6 clients ?
+Choix faits par défaut, à faire valider par Clément :
 
-Déjà dans la base (lot 5) : `consultants` (avec `theme` et `marque_blanche`),
-`membres_consultant`, `entreprises.consultant_id` et `acces_consultant`,
-`creer_cabinet`, `creer_entreprise_cliente`, `choisir_consultant`, la vue
-`prive.clients_actifs_consultant` (facturation). Il manque surtout les écrans.
+1. Le consultant voit des nombres et une date par client, jamais le contenu
+   des registres depuis sa page cabinet (il le voit en entrant chez le client).
+2. Chez le client, il peut tout faire comme un membre (cocher, décider,
+   régler le plan), tant que le client l'autorise ; tout est au registre à son nom.
+3. C'est le consultant qui crée l'espace, puis invite le responsable du client.
+4. Tous les clients d'un cabinet abonné ont la formule complète.
+
+Reste à faire :
+
+- **La marque blanche** : logo, couleur, nom affiché aux clients (et sur les
+  exports PDF). À trancher : ce qui change exactement à l'écran.
+- **Les collègues du cabinet** : inviter quelqu'un dans le cabinet (la base
+  le permet déjà, `inviter(cabinet => …)`, il manque l'écran).
+- **Le prix** : 49 / 42 / 35 € par client, marque blanche dès 6 clients —
+  à confirmer ; la facturation au nombre de clients viendra avec Stripe.
 
 ## 2. Perplexity pour mieux conseiller le client
 
@@ -38,7 +45,7 @@ Garde-fous retenus — sans eux, on ne le fait pas :
 - la clé API côté serveur (Supabase), jamais dans le site ; API payante à
   l'usage (prix à vérifier) ; une ligne dans la page de confidentialité.
 
-À placer **après le lot 7** : Clément pourra relire ce que l'IA propose à ses
+À placer maintenant que le lot 7 est fait : Clément pourra relire ce que l'IA propose à ses
 clients.
 
 Aussi évoqué : Perplexity comme « deuxième paire d'yeux » du robot (il

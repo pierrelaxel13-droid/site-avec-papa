@@ -357,8 +357,8 @@
       }).join("");
     }
 
-    // Dans un compte, seul l'administrateur de l'entreprise change ses réglages.
-    if (COMPTE && MAG.espace && MAG.espace.role !== "admin") {
+    // Dans un compte, seul l'administrateur de l'entreprise (ou son consultant) change ses réglages.
+    if (COMPTE && MAG.espace && MAG.espace.role !== "admin" && MAG.espace.role !== "consultant") {
       $$("input, select, textarea, button", form).forEach(function (c) { c.disabled = true; });
       etat.textContent = "Seul l'administrateur de votre entreprise peut changer ces réglages.";
     }

@@ -28,10 +28,24 @@
   }
   function entree(retour) {
     if (retour) return Promise.resolve(retour);
-    return V.mesEntreprises().then(function (r) {
-      var rang = r.ok && r.entreprises.length ? r.entreprises[0].rang : 0;
+    return Promise.all([V.mesAcces(), V.mesCabinets()]).then(function (x) {
+      var siens = x[0].ok ? x[0].acces.filter(function (a) { return a.role !== "consultant"; }) : [];
+      // Un consultant sans entreprise à lui arrive dans son cabinet.
+      if (!siens.length && x[1].ok && x[1].cabinets.length) return "compte/cabinet.html";
+      if (siens.length) V.choisir(siens[0].entreprise_id);
+      var rang = siens.length ? siens[0].rang : 0;
       return rang >= 2 ? "app/index.html" : rang === 1 ? "app/releve.html" : "compte/";
     });
+  }
+  function adresseValable(a) { return /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(a); }
+  function dateLongue(d) {
+    return d ? new Date(d).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" }) : "";
+  }
+  /* Le lien d'invitation, prêt à copier ou à envoyer par courriel. */
+  function copier(champ, b) {
+    var fini = function () { b.textContent = "Lien copié"; };
+    if (navigator.clipboard) navigator.clipboard.writeText(champ.value).then(fini, function () { champ.select(); });
+    else { champ.select(); try { document.execCommand("copy"); fini(); } catch (e) { /* le texte reste sélectionné */ } }
   }
 
   function dire(el, texte) { el.textContent = texte || ""; }
@@ -76,6 +90,7 @@
   function invitationEnAttente() { try { return window.localStorage.getItem(CLE_INVITATION) || ""; } catch (e) { return ""; } }
   function oublierInvitation() { try { window.localStorage.removeItem(CLE_INVITATION); } catch (e) { /* rien */ } }
   var ROLES = { admin: "administrateur", membre: "membre", lecteur: "lecteur" };
+  var CLE_TYPE = "vigie-type";
 
   /* Sans adresse de projet Supabase, rien ne peut marcher : on le dit. */
   if (!V || !V.ouvert) {
@@ -133,6 +148,12 @@
   if (fc) {
     var etatC = $("#etat-creer");
     var prerempli = new URLSearchParams(window.location.search).get("courriel");
+    // Venu de la page consultants : après la confirmation, Mon compte proposera le cabinet.
+    if (new URLSearchParams(window.location.search).get("type") === "cabinet") {
+      try { window.localStorage.setItem(CLE_TYPE, "cabinet"); } catch (e) { /* il choisira */ }
+      var titreC = $("#creer-pour");
+      if (titreC) titreC.hidden = false;
+    }
     if (prerempli) {
       $("#c-courriel").value = prerempli;
       dire(etatC, "Vous avez été invité : créez votre compte avec cette adresse, puis confirmez-la.");
@@ -196,10 +217,17 @@
     };
 
     var montrerEntreprise = function () {
-      V.mesEntreprises().then(function (r) {
+      Promise.all([V.mesEntreprises(), V.mesCabinets()]).then(function (x) {
+        var r = x[0], c = x[1];
         var boite = $("#compte-entreprise");
         if (!r.ok) { dire(etatM, r.erreur); return; }
-        if (!r.entreprises.length) { $("#form-entreprise").hidden = false; boite.hidden = true; return; }
+        var cab = c.ok && c.cabinets[0];
+        montrerCabinet(cab);
+        if (!r.entreprises.length) {
+          boite.hidden = true;
+          if (!cab) formulaireDepart();
+          return;
+        }
         $("#form-entreprise").hidden = true;
         var e = r.entreprises[0];
         $("#entreprise-nom").textContent = e.denomination;
@@ -209,6 +237,7 @@
         if (e.rang > 0) {
           f.textContent = "Formule « " + nomDuRang(e.rang) + " ».";
           ouvrir.href = vers(e.rang >= 2 ? "app/index.html" : "app/releve.html");
+          ouvrir.onclick = function () { V.choisir(e.entreprise_id); };
           ouvrir.hidden = false; tarifs.hidden = true;
         } else {
           f.textContent = "Pas encore d'abonnement : votre espace ouvrira avec lui.";
@@ -216,6 +245,69 @@
         }
         boite.hidden = false;
         equipe(e);
+        sonConsultant(e);
+      });
+    };
+
+    /* Le premier pas : nommer son entreprise, ou son cabinet de conseil. */
+    var formulaireDepart = function () {
+      var type = "";
+      try { type = window.localStorage.getItem(CLE_TYPE) || ""; } catch (e) { type = ""; }
+      var radio = $('input[name="e-type"][value="' + (type === "cabinet" ? "cabinet" : "entreprise") + '"]');
+      if (radio) radio.checked = true;
+      typeChoisi();
+      $("#form-entreprise").hidden = false;
+    };
+    var typeChoisi = function () {
+      var cabinet = ($('input[name="e-type"]:checked') || {}).value === "cabinet";
+      $("#e-nom-l").textContent = cabinet ? "Nom de votre cabinet" : "Nom de l'entreprise";
+      $("#e-explique").textContent = cabinet
+        ? "Vous y créerez l'espace de chacun de vos clients ; vous serez l'administrateur du cabinet."
+        : "C'est elle qui portera l'abonnement, le plan de veille et le registre ; vous en serez l'administrateur.";
+    };
+    var types = document.querySelectorAll('input[name="e-type"]');
+    for (var t = 0; t < types.length; t++) types[t].addEventListener("change", typeChoisi);
+
+    /* Votre cabinet (consultants) : un lien vers sa page. */
+    var montrerCabinet = function (cab) {
+      var b = $("#compte-cabinet");
+      if (!cab) { b.hidden = true; return; }
+      $("#cabinet-nom").textContent = cab.nom;
+      $("#cabinet-statut").textContent = cab.actif
+        ? "Abonnement consultant ouvert : vos clients ont la veille complète."
+        : "Abonnement consultant pas encore ouvert : votre page cabinet dit comment faire.";
+      b.hidden = false;
+    };
+
+    /* Le consultant de l'entreprise, et son accès (l'administrateur décide). */
+    var sonConsultant = function (e) {
+      var b = $("#entreprise-consultant");
+      V.rpc("mon_consultant", { e: e.entreprise_id }).then(function (r) {
+        var c = r.ok && r.donnees;
+        if (!c) { b.hidden = true; return; }
+        b.textContent = "";
+        var p = document.createElement("p");
+        p.textContent = c.acces
+          ? "Suivie par le cabinet « " + c.nom + " ». Il entre dans votre espace et peut y travailler ; ce qu'il y fait est inscrit au registre, à son nom."
+          : "Suivie par le cabinet « " + c.nom + " », mais vous avez coupé son accès : il ne voit plus rien de votre espace. Le registre garde ce qu'il y a fait.";
+        b.appendChild(p);
+        if (e.role === "admin") {
+          var dit = document.createElement("span"); dit.className = "etat-compte";
+          var bt = bouton(c.acces ? "Couper son accès" : "Lui rouvrir l'accès", function () {
+            if (c.acces && !bt.hasAttribute("data-sur")) {
+              bt.setAttribute("data-sur", ""); bt.textContent = "Confirmer : couper l'accès de « " + c.nom + " »"; return;
+            }
+            dit.textContent = "Enregistrement…";
+            V.rpc("espace_acces_consultant", { e: e.entreprise_id, acces: !c.acces }).then(function (x) {
+              if (!x.ok) { dit.textContent = x.erreur; return; }
+              sonConsultant(e);
+            });
+          });
+          var rg = document.createElement("p"); rg.className = "rangee";
+          rg.appendChild(bt); rg.appendChild(dit);
+          b.appendChild(rg);
+        }
+        b.hidden = false;
       });
     };
 
@@ -288,7 +380,7 @@
     fi.addEventListener("submit", function (ev) {
       ev.preventDefault();
       var etatI = $("#etat-inviter"), adresse = $("#i-courriel").value.trim().toLowerCase(), role = $("#i-role").value;
-      if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(adresse)) { dire(etatI, "Entrez une adresse électronique valable."); return; }
+      if (!adresseValable(adresse)) { dire(etatI, "Entrez une adresse électronique valable."); return; }
       dire(etatI, "Création…");
       V.mesEntreprises().then(function (m) {
         var e = m.ok && m.entreprises[0];
@@ -312,12 +404,7 @@
         });
       });
     });
-    $("#i-copier").addEventListener("click", function () {
-      var champ = $("#i-lien"), b = $("#i-copier");
-      var fini = function () { b.textContent = "Lien copié"; };
-      if (navigator.clipboard) navigator.clipboard.writeText(champ.value).then(fini, function () { champ.select(); });
-      else { champ.select(); try { document.execCommand("copy"); fini(); } catch (e) { /* le texte reste sélectionné */ } }
-    });
+    $("#i-copier").addEventListener("click", function () { copier($("#i-lien"), $("#i-copier")); });
 
     var montrer = function (s) {
       if (invitationEnAttente()) { window.location.replace(vers("compte/invitation.html")); return; }
@@ -370,14 +457,17 @@
       });
     });
 
-    // Nommer son entreprise : on en devient l'administrateur.
+    // Nommer son entreprise (on en devient l'administrateur), ou son cabinet.
     $("#form-entreprise").addEventListener("submit", function (e) {
       e.preventDefault();
       var nom = $("#e-nom").value.trim(), etatE = $("#etat-entreprise");
-      if (!nom) { dire(etatE, "Entrez le nom de votre entreprise."); return; }
+      var cabinet = ($('input[name="e-type"]:checked') || {}).value === "cabinet";
+      if (!nom) { dire(etatE, cabinet ? "Entrez le nom de votre cabinet." : "Entrez le nom de votre entreprise."); return; }
       dire(etatE, "Enregistrement…");
-      V.creerEntreprise(nom).then(function (r) {
+      (cabinet ? V.rpc("creer_cabinet", { nom: nom }) : V.creerEntreprise(nom)).then(function (r) {
         if (!r.ok) { dire(etatE, r.erreur); return; }
+        try { window.localStorage.removeItem(CLE_TYPE); } catch (x) { /* rien */ }
+        if (cabinet) { window.location.href = vers("compte/cabinet.html"); return; }
         dire(etatE, "");
         montrerEntreprise();
       });
@@ -472,6 +562,165 @@
         });
       });
     }
+  }
+
+  /* --- Mon cabinet (consultants) ----------------------------------------------
+     Ses clients et où ils en sont — des nombres et une date, jamais le
+     contenu de leurs registres —, en ajouter, inviter leur responsable,
+     entrer dans leur espace. */
+  var cabinetP = $("#cabinet-principal");
+  if (cabinetP) {
+    var etatCab = $("#cabinet-etat");
+    var CONTACT = cabinetP.getAttribute("data-contact") || "";
+    var cabinet = null;
+    var mk = function (balise, classe, texte) {
+      var x = document.createElement(balise);
+      if (classe) x.className = classe;
+      if (texte !== undefined) x.textContent = texte;
+      return x;
+    };
+    var pluriel = function (n, un, plusieurs) { return n + " " + (n > 1 ? plusieurs : un); };
+
+    // Inviter le responsable d'un client qui n'a pas encore de compte.
+    var inviterClient = function (carte, c) {
+      var f = mk("form", "admin-choix");
+      f.setAttribute("novalidate", "");
+      var id = "inv-" + c.id;
+      var lab = mk("label", "", "Adresse électronique de son responsable"); lab.htmlFor = id;
+      var champ = mk("input"); champ.type = "email"; champ.id = id; champ.autocomplete = "off"; champ.inputMode = "email"; champ.spellcheck = false;
+      var ok = mk("button", "bouton bouton-sobre", "Créer l'invitation"); ok.type = "submit";
+      var dit = mk("span", "etat-compte"); dit.setAttribute("role", "status");
+      f.appendChild(lab); f.appendChild(champ); f.appendChild(ok); f.appendChild(dit);
+      f.addEventListener("submit", function (ev) {
+        ev.preventDefault();
+        var adresse = champ.value.trim().toLowerCase();
+        if (!adresseValable(adresse)) { dit.textContent = "Entrez une adresse électronique valable."; return; }
+        ok.disabled = true; dit.textContent = "Création…";
+        V.rpc("inviter", { courriel: adresse, role: "admin", entreprise: c.id }).then(function (r) {
+          ok.disabled = false;
+          if (!r.ok) { dit.textContent = r.erreur; return; }
+          dit.textContent = "";
+          var adresseLien = V.pageDuSite("compte/invitation.html") + "#jeton=" + encodeURIComponent(r.donnees);
+          var boite = mk("div", "reserve reserve-ok");
+          var p1 = mk("p");
+          p1.appendChild(mk("strong", "", "Envoyez-lui ce lien."));
+          p1.appendChild(document.createTextNode(" Valable 7 jours, il ne sert qu'une fois : " + adresse +
+            " y crée son compte et devient l'administrateur de « " + c.denomination + " »."));
+          boite.appendChild(p1);
+          var l = mk("input"); l.type = "text"; l.readOnly = true; l.value = adresseLien; l.setAttribute("aria-label", "Le lien d'invitation");
+          boite.appendChild(l);
+          var rg = mk("p", "rangee"); rg.style.marginTop = "var(--t3)";
+          var cp = mk("button", "bouton bouton-accent", "Copier le lien"); cp.type = "button";
+          cp.addEventListener("click", function () { copier(l, cp); });
+          var mail = mk("a", "bouton bouton-sobre", "Écrire le courriel");
+          mail.href = "mailto:" + encodeURIComponent(adresse) +
+            "?subject=" + encodeURIComponent("Votre espace de veille réglementaire « " + c.denomination + " »") +
+            "&body=" + encodeURIComponent("Bonjour,\n\n" + cabinet.nom + " a ouvert l'espace de « " + c.denomination +
+              " » sur Vigie, l'outil de veille réglementaire que nous utilisons pour votre suivi QSE.\n\n" +
+              "Pour y entrer, ouvrez ce lien (valable 7 jours) :\n" + adresseLien +
+              "\n\nVous y créerez votre compte avec cette adresse : " + adresse +
+              ". Vous verrez votre plan de veille, les textes qui vous concernent et votre registre.\n");
+          rg.appendChild(cp); rg.appendChild(mail);
+          boite.appendChild(rg);
+          f.replaceWith(boite);
+        });
+      });
+      return f;
+    };
+
+    var carteClient = function (c) {
+      var carte = mk("article", "carte-connexion admin-entreprise");
+      carte.appendChild(mk("h3", "", c.denomination));
+      carte.appendChild(mk("p", "admin-details", "Espace créé le " + dateLongue(c.cree_le) + (c.naf ? " · code APE " + c.naf : " · code APE pas encore réglé")));
+      if (!c.acces) {
+        carte.appendChild(mk("p", "", "Ce client a coupé votre accès : vous ne voyez plus son espace. Lui seul peut le rouvrir, depuis son compte."));
+        return carte;
+      }
+      var etat = mk("p", "admin-formule");
+      if (c.actions_ouvertes) {
+        etat.appendChild(mk("strong", "", pluriel(c.actions_ouvertes, "action ouverte", "actions ouvertes")));
+        if (c.actions_en_retard) {
+          etat.appendChild(document.createTextNode(", dont "));
+          etat.appendChild(mk("span", "admin-alerte", c.actions_en_retard + " en retard"));
+        }
+        etat.appendChild(document.createTextNode("."));
+      } else {
+        etat.textContent = "Aucune action ouverte.";
+      }
+      carte.appendChild(etat);
+      carte.appendChild(mk("p", "admin-details", c.derniere_trace
+        ? "Dernière trace au registre le " + dateLongue(c.derniere_trace) + "."
+        : "Rien au registre pour l'instant."));
+      if (c.membres) {
+        carte.appendChild(mk("p", "admin-details", pluriel(c.membres, "personne de l'entreprise a", "personnes de l'entreprise ont") + " un compte."));
+      } else {
+        carte.appendChild(mk("p", "", "Votre client n'a pas encore de compte : invitez son responsable."));
+        carte.appendChild(inviterClient(carte, c));
+      }
+      var rg = mk("p", "rangee"); rg.style.marginTop = "var(--t3)";
+      if (cabinet.actif) {
+        var ouvrir = mk("a", "bouton bouton-accent", "Ouvrir son espace");
+        ouvrir.href = vers("app/index.html");
+        ouvrir.addEventListener("click", function () { V.choisir(c.id); });
+        rg.appendChild(ouvrir);
+      } else {
+        rg.appendChild(mk("span", "admin-details", "Son espace s'ouvre avec votre abonnement."));
+      }
+      carte.appendChild(rg);
+      return carte;
+    };
+
+    var chargerCabinet = function (message) {
+      V.rpc("cabinet_vue", { c: cabinet.id }).then(function (r) {
+        if (!r.ok) { etatCab.textContent = r.erreur; return; }
+        var d = r.donnees || {}, cl = d.clients || [];
+        cabinet = d.cabinet || cabinet;
+        $("#cabinet-titre").textContent = cabinet.nom;
+        var retard = cl.filter(function (c) { return c.actions_en_retard; }).length;
+        etatCab.textContent = message || (cl.length
+          ? pluriel(cl.length, "client", "clients") + (retard ? " — " + retard + " avec des actions en retard." : ", aucun en retard.")
+          : "Pas encore de client : ajoutez le premier ci-dessous.");
+        var inactif = $("#cabinet-inactif");
+        inactif.hidden = !!cabinet.actif;
+        if (!cabinet.actif) {
+          $("#cabinet-demander").href = "mailto:" + CONTACT + "?subject=" + encodeURIComponent("Ouvrir l'abonnement consultant — " + cabinet.nom) +
+            "&body=" + encodeURIComponent("Bonjour,\n\nPouvez-vous ouvrir l'abonnement consultant du cabinet « " + cabinet.nom +
+              " » ?\nCompte : " + ((V.utilisateur() || {}).courriel || "") + "\n");
+        }
+        var liste = $("#cabinet-clients"); liste.textContent = "";
+        cl.forEach(function (c) { liste.appendChild(carteClient(c)); });
+        $("#cabinet-vos-clients").hidden = !cl.length;
+        cabinetP.hidden = false;
+      });
+    };
+
+    $("#form-client").addEventListener("submit", function (ev) {
+      ev.preventDefault();
+      var nom = $("#cl-nom").value.trim(), dit = $("#etat-client");
+      if (!nom) { dit.textContent = "Entrez le nom de l'entreprise cliente."; return; }
+      dit.textContent = "Création…";
+      V.rpc("creer_entreprise_cliente", { cabinet: cabinet.id, denomination: nom }).then(function (r) {
+        if (!r.ok) { dit.textContent = r.erreur; return; }
+        $("#cl-nom").value = "";
+        dit.textContent = "L'espace de « " + nom + " » est créé. Ouvrez-le pour régler son plan, puis invitez son responsable.";
+        chargerCabinet();
+      });
+    });
+
+    V.session().then(function (s) {
+      if (!s) { window.location.replace(vers("connexion.html?retour=compte/cabinet.html")); return; }
+      V.mesCabinets().then(function (r) {
+        if (!r.ok) { etatCab.textContent = r.erreur; return; }
+        if (!r.cabinets.length) {
+          etatCab.textContent = "";
+          var sans = $("#cabinet-aucun"); sans.hidden = false;
+          return;
+        }
+        var c = r.cabinets[0];
+        cabinet = { id: c.cabinet_id, nom: c.nom, actif: c.actif };
+        chargerCabinet();
+      });
+    });
   }
 
   /* --- L'administration du service --------------------------------------------
@@ -572,6 +821,44 @@
       return carte;
     };
 
+    /* Un cabinet de conseil : ses clients, ses comptes, et son abonnement
+       consultant, ouvert ou fermé à la main tant que Stripe n'est pas là. */
+    var carteCabinet = function (c) {
+      var carte = el("article", "carte-connexion admin-entreprise");
+      carte.appendChild(el("h3", "", c.nom));
+      carte.appendChild(el("p", "admin-details", "Inscrit le " + date(c.cree_le) + " · " + c.clients + " client" + (c.clients > 1 ? "s" : "")));
+      var abos = c.abonnements || [];
+      var stripe = abos.filter(function (a) { return a.stripe && ["active", "trialing", "past_due"].indexOf(a.statut) !== -1; })[0];
+      var offert = abos.filter(function (a) { return !a.stripe && a.statut === "offert"; })[0];
+      var etat = el("p", "admin-formule");
+      etat.appendChild(el("strong", "", stripe || offert ? "Abonnement consultant ouvert" : "Abonnement consultant fermé"));
+      etat.appendChild(document.createTextNode(stripe ? " — payé chez Stripe (" + stripe.statut + ")." :
+        offert ? " — ouvert par vous : ses clients ont la veille complète." : " — ses clients n'ont pas accès à leur espace."));
+      carte.appendChild(etat);
+      if (!stripe) {
+        var rg = el("p", "rangee");
+        var dit = el("span", "etat-compte");
+        var b = el("button", "bouton bouton-sobre", offert ? "Fermer l'abonnement" : "Ouvrir l'abonnement");
+        b.type = "button";
+        b.addEventListener("click", function () {
+          b.disabled = true; dit.textContent = "Enregistrement…";
+          V.rpc("admin_abonnement_cabinet", { cabinet: c.id, ouvrir: !offert }).then(function (r) {
+            b.disabled = false;
+            if (!r.ok) { dit.textContent = r.erreur; return; }
+            charger("C'est enregistré pour le cabinet « " + c.nom + " ».");
+          });
+        });
+        rg.appendChild(b); rg.appendChild(dit);
+        carte.appendChild(rg);
+      }
+      var ul = el("ul", "admin-comptes");
+      (c.membres || []).forEach(function (m) {
+        ul.appendChild(ligneCompte(m.courriel, m.role === "admin" ? "administrateur du cabinet" : "membre du cabinet", m.confirme));
+      });
+      carte.appendChild(ul);
+      return carte;
+    };
+
     var charger = function (message) {
       V.adminVue().then(function (r) {
         if (!r.ok) {
@@ -579,12 +866,16 @@
           return;
         }
         var d = r.donnees || {}, ents = d.entreprises || [], seuls = d.sans_entreprise || [];
-        var avec = ents.filter(function (e) { return e.rang > 0; }).length;
+        var avec = ents.filter(function (e) { return e.rang > 0; }).length, nc = (d.cabinets || []).length;
         etatAd.textContent = message || (ents.length + " entreprise" + (ents.length > 1 ? "s" : "") + ", dont " +
-          avec + " avec une formule ; " + seuls.length + " compte" + (seuls.length > 1 ? "s" : "") + " sans entreprise.");
+          avec + " avec une formule ; " + nc + " cabinet" + (nc > 1 ? "s" : "") + " ; " +
+          seuls.length + " compte" + (seuls.length > 1 ? "s" : "") + " sans entreprise.");
         var liste = $("#admin-entreprises"); liste.textContent = "";
         if (!ents.length) liste.appendChild(el("p", "", "Aucune entreprise pour l'instant."));
         ents.forEach(function (e) { liste.appendChild(carteEntreprise(e)); });
+        var cabs = d.cabinets || [], lc = $("#admin-cabinets"); lc.textContent = "";
+        if (!cabs.length) lc.appendChild(el("p", "", "Aucun cabinet pour l'instant."));
+        cabs.forEach(function (c) { lc.appendChild(carteCabinet(c)); });
         var ul = $("#admin-seuls"); ul.textContent = "";
         if (!seuls.length) ul.appendChild(el("li", "", "Aucun."));
         seuls.forEach(function (c) {
@@ -632,6 +923,14 @@
       if (!s) { window.location.replace(vers("connexion.html?retour=compte/admin.html")); return; }
       moi = s.utilisateur;
       charger();
+      // L'application, dans son entreprise à soi (pas chez un client).
+      V.mesEntreprises().then(function (m) {
+        var b = $("#admin-app"), e = m.ok && m.entreprises[0];
+        if (!b || !e) return;
+        b.href = vers(e.rang >= 2 ? "app/index.html" : "app/releve.html");
+        b.addEventListener("click", function () { V.choisir(e.entreprise_id); });
+        b.hidden = false;
+      });
     });
   }
 })();

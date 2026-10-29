@@ -107,6 +107,16 @@ select 'null'`,
 select 'null'`,
   verifier_registre: (a) => `select coalesce(json_agg(t), '[]') from public.verifier_registre(${litteral(a.e)}) t`,
   mes_entreprises: () => "select coalesce(json_agg(t), '[]') from public.mes_entreprises() t",
+  mes_acces: () => "select coalesce(json_agg(t), '[]') from public.mes_acces() t",
+  mes_cabinets: () => "select coalesce(json_agg(t), '[]') from public.mes_cabinets() t",
+  cabinet_vue: (a) => `select public.cabinet_vue(${litteral(a.c)})`,
+  creer_cabinet: (a) => `select to_json(public.creer_cabinet(${litteral(a.nom)}))`,
+  creer_entreprise_cliente: (a) => `select to_json(public.creer_entreprise_cliente(${litteral(a.cabinet)}, ${litteral(a.denomination)}, ${litteral(a.naf)}))`,
+  mon_consultant: (a) => `select coalesce(public.mon_consultant(${litteral(a.e)}), 'null'::json)`,
+  espace_acces_consultant: (a) => `select public.espace_acces_consultant(${litteral(a.e)}, ${a.acces ? "true" : "false"}) \\g /dev/null
+select 'null'`,
+  admin_abonnement_cabinet: (a) => `select public.admin_abonnement_cabinet(${litteral(a.cabinet)}, ${a.ouvrir ? "true" : "false"}) \\g /dev/null
+select 'null'`,
   suis_administrateur: () => "select to_json(public.suis_administrateur())",
   admin_vue: () => "select public.admin_vue()",
   admin_abonnement: (a) => `select public.admin_abonnement(${litteral(a.entreprise)}, ${litteral(a.nouvelle_formule)}) \\g /dev/null

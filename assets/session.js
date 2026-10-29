@@ -7,7 +7,7 @@
      jamais être présenté comme telle : c'est une visite.
    - /app/  : l'espace d'un vrai compte. Sans session Supabase, on part à la
      connexion ; la formule est celle que l'entreprise a payée, lue dans la
-     base (mes_entreprises(), par assets/vigie.js).
+     base (mes_acces(), par assets/vigie.js) pour l'espace choisi.
 
    Ce qui protège les DONNÉES d'un abonné, ce sont les règles de la base
    (supabase/), pas ce voile : les pages elles-mêmes sont publiques, comme le
@@ -173,16 +173,30 @@
         window.location.replace(racine + "connexion.html?retour=" + encodeURIComponent(ici()));
         return;
       }
-      return window.VIGIE.mesEntreprises().then(function (r) {
+      return window.VIGIE.espaceChoisi().then(function (r) {
         if (!r.ok) {
           sansFormule("Votre espace n'a pas pu s'ouvrir", r.erreur, "Réessayer", ici());
           return;
         }
-        var e = r.entreprises[0];
+        var e = r.entreprise;
         if (!e) {
-          sansFormule("Il reste à nommer votre entreprise",
-            "C'est elle qui porte l'abonnement, le plan de veille et le registre. Cela se fait en une ligne, dans votre compte.",
-            "Mon compte", "compte/");
+          return window.VIGIE.mesCabinets().then(function (c) {
+            if (c.ok && c.cabinets.length) {
+              sansFormule("Choisissez d'abord un client",
+                "Vous entrez dans l'espace d'un client depuis votre cabinet : c'est là que vous les créez et les ouvrez.",
+                "Mon cabinet", "compte/cabinet.html");
+            } else {
+              sansFormule("Il reste à nommer votre entreprise",
+                "C'est elle qui porte l'abonnement, le plan de veille et le registre. Cela se fait en une ligne, dans votre compte.",
+                "Mon compte", "compte/");
+            }
+          });
+        }
+        consultant(e);
+        if (!e.rang && e.role === "consultant") {
+          sansFormule("L'abonnement de votre cabinet n'est pas encore ouvert",
+            "L'espace de « " + e.denomination + " » s'ouvre avec lui. Votre page cabinet dit comment l'ouvrir.",
+            "Mon cabinet", "compte/cabinet.html");
         } else if (!e.rang) {
           sansFormule("Votre espace ouvre avec l'abonnement",
             "Le compte de « " + e.denomination + " » est prêt. Choisissez votre formule : l'espace s'ouvre dès qu'elle est active.",
@@ -194,6 +208,24 @@
     });
   }
   function ici() { return CHEMIN.slice(CHEMIN.indexOf("/app/") + 1); }
+
+  /* Chez un client, le consultant le voit en haut de chaque écran : de qui
+     est cet espace, et le chemin du retour vers son cabinet. */
+  function consultant(e) {
+    var vrai = document.querySelector('.bandeau-demo[data-mode="compte"]');
+    if (!vrai || e.role !== "consultant") return;
+    vrai.textContent = "";
+    var fort = document.createElement("strong");
+    fort.textContent = "Espace de « " + e.denomination + " ».";
+    vrai.appendChild(fort);
+    vrai.appendChild(document.createTextNode(" Vous y êtes en tant que consultant" +
+      (e.cabinet ? " (" + e.cabinet + ")" : "") + " : ce que vous cochez entre à son registre, à votre nom. "));
+    var retour = document.createElement("a");
+    retour.href = racine + "compte/cabinet.html";
+    retour.textContent = "Revenir à mon cabinet";
+    vrai.appendChild(retour);
+    vrai.classList.add("bandeau-consultant");
+  }
 
   /* --- Sur la page des tarifs : ouvrir la démonstration ------------------------ */
   var bouton = document.getElementById("entrer-demo");

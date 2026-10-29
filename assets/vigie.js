@@ -172,6 +172,7 @@
   function deconnecter() {
     var s = lire();
     oublier();
+    try { window.localStorage.removeItem(CLE_CHOIX); } catch (e) { /* rien */ }
     if (!s) return Promise.resolve({ ok: true });
     return appel("/auth/v1/logout", { corps: {}, jeton: s.jeton }).then(function () { return { ok: true }; });
   }
@@ -243,6 +244,39 @@
     });
   }
 
+  /* Tous les espaces où la personne peut entrer : les siens d'abord, puis
+     ceux des clients de son cabinet (role « consultant »). L'espace ouvert
+     dans l'application est celui choisi en dernier (rangé dans le
+     navigateur), sinon le premier. Un seul appel par page. */
+  var CLE_CHOIX = "vigie-entreprise";
+  var acces = null;
+  function mesAcces() {
+    if (!acces) acces = rpc("mes_acces").then(function (r) {
+      if (!r.ok) { acces = null; return r; }
+      var l = Array.isArray(r.donnees) ? r.donnees : [];
+      l.sort(function (a, b) { return (a.role === "consultant") - (b.role === "consultant"); });
+      return { ok: true, acces: l };
+    });
+    return acces;
+  }
+  function choisir(id) {
+    try { window.localStorage.setItem(CLE_CHOIX, id); } catch (e) { /* on prendra le premier */ }
+  }
+  function espaceChoisi() {
+    return mesAcces().then(function (r) {
+      if (!r.ok) return r;
+      var c = null;
+      try { c = window.localStorage.getItem(CLE_CHOIX); } catch (e) { c = null; }
+      var e = r.acces.filter(function (x) { return x.entreprise_id === c; })[0] || r.acces[0] || null;
+      return { ok: true, entreprise: e, acces: r.acces };
+    });
+  }
+  function mesCabinets() {
+    return rpc("mes_cabinets").then(function (r) {
+      return r.ok ? { ok: true, cabinets: Array.isArray(r.donnees) ? r.donnees : [] } : r;
+    });
+  }
+
   function creerEntreprise(denomination) {
     return rpc("creer_entreprise", { denomination: denomination });
   }
@@ -264,6 +298,7 @@
     connecter: connecter, inscrire: inscrire, renvoyer: renvoyer, oubli: oubli,
     changer: changer, deconnecter: deconnecter, arrivee: arrivee,
     rpc: rpc, rpcPublic: rpcPublic, lire: lireTable, mesEntreprises: mesEntreprises, creerEntreprise: creerEntreprise,
+    mesAcces: mesAcces, espaceChoisi: espaceChoisi, choisir: choisir, mesCabinets: mesCabinets,
     suisAdministrateur: suisAdministrateur, adminVue: adminVue, adminAbonnement: adminAbonnement,
     pageDuSite: pageDuSite
   };

@@ -10,7 +10,8 @@
    d'office : aucun courriel ne part) :
      connexion → nommer son entreprise → réglages → plan → cocher, décocher
      → registre et sa chaîne → tableau de bord → un autre appareil (téléphone,
-     thème sombre) → l'administration lui est refusée → déconnexion.
+     thème sombre) → un collègue invité → l'administration lui est refusée
+     → un consultant (cabinet, client, il entre chez lui) → déconnexion.
    Puis tout est effacé : l'entreprise (registre compris, journalisé dans
    prive.purges) et le compte. Même si l'essai échoue.
 
@@ -29,6 +30,7 @@ const SECRETE = process.env.SUPABASE_SECRET_KEY || "";
 const BASE = process.env.SUPABASE_DB_URL || "";
 const ADRESSE = `essai-auto-${Date.now()}@example.com`;
 const COLLEGUE = ADRESSE.replace("@", "-collegue@");
+const CONSULTANT = ADRESSE.replace("@", "-consultant@");
 const MDP = randomBytes(18).toString("base64url");
 
 const lignes = [];
@@ -49,17 +51,24 @@ async function admin(methode, chemin, corps) {
   return { statut: 401, j: { msg: "clé secrète refusée" } };
 }
 
-let uid = "", uidCollegue = "";
+let uid = "", uidCollegue = "", uidConsultant = "";
 async function nettoyer() {
   if (!uid) return;
   try {
     sql(`select prive.purger_entreprise(m.entreprise_id) from public.membres_entreprise m where m.user_id = ${litteral(uid)}`);
-    for (const id of [uid, uidCollegue].filter(Boolean)) {
+    if (uidConsultant) {
+      // Le cabinet d'essai : ses clients (registre compris), puis lui-même.
+      sql(`select prive.purger_entreprise(e.id) from public.entreprises e join public.membres_consultant m
+             on m.consultant_id = e.consultant_id where m.user_id = ${litteral(uidConsultant)}`);
+      sql(`delete from public.consultants c using public.membres_consultant m
+             where m.consultant_id = c.id and m.user_id = ${litteral(uidConsultant)}`);
+    }
+    for (const id of [uid, uidCollegue, uidConsultant].filter(Boolean)) {
       const r = await admin("DELETE", `users/${id}`);
       if (r.statut >= 300) sql(`delete from auth.users where id = ${litteral(id)}`);
     }
-    ok(sql(`select count(*) from auth.users where id in (${[uid, uidCollegue].filter(Boolean).map(litteral).join(", ")})`) === "0",
-      "nettoyage : les comptes d'essai et leur entreprise sont effacés");
+    ok(sql(`select count(*) from auth.users where id in (${[uid, uidCollegue, uidConsultant].filter(Boolean).map(litteral).join(", ")})`) === "0",
+      "nettoyage : les comptes d'essai, leur entreprise et le cabinet sont effacés");
   } catch (e) {
     ok(false, "nettoyage : " + String(e.message || e).slice(0, 200));
   }
@@ -204,6 +213,32 @@ async function essai() {
     await p.goto(SITE + "compte/admin.html");
     await p.waitForFunction(() => /Réservé/.test(document.querySelector("#admin-etat").textContent), null, { timeout: 30000 });
     ok(await p.locator("#admin-liste").isHidden(), "un client n'ouvre pas l'administration");
+
+    // 7 bis. Un consultant : son cabinet, un client, l'abonnement ouvert, il entre chez le client.
+    const k = await admin("POST", "users", { email: CONSULTANT, password: MDP, email_confirm: true });
+    uidConsultant = k.j && k.j.id || "";
+    const pk = await contexte({ width: 390, height: 844 }, "dark");
+    await connecter(pk, CONSULTANT);
+    await pk.waitForURL(/compte\/$/, { timeout: 30000 });
+    await pk.waitForSelector("#form-entreprise:not([hidden])");
+    await pk.check('input[name="e-type"][value="cabinet"]');
+    await pk.fill("#e-nom", "Cabinet essai automatique");
+    await pk.click("#form-entreprise button[type=submit]");
+    await pk.waitForURL(/compte\/cabinet\.html/, { timeout: 30000 });
+    await pk.waitForSelector("#cabinet-principal:not([hidden])", { timeout: 30000 });
+    ok(await pk.locator("#cabinet-inactif").isVisible(), "un consultant crée son cabinet ; l'abonnement pas encore ouvert est dit en haut");
+    await pk.fill("#cl-nom", "Client essai automatique");
+    await pk.click("#form-client button[type=submit]");
+    await pk.waitForFunction(() => /Client essai automatique/.test(document.querySelector("#cabinet-clients").innerText), null, { timeout: 30000 });
+    ok(true, "il crée l'espace d'un client, qui apparaît dans « Vos clients »");
+    sql(`insert into public.abonnements (consultant_id, formule, periode, statut)
+           select consultant_id, 'consultant', 'mois', 'offert' from public.membres_consultant where user_id = ${litteral(uidConsultant)}`);
+    await pk.reload();
+    await pk.locator("#cabinet-clients article", { hasText: "Client essai automatique" }).locator("text=Ouvrir son espace").click();
+    await pk.waitForURL(/app\/index\.html/, { timeout: 30000 });
+    await pret(pk);
+    ok((await pk.locator(".bandeau-consultant").innerText()).includes("Espace de « Client essai automatique »"),
+      "abonnement ouvert : il entre chez son client, et le bandeau le dit");
 
     // 8. Déconnexion.
     await p.goto(SITE + "compte/");

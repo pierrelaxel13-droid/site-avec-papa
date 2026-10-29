@@ -2970,7 +2970,11 @@ a.defile:hover .avis-appel strong { text-decoration: underline; text-underline-o
 .admin-enveloppe { max-width: 72rem; }
 .admin-rappel { margin: 0 0 var(--t5); }
 .admin-grille { display: grid; gap: var(--t4); margin: var(--t4) 0 var(--t6); }
-@media (min-width: 62rem) { .admin-grille { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (min-width: 62rem) {
+  .admin-grille { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  /* Pas de case seule sur sa ligne : la dernière, si elle est seule, prend toute la largeur. */
+  .admin-grille > :last-child:nth-child(odd) { grid-column: 1 / -1; }
+}
 .admin-entreprise h3 { font-size: 1.25rem; margin: 0 0 var(--t1); overflow-wrap: anywhere; }
 .admin-details { color: var(--encre-douce); font-size: .92rem; }
 .admin-alerte { color: var(--ambre); font-weight: 600; }
@@ -2980,6 +2984,24 @@ a.defile:hover .avis-appel strong { text-decoration: underline; text-underline-o
 .admin-choix select { min-height: 2.75rem; padding: 0 .75rem; border-radius: var(--r2); border: 1px solid var(--filet);
   background: var(--carte); color: var(--encre); font: inherit; flex: 1 1 12rem; }
 .admin-choix .etat-compte { flex-basis: 100%; margin: 0; }
+.admin-choix input { min-height: 2.75rem; padding: 0 .9rem; border-radius: var(--r2); border: 1px solid var(--filet-fort);
+  background: var(--papier); color: var(--encre); font: inherit; flex: 1 1 14rem; min-width: 0; }
+.admin-entreprise .reserve input { width: 100%; margin-top: var(--t2); padding: .6rem .8rem; border-radius: var(--r2);
+  border: 1px solid var(--filet-fort); background: var(--papier); color: var(--encre); font: inherit; font-size: .9rem; }
+
+/* Lot 7 — le consultant : choisir entreprise ou cabinet, sa page, son bandeau. */
+.choix-type { border: 0; padding: 0; margin: var(--t3) 0; display: grid; gap: .5rem; }
+.choix-type legend { padding: 0; margin-bottom: .35rem; font-size: .9rem; font-weight: 600; color: var(--encre); }
+.choix-type label { display: flex; flex-wrap: wrap; align-items: baseline; gap: .2rem .6rem; cursor: pointer;
+  padding: .7rem 1rem; border: 1px solid var(--filet-fort); border-radius: var(--r2); font-weight: 600; }
+.choix-type label:has(input:checked) { border-color: var(--accent); background: var(--accent-clair); }
+.choix-type input { width: auto; padding: 0; margin: 0; flex: none; accent-color: var(--accent); }
+.choix-type .aide { flex-basis: 100%; font-weight: 400; color: var(--encre-douce); font-size: .9rem; padding-left: 1.6rem; }
+.compte-consultant { margin-top: var(--t4); padding-top: var(--t4); border-top: 1px solid var(--filet); }
+.compte-consultant .lien-nu { font: inherit; font-weight: 600; text-decoration: underline; }
+.etapes-cabinet { margin: 0 0 var(--t4); padding-left: 1.3rem; display: grid; gap: .3rem; color: var(--encre-douce); }
+#cabinet-inactif { margin-bottom: var(--t5); }
+.bandeau-consultant { background: var(--carte); border-bottom-color: var(--accent); }
 .admin-comptes { list-style: none; margin: 0; padding: 0; }
 .admin-comptes li { padding: var(--t3) 0; border-top: 1px solid var(--filet); display: grid; gap: .2rem; }
 .admin-comptes li:first-child { border-top: 0; }

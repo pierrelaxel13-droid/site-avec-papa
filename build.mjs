@@ -2543,7 +2543,7 @@ function pageConsultants() {
     <p class="heros-sous">Vous suivez des PME en QSE. ${esc(SITE.nom)} tient leur veille ; vous la livrez sous votre nom,
       vous gagnez du temps sur chaque client, et vous ajoutez une ligne de revenu récurrente à votre facturation.</p>
     <p class="rangee rangee-centre">
-      <a class="bouton bouton-accent" href="mailto:${esc(SITE.courriel)}?subject=${encodeURIComponent("Offre consultant")}">En parler</a>
+      <a class="bouton bouton-accent" href="compte/creer.html?type=cabinet">Créer mon compte consultant</a>
       <a class="bouton bouton-sobre" href="#grille">Voir la grille</a>
     </p>
   </div>
@@ -2666,10 +2666,12 @@ function pageConsultants() {
       <p class="reserve"><strong>Leurs données ne sont qu'à eux et à vous.</strong> Chaque entreprise sera isolée dans la
         base : elle ne verra que ses données, et vous, que celles de vos clients.</p>
     </div>
-    <p class="note-source" style="text-align:center;margin-top:var(--t4)">L'espace consultant ouvre avec les comptes
-      clients, à l'été 2027. Écrivez-nous pour être parmi les premiers équipés.</p>
+    <p class="note-source" style="text-align:center;margin-top:var(--t4)">L'espace consultant est ouvert : votre cabinet,
+      la liste de vos clients, leur espace. La marque blanche (votre logo, vos couleurs) arrive ensuite. Le paiement en
+      ligne aussi : d'ici là, nous ouvrons votre abonnement sur simple demande.</p>
     <p class="rangee rangee-centre" style="margin-top:var(--t4)">
-      <a class="bouton bouton-accent" href="mailto:${esc(SITE.courriel)}?subject=${encodeURIComponent("Offre consultant")}">En parler</a>
+      <a class="bouton bouton-accent" href="compte/creer.html?type=cabinet">Créer mon compte consultant</a>
+      <a class="bouton bouton-sobre" href="mailto:${esc(SITE.courriel)}?subject=${encodeURIComponent("Offre consultant")}">En parler</a>
     </p>
   </div>
 </section>`;
@@ -3843,6 +3845,8 @@ function pageCreer() {
     <div class="connexion connexion-seule">
       <form class="carte-connexion" id="form-creer" method="post" novalidate>
         <h2>Vos identifiants</h2>
+        <p class="reserve reserve-ok" id="creer-pour" hidden><strong>Compte consultant.</strong> Après la confirmation
+        de votre adresse, vous nommerez votre cabinet ; vous y créerez ensuite l'espace de chacun de vos clients.</p>
         ${comptesFermes()}
         <div id="creer-champs">
           <div class="champ">
@@ -3966,13 +3970,29 @@ function pageMonCompte() {
               <a class="bouton bouton-accent bouton-large" id="entreprise-ouvrir" href="../app/" hidden>Ouvrir mon espace</a>
               <a class="bouton bouton-accent bouton-large" id="entreprise-tarifs" href="../abonnement.html" hidden>Choisir ma formule</a>
             </p>
+            <div class="compte-consultant" id="entreprise-consultant" hidden></div>
+          </div>
+
+          <div id="compte-cabinet" hidden>
+            <p class="etiq" style="margin-top:var(--t4)">Votre cabinet</p>
+            <p class="compte-entreprise"><strong id="cabinet-nom"></strong></p>
+            <p id="cabinet-statut"></p>
+            <p class="rangee" style="margin-top:var(--t4)">
+              <a class="bouton bouton-accent bouton-large" href="cabinet.html">Ouvrir mon cabinet</a>
+            </p>
           </div>
 
           <form id="form-entreprise" method="post" novalidate hidden>
-            <p><strong>Dernière étape : le nom de votre entreprise.</strong>
-            C'est elle qui portera l'abonnement, le plan de veille et le registre ; vous en serez l'administrateur.</p>
+            <p><strong>Dernière étape : qui êtes-vous ?</strong> <span id="e-explique"></span></p>
+            <fieldset class="champ choix-type">
+              <legend>Vous êtes</legend>
+              <label><input type="radio" name="e-type" value="entreprise" checked> Une entreprise
+                <span class="aide">vous suivez votre propre veille</span></label>
+              <label><input type="radio" name="e-type" value="cabinet"> Un cabinet de conseil QSE
+                <span class="aide">vous suivez celle de vos clients</span></label>
+            </fieldset>
             <div class="champ">
-              <label for="e-nom">Nom de l'entreprise</label>
+              <label for="e-nom" id="e-nom-l">Nom de l'entreprise</label>
               <input type="text" id="e-nom" autocomplete="organization" maxlength="200" required>
             </div>
             <p class="rangee" style="margin-top:var(--t4)">
@@ -4085,6 +4105,68 @@ function pageInvitation() {
     racine: "../", zone: "public", corps, scripts: ["assets/compte.js"], installation: false });
 }
 
+/* Mon cabinet (compte/cabinet.html) : la page du consultant. Ses clients,
+   où ils en sont, en ajouter un, inviter son responsable, entrer chez lui.
+   La base ne lui donne que ses clients, et seulement ceux qui l'autorisent
+   (supabase/migrations/…_consultants.sql). */
+function pageCabinet() {
+  const corps = `
+<section class="heros heros-court">
+  <div class="enveloppe">
+    <div class="heros-texte"><p class="etiq">Mon cabinet</p><h1 id="cabinet-titre">Mon cabinet</h1></div>
+    <p class="heros-sous etat-compte" id="cabinet-etat" role="status">Un instant…</p>
+  </div>
+</section>
+<section class="section">
+  <div class="enveloppe admin-enveloppe">
+    ${comptesFermes()}
+    <div class="connexion connexion-seule" id="cabinet-aucun" hidden>
+      <div class="carte-connexion">
+        <h2>Vous n'avez pas encore de cabinet</h2>
+        <p>Il se crée en une ligne, dans votre compte : choisissez « Un cabinet de conseil QSE » et donnez son nom.</p>
+        <p class="rangee" style="margin-top:var(--t4)"><a class="bouton bouton-accent" href="./">Mon compte</a></p>
+      </div>
+    </div>
+    <div id="cabinet-principal" data-contact="${esc(SITE.courriel)}" hidden>
+      <div class="reserve" id="cabinet-inactif" hidden>
+        <p><strong>Votre abonnement consultant n'est pas encore ouvert.</strong> Le paiement en ligne n'existe pas
+        encore : nous l'ouvrons nous-mêmes, sur simple demande. Vous pouvez déjà créer l'espace de vos clients ;
+        ils s'ouvrent avec l'abonnement.</p>
+        <p class="rangee" style="margin-top:var(--t3)">
+          <a class="bouton bouton-accent" id="cabinet-demander" href="mailto:${esc(SITE.courriel)}">Demander l'ouverture</a>
+          <a class="bouton bouton-sobre" href="../consultants.html#grille">Voir les tarifs</a>
+        </p>
+      </div>
+      <div id="cabinet-vos-clients" hidden>
+        <h2 class="titre-section">Vos clients</h2>
+        <p class="aide-bas">Pour chacun : ses actions ouvertes, celles en retard, et la date de sa dernière trace au
+        registre. Vous ne voyez rien d'un client qui a coupé votre accès.</p>
+        <div class="admin-grille" id="cabinet-clients"></div>
+      </div>
+      <form class="carte-connexion" id="form-client" method="post" novalidate>
+        <h2>Ajouter un client</h2>
+        <ol class="etapes-cabinet">
+          <li>Créez son espace ici.</li>
+          <li>Ouvrez-le pour régler son plan de veille (code APE, situations).</li>
+          <li>Invitez son responsable : il crée son compte et voit tout. Il peut couper votre accès quand il veut.</li>
+        </ol>
+        <div class="champ">
+          <label for="cl-nom">Nom de l'entreprise cliente</label>
+          <input type="text" id="cl-nom" autocomplete="off" maxlength="200" required>
+        </div>
+        <p class="rangee"><button type="submit" class="bouton bouton-accent">Créer son espace</button></p>
+        <p class="etat-compte" id="etat-client" role="status"></p>
+      </form>
+      <p class="rangee rangee-centre" style="margin-top:var(--t5)">
+        <a class="bouton bouton-sobre" href="./">Mon compte</a>
+      </p>
+    </div>
+  </div>
+</section>`;
+  return page({ titre: `Mon cabinet | ${SITE.nom}`, description: `Votre cabinet de conseil sur ${SITE.nom}.`,
+    racine: "../", zone: "public", corps, scripts: ["assets/compte.js"], installation: false });
+}
+
 /* L'administration du service, pour l'administrateur seul : la base refuse
    les données à tout autre compte (supabase/migrations/…_administration.sql).
    Les entreprises, leur formule, leurs comptes — jamais leurs registres. */
@@ -4095,6 +4177,7 @@ function pageAdmin() {
   <div class="enveloppe">
     <div class="heros-texte"><h1>Administration</h1></div>
     <p class="heros-sous etat-compte" id="admin-etat" role="status">Chargement…</p>
+    <p class="rangee rangee-centre"><a class="bouton bouton-accent" id="admin-app" href="../app/" hidden>Ouvrir l'application</a></p>
   </div>
 </section>
 <section class="section">
@@ -4105,6 +4188,10 @@ function pageAdmin() {
       la base ne les donne pas à l'administrateur. Une formule « donnée par vous » ne touche jamais un abonnement payé chez Stripe.</p>
       <h2 class="titre-section">Les entreprises</h2>
       <div class="admin-grille" id="admin-entreprises"></div>
+      <h2 class="titre-section">Les cabinets de conseil</h2>
+      <p class="aide-bas">Tant que le paiement en ligne n'existe pas, c'est ici qu'on ouvre l'abonnement consultant
+      d'un cabinet : tous ses clients ont alors la veille complète.</p>
+      <div class="admin-grille" id="admin-cabinets"></div>
       <h2 class="titre-section">Le robot de collecte</h2>
       <p class="aide-bas" id="admin-robot-etat">Les derniers passages, du plus récent au plus ancien. Un passage
       « en alerte » a été mené au bout, mais quelque chose y est anormal : c'est écrit dessous.</p>
@@ -4495,6 +4582,7 @@ async function main() {
   await writeFile(join(SORTIE, "compte", "creer.html"), pageCreer());
   await writeFile(join(SORTIE, "compte", "oubli.html"), pageOubli());
   await writeFile(join(SORTIE, "compte", "admin.html"), pageAdmin());
+  await writeFile(join(SORTIE, "compte", "cabinet.html"), pageCabinet());
   await writeFile(join(SORTIE, "compte", "invitation.html"), pageInvitation());
 
   await writeFile(join(SORTIE, "app", "index.html"), appTableauBord(V, D, C, LIENS));

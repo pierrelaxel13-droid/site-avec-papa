@@ -135,13 +135,15 @@
   } else {
     V.session().then(function (s) {
       if (!s) return;                    // session.js renvoie à la connexion
-      return V.mesEntreprises().then(function (r) {
-        var e = r.ok && r.entreprises[0];
+      return V.espaceChoisi().then(function (r) {
+        var e = r.ok && r.entreprise;
         if (!e || !e.rang) return;       // session.js dit ce qui manque
         return V.rpc("espace_lire", { e: e.entreprise_id }).then(function (x) {
           if (!x.ok) { M.erreur = x.erreur; return; }
           var d = x.donnees || {};
-          M.espace = { id: e.entreprise_id, role: d.role, rang: d.rang, ecrit: !!d.ecrit, entreprise: d.entreprise };
+          // Un consultant n'est pas membre : il règle le plan de son client comme son administrateur.
+          M.espace = { id: e.entreprise_id, role: d.role || (e.role === "consultant" ? "consultant" : null),
+            rang: d.rang, ecrit: !!d.ecrit, entreprise: d.entreprise, cabinet: e.cabinet || null };
           memoire["pco-entreprise"] = reglagesDepuis(d.entreprise || {}, d.reponses);
           memoire["pco-alertes"] = (d.profil && d.profil.alertes) || null;
           memoire["pco-faits"] = d.faits || {};

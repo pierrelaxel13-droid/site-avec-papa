@@ -541,6 +541,66 @@ set local role authenticated;
 select tests.ok(tests.compte($$select 1 from public.mes_entreprises()$$) = 0, 'la personne retirée n''a plus accès à l''entreprise');
 reset role;
 
+-- =========================================================================
+-- 13. Un cabinet consultant, de bout en bout
+-- =========================================================================
+select tests.qui('00000000-0000-0000-0000-0000000000e4', 'seul@test.fr');
+set local role authenticated;
+select set_config('tests.cab', public.creer_cabinet('Cabinet S (essai)')::text, true);
+select tests.ok((select count(*) = 1 and bool_and(not actif) from public.mes_cabinets()), 'un consultant crée son cabinet (abonnement pas encore actif)');
+select set_config('tests.cli', public.creer_entreprise_cliente(current_setting('tests.cab')::uuid, 'Client S1 (essai)')::text, true);
+select tests.ok((select count(*) = 1 and bool_and(role = 'consultant' and rang = 0) from public.mes_acces()
+                 where entreprise_id = current_setting('tests.cli')::uuid), 'il crée l''espace d''un client, et y a accès comme consultant');
+select tests.ok((select json_array_length(public.cabinet_vue(current_setting('tests.cab')::uuid) -> 'clients')) = 1,
+  'son tableau de cabinet liste ce client');
+select public.espace_reglages(current_setting('tests.cli')::uuid, '{"naf": "43.21A", "contexte": ["salaries"]}');
+select tests.ok((select naf from public.entreprises where id = current_setting('tests.cli')::uuid) = '43.21A',
+  'il règle le plan de son client');
+select tests.refuse(format('select public.espace_fait(%L, %L, %L, null, true)', current_setting('tests.cli'), 'plan:t_sst', 'x'),
+  'sans abonnement du cabinet, pas de registre chez le client');
+reset role;
+
+select tests.qui('00000000-0000-0000-0000-0000000000a1', 'a_admin@test.fr');
+set local role authenticated;
+select tests.refuse(format('select public.cabinet_vue(%L)', current_setting('tests.cab')), 'une entreprise ne voit pas le tableau d''un cabinet');
+select tests.ok(tests.compte(format('select 1 from public.mes_acces() where entreprise_id = %L', current_setting('tests.cli'))) = 0,
+  'ni l''espace de ses clients');
+select tests.refuse(format('select public.admin_abonnement_cabinet(%L, true)', current_setting('tests.cab')), 'ni ne s''ouvre un abonnement de cabinet');
+reset role;
+
+select tests.qui('00000000-0000-0000-0000-0000000000f1', 'axel@test.fr');
+set local role authenticated;
+select public.admin_abonnement_cabinet(current_setting('tests.cab')::uuid, true);
+select tests.ok((public.admin_vue() -> 'cabinets')::text like '%Cabinet S (essai)%', 'l''administrateur voit le cabinet');
+reset role;
+select tests.ok(prive.rang_entreprise(current_setting('tests.cli')::uuid) = 3, 'abonnement du cabinet ouvert : son client a la formule complète');
+
+select tests.qui('00000000-0000-0000-0000-0000000000e4', 'seul@test.fr');
+set local role authenticated;
+select tests.ok(public.espace_fait(current_setting('tests.cli')::uuid, 'plan:t_sst', 'Revue (essai)', 't_sst', true) is not null,
+  'le consultant coche une revue chez son client');
+select set_config('tests.jeton3', public.inviter('neuf@test.fr', 'admin', current_setting('tests.cli')::uuid), true);
+reset role;
+
+select tests.qui('00000000-0000-0000-0000-0000000000e3', 'neuf@test.fr');
+set local role authenticated;
+select public.accepter_invitation(current_setting('tests.jeton3'));
+select tests.ok((public.mon_consultant(current_setting('tests.cli')::uuid) ->> 'nom') = 'Cabinet S (essai)', 'le client invité voit qui est son consultant');
+select public.espace_acces_consultant(current_setting('tests.cli')::uuid, false);
+reset role;
+
+select tests.qui('00000000-0000-0000-0000-0000000000e4', 'seul@test.fr');
+set local role authenticated;
+select tests.ok(tests.compte(format('select 1 from public.mes_acces() where entreprise_id = %L', current_setting('tests.cli'))) = 0,
+  'le client coupe l''accès : le consultant n''entre plus');
+select tests.refuse(format('select public.espace_lire(%L)', current_setting('tests.cli')), 'et ne lit plus rien');
+select tests.ok((select (c ->> 'acces')::boolean = false and json_typeof(c -> 'actions_ouvertes') = 'null'
+                 from json_array_elements(public.cabinet_vue(current_setting('tests.cab')::uuid) -> 'clients') c),
+  'son tableau garde le client, sans aucun chiffre');
+reset role;
+select tests.ok(tests.compte(format('select 1 from public.registre where entreprise_id = %L and auteur_nom = %L', current_setting('tests.cli'), 'seul@test.fr')) = 1,
+  'ce qu''il a fait reste au registre du client, à son nom');
+
 do $$ begin raise notice 'TOUS LES TESTS D''ISOLATION SONT PASSÉS'; end $$;
 
 rollback;

@@ -55,7 +55,8 @@ données » les applique.
   l'adresse du projet et la clé **publique** sont dans le site (`SITE.supabase`) ;
   la construction s'arrête si on y met la clé secrète.
 - **`/app/`** demande une session (sinon : la connexion) et ouvre selon la
-  formule payée par l'entreprise (`mes_entreprises()` dans la base).
+  formule payée par l'entreprise choisie (`mes_acces()` dans la base : les
+  siennes, et celles des clients pour un consultant).
   `/demo/` en est la copie ouverte à tous, avec le jeu d'essai.
 - **Les données d'un compte sont dans la base**, plus dans le navigateur
   (`assets/magasin.js`) : les réglages, les alertes, et chaque case « Fait »,
@@ -65,7 +66,8 @@ données » les applique.
   chaîne d'empreintes, dates de revue). Sans donnée, une phrase le dit.
 - **`compte/admin.html`** : l'administration, pour l'administrateur seul (une
   ligne dans `prive.administrateurs`, voir `supabase/README.md`) — les
-  entreprises, leurs comptes, donner ou retirer une formule. Jamais les registres.
+  entreprises, leurs comptes, donner ou retirer une formule, les cabinets et
+  leur abonnement ; en haut, « Ouvrir l'application ». Jamais les registres.
 - **Ce qui protège les données**, ce sont les règles de la base (RLS), pas les
   pages : elles sont publiques, comme le code du site.
 
@@ -83,6 +85,20 @@ données » les applique.
   usage) qu'il envoie lui-même — « Copier le lien » ou « Écrire le courriel ».
   Il change les rôles (membre, lecteur, administrateur) et retire quelqu'un ;
   la base garde toujours au moins un administrateur.
+
+- **Les consultants** (lot 7) : depuis `consultants.html`, « Créer mon compte
+  consultant » ; dans Mon compte, il choisit « Un cabinet de conseil QSE » et
+  arrive sur **`compte/cabinet.html`** (Mon cabinet) : ses clients (actions
+  ouvertes, en retard, dernière trace — jamais le contenu des registres), créer
+  l'espace d'un client, inviter son responsable, « Ouvrir son espace ». Dans
+  l'application, un bandeau dit « Espace de X — vous y êtes en tant que
+  consultant ». Le client voit son consultant dans Mon compte et peut couper
+  (ou rouvrir) son accès. L'abonnement consultant s'ouvre depuis
+  `compte/admin.html` (section « Les cabinets ») tant que Stripe n'est pas là ;
+  tous les clients du cabinet ont alors la veille complète. L'espace ouvert
+  dans l'application est choisi par `VIGIE.choisir()` / `espaceChoisi()`
+  (`mes_acces()` dans la base). Pas encore : la marque blanche (logo,
+  couleurs), et inviter des collègues dans le cabinet.
 
 **Pas encore fait** : l'envoi automatique des courriels (invitations,
 alertes) — il attend Brevo et le nom de domaine —, et l'abonnement

@@ -268,8 +268,12 @@ qu'il n'y a pas de client.
   bibliothèque) + `assets/compte.js` (pages `connexion.html`, `compte/creer.html`,
   `compte/oubli.html`, `compte/index.html` = Mon compte, où arrivent les liens
   des courriels ; `compte/admin.html` = l'administration, `admin_vue()` et
-  `admin_abonnement()` dans la base, refusées à tout autre compte). `assets/session.js` : sur `/app/`, session obligatoire et
-  formule lue par `mes_entreprises()` ; sur `/demo/`, la visite sans compte.
+  `admin_abonnement()` dans la base, refusées à tout autre compte ;
+  `compte/cabinet.html` = Mon cabinet, pour les consultants, `cabinet_vue()`).
+  `assets/session.js` : sur `/app/`, session obligatoire et formule de
+  l'espace choisi (`VIGIE.espaceChoisi()` → `mes_acces()` ; un consultant chez
+  son client a le rôle « consultant » et un bandeau qui le dit) ; sur
+  `/demo/`, la visite sans compte.
   La démo est copiée de `app/` vers `demo/` à la fin de build.mjs
   (`copieDemo()`), liens réécrits. Les pages publiques mènent à la démo par
   `demo/`, jamais par `app/`. `SITE.supabase` : adresse + clé PUBLIQUE
@@ -291,7 +295,7 @@ qu'il n'y a pas de client.
   (une seule fois dans la page). « Dernière collecte réussie » (`blocCollecte()`)
   prend l'heure de la dernière relève réussie dans COLLECTE_LE, posée par
   publie.yml ; `collecte()` (app.js) l'affiche en alerte après 26 h. Le bloc
-  consultant est éteint (`SITE.offreConsultant`) jusqu'aux lots 7 et 8.
+  consultant s'allume avec `SITE.offreConsultant` (allumé).
 - **Pages légales** : `legales.mjs` (mentions, confidentialité, CGV), liées
   dans le pied de chaque page. Versions de travail : relecture par un avocat
   obligatoire avant le lancement. Identité dans `SITE.editeur`.
