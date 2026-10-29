@@ -38,7 +38,7 @@ jobs:
         run: |
           mkdir -p /tmp/pw && cd /tmp/pw
           npm init -y > /dev/null
-          npm install --no-audit --no-fund playwright@1.48.2
+          npm install --no-audit --no-fund playwright@1.56.1
           npx playwright install --with-deps chromium
       - name: Le parcours d'un client, puis le nettoyage
         env:
