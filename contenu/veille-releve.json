@@ -97,8 +97,8 @@
   {
    "id": "ademe",
    "nom": "ADEME — nouvelles publications",
-   "entrees": 94,
-   "retenus": 2,
+   "entrees": 98,
+   "retenus": 3,
    "souci": null
   },
   {
@@ -112,7 +112,7 @@
    "id": "dgccrf",
    "nom": "DGCCRF — actualités",
    "entrees": 20,
-   "retenus": 1,
+   "retenus": 0,
    "souci": null
   },
   {
@@ -707,6 +707,30 @@
    ],
    "morceaux": 6,
    "dateTexte": "2006-06-26",
+   "vuLe": "2026-10-28"
+  },
+  {
+   "source": "ademe",
+   "sourceNom": "ADEME — nouvelles publications",
+   "genre": "actualite",
+   "id": "https://librairie.ademe.fr/economie-circulaire-et-dechets/9732-biodechets-comprendre-et-agir.html",
+   "titre": "Biodéchets : comprendre et agir",
+   "nature": "Publication officielle",
+   "date": "2026-10-28",
+   "corps": "<p>Infographie sur les biodéchets qui répond aux 3 questions suivantes : </p>\n\n<p>Que constate t-on ? Pourquoi agir ? Comment agir ?</p>",
+   "lien": "https://librairie.ademe.fr/economie-circulaire-et-dechets/9732-biodechets-comprendre-et-agir.html",
+   "domaines": [
+    {
+     "id": "dechets",
+     "nom": "Déchets, REP et économie circulaire",
+     "mots": [
+      "dechets",
+      "biodechets"
+     ]
+    }
+   ],
+   "morceaux": 1,
+   "dateTexte": "",
    "vuLe": "2026-10-28"
   },
   {
@@ -2266,29 +2290,6 @@
    "vuLe": "2026-10-23"
   },
   {
-   "source": "dgccrf",
-   "sourceNom": "DGCCRF — actualités",
-   "genre": "actualite",
-   "id": "https://www.economie.gouv.fr/dgccrf/laction-de-la-dgccrf/injonctions-et-sanctions/influenceurs-injonction-de-cesser-des-pratiques-commerciales-trompeuses-et-dutiliser-des",
-   "titre": "Influenceurs : injonction de cesser des pratiques commerciales trompeuses et d’utiliser des allégations de santé interdites sur le compte Instagram de DIVA REBECCA « @divarebeccaofficiel »",
-   "nature": "Publication officielle",
-   "date": "2026-10-23",
-   "corps": "",
-   "lien": "https://www.economie.gouv.fr/dgccrf/laction-de-la-dgccrf/injonctions-et-sanctions/influenceurs-injonction-de-cesser-des-pratiques-commerciales-trompeuses-et-dutiliser-des",
-   "domaines": [
-    {
-     "id": "consommation",
-     "nom": "Droit de la consommation et pratiques commerciales",
-     "mots": [
-      "pratiques commerciales"
-     ]
-    }
-   ],
-   "morceaux": 0,
-   "dateTexte": "",
-   "vuLe": "2026-10-23"
-  },
-  {
    "source": "jorf",
    "sourceNom": "Journal officiel de la République française",
    "genre": "texte",
@@ -3025,23 +3026,24 @@
    "source": "eurlex-l",
    "sourceNom": "Journal officiel de l'Union européenne — série L",
    "genre": "texte",
-   "id": "https://eur-lex.europa.eu/./legal-content/AUTO/?uri=CELEX:32026R2314",
-   "titre": "CELEX:32026R2314: Règlement d’exécution (UE) 2026/2314 de la Commission du 19 octobre 2026 portant abrogation d’un droit antidumping définitif sur les importations de vitrage solaire originaire de la République populaire de Chine à l’issue d’un réexamen au titre de l’expiration des mesures effectué en vertu de l’article 11, paragraphe 2, du règlement (UE) 2016/1036 du Parlement européen et du Conseil",
+   "id": "https://eur-lex.europa.eu/./legal-content/AUTO/?uri=CELEX:32026D2356",
+   "titre": "CELEX:32026D2356: Décision (UE) 2026/2356 du Conseil du 13 octobre 2026 relative à la signature du protocole additionnel à la convention du Conseil de l’Europe relative au blanchiment, au dépistage, à la saisie et à la confiscation des produits du crime et au financement du terrorisme, en ce qui concerne les mesures de lutte contre le blanchiment des capitaux",
    "nature": "Texte officiel",
    "date": "2026-10-20",
    "corps": "",
-   "lien": "https://eur-lex.europa.eu/./legal-content/AUTO/?uri=CELEX:32026R2314",
+   "lien": "https://eur-lex.europa.eu/./legal-content/AUTO/?uri=CELEX:32026D2356",
    "domaines": [
     {
-     "id": "douane",
-     "nom": "Douane et échanges internationaux",
+     "id": "finance",
+     "nom": "Services financiers, assurance et LCB-FT",
      "mots": [
-      "importation"
+      "lutte contre le blanchiment",
+      "financement du terrorisme"
      ]
     }
    ],
    "morceaux": 0,
-   "dateTexte": "2026-10-19",
+   "dateTexte": "2026-10-13",
    "vuLe": "2026-10-20"
   },
   {
