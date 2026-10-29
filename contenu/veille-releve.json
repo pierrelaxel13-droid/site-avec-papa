@@ -3025,24 +3025,23 @@
    "source": "eurlex-l",
    "sourceNom": "Journal officiel de l'Union européenne — série L",
    "genre": "texte",
-   "id": "https://eur-lex.europa.eu/./legal-content/AUTO/?uri=CELEX:32026D2356",
-   "titre": "CELEX:32026D2356: Décision (UE) 2026/2356 du Conseil du 13 octobre 2026 relative à la signature du protocole additionnel à la convention du Conseil de l’Europe relative au blanchiment, au dépistage, à la saisie et à la confiscation des produits du crime et au financement du terrorisme, en ce qui concerne les mesures de lutte contre le blanchiment des capitaux",
+   "id": "https://eur-lex.europa.eu/./legal-content/AUTO/?uri=CELEX:32026R2314",
+   "titre": "CELEX:32026R2314: Règlement d’exécution (UE) 2026/2314 de la Commission du 19 octobre 2026 portant abrogation d’un droit antidumping définitif sur les importations de vitrage solaire originaire de la République populaire de Chine à l’issue d’un réexamen au titre de l’expiration des mesures effectué en vertu de l’article 11, paragraphe 2, du règlement (UE) 2016/1036 du Parlement européen et du Conseil",
    "nature": "Texte officiel",
    "date": "2026-10-20",
    "corps": "",
-   "lien": "https://eur-lex.europa.eu/./legal-content/AUTO/?uri=CELEX:32026D2356",
+   "lien": "https://eur-lex.europa.eu/./legal-content/AUTO/?uri=CELEX:32026R2314",
    "domaines": [
     {
-     "id": "finance",
-     "nom": "Services financiers, assurance et LCB-FT",
+     "id": "douane",
+     "nom": "Douane et échanges internationaux",
      "mots": [
-      "lutte contre le blanchiment",
-      "financement du terrorisme"
+      "importation"
      ]
     }
    ],
    "morceaux": 0,
-   "dateTexte": "2026-10-13",
+   "dateTexte": "2026-10-19",
    "vuLe": "2026-10-20"
   },
   {
