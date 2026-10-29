@@ -43,11 +43,16 @@ import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { execFile } from "node:child_process";
 import { promisify } from "node:util";
+import { controle } from "./controles.mjs";
 
 const execFileP = promisify(execFile);
 const RACINE = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const TRAVAIL = join(RACINE, ".releve");
 const SORTIE = join(RACINE, "contenu", "veille-releve.json");
+/* Le bilan du passage, pour son journal (outils/journal-collecte.mjs). Il
+   n'est pas commité : il change à chaque passage. */
+const BILAN = process.env.BILAN || join(RACINE, "releve-bilan.json");
+const ecrireBilan = (b) => writeFile(BILAN, JSON.stringify({ le: new Date().toISOString(), ...b }, null, 1));
 
 /* --- Arguments ------------------------------------------------------------ */
 const args = process.argv.slice(2);
@@ -415,7 +420,7 @@ async function relevéDila(V, s, depuis) {
       console.log(`      ${a.date} : ${diagnostic(e)}`);
     }
   }
-  return { entrees, retenus };
+  return { entrees, retenus, derniere: archives[0].date };
 }
 
 /* --- Trouver le vrai flux d'une source muette ------------------------------ */
@@ -657,10 +662,12 @@ async function main() {
 
   const tout = [];
   const rapport = [];
+  let joDerniere = "";
   for (const s of SOURCES) {
     process.stdout.write(`  ${s.id.padEnd(16)} `);
     try {
       const r = s.type === "dila" ? await relevéDila(V, s, depuis) : await relevéFlux(V, s, depuis);
+      if (s.id === "jorf" && r.derniere) joDerniere = r.derniere;
       tout.push(...r.retenus);
       rapport.push({ id: s.id, nom: s.nom, entrees: r.entrees, retenus: r.retenus.length, souci: r.souci || null });
       console.log(`${r.entrees} lus, ${r.retenus.length} retenus` + (r.souci ? `  ← ${r.souci}` : ""));
@@ -672,6 +679,8 @@ async function main() {
   }
 
   if (!tout.length) {
+    await ecrireBilan({ statut: "echouee", examines: SOURCES.length, retenus: 0, nouveaux: 0, rapport,
+      alertes: [{ niveau: "grave", source: "", quoi: "Aucune entrée retenue, sur aucune source : rien n'a été écrit." }] });
     console.error("\nAucune entrée retenue : rien n'est écrit.\n" +
       "Le fichier contenu/veille-releve.json n'est pas touché, et l'application\n" +
       "continuera d'afficher « aucune relève ». C'est voulu : mieux vaut une page\n" +
@@ -708,7 +717,15 @@ async function main() {
     r.souci += ` — ${repris.length} texte${repris.length > 1 ? "s" : ""} de la relève précédente conservé${repris.length > 1 ? "s" : ""}`;
     console.log(`  ${r.id.padEnd(16)} muette : ${repris.length} textes de la relève précédente conservés`);
   }
-  if (muettes.size) propres.sort((a, b) => (a.vuLe < b.vuLe ? 1 : (a.vuLe > b.vuLe ? -1 : (a.titre < b.titre ? -1 : 1))));
+  /* Les contrôles de vraisemblance (outils/controles.mjs). Le JO muet à ce
+     passage-ci n'est pas « sans JO » : on prend alors le dernier qu'on
+     connaissait. */
+  const joDernier = joDerniere ||
+    AVANT.filter((t) => t.source === "jorf").map((t) => t.date || t.vuLe).sort().pop() || "";
+  const { alertes, nouveaux } = controle({ rapport, propres, avant: AVANT, sources: SOURCES, depuis,
+    aujourdhui: new Date().toISOString().slice(0, 10), joDernier });
+  for (const a of alertes) console.log(`  ${a.niveau === "grave" ? "GRAVE" : "attention"} : ${a.quoi}`);
+  propres.sort((a, b) => (a.vuLe < b.vuLe ? 1 : (a.vuLe > b.vuLe ? -1 : (a.titre < b.titre ? -1 : 1))));
 
   await writeFile(SORTIE, JSON.stringify({
     licence: "Textes officiels de la République française — Licence Ouverte. " +
@@ -720,6 +737,8 @@ async function main() {
   }, null, 1));
 
   if (!GARDER) await rm(TRAVAIL, { recursive: true, force: true });
+  await ecrireBilan({ statut: alertes.length ? "alerte" : "reussie", examines: SOURCES.length,
+    retenus: propres.length, nouveaux, joDernier, rapport, alertes });
 
   const parGenre = propres.reduce((a, t) => ((a[t.genre] = (a[t.genre] || 0) + 1), a), {});
   console.log(`\n${propres.length} textes écrits dans contenu/veille-releve.json` +

@@ -10,3 +10,6 @@ node_modules/
 
 # Le paquet des codes, téléchargé puis extrait par outils/codes.mjs.
 .codes/
+
+# Le bilan d'un passage du robot (outils/veille.mjs) : il change à chaque fois.
+releve-bilan.json

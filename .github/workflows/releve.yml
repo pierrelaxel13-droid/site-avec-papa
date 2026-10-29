@@ -60,6 +60,13 @@ jobs:
         with:
           node-version: "22"
 
+      # Les contrôles de vraisemblance (outils/controles.mjs) sont testés à
+      # chaque passage : un contrôle cassé ne doit jamais se taire.
+      - name: Les contrôles du robot, testés
+        run: |
+          echo "DEBUT=$(date -u +%Y-%m-%dT%H:%M:%SZ)" >> "$GITHUB_ENV"
+          node outils/controles.test.mjs
+
       # La Haute Autorité de santé envoie son certificat sans le certificat
       # intermédiaire qui le relie à une autorité reconnue. Un navigateur va le
       # chercher tout seul ; Node, non, et refuse la connexion. On fait ce que
@@ -163,7 +170,7 @@ jobs:
 
       - name: Commiter ce qui a bougé
         run: |
-          rm -f construction.log construction-essai.log releve-flux.log releve-codes.log vraie-releve.json
+          rm -f construction.log construction-essai.log releve-flux.log vraie-releve.json
           if [ -z "$(git status --porcelain contenu/)" ]; then
             echo "Rien n'a changé : pas de commit."
             exit 0
@@ -177,3 +184,15 @@ jobs:
           git add contenu/
           git commit -m "Relève du $(date -u +%d/%m/%Y\ à\ %H:%M) UTC"
           git push
+
+      # Le journal : une ligne par passage dans la base (table collectes), même
+      # si le passage a échoué. Une alerte grave fait échouer l'action — donc
+      # un courriel — mais au passage du matin seulement : un par jour au plus.
+      - name: Inscrire le passage au journal (et prévenir si c'est grave)
+        if: always()
+        env:
+          SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+          QUOTIDIEN: ${{ (github.event.schedule == '42 5 * * *' || github.event_name == 'workflow_dispatch') && 'oui' || 'non' }}
+          ETAT_DU_PASSAGE: ${{ job.status }}
+          CODES_LOG: releve-codes.log
+        run: node outils/journal-collecte.mjs

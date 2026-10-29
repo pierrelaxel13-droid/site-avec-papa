@@ -109,6 +109,25 @@ franchise de TVA : « TVA non applicable, art. 293 B du CGI » (`SITE.tva` ;
 mettre "ht" le jour où la TVA est facturée). Montants dans `FORMULES`
 (build.mjs) — la construction vérifie que l'année vaut dix mois.
 
+## Le robot de collecte : ses contrôles et son journal
+
+Chaque heure, `outils/veille.mjs` relit 14 jours sur les 25 sources (action
+« Relève »). Puis :
+
+- **`outils/controles.mjs`** compare au passage précédent et signale ce qui
+  n'est pas normal : source vérifiée muette, source qui répond vide, source
+  qui perd plus de la moitié de ses textes, pas de Journal officiel depuis
+  3 jours, relevé qui s'effondre, date à venir. Une source qui chute, ou un
+  relevé qui s'effondre, **garde ses textes d'avant** : le site ne perd rien.
+  Testé à chaque passage (`node outils/controles.test.mjs`).
+- **`outils/journal-collecte.mjs`** inscrit le passage dans la table
+  `collectes` (statut réussi / en alerte / échoué, textes, nouveaux, alertes,
+  détail par source) — visible dans `compte/admin.html`, section « Le robot ».
+- **Les alertes graves** (JO absent 3 jours, relevé effondré, source vérifiée
+  muette 24 passages de suite, robot arrêté avant la fin) font échouer
+  l'action au passage du matin : GitHub envoie alors un courriel — un par jour
+  au plus.
+
 ## Les captures de l'accueil
 
 Les écrans montrés sur la page d'accueil sont de **vraies captures** de

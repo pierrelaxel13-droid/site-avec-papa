@@ -4105,6 +4105,10 @@ function pageAdmin() {
       la base ne les donne pas à l'administrateur. Une formule « donnée par vous » ne touche jamais un abonnement payé chez Stripe.</p>
       <h2 class="titre-section">Les entreprises</h2>
       <div class="admin-grille" id="admin-entreprises"></div>
+      <h2 class="titre-section">Le robot de collecte</h2>
+      <p class="aide-bas" id="admin-robot-etat">Les derniers passages, du plus récent au plus ancien. Un passage
+      « en alerte » a été mené au bout, mais quelque chose y est anormal : c'est écrit dessous.</p>
+      <div class="carte-connexion"><ul class="admin-comptes admin-collectes" id="admin-collectes"></ul></div>
       <h2 class="titre-section">Les comptes sans entreprise</h2>
       <p class="aide-bas">Inscrits, mais qui n'ont pas encore nommé leur entreprise.</p>
       <div class="carte-connexion"><ul class="admin-comptes" id="admin-seuls"></ul></div>

@@ -591,6 +591,40 @@
           ul.appendChild(ligneCompte(c.courriel, "inscrit le " + date(c.inscrit_le), c.confirme));
         });
         admin.hidden = false;
+        robot();
+      });
+    };
+
+    /* Le robot de collecte : les 24 derniers passages (table collectes). */
+    var ETATS = { reussie: "Réussi", alerte: "En alerte", echouee: "Échoué", en_cours: "En cours" };
+    var robot = function () {
+      V.lire("collectes", "select=id,debut,statut,retenus,erreurs,details&order=id.desc&limit=24").then(function (r) {
+        var ul = $("#admin-collectes");
+        ul.textContent = "";
+        if (!r.ok) { ul.appendChild(el("li", "", r.erreur)); return; }
+        var l = r.donnees || [];
+        if (!l.length) { ul.appendChild(el("li", "", "Aucun passage inscrit pour l'instant : le journal commence au prochain passage du robot.")); return; }
+        var minutes = Math.round((Date.now() - new Date(l[0].debut).getTime()) / 60000);
+        var n = function (s) { return l.filter(function (c) { return c.statut === s; }).length; };
+        $("#admin-robot-etat").textContent = "Dernier passage il y a " + (minutes < 90 ? minutes + " min" : Math.round(minutes / 60) + " h") +
+          " : " + (ETATS[l[0].statut] || l[0].statut).toLowerCase() + "." + (minutes > 26 * 60 ? " C'est trop vieux : le robot ne tourne plus." : "") +
+          " Sur les " + l.length + " derniers passages : " + n("reussie") + " réussi" + (n("reussie") > 1 ? "s" : "") + ", " +
+          n("alerte") + " en alerte, " + n("echouee") + " échoué" + (n("echouee") > 1 ? "s" : "") + ".";
+        // On ne détaille que ce qui cloche : c'est ce qu'on vient voir.
+        var aVoir = l.filter(function (c) { return c.statut !== "reussie"; }).slice(0, 8);
+        if (!aVoir.length) { ul.appendChild(el("li", "", "Rien d'anormal sur ces passages.")); return; }
+        aVoir.forEach(function (c) {
+          var li = el("li", "admin-compte collecte-" + c.statut);
+          var quand = new Date(c.debut).toLocaleString("fr-FR", { day: "numeric", month: "long", hour: "2-digit", minute: "2-digit" });
+          var d = c.details || {};
+          li.appendChild(el("span", "admin-courriel", quand + " — " + (ETATS[c.statut] || c.statut)));
+          li.appendChild(el("span", "admin-details", c.retenus + " textes dans le relevé · " + (d.nouveaux || 0) + " nouveau" + ((d.nouveaux || 0) > 1 ? "x" : "")));
+          (c.erreurs || []).forEach(function (a) {
+            li.appendChild(el("span", "admin-details" + (a.niveau === "grave" ? " admin-alerte" : ""), (a.niveau === "grave" ? "Grave : " : "") + a.quoi));
+          });
+          if (d.passage) { var a = el("a", "", "Voir le passage chez GitHub"); a.href = d.passage; a.target = "_blank"; a.rel = "noopener"; li.appendChild(a); }
+          ul.appendChild(li);
+        });
       });
     };
 

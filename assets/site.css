@@ -2984,6 +2984,8 @@ a.defile:hover .avis-appel strong { text-decoration: underline; text-underline-o
 .admin-comptes li { padding: var(--t3) 0; border-top: 1px solid var(--filet); display: grid; gap: .2rem; }
 .admin-comptes li:first-child { border-top: 0; }
 .admin-courriel { font-weight: 600; overflow-wrap: anywhere; }
+.admin-collectes .collecte-alerte .admin-courriel { color: var(--ambre); }
+.admin-collectes .collecte-echouee .admin-courriel { color: var(--rouge, #c0392b); }
 .admin-comptes .lien-nu { justify-self: start; font: inherit; font-size: .92rem; text-decoration: underline; }
 
 /* Qualifier un texte : trois choix, puis l'action qui en découle. */
