@@ -97,8 +97,8 @@
   {
    "id": "ademe",
    "nom": "ADEME — nouvelles publications",
-   "entrees": 98,
-   "retenus": 3,
+   "entrees": 100,
+   "retenus": 4,
    "souci": null
   },
   {
@@ -160,8 +160,8 @@
   {
    "id": "ansm",
    "nom": "ANSM — actualités",
-   "entrees": 0,
-   "retenus": 0,
+   "entrees": 1,
+   "retenus": 1,
    "souci": null
   },
   {
@@ -202,7 +202,8 @@
    ],
    "morceaux": 3,
    "dateTexte": "2026-10-26",
-   "vuLe": "2026-10-29"
+   "vuLe": "2026-10-29",
+   "vuA": "2026-10-29T00:00:00Z"
   },
   {
    "source": "jorf",
@@ -226,7 +227,8 @@
    ],
    "morceaux": 3,
    "dateTexte": "2026-10-26",
-   "vuLe": "2026-10-29"
+   "vuLe": "2026-10-29",
+   "vuA": "2026-10-29T00:00:00Z"
   },
   {
    "source": "jorf",
@@ -250,7 +252,8 @@
    ],
    "morceaux": 3,
    "dateTexte": "2026-10-27",
-   "vuLe": "2026-10-29"
+   "vuLe": "2026-10-29",
+   "vuA": "2026-10-29T00:00:00Z"
   },
   {
    "source": "jorf",
@@ -274,7 +277,8 @@
    ],
    "morceaux": 3,
    "dateTexte": "2026-10-27",
-   "vuLe": "2026-10-29"
+   "vuLe": "2026-10-29",
+   "vuA": "2026-10-29T00:00:00Z"
   },
   {
    "source": "jorf",
@@ -298,7 +302,8 @@
    ],
    "morceaux": 3,
    "dateTexte": "2026-10-27",
-   "vuLe": "2026-10-29"
+   "vuLe": "2026-10-29",
+   "vuA": "2026-10-29T00:00:00Z"
   },
   {
    "source": "jorf",
@@ -322,7 +327,8 @@
    ],
    "morceaux": 3,
    "dateTexte": "2026-10-27",
-   "vuLe": "2026-10-29"
+   "vuLe": "2026-10-29",
+   "vuA": "2026-10-29T00:00:00Z"
   },
   {
    "source": "jorf",
@@ -346,7 +352,8 @@
    ],
    "morceaux": 1,
    "dateTexte": "",
-   "vuLe": "2026-10-29"
+   "vuLe": "2026-10-29",
+   "vuA": "2026-10-29T00:00:00Z"
   },
   {
    "source": "anses",
@@ -376,7 +383,8 @@
    ],
    "morceaux": 1,
    "dateTexte": "",
-   "vuLe": "2026-10-29"
+   "vuLe": "2026-10-29",
+   "vuA": "2026-10-29T00:00:00Z"
   },
   {
    "source": "anses",
@@ -406,7 +414,8 @@
    ],
    "morceaux": 1,
    "dateTexte": "",
-   "vuLe": "2026-10-29"
+   "vuLe": "2026-10-29",
+   "vuA": "2026-10-29T00:00:00Z"
   },
   {
    "source": "anses",
@@ -436,7 +445,8 @@
    ],
    "morceaux": 1,
    "dateTexte": "",
-   "vuLe": "2026-10-29"
+   "vuLe": "2026-10-29",
+   "vuA": "2026-10-29T00:00:00Z"
   },
   {
    "source": "anses",
@@ -466,7 +476,8 @@
    ],
    "morceaux": 1,
    "dateTexte": "",
-   "vuLe": "2026-10-29"
+   "vuLe": "2026-10-29",
+   "vuA": "2026-10-29T00:00:00Z"
   },
   {
    "source": "anses",
@@ -496,7 +507,8 @@
    ],
    "morceaux": 1,
    "dateTexte": "",
-   "vuLe": "2026-10-29"
+   "vuLe": "2026-10-29",
+   "vuA": "2026-10-29T00:00:00Z"
   },
   {
    "source": "anses",
@@ -526,7 +538,8 @@
    ],
    "morceaux": 1,
    "dateTexte": "",
-   "vuLe": "2026-10-29"
+   "vuLe": "2026-10-29",
+   "vuA": "2026-10-29T00:00:00Z"
   },
   {
    "source": "anses",
@@ -556,7 +569,8 @@
    ],
    "morceaux": 1,
    "dateTexte": "",
-   "vuLe": "2026-10-29"
+   "vuLe": "2026-10-29",
+   "vuA": "2026-10-29T00:00:00Z"
   },
   {
    "source": "cnil",
@@ -579,7 +593,8 @@
    ],
    "morceaux": 1,
    "dateTexte": "",
-   "vuLe": "2026-10-29"
+   "vuLe": "2026-10-29",
+   "vuA": "2026-10-29T00:00:00Z"
   },
   {
    "source": "jorf",
@@ -603,7 +618,8 @@
    ],
    "morceaux": 4,
    "dateTexte": "2026-10-26",
-   "vuLe": "2026-10-29"
+   "vuLe": "2026-10-29",
+   "vuA": "2026-10-29T00:00:00Z"
   },
   {
    "source": "jorf",
@@ -627,7 +643,32 @@
    ],
    "morceaux": 3,
    "dateTexte": "2026-10-28",
-   "vuLe": "2026-10-29"
+   "vuLe": "2026-10-29",
+   "vuA": "2026-10-29T00:00:00Z"
+  },
+  {
+   "source": "ansm",
+   "sourceNom": "ANSM — actualités",
+   "genre": "actualite",
+   "id": "https://ansm.sante.fr/actualites/rappel-de-deux-lots-de-medicaments-a-base-daflibercept-destines-a-linjection-dans-loeil-en-ophtalmologie",
+   "titre": "Rappel de deux lots de médicaments à base d’aflibercept destinés à l’injection dans l’œil en ophtalmologie",
+   "nature": "Publication officielle",
+   "date": "2026-10-29",
+   "corps": "Publié le 29/10/2026",
+   "lien": "https://ansm.sante.fr/actualites/rappel-de-deux-lots-de-medicaments-a-base-daflibercept-destines-a-linjection-dans-loeil-en-ophtalmologie",
+   "domaines": [
+    {
+     "id": "pharma",
+     "nom": "Produits de santé et dispositifs médicaux",
+     "mots": [
+      "medicaments"
+     ]
+    }
+   ],
+   "morceaux": 1,
+   "dateTexte": "",
+   "vuLe": "2026-10-29",
+   "vuA": "2026-10-29T20:21:58Z"
   },
   {
    "source": "jorf",
@@ -659,7 +700,8 @@
    ],
    "morceaux": 9,
    "dateTexte": "2025-08-13",
-   "vuLe": "2026-10-28"
+   "vuLe": "2026-10-28",
+   "vuA": "2026-10-28T00:00:00Z"
   },
   {
    "source": "jorf",
@@ -683,7 +725,8 @@
    ],
    "morceaux": 3,
    "dateTexte": "2026-10-23",
-   "vuLe": "2026-10-28"
+   "vuLe": "2026-10-28",
+   "vuA": "2026-10-28T00:00:00Z"
   },
   {
    "source": "jorf",
@@ -707,7 +750,8 @@
    ],
    "morceaux": 6,
    "dateTexte": "2006-06-26",
-   "vuLe": "2026-10-28"
+   "vuLe": "2026-10-28",
+   "vuA": "2026-10-28T00:00:00Z"
   },
   {
    "source": "ademe",
@@ -731,7 +775,8 @@
    ],
    "morceaux": 1,
    "dateTexte": "",
-   "vuLe": "2026-10-28"
+   "vuLe": "2026-10-28",
+   "vuA": "2026-10-28T00:00:00Z"
   },
   {
    "source": "eurlex-l",
@@ -754,7 +799,8 @@
    ],
    "morceaux": 0,
    "dateTexte": "2026-10-28",
-   "vuLe": "2026-10-28"
+   "vuLe": "2026-10-28",
+   "vuA": "2026-10-28T00:00:00Z"
   },
   {
    "source": "eurlex-l",
@@ -777,7 +823,8 @@
    ],
    "morceaux": 0,
    "dateTexte": "2026-10-28",
-   "vuLe": "2026-10-28"
+   "vuLe": "2026-10-28",
+   "vuA": "2026-10-28T00:00:00Z"
   },
   {
    "source": "eurlex-l",
@@ -800,7 +847,8 @@
    ],
    "morceaux": 0,
    "dateTexte": "2026-10-28",
-   "vuLe": "2026-10-28"
+   "vuLe": "2026-10-28",
+   "vuA": "2026-10-28T00:00:00Z"
   },
   {
    "source": "jorf",
@@ -824,7 +872,8 @@
    ],
    "morceaux": 15,
    "dateTexte": "2020-08-07",
-   "vuLe": "2026-10-28"
+   "vuLe": "2026-10-28",
+   "vuA": "2026-10-28T00:00:00Z"
   },
   {
    "source": "jorf",
@@ -848,7 +897,8 @@
    ],
    "morceaux": 11,
    "dateTexte": "2022-11-21",
-   "vuLe": "2026-10-28"
+   "vuLe": "2026-10-28",
+   "vuA": "2026-10-28T00:00:00Z"
   },
   {
    "source": "jorf",
@@ -872,7 +922,8 @@
    ],
    "morceaux": 15,
    "dateTexte": "2023-10-10",
-   "vuLe": "2026-10-28"
+   "vuLe": "2026-10-28",
+   "vuA": "2026-10-28T00:00:00Z"
   },
   {
    "source": "jorf",
@@ -896,7 +947,8 @@
    ],
    "morceaux": 1,
    "dateTexte": "2023-10-10",
-   "vuLe": "2026-10-28"
+   "vuLe": "2026-10-28",
+   "vuA": "2026-10-28T00:00:00Z"
   },
   {
    "source": "jorf",
@@ -920,7 +972,8 @@
    ],
    "morceaux": 3,
    "dateTexte": "2026-10-26",
-   "vuLe": "2026-10-28"
+   "vuLe": "2026-10-28",
+   "vuA": "2026-10-28T00:00:00Z"
   },
   {
    "source": "jorf",
@@ -944,7 +997,8 @@
    ],
    "morceaux": 10,
    "dateTexte": "2026-10-26",
-   "vuLe": "2026-10-28"
+   "vuLe": "2026-10-28",
+   "vuA": "2026-10-28T00:00:00Z"
   },
   {
    "source": "jorf",
@@ -968,7 +1022,32 @@
    ],
    "morceaux": 2,
    "dateTexte": "2026-09-03",
-   "vuLe": "2026-10-28"
+   "vuLe": "2026-10-28",
+   "vuA": "2026-10-28T00:00:00Z"
+  },
+  {
+   "source": "ademe",
+   "sourceNom": "ADEME — nouvelles publications",
+   "genre": "actualite",
+   "id": "https://librairie.ademe.fr/societe-et-politiques-publiques/9733-engager-et-impliquer-mes-elus-dans-le-programme-territoire-engage-transition-ecologique.html",
+   "titre": "Engager et impliquer mes élus dans le programme Territoire Engagé Transition Ecologique",
+   "nature": "Publication officielle",
+   "date": "2026-10-28",
+   "corps": "<p>Infographie sur l'engagement des élus dans le programme TETE qui répond aux 3 questions suivantes : </p>\n\n<p>Que constate t-on ? Pourquoi agir ? Comment agir ?</p>",
+   "lien": "https://librairie.ademe.fr/societe-et-politiques-publiques/9733-engager-et-impliquer-mes-elus-dans-le-programme-territoire-engage-transition-ecologique.html",
+   "domaines": [
+    {
+     "id": "env_general",
+     "nom": "Environnement — socle commun",
+     "mots": [
+      "transition ecologique"
+     ]
+    }
+   ],
+   "morceaux": 1,
+   "dateTexte": "",
+   "vuLe": "2026-10-28",
+   "vuA": "2026-10-29T20:21:58Z"
   },
   {
    "source": "jorf",
@@ -992,7 +1071,8 @@
    ],
    "morceaux": 117,
    "dateTexte": "2025-12-30",
-   "vuLe": "2026-10-28"
+   "vuLe": "2026-10-28",
+   "vuA": "2026-10-28T00:00:00Z"
   },
   {
    "source": "jorf",
@@ -1016,7 +1096,8 @@
    ],
    "morceaux": 1178,
    "dateTexte": "2025-12-17",
-   "vuLe": "2026-10-28"
+   "vuLe": "2026-10-28",
+   "vuA": "2026-10-28T00:00:00Z"
   },
   {
    "source": "jorf",
@@ -1047,7 +1128,8 @@
    ],
    "morceaux": 1,
    "dateTexte": "",
-   "vuLe": "2026-10-27"
+   "vuLe": "2026-10-27",
+   "vuA": "2026-10-27T00:00:00Z"
   },
   {
    "source": "jorf",
@@ -1071,7 +1153,8 @@
    ],
    "morceaux": 1,
    "dateTexte": "",
-   "vuLe": "2026-10-27"
+   "vuLe": "2026-10-27",
+   "vuA": "2026-10-27T00:00:00Z"
   },
   {
    "source": "jorf",
@@ -1095,7 +1178,8 @@
    ],
    "morceaux": 1,
    "dateTexte": "",
-   "vuLe": "2026-10-27"
+   "vuLe": "2026-10-27",
+   "vuA": "2026-10-27T00:00:00Z"
   },
   {
    "source": "jorf",
@@ -1119,7 +1203,8 @@
    ],
    "morceaux": 1,
    "dateTexte": "",
-   "vuLe": "2026-10-27"
+   "vuLe": "2026-10-27",
+   "vuA": "2026-10-27T00:00:00Z"
   },
   {
    "source": "eurlex-l",
@@ -1142,7 +1227,8 @@
    ],
    "morceaux": 0,
    "dateTexte": "2026-10-15",
-   "vuLe": "2026-10-27"
+   "vuLe": "2026-10-27",
+   "vuA": "2026-10-27T00:00:00Z"
   },
   {
    "source": "jorf",
@@ -1167,7 +1253,8 @@
    ],
    "morceaux": 25,
    "dateTexte": "2017-05-06",
-   "vuLe": "2026-10-27"
+   "vuLe": "2026-10-27",
+   "vuA": "2026-10-27T00:00:00Z"
   },
   {
    "source": "ademe",
@@ -1190,7 +1277,8 @@
    ],
    "morceaux": 1,
    "dateTexte": "",
-   "vuLe": "2026-10-27"
+   "vuLe": "2026-10-27",
+   "vuA": "2026-10-27T00:00:00Z"
   },
   {
    "source": "jorf",
@@ -1214,7 +1302,8 @@
    ],
    "morceaux": 9,
    "dateTexte": "2022-09-14",
-   "vuLe": "2026-10-26"
+   "vuLe": "2026-10-26",
+   "vuA": "2026-10-26T00:00:00Z"
   },
   {
    "source": "jorf",
@@ -1238,7 +1327,8 @@
    ],
    "morceaux": 14,
    "dateTexte": "2026-10-16",
-   "vuLe": "2026-10-26"
+   "vuLe": "2026-10-26",
+   "vuA": "2026-10-26T00:00:00Z"
   },
   {
    "source": "jorf",
@@ -1262,7 +1352,8 @@
    ],
    "morceaux": 8,
    "dateTexte": "2026-10-20",
-   "vuLe": "2026-10-26"
+   "vuLe": "2026-10-26",
+   "vuA": "2026-10-26T00:00:00Z"
   },
   {
    "source": "jorf",
@@ -1286,7 +1377,8 @@
    ],
    "morceaux": 6,
    "dateTexte": "2026-10-21",
-   "vuLe": "2026-10-26"
+   "vuLe": "2026-10-26",
+   "vuA": "2026-10-26T00:00:00Z"
   },
   {
    "source": "jorf",
@@ -1310,7 +1402,8 @@
    ],
    "morceaux": 3,
    "dateTexte": "2026-10-23",
-   "vuLe": "2026-10-26"
+   "vuLe": "2026-10-26",
+   "vuA": "2026-10-26T00:00:00Z"
   },
   {
    "source": "jorf",
@@ -1334,7 +1427,8 @@
    ],
    "morceaux": 3,
    "dateTexte": "2025-10-29",
-   "vuLe": "2026-10-26"
+   "vuLe": "2026-10-26",
+   "vuA": "2026-10-26T00:00:00Z"
   },
   {
    "source": "jorf",
@@ -1358,7 +1452,8 @@
    ],
    "morceaux": 4,
    "dateTexte": "1996-09-05",
-   "vuLe": "2026-10-26"
+   "vuLe": "2026-10-26",
+   "vuA": "2026-10-26T00:00:00Z"
   },
   {
    "source": "jorf",
@@ -1382,7 +1477,8 @@
    ],
    "morceaux": 3,
    "dateTexte": "2026-10-07",
-   "vuLe": "2026-10-26"
+   "vuLe": "2026-10-26",
+   "vuA": "2026-10-26T00:00:00Z"
   },
   {
    "source": "eurlex-l",
@@ -1405,7 +1501,8 @@
    ],
    "morceaux": 0,
    "dateTexte": "2026-10-26",
-   "vuLe": "2026-10-26"
+   "vuLe": "2026-10-26",
+   "vuA": "2026-10-26T00:00:00Z"
   },
   {
    "source": "eurlex-l",
@@ -1428,7 +1525,8 @@
    ],
    "morceaux": 0,
    "dateTexte": "2026-10-26",
-   "vuLe": "2026-10-26"
+   "vuLe": "2026-10-26",
+   "vuA": "2026-10-26T00:00:00Z"
   },
   {
    "source": "eurlex-l",
@@ -1451,7 +1549,8 @@
    ],
    "morceaux": 0,
    "dateTexte": "2026-10-26",
-   "vuLe": "2026-10-26"
+   "vuLe": "2026-10-26",
+   "vuA": "2026-10-26T00:00:00Z"
   },
   {
    "source": "eurlex-l",
@@ -1474,7 +1573,8 @@
    ],
    "morceaux": 0,
    "dateTexte": "2026-10-07",
-   "vuLe": "2026-10-26"
+   "vuLe": "2026-10-26",
+   "vuA": "2026-10-26T00:00:00Z"
   },
   {
    "source": "eurlex-l",
@@ -1497,7 +1597,8 @@
    ],
    "morceaux": 0,
    "dateTexte": "2026-10-26",
-   "vuLe": "2026-10-26"
+   "vuLe": "2026-10-26",
+   "vuA": "2026-10-26T00:00:00Z"
   },
   {
    "source": "jorf",
@@ -1521,7 +1622,8 @@
    ],
    "morceaux": 7,
    "dateTexte": "2002-12-30",
-   "vuLe": "2026-10-26"
+   "vuLe": "2026-10-26",
+   "vuA": "2026-10-26T00:00:00Z"
   },
   {
    "source": "jorf",
@@ -1545,7 +1647,8 @@
    ],
    "morceaux": 14,
    "dateTexte": "2007-05-11",
-   "vuLe": "2026-10-26"
+   "vuLe": "2026-10-26",
+   "vuA": "2026-10-26T00:00:00Z"
   },
   {
    "source": "jorf",
@@ -1569,7 +1672,8 @@
    ],
    "morceaux": 14,
    "dateTexte": "2013-12-23",
-   "vuLe": "2026-10-26"
+   "vuLe": "2026-10-26",
+   "vuA": "2026-10-26T00:00:00Z"
   },
   {
    "source": "jorf",
@@ -1593,7 +1697,8 @@
    ],
    "morceaux": 24,
    "dateTexte": "2016-05-11",
-   "vuLe": "2026-10-26"
+   "vuLe": "2026-10-26",
+   "vuA": "2026-10-26T00:00:00Z"
   },
   {
    "source": "jorf",
@@ -1617,7 +1722,8 @@
    ],
    "morceaux": 3,
    "dateTexte": "2026-10-23",
-   "vuLe": "2026-10-26"
+   "vuLe": "2026-10-26",
+   "vuA": "2026-10-26T00:00:00Z"
   },
   {
    "source": "jorf",
@@ -1641,7 +1747,8 @@
    ],
    "morceaux": 61,
    "dateTexte": "2000-12-23",
-   "vuLe": "2026-10-26"
+   "vuLe": "2026-10-26",
+   "vuA": "2026-10-26T00:00:00Z"
   },
   {
    "source": "jorf",
@@ -1665,7 +1772,8 @@
    ],
    "morceaux": 26,
    "dateTexte": "2006-06-28",
-   "vuLe": "2026-10-26"
+   "vuLe": "2026-10-26",
+   "vuA": "2026-10-26T00:00:00Z"
   },
   {
    "source": "jorf",
@@ -1689,7 +1797,8 @@
    ],
    "morceaux": 71,
    "dateTexte": "2010-05-12",
-   "vuLe": "2026-10-26"
+   "vuLe": "2026-10-26",
+   "vuA": "2026-10-26T00:00:00Z"
   },
   {
    "source": "jorf",
@@ -1713,7 +1822,8 @@
    ],
    "morceaux": 116,
    "dateTexte": "2020-12-14",
-   "vuLe": "2026-10-26"
+   "vuLe": "2026-10-26",
+   "vuA": "2026-10-26T00:00:00Z"
   },
   {
    "source": "jorf",
@@ -1737,7 +1847,8 @@
    ],
    "morceaux": 54,
    "dateTexte": "2019-10-02",
-   "vuLe": "2026-10-26"
+   "vuLe": "2026-10-26",
+   "vuA": "2026-10-26T00:00:00Z"
   },
   {
    "source": "jorf",
@@ -1761,7 +1872,8 @@
    ],
    "morceaux": 70,
    "dateTexte": "2021-05-26",
-   "vuLe": "2026-10-26"
+   "vuLe": "2026-10-26",
+   "vuA": "2026-10-26T00:00:00Z"
   },
   {
    "source": "jorf",
@@ -1785,7 +1897,8 @@
    ],
    "morceaux": 3,
    "dateTexte": "2026-10-15",
-   "vuLe": "2026-10-25"
+   "vuLe": "2026-10-25",
+   "vuA": "2026-10-25T00:00:00Z"
   },
   {
    "source": "jorf",
@@ -1809,7 +1922,8 @@
    ],
    "morceaux": 7,
    "dateTexte": "2022-12-16",
-   "vuLe": "2026-10-25"
+   "vuLe": "2026-10-25",
+   "vuA": "2026-10-25T00:00:00Z"
   },
   {
    "source": "jorf",
@@ -1833,7 +1947,8 @@
    ],
    "morceaux": 3,
    "dateTexte": "2026-10-22",
-   "vuLe": "2026-10-25"
+   "vuLe": "2026-10-25",
+   "vuA": "2026-10-25T00:00:00Z"
   },
   {
    "source": "jorf",
@@ -1857,7 +1972,8 @@
    ],
    "morceaux": 3,
    "dateTexte": "2026-10-22",
-   "vuLe": "2026-10-25"
+   "vuLe": "2026-10-25",
+   "vuA": "2026-10-25T00:00:00Z"
   },
   {
    "source": "jorf",
@@ -1881,7 +1997,8 @@
    ],
    "morceaux": 23,
    "dateTexte": "2020-10-28",
-   "vuLe": "2026-10-25"
+   "vuLe": "2026-10-25",
+   "vuA": "2026-10-25T00:00:00Z"
   },
   {
    "source": "eurlex-l",
@@ -1904,7 +2021,8 @@
    ],
    "morceaux": 0,
    "dateTexte": "2026-10-23",
-   "vuLe": "2026-10-25"
+   "vuLe": "2026-10-25",
+   "vuA": "2026-10-25T00:00:00Z"
   },
   {
    "source": "eurlex-l",
@@ -1927,7 +2045,8 @@
    ],
    "morceaux": 0,
    "dateTexte": "2026-10-23",
-   "vuLe": "2026-10-25"
+   "vuLe": "2026-10-25",
+   "vuA": "2026-10-25T00:00:00Z"
   },
   {
    "source": "jorf",
@@ -1951,7 +2070,8 @@
    ],
    "morceaux": 130,
    "dateTexte": "2006-12-21",
-   "vuLe": "2026-10-25"
+   "vuLe": "2026-10-25",
+   "vuA": "2026-10-25T00:00:00Z"
   },
   {
    "source": "jorf",
@@ -1975,7 +2095,8 @@
    ],
    "morceaux": 3,
    "dateTexte": "2026-10-22",
-   "vuLe": "2026-10-24"
+   "vuLe": "2026-10-24",
+   "vuA": "2026-10-24T00:00:00Z"
   },
   {
    "source": "jorf",
@@ -1999,7 +2120,8 @@
    ],
    "morceaux": 3,
    "dateTexte": "2026-10-08",
-   "vuLe": "2026-10-24"
+   "vuLe": "2026-10-24",
+   "vuA": "2026-10-24T00:00:00Z"
   },
   {
    "source": "jorf",
@@ -2023,7 +2145,8 @@
    ],
    "morceaux": 1,
    "dateTexte": "",
-   "vuLe": "2026-10-24"
+   "vuLe": "2026-10-24",
+   "vuA": "2026-10-24T00:00:00Z"
   },
   {
    "source": "jorf",
@@ -2047,7 +2170,8 @@
    ],
    "morceaux": 1,
    "dateTexte": "",
-   "vuLe": "2026-10-24"
+   "vuLe": "2026-10-24",
+   "vuA": "2026-10-24T00:00:00Z"
   },
   {
    "source": "jorf",
@@ -2071,7 +2195,8 @@
    ],
    "morceaux": 9,
    "dateTexte": "2022-11-14",
-   "vuLe": "2026-10-23"
+   "vuLe": "2026-10-23",
+   "vuA": "2026-10-23T00:00:00Z"
   },
   {
    "source": "jorf",
@@ -2095,7 +2220,8 @@
    ],
    "morceaux": 3,
    "dateTexte": "2026-10-16",
-   "vuLe": "2026-10-23"
+   "vuLe": "2026-10-23",
+   "vuA": "2026-10-23T00:00:00Z"
   },
   {
    "source": "jorf",
@@ -2119,7 +2245,8 @@
    ],
    "morceaux": 6,
    "dateTexte": "2003-05-20",
-   "vuLe": "2026-10-23"
+   "vuLe": "2026-10-23",
+   "vuA": "2026-10-23T00:00:00Z"
   },
   {
    "source": "jorf",
@@ -2143,7 +2270,8 @@
    ],
    "morceaux": 3,
    "dateTexte": "2026-10-21",
-   "vuLe": "2026-10-23"
+   "vuLe": "2026-10-23",
+   "vuA": "2026-10-23T00:00:00Z"
   },
   {
    "source": "jorf",
@@ -2167,7 +2295,8 @@
    ],
    "morceaux": 3,
    "dateTexte": "2024-07-08",
-   "vuLe": "2026-10-23"
+   "vuLe": "2026-10-23",
+   "vuA": "2026-10-23T00:00:00Z"
   },
   {
    "source": "jorf",
@@ -2191,7 +2320,8 @@
    ],
    "morceaux": 3,
    "dateTexte": "2026-10-08",
-   "vuLe": "2026-10-23"
+   "vuLe": "2026-10-23",
+   "vuA": "2026-10-23T00:00:00Z"
   },
   {
    "source": "jorf",
@@ -2215,7 +2345,8 @@
    ],
    "morceaux": 1,
    "dateTexte": "",
-   "vuLe": "2026-10-23"
+   "vuLe": "2026-10-23",
+   "vuA": "2026-10-23T00:00:00Z"
   },
   {
    "source": "jorf",
@@ -2239,7 +2370,8 @@
    ],
    "morceaux": 4,
    "dateTexte": "2019-12-06",
-   "vuLe": "2026-10-23"
+   "vuLe": "2026-10-23",
+   "vuA": "2026-10-23T00:00:00Z"
   },
   {
    "source": "jorf",
@@ -2263,7 +2395,8 @@
    ],
    "morceaux": 42,
    "dateTexte": "2020-03-04",
-   "vuLe": "2026-10-23"
+   "vuLe": "2026-10-23",
+   "vuA": "2026-10-23T00:00:00Z"
   },
   {
    "source": "jorf",
@@ -2287,7 +2420,8 @@
    ],
    "morceaux": 2,
    "dateTexte": "2021-01-21",
-   "vuLe": "2026-10-23"
+   "vuLe": "2026-10-23",
+   "vuA": "2026-10-23T00:00:00Z"
   },
   {
    "source": "jorf",
@@ -2311,7 +2445,8 @@
    ],
    "morceaux": 13,
    "dateTexte": "2026-07-27",
-   "vuLe": "2026-10-23"
+   "vuLe": "2026-10-23",
+   "vuA": "2026-10-23T00:00:00Z"
   },
   {
    "source": "jorf",
@@ -2336,7 +2471,8 @@
    ],
    "morceaux": 16,
    "dateTexte": "2012-08-14",
-   "vuLe": "2026-10-22"
+   "vuLe": "2026-10-22",
+   "vuA": "2026-10-22T00:00:00Z"
   },
   {
    "source": "eurlex-l",
@@ -2359,7 +2495,8 @@
    ],
    "morceaux": 0,
    "dateTexte": "2026-10-21",
-   "vuLe": "2026-10-22"
+   "vuLe": "2026-10-22",
+   "vuA": "2026-10-22T00:00:00Z"
   },
   {
    "source": "eurlex-l",
@@ -2389,7 +2526,8 @@
    ],
    "morceaux": 0,
    "dateTexte": "2026-10-22",
-   "vuLe": "2026-10-22"
+   "vuLe": "2026-10-22",
+   "vuA": "2026-10-22T00:00:00Z"
   },
   {
    "source": "jorf",
@@ -2413,7 +2551,8 @@
    ],
    "morceaux": 20,
    "dateTexte": "2011-05-26",
-   "vuLe": "2026-10-22"
+   "vuLe": "2026-10-22",
+   "vuA": "2026-10-22T00:00:00Z"
   },
   {
    "source": "jorf",
@@ -2437,7 +2576,8 @@
    ],
    "morceaux": 5,
    "dateTexte": "2026-08-21",
-   "vuLe": "2026-10-22"
+   "vuLe": "2026-10-22",
+   "vuA": "2026-10-22T00:00:00Z"
   },
   {
    "source": "jorf",
@@ -2461,7 +2601,8 @@
    ],
    "morceaux": 116,
    "dateTexte": "2023-12-26",
-   "vuLe": "2026-10-22"
+   "vuLe": "2026-10-22",
+   "vuA": "2026-10-22T00:00:00Z"
   },
   {
    "source": "jorf",
@@ -2485,7 +2626,8 @@
    ],
    "morceaux": 8,
    "dateTexte": "1992-07-01",
-   "vuLe": "2026-10-22"
+   "vuLe": "2026-10-22",
+   "vuA": "2026-10-22T00:00:00Z"
   },
   {
    "source": "jorf",
@@ -2509,7 +2651,8 @@
    ],
    "morceaux": 5,
    "dateTexte": "2025-08-13",
-   "vuLe": "2026-10-21"
+   "vuLe": "2026-10-21",
+   "vuA": "2026-10-21T00:00:00Z"
   },
   {
    "source": "jorf",
@@ -2533,7 +2676,8 @@
    ],
    "morceaux": 6,
    "dateTexte": "2026-10-20",
-   "vuLe": "2026-10-21"
+   "vuLe": "2026-10-21",
+   "vuA": "2026-10-21T00:00:00Z"
   },
   {
    "source": "jorf",
@@ -2557,7 +2701,8 @@
    ],
    "morceaux": 11,
    "dateTexte": "2022-11-23",
-   "vuLe": "2026-10-21"
+   "vuLe": "2026-10-21",
+   "vuA": "2026-10-21T00:00:00Z"
   },
   {
    "source": "jorf",
@@ -2581,7 +2726,8 @@
    ],
    "morceaux": 14,
    "dateTexte": "2017-07-06",
-   "vuLe": "2026-10-21"
+   "vuLe": "2026-10-21",
+   "vuA": "2026-10-21T00:00:00Z"
   },
   {
    "source": "eurlex-l",
@@ -2604,7 +2750,8 @@
    ],
    "morceaux": 0,
    "dateTexte": "2021-12-02",
-   "vuLe": "2026-10-21"
+   "vuLe": "2026-10-21",
+   "vuA": "2026-10-21T00:00:00Z"
   },
   {
    "source": "eurlex-l",
@@ -2627,7 +2774,8 @@
    ],
    "morceaux": 0,
    "dateTexte": "2026-10-21",
-   "vuLe": "2026-10-21"
+   "vuLe": "2026-10-21",
+   "vuA": "2026-10-21T00:00:00Z"
   },
   {
    "source": "eurlex-l",
@@ -2650,7 +2798,8 @@
    ],
    "morceaux": 0,
    "dateTexte": "2026-10-21",
-   "vuLe": "2026-10-21"
+   "vuLe": "2026-10-21",
+   "vuA": "2026-10-21T00:00:00Z"
   },
   {
    "source": "eurlex-l",
@@ -2673,7 +2822,8 @@
    ],
    "morceaux": 0,
    "dateTexte": "2026-10-21",
-   "vuLe": "2026-10-21"
+   "vuLe": "2026-10-21",
+   "vuA": "2026-10-21T00:00:00Z"
   },
   {
    "source": "rappelconso",
@@ -2696,7 +2846,8 @@
    ],
    "morceaux": 1,
    "dateTexte": "",
-   "vuLe": "2026-10-21"
+   "vuLe": "2026-10-21",
+   "vuA": "2026-10-21T00:00:00Z"
   },
   {
    "source": "rappelconso",
@@ -2719,7 +2870,8 @@
    ],
    "morceaux": 1,
    "dateTexte": "",
-   "vuLe": "2026-10-21"
+   "vuLe": "2026-10-21",
+   "vuA": "2026-10-21T00:00:00Z"
   },
   {
    "source": "jorf",
@@ -2743,7 +2895,8 @@
    ],
    "morceaux": 26,
    "dateTexte": "2010-11-12",
-   "vuLe": "2026-10-21"
+   "vuLe": "2026-10-21",
+   "vuA": "2026-10-21T00:00:00Z"
   },
   {
    "source": "jorf",
@@ -2767,7 +2920,8 @@
    ],
    "morceaux": 5,
    "dateTexte": "2025-10-29",
-   "vuLe": "2026-10-21"
+   "vuLe": "2026-10-21",
+   "vuA": "2026-10-21T00:00:00Z"
   },
   {
    "source": "jorf",
@@ -2791,7 +2945,8 @@
    ],
    "morceaux": 3,
    "dateTexte": "2026-10-20",
-   "vuLe": "2026-10-21"
+   "vuLe": "2026-10-21",
+   "vuA": "2026-10-21T00:00:00Z"
   },
   {
    "source": "jorf",
@@ -2815,7 +2970,8 @@
    ],
    "morceaux": 4,
    "dateTexte": "2026-10-20",
-   "vuLe": "2026-10-21"
+   "vuLe": "2026-10-21",
+   "vuA": "2026-10-21T00:00:00Z"
   },
   {
    "source": "jorf",
@@ -2839,7 +2995,8 @@
    ],
    "morceaux": 6,
    "dateTexte": "2026-10-15",
-   "vuLe": "2026-10-20"
+   "vuLe": "2026-10-20",
+   "vuA": "2026-10-20T00:00:00Z"
   },
   {
    "source": "jorf",
@@ -2863,7 +3020,8 @@
    ],
    "morceaux": 5,
    "dateTexte": "2025-12-19",
-   "vuLe": "2026-10-20"
+   "vuLe": "2026-10-20",
+   "vuA": "2026-10-20T00:00:00Z"
   },
   {
    "source": "jorf",
@@ -2894,7 +3052,8 @@
    ],
    "morceaux": 34,
    "dateTexte": "2018-07-19",
-   "vuLe": "2026-10-20"
+   "vuLe": "2026-10-20",
+   "vuA": "2026-10-20T00:00:00Z"
   },
   {
    "source": "jorf",
@@ -2918,7 +3077,8 @@
    ],
    "morceaux": 3,
    "dateTexte": "2026-10-19",
-   "vuLe": "2026-10-20"
+   "vuLe": "2026-10-20",
+   "vuA": "2026-10-20T00:00:00Z"
   },
   {
    "source": "jorf",
@@ -2942,7 +3102,8 @@
    ],
    "morceaux": 3,
    "dateTexte": "1992-12-28",
-   "vuLe": "2026-10-20"
+   "vuLe": "2026-10-20",
+   "vuA": "2026-10-20T00:00:00Z"
   },
   {
    "source": "jorf",
@@ -2973,7 +3134,8 @@
    ],
    "morceaux": 16,
    "dateTexte": "2022-12-31",
-   "vuLe": "2026-10-20"
+   "vuLe": "2026-10-20",
+   "vuA": "2026-10-20T00:00:00Z"
   },
   {
    "source": "jorf",
@@ -2997,7 +3159,8 @@
    ],
    "morceaux": 1,
    "dateTexte": "",
-   "vuLe": "2026-10-20"
+   "vuLe": "2026-10-20",
+   "vuA": "2026-10-20T00:00:00Z"
   },
   {
    "source": "ademe",
@@ -3020,7 +3183,8 @@
    ],
    "morceaux": 1,
    "dateTexte": "",
-   "vuLe": "2026-10-20"
+   "vuLe": "2026-10-20",
+   "vuA": "2026-10-20T00:00:00Z"
   },
   {
    "source": "eurlex-l",
@@ -3044,7 +3208,8 @@
    ],
    "morceaux": 0,
    "dateTexte": "2026-10-13",
-   "vuLe": "2026-10-20"
+   "vuLe": "2026-10-20",
+   "vuA": "2026-10-20T00:00:00Z"
   },
   {
    "source": "jorf",
@@ -3068,7 +3233,8 @@
    ],
    "morceaux": 42,
    "dateTexte": "2007-10-15",
-   "vuLe": "2026-10-20"
+   "vuLe": "2026-10-20",
+   "vuA": "2026-10-20T00:00:00Z"
   },
   {
    "source": "jorf",
@@ -3099,7 +3265,8 @@
    ],
    "morceaux": 5,
    "dateTexte": "2014-07-08",
-   "vuLe": "2026-10-20"
+   "vuLe": "2026-10-20",
+   "vuA": "2026-10-20T00:00:00Z"
   },
   {
    "source": "jorf",
@@ -3123,7 +3290,8 @@
    ],
    "morceaux": 106,
    "dateTexte": "2022-06-17",
-   "vuLe": "2026-10-20"
+   "vuLe": "2026-10-20",
+   "vuA": "2026-10-20T00:00:00Z"
   },
   {
    "source": "douane",
@@ -3146,7 +3314,8 @@
    ],
    "morceaux": 1,
    "dateTexte": "",
-   "vuLe": "2026-10-20"
+   "vuLe": "2026-10-20",
+   "vuA": "2026-10-20T00:00:00Z"
   },
   {
    "source": "cnil",
@@ -3176,7 +3345,8 @@
    ],
    "morceaux": 1,
    "dateTexte": "",
-   "vuLe": "2026-10-20"
+   "vuLe": "2026-10-20",
+   "vuA": "2026-10-20T00:00:00Z"
   },
   {
    "source": "jorf",
@@ -3200,7 +3370,8 @@
    ],
    "morceaux": 81,
    "dateTexte": "2003-12-18",
-   "vuLe": "2026-10-20"
+   "vuLe": "2026-10-20",
+   "vuA": "2026-10-20T00:00:00Z"
   },
   {
    "source": "jorf",
@@ -3224,7 +3395,8 @@
    ],
    "morceaux": 111,
    "dateTexte": "2008-12-17",
-   "vuLe": "2026-10-20"
+   "vuLe": "2026-10-20",
+   "vuA": "2026-10-20T00:00:00Z"
   },
   {
    "source": "jorf",
@@ -3248,7 +3420,8 @@
    ],
    "morceaux": 1,
    "dateTexte": "2025-12-30",
-   "vuLe": "2026-10-20"
+   "vuLe": "2026-10-20",
+   "vuA": "2026-10-20T00:00:00Z"
   },
   {
    "source": "jorf",
@@ -3272,7 +3445,8 @@
    ],
    "morceaux": 33,
    "dateTexte": "1993-01-04",
-   "vuLe": "2026-10-20"
+   "vuLe": "2026-10-20",
+   "vuA": "2026-10-20T00:00:00Z"
   },
   {
    "source": "amf",
@@ -3295,7 +3469,8 @@
    ],
    "morceaux": 1,
    "dateTexte": "",
-   "vuLe": "2026-10-20"
+   "vuLe": "2026-10-20",
+   "vuA": "2026-10-20T00:00:00Z"
   },
   {
    "source": "jorf",
@@ -3319,7 +3494,8 @@
    ],
    "morceaux": 2,
    "dateTexte": "1945-10-04",
-   "vuLe": "2026-10-20"
+   "vuLe": "2026-10-20",
+   "vuA": "2026-10-20T00:00:00Z"
   },
   {
    "source": "jorf",
@@ -3343,7 +3519,8 @@
    ],
    "morceaux": 27,
    "dateTexte": "2015-08-10",
-   "vuLe": "2026-10-19"
+   "vuLe": "2026-10-19",
+   "vuA": "2026-10-19T00:00:00Z"
   },
   {
    "source": "jorf",
@@ -3367,7 +3544,8 @@
    ],
    "morceaux": 24,
    "dateTexte": "2015-08-11",
-   "vuLe": "2026-10-19"
+   "vuLe": "2026-10-19",
+   "vuA": "2026-10-19T00:00:00Z"
   },
   {
    "source": "jorf",
@@ -3391,7 +3569,8 @@
    ],
    "morceaux": 10,
    "dateTexte": "2026-10-12",
-   "vuLe": "2026-10-19"
+   "vuLe": "2026-10-19",
+   "vuA": "2026-10-19T00:00:00Z"
   },
   {
    "source": "jorf",
@@ -3415,7 +3594,8 @@
    ],
    "morceaux": 15,
    "dateTexte": "2022-03-23",
-   "vuLe": "2026-10-19"
+   "vuLe": "2026-10-19",
+   "vuA": "2026-10-19T00:00:00Z"
   },
   {
    "source": "jorf",
@@ -3439,7 +3619,8 @@
    ],
    "morceaux": 8,
    "dateTexte": "2026-07-31",
-   "vuLe": "2026-10-19"
+   "vuLe": "2026-10-19",
+   "vuA": "2026-10-19T00:00:00Z"
   },
   {
    "source": "jorf",
@@ -3463,7 +3644,8 @@
    ],
    "morceaux": 30,
    "dateTexte": "2020-05-07",
-   "vuLe": "2026-10-19"
+   "vuLe": "2026-10-19",
+   "vuA": "2026-10-19T00:00:00Z"
   },
   {
    "source": "jorf",
@@ -3487,7 +3669,8 @@
    ],
    "morceaux": 10,
    "dateTexte": "2021-10-07",
-   "vuLe": "2026-10-19"
+   "vuLe": "2026-10-19",
+   "vuA": "2026-10-19T00:00:00Z"
   },
   {
    "source": "jorf",
@@ -3511,7 +3694,8 @@
    ],
    "morceaux": 8,
    "dateTexte": "2002-01-30",
-   "vuLe": "2026-10-19"
+   "vuLe": "2026-10-19",
+   "vuA": "2026-10-19T00:00:00Z"
   },
   {
    "source": "jorf",
@@ -3535,7 +3719,8 @@
    ],
    "morceaux": 55,
    "dateTexte": "2015-06-24",
-   "vuLe": "2026-10-19"
+   "vuLe": "2026-10-19",
+   "vuA": "2026-10-19T00:00:00Z"
   },
   {
    "source": "jorf",
@@ -3566,7 +3751,8 @@
    ],
    "morceaux": 4,
    "dateTexte": "2021-01-11",
-   "vuLe": "2026-10-19"
+   "vuLe": "2026-10-19",
+   "vuA": "2026-10-19T00:00:00Z"
   },
   {
    "source": "jorf",
@@ -3590,7 +3776,8 @@
    ],
    "morceaux": 4,
    "dateTexte": "2025-06-13",
-   "vuLe": "2026-10-19"
+   "vuLe": "2026-10-19",
+   "vuA": "2026-10-19T00:00:00Z"
   },
   {
    "source": "jorf",
@@ -3614,7 +3801,8 @@
    ],
    "morceaux": 3,
    "dateTexte": "2026-10-15",
-   "vuLe": "2026-10-18"
+   "vuLe": "2026-10-18",
+   "vuA": "2026-10-18T00:00:00Z"
   },
   {
    "source": "jorf",
@@ -3638,7 +3826,8 @@
    ],
    "morceaux": 3,
    "dateTexte": "2026-10-15",
-   "vuLe": "2026-10-18"
+   "vuLe": "2026-10-18",
+   "vuA": "2026-10-18T00:00:00Z"
   },
   {
    "source": "jorf",
@@ -3662,7 +3851,8 @@
    ],
    "morceaux": 3,
    "dateTexte": "2026-10-15",
-   "vuLe": "2026-10-18"
+   "vuLe": "2026-10-18",
+   "vuA": "2026-10-18T00:00:00Z"
   },
   {
    "source": "entreprendre",
@@ -3685,7 +3875,8 @@
    ],
    "morceaux": 1,
    "dateTexte": "",
-   "vuLe": "2026-10-18"
+   "vuLe": "2026-10-18",
+   "vuA": "2026-10-18T00:00:00Z"
   },
   {
    "source": "jorf",
@@ -3709,7 +3900,8 @@
    ],
    "morceaux": 3,
    "dateTexte": "2026-10-12",
-   "vuLe": "2026-10-17"
+   "vuLe": "2026-10-17",
+   "vuA": "2026-10-17T00:00:00Z"
   },
   {
    "source": "jorf",
@@ -3733,7 +3925,8 @@
    ],
    "morceaux": 3,
    "dateTexte": "2026-10-14",
-   "vuLe": "2026-10-17"
+   "vuLe": "2026-10-17",
+   "vuA": "2026-10-17T00:00:00Z"
   },
   {
    "source": "jorf",
@@ -3757,7 +3950,8 @@
    ],
    "morceaux": 3,
    "dateTexte": "2026-10-14",
-   "vuLe": "2026-10-17"
+   "vuLe": "2026-10-17",
+   "vuA": "2026-10-17T00:00:00Z"
   },
   {
    "source": "jorf",
@@ -3781,7 +3975,8 @@
    ],
    "morceaux": 3,
    "dateTexte": "2026-10-14",
-   "vuLe": "2026-10-17"
+   "vuLe": "2026-10-17",
+   "vuA": "2026-10-17T00:00:00Z"
   },
   {
    "source": "jorf",
@@ -3805,7 +4000,8 @@
    ],
    "morceaux": 3,
    "dateTexte": "2025-10-20",
-   "vuLe": "2026-10-17"
+   "vuLe": "2026-10-17",
+   "vuA": "2026-10-17T00:00:00Z"
   },
   {
    "source": "jorf",
@@ -3829,7 +4025,8 @@
    ],
    "morceaux": 3,
    "dateTexte": "2026-10-07",
-   "vuLe": "2026-10-17"
+   "vuLe": "2026-10-17",
+   "vuA": "2026-10-17T00:00:00Z"
   },
   {
    "source": "jorf",
@@ -3853,7 +4050,8 @@
    ],
    "morceaux": 3,
    "dateTexte": "2026-10-08",
-   "vuLe": "2026-10-17"
+   "vuLe": "2026-10-17",
+   "vuA": "2026-10-17T00:00:00Z"
   },
   {
    "source": "jorf",
@@ -3877,7 +4075,8 @@
    ],
    "morceaux": 6,
    "dateTexte": "2026-10-14",
-   "vuLe": "2026-10-16"
+   "vuLe": "2026-10-16",
+   "vuA": "2026-10-16T00:00:00Z"
   },
   {
    "source": "jorf",
@@ -3901,7 +4100,8 @@
    ],
    "morceaux": 34,
    "dateTexte": "2026-10-14",
-   "vuLe": "2026-10-16"
+   "vuLe": "2026-10-16",
+   "vuA": "2026-10-16T00:00:00Z"
   },
   {
    "source": "jorf",
@@ -3925,7 +4125,8 @@
    ],
    "morceaux": 32,
    "dateTexte": "2022-06-17",
-   "vuLe": "2026-10-16"
+   "vuLe": "2026-10-16",
+   "vuA": "2026-10-16T00:00:00Z"
   },
   {
    "source": "jorf",
@@ -3950,7 +4151,8 @@
    ],
    "morceaux": 8,
    "dateTexte": "2023-06-01",
-   "vuLe": "2026-10-16"
+   "vuLe": "2026-10-16",
+   "vuA": "2026-10-16T00:00:00Z"
   },
   {
    "source": "jorf",
@@ -3974,7 +4176,8 @@
    ],
    "morceaux": 13,
    "dateTexte": "2022-06-20",
-   "vuLe": "2026-10-16"
+   "vuLe": "2026-10-16",
+   "vuA": "2026-10-16T00:00:00Z"
   },
   {
    "source": "jorf",
@@ -3998,7 +4201,8 @@
    ],
    "morceaux": 1,
    "dateTexte": "",
-   "vuLe": "2026-10-16"
+   "vuLe": "2026-10-16",
+   "vuA": "2026-10-16T00:00:00Z"
   },
   {
    "source": "jorf",
@@ -4022,7 +4226,8 @@
    ],
    "morceaux": 1,
    "dateTexte": "",
-   "vuLe": "2026-10-16"
+   "vuLe": "2026-10-16",
+   "vuA": "2026-10-16T00:00:00Z"
   },
   {
    "source": "jorf",
@@ -4046,7 +4251,8 @@
    ],
    "morceaux": 1,
    "dateTexte": "",
-   "vuLe": "2026-10-16"
+   "vuLe": "2026-10-16",
+   "vuA": "2026-10-16T00:00:00Z"
   },
   {
    "source": "cnil",
@@ -4069,7 +4275,8 @@
    ],
    "morceaux": 1,
    "dateTexte": "",
-   "vuLe": "2026-10-16"
+   "vuLe": "2026-10-16",
+   "vuA": "2026-10-16T00:00:00Z"
   },
   {
    "source": "jorf",
@@ -4093,7 +4300,8 @@
    ],
    "morceaux": 9,
    "dateTexte": "2022-08-31",
-   "vuLe": "2026-10-16"
+   "vuLe": "2026-10-16",
+   "vuA": "2026-10-16T00:00:00Z"
   },
   {
    "source": "jorf",
@@ -4117,7 +4325,8 @@
    ],
    "morceaux": 2,
    "dateTexte": "1971-07-16",
-   "vuLe": "2026-10-16"
+   "vuLe": "2026-10-16",
+   "vuA": "2026-10-16T00:00:00Z"
   },
   {
    "source": "jorf",
@@ -4141,7 +4350,8 @@
    ],
    "morceaux": 3,
    "dateTexte": "2026-10-13",
-   "vuLe": "2026-10-15"
+   "vuLe": "2026-10-15",
+   "vuA": "2026-10-15T00:00:00Z"
   },
   {
    "source": "jorf",
@@ -4165,7 +4375,8 @@
    ],
    "morceaux": 13,
    "dateTexte": "2006-01-03",
-   "vuLe": "2026-10-15"
+   "vuLe": "2026-10-15",
+   "vuA": "2026-10-15T00:00:00Z"
   },
   {
    "source": "jorf",
@@ -4189,7 +4400,8 @@
    ],
    "morceaux": 9,
    "dateTexte": "2023-09-07",
-   "vuLe": "2026-10-15"
+   "vuLe": "2026-10-15",
+   "vuA": "2026-10-15T00:00:00Z"
   },
   {
    "source": "jorf",
@@ -4213,7 +4425,8 @@
    ],
    "morceaux": 3,
    "dateTexte": "2026-10-08",
-   "vuLe": "2026-10-15"
+   "vuLe": "2026-10-15",
+   "vuA": "2026-10-15T00:00:00Z"
   },
   {
    "source": "jorf",
@@ -4237,7 +4450,8 @@
    ],
    "morceaux": 9,
    "dateTexte": "2009-11-09",
-   "vuLe": "2026-10-15"
+   "vuLe": "2026-10-15",
+   "vuA": "2026-10-15T00:00:00Z"
   },
   {
    "source": "jorf",
@@ -4261,7 +4475,8 @@
    ],
    "morceaux": 4,
    "dateTexte": "2026-07-21",
-   "vuLe": "2026-10-15"
+   "vuLe": "2026-10-15",
+   "vuA": "2026-10-15T00:00:00Z"
   },
   {
    "source": "travail",
@@ -4284,7 +4499,8 @@
    ],
    "morceaux": 0,
    "dateTexte": "",
-   "vuLe": "2026-10-15"
+   "vuLe": "2026-10-15",
+   "vuA": "2026-10-15T00:00:00Z"
   },
   {
    "source": "jorf",
@@ -4309,7 +4525,8 @@
    ],
    "morceaux": 9,
    "dateTexte": "2023-11-07",
-   "vuLe": "2026-10-15"
+   "vuLe": "2026-10-15",
+   "vuA": "2026-10-15T00:00:00Z"
   },
   {
    "source": "jorf",
@@ -4333,7 +4550,8 @@
    ],
    "morceaux": 16,
    "dateTexte": "2026-10-14",
-   "vuLe": "2026-10-15"
+   "vuLe": "2026-10-15",
+   "vuA": "2026-10-15T00:00:00Z"
   },
   {
    "source": "jorf",
@@ -4358,7 +4576,8 @@
    ],
    "morceaux": 11,
    "dateTexte": "2010-05-06",
-   "vuLe": "2026-10-15"
+   "vuLe": "2026-10-15",
+   "vuA": "2026-10-15T00:00:00Z"
   },
   {
    "source": "jorf",
@@ -4382,7 +4601,8 @@
    ],
    "morceaux": 1,
    "dateTexte": "1955-05-20",
-   "vuLe": "1955-05-22"
+   "vuLe": "1955-05-22",
+   "vuA": "1955-05-22T00:00:00Z"
   }
  ]
 }
