@@ -106,10 +106,12 @@
   }
 
   /* --- « Mon plan » suit « Mon entreprise » ---------------------------------
-     La page porte les 44 domaines ; on ne garde que ceux du périmètre
-     enregistré. Sans réglages, elle reste sur le jeu d'essai et le dit.
-     Sans JavaScript, elle affiche le périmètre du jeu d'essai, posé à la
-     construction : rien ne disparaît. */
+     Les rubriques ne portent que les sujets du plan ; les autres attendent
+     dans <template id="plan-reserve">. Quand le périmètre enregistré change,
+     on fait passer les blocs de l'un à l'autre, et la liste des sujets
+     écartés (le volet replié) suit. Sans réglages, la page reste sur le jeu
+     d'essai et le dit. Sans JavaScript, elle montre le plan du jeu d'essai,
+     posé à la construction. */
   function suivrePlan() {
     if (!document.getElementById("plan-total") || !P) return;
     var garde = lire(CLE_E);
@@ -119,12 +121,44 @@
 
     var dedans = {};
     vue.liste.forEach(function (id) { dedans[id] = 1; });
-    $$("[data-domaine]").forEach(function (b) {
-      b.hidden = !dedans[b.getAttribute("data-domaine")];
+    var reserve = document.getElementById("plan-reserve");
+    var enReserve = reserve && reserve.content ? [].slice.call(reserve.content.querySelectorAll(".bloc-domaine")) : [];
+    $$(".bloc-domaine[data-domaine]").concat(enReserve).forEach(function (b) {
+      var id = b.getAttribute("data-domaine");
+      if (!dedans[id]) { if (reserve && reserve.content) reserve.content.appendChild(b); return; }
+      var hote = P.d[id] && document.querySelector('[data-groupe-frequence="' + P.d[id].f + '"] > .enveloppe');
+      if (!hote) return;
+      b.hidden = false;
+      b.setAttribute("data-origine", vue.div.b.indexOf(id) !== -1 ? "base" : "declencheur-retenu");
+      // À sa place dans l'ordre du référentiel.
+      var rang = Number(b.getAttribute("data-rang"));
+      var suivant = $$(".bloc-domaine", hote).filter(function (x) {
+        return x !== b && Number(x.getAttribute("data-rang")) > rang;
+      })[0];
+      if (suivant) hote.insertBefore(b, suivant); else hote.appendChild(b);
     });
-    $$("[data-sujet-plan]").forEach(function (li) {
-      li.hidden = !dedans[li.getAttribute("data-sujet-plan")];
+    // « À ce rythme » : les sujets présents, et eux seuls.
+    $$("[data-groupe-frequence]").forEach(function (g) {
+      var ul = g.querySelector(".dedans ul");
+      if (!ul) return;
+      ul.innerHTML = $$(".bloc-domaine", g).map(function (b) {
+        var id = b.getAttribute("data-domaine");
+        return '<li data-sujet-plan="' + echappe(id) + '"><a href="#domaine-' + echappe(id) + '"><span>' +
+          echappe(P.d[id] ? P.d[id].n : id) + "</span></a></li>";
+      }).join("");
     });
+    // Le volet des sujets écartés.
+    var ecartes = Object.keys(P.d).filter(function (id) { return !dedans[id]; });
+    var liste = document.getElementById("plan-ecartes-liste");
+    if (liste) {
+      liste.innerHTML = ecartes.map(function (id) {
+        return '<li data-ecarte="' + echappe(id) + '">' + echappe(P.d[id].n) + "</li>";
+      }).join("");
+    }
+    $$("[data-ecartes-total]").forEach(function (e) { e.textContent = ecartes.length; });
+    var volet = document.getElementById("plan-ecartes");
+    if (volet) volet.hidden = !ecartes.length;
+
     $$("[data-groupe-frequence]").forEach(function (g) {
       var n = g.querySelectorAll("[data-domaine]:not([hidden])").length;
       g.hidden = !n;
@@ -177,11 +211,137 @@
 
     try { window.dispatchEvent(new Event("pco-plan")); } catch (e) { /* vieux navigateur */ }
 
+    // La même phrase qu'à la construction (phrasePlan, build.mjs) : d'où vient le chiffre.
     var tete = document.querySelector(".tete-app .chapeau");
     if (tete) {
-      tete.textContent = "Ce qui s'applique chez " + (garde.nom || vue.div.l) + " : " +
-        vue.liste.length + " sujets à suivre. Choisissez un rythme de revue : vous ne verrez que ses sujets.";
+      var parCode = vue.liste.length - vue.ajoutes;
+      var ajout = vue.liste.slice(parCode).map(function (id) { return P.d[id].n; });
+      tete.innerHTML = '<span data-plan-total>' + vue.liste.length + "</span> sujets s'appliquent chez " +
+        '<span id="plan-chez">' + echappe(garde.nom || vue.div.l) + '</span><span id="plan-detail"> : ' +
+        (ajout.length
+          ? parCode + " par son code APE (" + echappe(garde.naf) + "), " + ajout.length + " par sa situation (" + echappe(ajout.join(", ")) + ")"
+          : "tous par son code APE (" + echappe(garde.naf) + ")") +
+        "</span>. Ils sont rangés selon le rythme auquel les revoir : cliquez sur un rythme pour voir les sujets à revoir à ce rythme.";
     }
+  }
+
+  /* --- Le relevé suit le plan ----------------------------------------------
+     Les textes officiels sont rangés à la construction sur le plan du jeu
+     d'essai. Avec d'autres réglages (un vrai compte, ou « Réglages » dans la
+     démonstration), on refait le tri : un texte qui touche un sujet du plan
+     va sous ce sujet, dans sa famille ; les autres, dans le volet replié
+     « ne vous concernent pas ». Puis on recompte tout ce qui affiche un
+     nombre. Dans un compte sans code APE, tout est montré, et on le dit. */
+  var MOIS = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août",
+              "septembre", "octobre", "novembre", "décembre"];
+  function jourFr(iso) {
+    var p = String(iso || "").split("-");
+    if (p.length < 3) return iso || "";
+    var j = Number(p[2]);
+    return (j === 1 ? "1er" : j) + " " + MOIS[Number(p[1]) - 1] + " " + p[0];
+  }
+  function suivreReleve() {
+    var volet = document.getElementById("releve-ecartes");
+    var ecartes = document.getElementById("releve-ecartes-liste");
+    if (!volet || !ecartes || !P) return;
+    var garde = lire(CLE_E);
+    var vue = garde && garde.naf ? perimetre(garde.naf, garde.contexte || []) : null;
+    var dedans = {};
+    if (vue) {
+      vue.liste.forEach(function (id) { dedans[id] = 1; });
+    } else if (COMPTE) {
+      Object.keys(P.d).forEach(function (id) { dedans[id] = 1; });
+      var sans = document.getElementById("releve-sans-plan");
+      if (sans) sans.hidden = false;
+    } else {
+      return;                              // la démonstration, telle que construite
+    }
+
+    $$("li.ligne-releve[data-domaines]").forEach(function (li) {
+      var doms = li.getAttribute("data-domaines").split(" ");
+      var sujet = doms.filter(function (id) { return dedans[id]; })[0];
+      var famille = sujet && P.d[sujet] && document.querySelector('[data-famille="' + P.d[sujet].c + '"]');
+      if (!famille) { ecartes.appendChild(li); return; }
+      var groupe = famille.querySelector('[data-sujet-releve="' + sujet + '"]');
+      if (!groupe) {
+        groupe = document.createElement("section");
+        groupe.className = "sous-groupe";
+        groupe.id = famille.id + "--" + sujet;
+        groupe.setAttribute("data-groupe", "");
+        groupe.setAttribute("data-sujet-releve", sujet);
+        groupe.innerHTML = "<h4>" + echappe(P.d[sujet].n) + ' <span class="etiq"></span></h4><ul class="liste-releve"></ul>';
+        famille.appendChild(groupe);
+      }
+      groupe.querySelector("ul").appendChild(li);
+    });
+
+    var parDate = function (ul) {
+      $$("li.ligne-releve", ul).sort(function (a, b) {
+        return a.getAttribute("data-date") < b.getAttribute("data-date") ? 1 : -1;
+      }).forEach(function (li) { ul.appendChild(li); });
+    };
+    var textes = function (n) { return n + " texte" + (n > 1 ? "s" : ""); };
+    parDate(ecartes);
+    var nEcartes = ecartes.children.length;
+    $$("[data-ecartes-total]", volet).forEach(function (e) { e.textContent = nEcartes; });
+    volet.hidden = !nEcartes;
+
+    $$("[data-famille]").forEach(function (famille) {
+      var groupes = $$("[data-sujet-releve]", famille);
+      groupes.forEach(function (g) {
+        var ul = g.querySelector("ul");
+        parDate(ul);
+        var n = ul.children.length;
+        g.hidden = !n;
+        var etiq = g.querySelector("h4 .etiq");
+        if (etiq) etiq.textContent = textes(n);
+      });
+      var pleins = groupes.filter(function (g) { return !g.hidden; })
+        .sort(function (a, b) { return b.querySelector("ul").children.length - a.querySelector("ul").children.length; });
+      pleins.forEach(function (g) { famille.appendChild(g); });
+      var lignes = $$("li.ligne-releve", famille);
+      famille.hidden = !lignes.length;
+      var h3 = famille.querySelector("h3 .etiq");
+      if (h3) h3.textContent = textes(lignes.length);
+
+      // « Dans cette catégorie » : un lien par sujet, s'il y en a plus d'un.
+      var nav = famille.querySelector(".dedans");
+      if (nav) nav.parentNode.removeChild(nav);
+      if (pleins.length > 1) {
+        nav = document.createElement("nav");
+        nav.className = "dedans";
+        nav.setAttribute("aria-label", "Ce qu'il y a dans cette catégorie");
+        nav.innerHTML = '<p class="etiq">Dans cette catégorie</p><ul>' + pleins.map(function (g) {
+          return '<li><a href="#' + echappe(g.id) + '"><span>' + echappe(P.d[g.getAttribute("data-sujet-releve")].n) +
+            '</span> <span class="compte">' + g.querySelector("ul").children.length + "</span></a></li>";
+        }).join("") + "</ul>";
+        var avant = famille.querySelector(".precision");
+        famille.insertBefore(nav, avant ? avant.nextSibling : famille.firstChild);
+      }
+
+      // La carte de la famille.
+      var carte = document.querySelector('.carte-categorie[href="#' + famille.id + '"]');
+      if (!carte) return;
+      var plusRecent = lignes.slice().sort(function (a, b) {
+        return a.getAttribute("data-date") < b.getAttribute("data-date") ? 1 : -1;
+      })[0];
+      var neufs = lignes.filter(function (l) { return l.hasAttribute("data-neuf"); }).length;
+      var compte = carte.querySelector(".carte-compte");
+      if (compte) compte.textContent = lignes.length ? textes(lignes.length) : "Rien qui vous concerne";
+      var tete = carte.querySelector(".carte-tete");
+      var marque = carte.querySelector(".carte-tete .marque-neuf");
+      if (neufs && !marque && tete) { marque = document.createElement("span"); marque.className = "marque-neuf"; tete.appendChild(marque); }
+      if (marque) { marque.hidden = !neufs; marque.textContent = neufs + " nouveau" + (neufs > 1 ? "x" : ""); }
+      var cl = carte.querySelectorAll(".carte-ligne");
+      var precision = famille.querySelector(".precision");
+      if (cl[0]) cl[0].textContent = plusRecent ? "Le plus récent : " + jourFr(plusRecent.getAttribute("data-date")) : (precision ? precision.textContent : "");
+      if (cl[1]) cl[1].textContent = plusRecent && plusRecent.getAttribute("data-premier")
+        ? "En premier : " + plusRecent.getAttribute("data-premier") : (plusRecent && precision ? precision.textContent : "");
+      carte.classList.toggle("carte-vide", !lignes.length);
+      if (lignes.length) { carte.removeAttribute("aria-disabled"); carte.removeAttribute("tabindex"); }
+      else { carte.setAttribute("aria-disabled", "true"); carte.setAttribute("tabindex", "-1"); }
+    });
+    try { window.dispatchEvent(new Event("pco-plan")); } catch (e) { /* vieux navigateur */ }
   }
 
   /* --- L'écran « Mon entreprise » ------------------------------------------- */
@@ -542,6 +702,7 @@
   MAG.quandPret(function () {
     suivreEnTete();
     suivrePlan();
+    suivreReleve();
     ecranEntreprise();
     ecranAlertes();
     bandeauEntreprise();

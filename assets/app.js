@@ -346,12 +346,13 @@
   }
 
   function faits() {
-    var blocs = $$("[data-fait]");
-    if (!blocs.length) return;
+    if (!$$("[data-fait]").length) return;
 
+    /* Les blocs se relisent à chaque fois : « Mon plan » en fait entrer et
+       sortir quand le périmètre change (assets/entreprise.js). */
     function peindre() {
       var f = lireFaits();
-      blocs.forEach(function (b) {
+      $$("[data-fait]").forEach(function (b) {
         var id = b.getAttribute("data-fait");
         var e = etatFait(id, Number(b.getAttribute("data-periode") || 0), f);
         var bouton = $(".bouton-fait", b);
@@ -385,21 +386,22 @@
       });
     }
 
-    blocs.forEach(function (b) {
-      var bouton = $(".bouton-fait", b);
-      bouton.addEventListener("click", function () {
-        var id = b.getAttribute("data-fait");
-        var deja = etatFait(id, Number(b.getAttribute("data-periode") || 0), lireFaits()).fait;
-        // Ce que le registre retiendra : l'intitulé posé à la construction.
-        var intitule = b.getAttribute("data-objet") || document.title.split(" | ")[0];
-        bouton.disabled = true;
-        $(".fait-quand", b).textContent = "Enregistrement…";
-        marquer(id, intitule, !deja).then(function (r) {
-          bouton.disabled = false;
-          peindre();
-          if (!r.ok) $(".fait-quand", b).textContent = r.erreur;
-          else try { window.dispatchEvent(new Event("pco-faits")); } catch (e) { /* vieux navigateur */ }
-        });
+    // Un seul écouteur, pour les boutons d'aujourd'hui et ceux qui arriveront.
+    document.addEventListener("click", function (ev) {
+      var bouton = ev.target.closest ? ev.target.closest(".bouton-fait") : null;
+      var b = bouton && bouton.closest("[data-fait]");
+      if (!b || bouton.disabled) return;
+      var id = b.getAttribute("data-fait");
+      var deja = etatFait(id, Number(b.getAttribute("data-periode") || 0), lireFaits()).fait;
+      // Ce que le registre retiendra : l'intitulé posé à la construction.
+      var intitule = b.getAttribute("data-objet") || document.title.split(" | ")[0];
+      bouton.disabled = true;
+      $(".fait-quand", b).textContent = "Enregistrement…";
+      marquer(id, intitule, !deja).then(function (r) {
+        bouton.disabled = false;
+        peindre();
+        if (!r.ok) $(".fait-quand", b).textContent = r.erreur;
+        else try { window.dispatchEvent(new Event("pco-faits")); } catch (e) { /* vieux navigateur */ }
       });
     });
     /* Le plan change de périmètre après les réglages : les comptes suivent. */
@@ -811,6 +813,10 @@
         if (visible) n++;
       });
       if (compteur) compteur.textContent = n;
+      var precision = $("#compte-precision");
+      if (precision) precision.textContent = n > base
+        ? base + " par le code APE, " + (n - base) + " par les situations cochées"
+        : "par le code APE seul ; vos situations, plus bas, peuvent en ajouter";
 
       $$("[data-groupe-frequence]").forEach(function (g) {
         g.hidden = !g.querySelector("[data-domaine]:not([hidden])");

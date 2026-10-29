@@ -581,6 +581,31 @@ function perimetre(V, code) {
   return { base, declencheurs, ajoutables, groupes };
 }
 
+/* --- Le plan d'une entreprise : LA source des chiffres ----------------------
+   Code APE (sa division) + situations cochées. Tout ce qui compte les sujets
+   d'une entreprise — en-tête, cartes, rubriques, sujets écartés, relevé —
+   part d'ici, et assets/entreprise.js refait le même calcul dans le
+   navigateur (perimetre()) sur les mêmes données. */
+function planDe(V, ent) {
+  const { base } = perimetre(V, ent.naf);
+  const ajoutes = [];
+  (ent.contexte || []).forEach((qid) => {
+    const q = V.declencheurs.find((x) => x.id === qid);
+    if (q) q.domaines.forEach((id) => { if (V.domaines[id] && !base.includes(id) && !ajoutes.includes(id)) ajoutes.push(id); });
+  });
+  const liste = [...base, ...ajoutes];
+  return { base, ajoutes, liste, ecartes: Object.keys(V.domaines).filter((id) => !liste.includes(id)) };
+}
+/* La phrase qui dit d'où vient le chiffre : le code APE, puis la situation. */
+function phrasePlan(V, ent, plan) {
+  const noms = plan.ajoutes.map((id) => V.domaines[id].nom);
+  return `<span data-plan-total>${plan.liste.length}</span> sujets s'appliquent chez <span id="plan-chez">${esc(ent.nom)}</span><span id="plan-detail"> : ` +
+    (noms.length
+      ? `${plan.base.length} par son code APE (${esc(ent.nafComplet || ent.naf)}), ${noms.length} par sa situation (${esc(noms.join(", "))})`
+      : `tous par son code APE (${esc(ent.nafComplet || ent.naf)})`) +
+    `</span>. Ils sont rangés selon le rythme auquel les revoir : cliquez sur un rythme pour voir les sujets à revoir à ce rythme.`;
+}
+
 /* --- Fait, ou pas fait ------------------------------------------------------
    Pour chaque texte qui demande un geste, le client dit s'il l'a fait. Le
    bouton vit dans « Ce que vous devez faire » ; le titre de la fiche porte la
@@ -599,8 +624,8 @@ function boutonFait(id, { periode = 0, libelle = "Marquer comme fait", objet = "
 const marqueFait = (id) => `<span class="marque-fait" data-etat-fait="${esc(id)}" hidden>Fait</span>`;
 const JOURS_DE = { quotidienne: 1, hebdomadaire: 7, mensuelle: 31, trimestrielle: 92 };
 
-function blocDomaine(C, LIENS, id, d, origine, lienSecteur = "", racine = "", fait = false) {
-  return `<article class="bloc-domaine" id="domaine-${esc(id)}" data-domaine="${esc(id)}" data-origine="${origine}"${origine === "declencheur" || origine === "hors" ? " hidden" : ""}>
+function blocDomaine(C, LIENS, id, d, origine, lienSecteur = "", racine = "", fait = false, rang = -1) {
+  return `<article class="bloc-domaine" id="domaine-${esc(id)}" data-domaine="${esc(id)}" data-origine="${origine}"${rang >= 0 ? ` data-rang="${rang}"` : ""}${origine === "declencheur" || origine === "hors" ? " hidden" : ""}>
   <div class="bloc-domaine-tete">
     <h3>${esc(d.nom)}</h3>
     ${origine === "declencheur" ? '<span class="marque-ajout">ajouté par votre contexte</span>' : ""}
@@ -870,21 +895,19 @@ function ligneRegistre(r) {
 
 /* --- Mon plan --------------------------------------------------------------- */
 function appPlan(V, D, C, LIENS) {
-  const { base } = perimetre(V, D.entreprise.naf);
-  const ajoutes = new Set();
-  D.entreprise.contexte.forEach((qid) => {
-    const q = V.declencheurs.filter((x) => x.id === qid)[0];
-    if (q) q.domaines.forEach((id) => { if (V.domaines[id] && !base.includes(id)) ajoutes.add(id); });
-  });
-
-  const total = base.length + ajoutes.size;
+  const plan = planDe(V, D.entreprise);
+  const { base } = plan;
+  const ajoutes = new Set(plan.ajoutes);
+  const total = plan.liste.length;
+  const rangs = Object.keys(V.domaines);
   const contexteNoms = D.entreprise.contexte
     .map((qid) => (V.declencheurs.filter((x) => x.id === qid)[0] || {}).q).filter(Boolean);
 
-  /* La page porte les 44 domaines, pas seulement ceux du jeu d'essai : c'est
-     ce qui permet à « Mon entreprise » de la refaire sans recharger quoi que
-     ce soit. Sans JavaScript, seuls ceux du périmètre sont visibles — les
-     autres sont posés `hidden`, et rien ne manque à l'écran. */
+  /* Les rubriques ne portent que les sujets du plan. Les autres attendent dans
+     un <template> (rien ne s'en affiche, rien ne s'en lit) : « Réglages » peut
+     refaire le plan sans recharger la page (assets/entreprise.js). Leurs noms
+     sont dans un volet replié, en bas : ce qui a été écarté se montre à un
+     auditeur, mais ce n'est pas la vue principale. */
   const parFrequence = Object.keys(V.frequences)
     .sort((a, b) => V.frequences[a].ordre - V.frequences[b].ordre)
     .map((fid) => ({
@@ -893,8 +916,15 @@ function appPlan(V, D, C, LIENS) {
     }))
     .filter((g) => g.ids.length);
 
+  const blocPlan = (id) => {
+    const division = divisionDuDomaine(V, id);
+    const origine = base.includes(id) ? "base" : (ajoutes.has(id) ? "declencheur-retenu" : "hors");
+    return blocDomaine(C, LIENS, id, V.domaines[id], origine,
+      division ? `secteur/${division}.html` : "", "", true, rangs.indexOf(id));
+  };
+
   const corps = enTeteApp(D, "Mon plan de veille",
-    `Ce qui s'applique chez <span id="plan-chez">${esc(D.entreprise.nom)}</span> : <span data-plan-total>${total}</span> sujets à suivre. Choisissez un rythme de revue : vous ne verrez que ses sujets.`,
+    phrasePlan(V, D.entreprise, plan),
     ficheDeLEntreprise(V, D)) + `
 
 <section class="rubrique">
@@ -938,15 +968,27 @@ ${parFrequence.map((g) => {
       <p class="lecture">${esc(g.f.d)}${ech ? `<span data-demo> Prochaine revue : <strong>${esc(dateFr(ech.prochaine))}</strong>${ech.retard ? " — en retard." : "."}</span>` : ""}</p>
       <nav class="dedans" aria-label="Ce qu'il y a à ce rythme">
         <p class="etiq">À ce rythme</p>
-        <ul>${g.ids.map((id) => `<li data-sujet-plan="${esc(id)}"${dedans.includes(id) ? "" : " hidden"}><a href="#domaine-${esc(id)}"><span>${esc(V.domaines[id].nom)}</span></a></li>`).join("")}</ul>
+        <ul>${dedans.map((id) => `<li data-sujet-plan="${esc(id)}"><a href="#domaine-${esc(id)}"><span>${esc(V.domaines[id].nom)}</span></a></li>`).join("")}</ul>
       </nav>
-      ${g.ids.map((id) => {
-        const division = divisionDuDomaine(V, id);
-        const origine = base.includes(id) ? "base" : (ajoutes.has(id) ? "declencheur-retenu" : "hors");
-        return blocDomaine(C, LIENS, id, V.domaines[id], origine,
-          division ? `secteur/${division}.html` : "", "", true);
-      }).join("\n")}`, attrs: ` data-categorie data-groupe-frequence="${esc(g.id)}"${dedans.length ? "" : " hidden"}` });
-  }).join("\n")}`;
+      ${dedans.map((id) => blocPlan(id)).join("\n")}`, attrs: ` data-categorie data-groupe-frequence="${esc(g.id)}"${dedans.length ? "" : " hidden"}` });
+  }).join("\n")}
+
+<template id="plan-reserve">
+${plan.ecartes.map((id) => blocPlan(id)).join("\n")}
+</template>
+
+<section class="rubrique">
+  <div class="enveloppe">
+    <details class="a-savoir plan-ecartes" id="plan-ecartes">
+      <summary><span>Voir aussi les <b data-ecartes-total>${plan.ecartes.length}</b> sujets qui ne vous concernent pas</span></summary>
+      <div class="a-savoir-corps">
+        <p class="lecture">Ni votre code APE ni votre situation ne les déclenchent. Si l'un d'eux vous concerne
+        quand même, cochez la situation qui l'ajoute dans <a href="reglages.html">Réglages</a>.</p>
+        <ul class="liste-ecartes" id="plan-ecartes-liste">${plan.ecartes.map((id) => `<li data-ecarte="${esc(id)}">${esc(V.domaines[id].nom)}</li>`).join("")}</ul>
+      </div>
+    </details>
+  </div>
+</section>`;
 
   return page({
     titre: `Mon plan de veille | ${SITE.nom}`,
@@ -1237,7 +1279,9 @@ function ligneJO(V, t, i, releveLe = "") {
   const neuf = Boolean(releveLe) && vu === releveLe;
   const idFait = `jo:${t.id && !/^http/.test(t.id) ? t.id : slug(t.titre).slice(0, 80)}`;
 
-  return `<li class="ligne-releve statut-${droit ? "attente" : "neutre"}${neuf ? " est-neuf" : ""}">
+  /* data-domaines, data-date, data-premier : de quoi le ranger dans le plan
+     d'une autre entreprise sans rien recalculer (assets/entreprise.js). */
+  return `<li class="ligne-releve statut-${droit ? "attente" : "neutre"}${neuf ? " est-neuf" : ""}" data-domaines="${esc(t.domaines.map((d) => d.id).join(" "))}" data-date="${esc(quand)}"${neuf ? " data-neuf" : ""}${actions.length ? ` data-premier="${esc(actions[0])}"` : ""}>
   <details>
     <summary>
       <span class="mono date">${esc(dateFr(quand))}</span>
@@ -1471,7 +1515,7 @@ function parSujet(V, prefixe, entrees, domaineDe, rendre, unite = "texte") {
     <ul>${sujets.map((g) => `<li><a href="#${esc(prefixe)}--${esc(g.id)}"><span>${esc(g.nom)}</span>
       <span class="compte">${g.liste.length}</span></a></li>`).join("")}</ul>
   </nav>` : ""}
-  ${sujets.map((g) => `<section class="sous-groupe" id="${esc(prefixe)}--${esc(g.id)}" data-groupe>
+  ${sujets.map((g) => `<section class="sous-groupe" id="${esc(prefixe)}--${esc(g.id)}" data-groupe data-sujet-releve="${esc(g.id)}">
     <h4>${esc(g.nom)} <span class="etiq">${compte(g.liste.length)}</span></h4>
     ${rendre(g.liste)}
   </section>`).join("")}`;
@@ -1494,11 +1538,20 @@ function appReleve(V, D, JO, C, LIENS, SOURCES = []) {
 
   const officiel = JO && JO.textes && JO.textes.length;
   const groupes = groupesParClassement(V, D.releve, (t) => t.domaine);
+  /* Seuls les textes qui touchent le plan de l'entreprise sont rangés par
+     famille ; les autres vont dans un volet replié, en bas. Un texte est rangé
+     sous le premier de ses sujets qui est dans le plan. Dans un vrai compte,
+     ou après « Réglages », assets/entreprise.js refait ce tri sur son plan. */
+  const plan = planDe(V, D.entreprise);
+  const dansPlan = (t) => t.domaines.some((d) => plan.liste.includes(d.id));
+  const textesPlan = officiel ? JO.textes.filter(dansPlan) : [];
+  const textesHors = officiel ? JO.textes.filter((t) => !dansPlan(t))
+    .sort((a, b) => ((a.dateTexte || a.date) < (b.dateTexte || b.date) ? 1 : -1)) : [];
   /* Les textes relevés, rangés par famille : santé-sécurité, hygiène, social,
      environnement, métier. Cent quarante-deux textes d'affilée, c'est illisible ;
      rangés par nature, on voit d'un coup d'œil où il y a du travail. */
-  const domaineJO = (t) => (t.domaines && t.domaines[0] ? t.domaines[0].id : "");
-  const groupesJO = officiel ? groupesParClassement(V, JO.textes, domaineJO) : [];
+  const domaineJO = (t) => ((t.domaines || []).find((d) => plan.liste.includes(d.id)) || (t.domaines || [])[0] || {}).id || "";
+  const groupesJO = officiel ? groupesParClassement(V, textesPlan, domaineJO) : [];
   /* Une source vérifiée qui n'a pas répondu cette fois-ci. Celles qu'on ne sait
      pas encore relever sont dites à part, avec leur raison. */
   const muettes = officiel
@@ -1512,7 +1565,11 @@ function appReleve(V, D, JO, C, LIENS, SOURCES = []) {
   const carteFamille = (g, prefixe, dateDe, domaineDe, neufDe) => {
     const liste = g.textes.slice().sort((a, b) => (dateDe(a) < dateDe(b) ? 1 : -1));
     if (!liste.length) {
-      return { nom: g.cl.l, compte: "Rien sur la période", lignes: [esc(g.cl.d)], vide: true };
+      // Une famille du relevé officiel garde son lien : le plan d'un autre compte peut la remplir.
+      return prefixe === "jo-"
+        ? { id: `${prefixe}famille-${g.id}`, nom: g.cl.l, compte: "Rien qui vous concerne", lignes: [esc(g.cl.d)],
+            classe: "carte-vide", attrs: ' aria-disabled="true" tabindex="-1"' }
+        : { nom: g.cl.l, compte: "Rien sur la période", lignes: [esc(g.cl.d)], vide: true };
     }
     const d = V.domaines[domaineDe(liste[0])];
     const neufs = neufDe ? liste.filter(neufDe).length : 0;
@@ -1571,7 +1628,7 @@ function appReleve(V, D, JO, C, LIENS, SOURCES = []) {
     prochaine relève.</p>` : ""}` : "";
 
   const corps = enTeteApp(D, "Relevé des textes",
-    "Choisissez une famille : vous ne verrez que ses textes, chacun avec ce qu'il faut faire.",
+    "Les textes parus qui touchent votre plan, rangés par famille. Cliquez sur une famille pour voir les textes de cette famille, chacun avec ce qu'il faut faire.",
     ficheDeLEntreprise(V, D)) + `
 
 <section class="rubrique">
@@ -1587,8 +1644,10 @@ function appReleve(V, D, JO, C, LIENS, SOURCES = []) {
     décision, trace.</p>
     ${statutsDemo}
     ${groupes.filter((g) => g.textes.length).map((g) => familleDemo(g, false)).join("")}`)}</div>
-  ${(() => { let n = 0; return groupesJO.filter((g) => g.textes.length).map((g) => `
-  <section class="famille-releve" id="jo-famille-${esc(g.id)}" data-categorie>
+  <p class="reserve" id="releve-sans-plan" hidden>Votre code APE n'est pas encore renseigné : tous les textes relevés
+    sont ici. Renseignez-le dans <a href="reglages.html">Réglages</a> : le relevé ne montrera plus que ce qui vous concerne.</p>
+  ${(() => { let n = 0; return groupesJO.map((g) => `
+  <section class="famille-releve" id="jo-famille-${esc(g.id)}" data-categorie data-famille="${esc(g.id)}"${g.textes.length ? "" : " hidden"}>
     <h3>${esc(g.cl.l)} <span class="etiq">${g.textes.length} texte${g.textes.length > 1 ? "s" : ""}</span></h3>
     <p class="precision">${esc(g.cl.d)}</p>
     ${parSujet(V, `jo-famille-${g.id}`,
@@ -1596,7 +1655,17 @@ function appReleve(V, D, JO, C, LIENS, SOURCES = []) {
       domaineJO, (liste) => `<ul class="liste-releve">
       ${liste.map((t) => ligneJO(V, t, n++, JO.releve_le)).join("")}
     </ul>`)}
-  </section>`).join(""); })()}` : `
+  </section>`).join("") + `
+  <details class="a-savoir releve-ecartes" id="releve-ecartes"${textesHors.length ? "" : " hidden"}>
+    <summary><span>Voir aussi les <b data-ecartes-total>${textesHors.length}</b> textes parus qui ne vous concernent pas</span></summary>
+    <div class="a-savoir-corps">
+      <p class="lecture">Ils ne touchent aucun des sujets de votre plan. Ils restent ici pour qui veut vérifier
+      que rien n'a été oublié.</p>
+      <ul class="liste-releve" id="releve-ecartes-liste">
+      ${textesHors.map((t) => ligneJO(V, t, n++, JO.releve_le)).join("")}
+      </ul>
+    </div>
+  </details>`; })()}` : `
   <p class="reserve">
     <strong>Aucune relève n'a encore été faite.</strong>
     Le robot qui va chercher sur les sources officielles tourne
@@ -1636,7 +1705,7 @@ ${C ? rubrique({ etiq: "Ce qui a changé dans les codes", id: "codes-changements
   return page({
     titre: `Relevé des textes | ${SITE.nom}`,
     description: "Les textes parus qui vous concernent.",
-    racine: "../", zone: "app", actif: "releve", corps, verrou: true, formule: "textes"
+    racine: "../", zone: "app", actif: "releve", corps, verrou: true, formule: "textes", donneesPlan: true
   });
 }
 
@@ -1931,8 +2000,8 @@ function appTextes(V, TEXTES, parTexte, C, LIENS) {
     </ul>
     <h1>Tous les textes</h1>
     <p class="chapeau">
-      Choisissez une catégorie : vous ne verrez que ses textes, chacun avec ce qu'il
-      exige et où le lire.
+      Cliquez sur une catégorie pour voir les textes de cette catégorie, chacun avec ce
+      qu'il exige et où le lire.
     </p>
     <div class="recherche" style="margin-top:var(--t5)">
       <label class="etiq" for="recherche-secteur">Ou tapez un mot</label>
@@ -2007,7 +2076,8 @@ function appSecteur(V, PIEGES, METIERS, TEXTES, NAF, C, LIENS, d) {
     ${mots.length ? `<p class="chapeau"><span class="etiq">On dit aussi</span>${esc(mots.join(" · "))}</p>` : ""}
     <dl class="faits" style="margin-top:var(--t5)">
       <div><dt class="etiq">Textes de référence</dt><dd><span class="grand">${textes.length}</span></dd></div>
-      <div><dt class="etiq">Domaines de base</dt><dd><span class="grand" id="compte-domaines">${base.length}</span></dd></div>
+      <div><dt class="etiq">Sujets à suivre</dt><dd><span class="grand" id="compte-domaines">${base.length}</span>
+        <span class="precision" id="compte-precision">par le code APE seul ; vos situations, plus bas, peuvent en ajouter</span></dd></div>
       <div><dt class="etiq">À revoir le plus souvent</dt><dd>${esc(rythme)}</dd></div>
       <div><dt class="etiq">Questions de contexte</dt><dd><span class="grand">${declencheurs.length}</span></dd></div>
       ${apes.length ? `<div><dt class="etiq">Codes APE</dt><dd><span class="grand">${apes.length}</span></dd></div>` : ""}
@@ -4342,7 +4412,10 @@ function donneesPlan(V, METIERS) {
   Object.keys(V.frequences).forEach((id) => { f[id] = { l: V.frequences[id].l, ordre: V.frequences[id].ordre }; });
 
   const d = {};
-  Object.keys(V.domaines).forEach((id) => { d[id] = { n: V.domaines[id].nom, f: V.domaines[id].frequence }; });
+  Object.keys(V.domaines).forEach((id) => {
+    const cl = V.classements[V.domaines[id].classement] ? V.domaines[id].classement : "metier";
+    d[id] = { n: V.domaines[id].nom, f: V.domaines[id].frequence, c: cl };
+  });
 
   const div = {};
   V.divisions.forEach((x) => {

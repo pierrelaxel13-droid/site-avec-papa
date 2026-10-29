@@ -69,6 +69,11 @@ jobs:
         run: |
           COMMIT_REF=$(git rev-parse HEAD) node build.mjs
 
+      # « Ce qui vous concerne, et rien d'autre » : le plan et le relevé de la
+      # démonstration, lus comme les lit un outil, sans rien hors du plan.
+      - name: Le plan ne montre que ce qui concerne l'entreprise
+        run: node outils/perimetre.test.mjs
+
       - uses: actions/upload-pages-artifact@v3
         with:
           path: _site

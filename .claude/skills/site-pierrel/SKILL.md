@@ -291,6 +291,16 @@ qu'il n'y a pas de client.
   dans l'adresse. Les textes du relevé : dans un compte, la case « Fait » cède
   la place au bloc `.qualifier` (espace.js : décision, action, échéance).
   Après un changement de l'espace : relancer l'action « Essai en ligne ».
+- **Le périmètre, une seule source** : `planDe(V, entreprise)` (build.mjs) =
+  code APE + situations ; `perimetre()` d'assets/entreprise.js fait le même
+  calcul dans le navigateur. « Mon plan » ne porte dans ses rubriques que les
+  sujets du plan ; les autres sont dans `<template id="plan-reserve">` et leurs
+  noms dans le volet replié « ne vous concernent pas ». Le relevé range sous
+  ses familles les seuls textes qui touchent le plan (`data-domaines` sur chaque
+  ligne) ; les autres vont dans le volet `#releve-ecartes`. Après des réglages ou
+  dans un compte, `suivrePlan()` / `suivreReleve()` refont le tri. Jamais
+  d'`hidden` pour cacher un hors-périmètre : un outil qui lit la source le
+  verrait. Test : `node outils/perimetre.test.mjs` (lancé par publie.yml).
 - **Accueil** : l'accroche « la veille faite et jamais écrite » est sous le titre
   (une seule fois dans la page). « Dernière collecte réussie » (`blocCollecte()`)
   prend l'heure de la dernière relève réussie dans COLLECTE_LE, posée par

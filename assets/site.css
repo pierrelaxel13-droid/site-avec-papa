@@ -3151,3 +3151,8 @@ mark.a-decider { background: #E6E1FF; color: #3B1FBF; }
   .calcul-res > div { flex-direction: column; gap: .15rem; }
   .calcul-res dd { text-align: left; }
 }
+
+/* Les sujets écartés du plan : une liste de noms, dans le volet replié. */
+.liste-ecartes { list-style: none; margin: var(--t3) 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: .4rem; }
+.liste-ecartes li { padding: .3rem .8rem; border: 1px solid var(--filet); border-radius: var(--rp); color: var(--encre-douce); font-size: .92rem; }
+.plan-ecartes, .releve-ecartes { margin-top: var(--t5); }
