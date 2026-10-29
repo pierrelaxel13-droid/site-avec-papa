@@ -101,18 +101,15 @@ Recherche du flux de 6 sources muettes.
   → aucun flux trouvé
 
 ■ ansm — ANSM — actualités
-    · https://ansm.sante.fr/rss/actualites  — 0 entrées  (application/xml)  [adresse actuelle]
-        contenu : <?xml version="1.0" encoding="UTF-8"?> <rss version="2.0"> <channel> <title>Actualités - Ansm.sante.fr</title> <link>https://ansm.sante.fr/actualites/</link> <description>Actualités du jour de l'ANSM</description> </channel> </rss>
-    ✔ https://ansm.sante.fr/rss/informations_securite  — 3 entrées, la plus récente du 2026-10-28  « Informations de sécurité - Ansm.sante.fr »  [piste connue]
+    ✔ https://ansm.sante.fr/rss/actualites  — 1 entrées, la plus récente du 2026-10-29  « Actualités - Ansm.sante.fr »  [adresse actuelle]
+    ✔ https://ansm.sante.fr/rss/informations_securite  — 5 entrées, la plus récente du 2026-10-28  « Informations de sécurité - Ansm.sante.fr »  [piste connue]
     · https://ansm.sante.fr/page/flux-rss  — 0 entrées  (text/html)  [page du site]
       la page déclare 25 lien(s) de flux
-    · https://ansm.sante.fr/rss/actualites?produitsSante=medicaments  — 0 entrées  (application/xml)  [déclaré par la page]
-        contenu : <?xml version="1.0" encoding="UTF-8"?> <rss version="2.0"> <channel> <title>Actualités - Ansm.sante.fr</title> <link>https://ansm.sante.fr/actualites/</link> <description>Actualités du jour de l'ANSM</description> </channel> </rss>
+    ✔ https://ansm.sante.fr/rss/actualites?produitsSante=medicaments  — 1 entrées, la plus récente du 2026-10-29  « Actualités - Ansm.sante.fr »  [déclaré par la page]
     · https://ansm.sante.fr/rss/actualites?produitsSante=dispositifs_medicaux  — 0 entrées  (application/xml)  [déclaré par la page]
         contenu : <?xml version="1.0" encoding="UTF-8"?> <rss version="2.0"> <channel> <title>Actualités - Ansm.sante.fr</title> <link>https://ansm.sante.fr/actualites/</link> <description>Actualités du jour de l'ANSM</description> </channel> </rss>
-    · https://ansm.sante.fr/rss/informations_securite?produitsSante=medicaments  — 0 entrées  (application/xml)  [déclaré par la page]
-        contenu : <?xml version="1.0" encoding="UTF-8"?> <rss version="2.0"> <channel> <title>Informations de sécurité - Ansm.sante.fr</title> <link>https://ansm.sante.fr/informations-de-securite/</link> <description>Informations de sécurité du jour de l'ANSM</description> </channel> </rss>
-    ✔ https://ansm.sante.fr/rss/informations_securite?produitsSante=dispositifs_medicaux  — 1 entrées, la plus récente du 2026-10-28  « Informations de sécurité - Ansm.sante.fr »  [déclaré par la page]
+    ✔ https://ansm.sante.fr/rss/informations_securite?produitsSante=medicaments  — 1 entrées, la plus récente du 2026-10-28  « Informations de sécurité - Ansm.sante.fr »  [déclaré par la page]
+    ✔ https://ansm.sante.fr/rss/informations_securite?produitsSante=dispositifs_medicaux  — 2 entrées, la plus récente du 2026-10-28  « Informations de sécurité - Ansm.sante.fr »  [déclaré par la page]
     ✔ https://ansm.sante.fr/rss/informations_securite?produitsSante=dispositifs_medicaux_de_diagnostic_in_vitro  — 2 entrées, la plus récente du 2026-10-28  « Informations de sécurité - Ansm.sante.fr »  [déclaré par la page]
     · https://ansm.sante.fr/rss/disponibilite_produits_sante  — 0 entrées  (application/xml)  [déclaré par la page]
         contenu : <?xml version="1.0" encoding="UTF-8"?> <rss version="2.0"> <channel> <title>Disponibilité des produits de santé - Ansm.sante.fr</title> <link>https://ansm.sante.fr/disponibilites-des-produits-de-sante</link> <description>Informations du jour de l'ANSM sur les tensions d'approvisionnement des produits de santé (médicaments MITM, vaccins, dispositifs médicaux et dispositifs médicaux de diagnostic in vitro)</description> </channel> </rss>
@@ -150,7 +147,7 @@ Recherche du flux de 6 sources muettes.
         contenu : <?xml version="1.0" encoding="UTF-8"?> <rss version="2.0"> <channel> <title>Actualités - Ansm.sante.fr</title> <link>https://ansm.sante.fr/actualites/</link> <description>Actualités du jour de l'ANSM</description> </channel> </rss>
     · https://ansm.sante.fr/rss/actualites?domainesMedicaux=imagerie_radiologie  — 0 entrées  (application/xml)  [déclaré par la page]
         contenu : <?xml version="1.0" encoding="UTF-8"?> <rss version="2.0"> <channel> <title>Actualités - Ansm.sante.fr</title> <link>https://ansm.sante.fr/actualites/</link> <description>Actualités du jour de l'ANSM</description> </channel> </rss>
-  → RETENUE : https://ansm.sante.fr/rss/informations_securite
+  → RETENUE : https://ansm.sante.fr/rss/actualites
 
 ■ boamp — BOAMP — marchés publics
     ✘ https://www.boamp.fr/rss  — HTTP 404  [adresse actuelle]

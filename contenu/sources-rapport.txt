@@ -1,6 +1,6 @@
 Vérification de 25 sources.
 
-  jorf             répond — 874 archives
+  jorf             répond — 875 archives
   eurlex-l         répond — 100 entrées
   inrs             répond — 0 entrées  ← format à revoir
                   type : text/html;charset=UTF-8
@@ -16,7 +16,7 @@ Vérification de 25 sources.
   certfr-alerte    répond — 40 entrées
   ecologie         répond — 10 entrées
   ineris-aida      répond — 10 entrées
-  ademe            répond — 94 entrées
+  ademe            répond — 100 entrées
   rappelconso      répond — 100 entrées
   dgccrf           répond — 20 entrées
   anses            répond — 10 entrées
@@ -25,12 +25,9 @@ Vérification de 25 sources.
   amf              répond — 200 entrées
   arcep            répond — 10 entrées
   has              répond — 50 entrées
-  ansm             répond — 0 entrées  ← format à revoir
-                  type : application/xml
-                  début : <?xml version="1.0" encoding="UTF-8"?> <rss version="2.0"> <channel> <title>Actualités - Ansm.sante.fr</title> <link>https://ansm.sante.fr/actualites/</link> <description>Actualités du jour de l'ANSM</description> </channel> </rss>
-                  balises : 0 <item>, 0 <entry>, 0 <ns:item>
+  ansm             répond — 1 entrées
   douane           répond — 10 entrées
   boamp            HTTP 404
 
-19 source(s) sur 25 exploitables.
+20 source(s) sur 25 exploitables.
 Passer « confirme: true » dans contenu/sources.js pour celles-là, et seulement celles-là.

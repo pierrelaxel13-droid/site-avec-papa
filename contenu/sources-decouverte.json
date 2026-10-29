@@ -1,5 +1,5 @@
 {
- "le": "2026-10-29T13:04:06.255Z",
+ "le": "2026-10-29T21:59:59.430Z",
  "bilan": [
   {
    "id": "inrs",
@@ -49,19 +49,40 @@
   {
    "id": "ansm",
    "nom": "ANSM — actualités",
-   "retenue": "https://ansm.sante.fr/rss/informations_securite",
-   "derniere": "2026-10-28",
+   "retenue": "https://ansm.sante.fr/rss/actualites",
+   "derniere": "2026-10-29",
    "flux": [
     {
+     "url": "https://ansm.sante.fr/rss/actualites",
+     "entrees": 1,
+     "derniere": "2026-10-29",
+     "titre": "Actualités - Ansm.sante.fr",
+     "d_ou": "adresse actuelle"
+    },
+    {
      "url": "https://ansm.sante.fr/rss/informations_securite",
-     "entrees": 3,
+     "entrees": 5,
      "derniere": "2026-10-28",
      "titre": "Informations de sécurité - Ansm.sante.fr",
      "d_ou": "piste connue"
     },
     {
-     "url": "https://ansm.sante.fr/rss/informations_securite?produitsSante=dispositifs_medicaux",
+     "url": "https://ansm.sante.fr/rss/actualites?produitsSante=medicaments",
      "entrees": 1,
+     "derniere": "2026-10-29",
+     "titre": "Actualités - Ansm.sante.fr",
+     "d_ou": "déclaré par la page"
+    },
+    {
+     "url": "https://ansm.sante.fr/rss/informations_securite?produitsSante=medicaments",
+     "entrees": 1,
+     "derniere": "2026-10-28",
+     "titre": "Informations de sécurité - Ansm.sante.fr",
+     "d_ou": "déclaré par la page"
+    },
+    {
+     "url": "https://ansm.sante.fr/rss/informations_securite?produitsSante=dispositifs_medicaux",
+     "entrees": 2,
      "derniere": "2026-10-28",
      "titre": "Informations de sécurité - Ansm.sante.fr",
      "d_ou": "déclaré par la page"
