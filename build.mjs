@@ -146,10 +146,10 @@ const paiementComplet = () => Object.keys(FORMULES).every((id) => lienPaiement(i
 const FORMULES = {
   textes:  { l: "Textes", rang: 1, mois: 59, an: 590,
              pour: "Vous voulez savoir ce qui paraît pour votre métier.",
-             ouvre: "Les textes de votre métier, chacun avec ce qu'il faut faire, et les 88 fiches de métier.",
+             ouvre: "Les textes de votre métier, chacun avec ce qu'il faut faire, et la fiche de chaque métier (732 codes APE).",
              donne: ["Le relevé des textes de votre métier, mis à jour toutes les heures",
                      "Pour chaque texte : ce qu'il faut faire, et le texte lui-même, à côté de sa source",
-                     "Les 88 fiches de métier, et les codes relus article par article",
+                     "La fiche de chaque métier (732 codes APE), et les codes relus article par article",
                      "Vos réglages : votre métier, vos réponses, vos chiffres"] },
   suivi:   { l: "Textes et suivi", rang: 2, mois: 99, an: 990,
              pour: "Vous voulez aussi savoir quoi revoir, et quand.",
@@ -1780,7 +1780,7 @@ function appSecteurs(V, METIERS, NAF) {
     <ul class="jalons">
       <li><span class="fort">Référentiel</span></li>
       ${NAF ? `<li><span>${codes.length} codes APE</span></li>` : ""}
-      <li><span>${V.divisions.length} divisions · ${V.sections.length} sections</span></li>
+      <li><span>${V.divisions.length} familles · ${V.sections.length} sections</span></li>
       <li><span>${Object.keys(V.domaines).length} domaines</span></li>
     </ul>
     <h1>Trouvez votre code</h1>
@@ -1914,7 +1914,7 @@ ${rubrique({ etiq: "Ce que ce texte exige", contenu: `
 
 ${rubrique({ etiq: "Où il s'applique", aplat: true, contenu: `
   <p class="lecture">Ce texte est rattaché à ${domaines.length} domaine${domaines.length > 1 ? "s" : ""}
-  de veille, et concerne ${secteurs.length} division${secteurs.length > 1 ? "s" : ""} d'activité sur
+  de veille, et concerne ${secteurs.length} famille${secteurs.length > 1 ? "s" : ""} de métiers sur
   ${V.divisions.length}.</p>
   <ul class="puces" style="margin-top:var(--t4)">
     ${domaines.map((id) => `<li><a href="../plan.html">
@@ -2503,7 +2503,7 @@ function encartsDuSite(V, C, NAF, SOURCES) {
       `Un bouton <strong>Fait</strong> qui garde la date où vous l'avez traité`
     ] },
     { titre: "Seulement ce qui vous concerne", lignes: [
-      `${V.divisions.length} familles de métiers${NAF ? `, ${NAF.codes.length} codes APE` : ""} : vous choisissez le vôtre, le reste disparaît`,
+      `${NAF ? `${NAF.codes.length} codes APE, rangés en ${V.divisions.length} familles de métiers` : `${V.divisions.length} familles de métiers`} : vous choisissez le vôtre, le reste disparaît`,
       `${Object.keys(V.domaines).length} sujets à suivre, rangés en cinq familles : santé et sécurité, hygiène, social, environnement, métier et gestion`,
       `${V.declencheurs.length} questions simples (salariés, chantiers, produits chimiques…) ajoutent ce qui vient de votre façon de travailler`,
       `Chaque sujet a son rythme de revue : chaque semaine, chaque mois ou chaque trimestre`
@@ -2533,7 +2533,7 @@ function encartsDeNous() {
     ] },
     { titre: "Ce qu'on fait pour vous", lignes: [
       ...Object.values(FORMULES).map((f) => `<strong>${esc(f.l)}</strong> (${esc(f.prixAn)} ou ${esc(f.prix)}) : ${esc(f.ouvre.replace(/^En plus : /, "en plus, ").replace(/\.$/, ""))}`),
-      `L'année au prix de dix mois. ${esc(TVA.mention)}. Prix affichés sur la <a href="abonnement.html">page des tarifs</a>, sans devis`
+      `L'année au prix de dix mois. Prix affichés sur la <a href="abonnement.html">page des tarifs</a>, sans devis`
     ] },
     { titre: `Les audits que ${esc(SITE.nom)} prépare`, lignes: [
       `<strong>ISO 14001</strong> (environnement) et <strong>ISO 45001</strong> (santé et sécurité)`,
@@ -2715,7 +2715,6 @@ function pageConsultants() {
         </ul>
       </article>`).join("\n      ")}
     </div>
-    <p class="mention-tva">${esc(TVA.mention)}.</p>
   </div>
 </section>
 
@@ -2741,7 +2740,7 @@ function pageConsultants() {
       <p class="calcul-blanche" data-calcul="blanche">${c.p.blanche ? "Marque blanche incluse : votre logo, votre nom, vos couleurs." : `Marque blanche à partir de ${O.paliers.find((p) => p.blanche).de} clients.`}</p>
     </div>`;
     })()}
-    <p class="mention-tva">${esc(TVA.mention)}. Exemple de calcul : votre propre prix de revente est libre.</p>
+    <p class="mention-tva">Exemple de calcul : votre propre prix de revente est libre.</p>
   </div>
 </section>
 
@@ -2780,8 +2779,8 @@ function pageMetiers(V, NAF) {
 <section class="heros heros-court">
   <div class="enveloppe">
     <div class="heros-texte"><h1>Tous les métiers couverts</h1></div>
-    <p class="heros-sous">Les ${V.divisions.length} familles de métiers de la nomenclature officielle${NAF ? `
-      (${NAF.codes.length} codes APE)` : ""}. Cliquez la vôtre : vous voyez tout de suite ce qui s'applique chez vous.
+    <p class="heros-sous">${NAF ? `Les ${NAF.codes.length} codes APE de la nomenclature officielle, rangés en
+      ${V.divisions.length} familles de métiers` : `Les ${V.divisions.length} familles de métiers de la nomenclature officielle`}. Cliquez la vôtre : vous voyez tout de suite ce qui s'applique chez vous.
       Votre code APE (par exemple 43.21A) commence par le numéro de votre famille.</p>
   </div>
 </section>
@@ -2799,7 +2798,7 @@ function pageMetiers(V, NAF) {
 </section>`;
   return page({
     titre: `Tous les métiers couverts | ${SITE.nom}`,
-    description: `Les ${V.divisions.length} familles de métiers couvertes par la veille, rangées par secteur d'activité.`,
+    description: `${NAF ? `Les ${NAF.codes.length} codes APE couverts par la veille, rangés en ${V.divisions.length} familles de métiers` : `Les ${V.divisions.length} familles de métiers couvertes par la veille`}, par secteur d'activité.`,
     zone: "public", corps
   });
 }
@@ -2963,8 +2962,9 @@ function pageAccueil(V, D, METIERS, ECRANS, C = null, NAF = null, SOURCES = [], 
         ${esc(muettes.map((x) => `${nomCourt(x)} (${x.pourquoi || "ne répond pas"})`).join(", "))}.</p>` : ""}`],
       ["Comment savez-vous ce qui me concerne ?",
        `<p><strong>Par votre métier d'abord, puis par vos réponses à quelques questions simples.</strong></p>
-        <p>Chacune des ${V.divisions.length} familles de métiers de la nomenclature officielle est rattachée aux
-        sujets qui la concernent, parmi ${Object.keys(V.domaines).length}. Par exemple, pour les
+        <p>La nomenclature officielle compte ${NAF ? `${NAF.codes.length} codes APE, rangés en ` : ""}${V.divisions.length} familles
+        de métiers. Chaque famille est rattachée aux sujets qui la concernent, parmi ${Object.keys(V.domaines).length} ;
+        votre code APE prend ceux de sa famille. Par exemple, pour les
         <strong>${esc(divDefaut.l.toLowerCase())}</strong> (électriciens, plombiers, peintres…), cela fait
         <strong>${vuDefaut.base.length} sujets</strong> : ${esc(exempleRythmes)}.</p>
         <p>Ensuite, ${V.declencheurs.length} questions ajoutent ce qui vient de votre façon de travailler :
@@ -3004,8 +3004,7 @@ function pageAccueil(V, D, METIERS, ECRANS, C = null, NAF = null, SOURCES = [], 
     ] },
     { theme: "Prix et démarrage", questions: [
       ["Combien ça coûte ?",
-       `<p><strong>${prixListe} par mois selon la formule, ou à l'année avec deux mois offerts.</strong> Sans devis.
-        ${esc(TVA.mention)}.</p>
+       `<p><strong>${prixListe} par mois selon la formule, ou à l'année avec deux mois offerts.</strong> Sans devis.</p>
         <ul>
           ${Object.values(FORMULES).map((f) => `<li><strong>${esc(f.l)}</strong> — ${esc(f.prixAn)}, ou ${esc(f.prix)} : ${esc(f.ouvre.replace(/^En plus : /, "en plus de la formule précédente, "))}</li>`).join("\n          ")}
         </ul>
@@ -3020,7 +3019,7 @@ function pageAccueil(V, D, METIERS, ECRANS, C = null, NAF = null, SOURCES = [], 
         <p>En cas de doute, commencez par la démonstration : vous voyez exactement les écrans que chaque formule
         ouvre, et vous changez de formule d'un clic.</p>`],
       ["Mon métier est-il couvert ?",
-       `<p><strong>Oui, quel qu'il soit : les ${V.divisions.length} familles de métiers${NAF ? ` et les ${NAF.codes.length} codes APE` : ""} de la nomenclature officielle.</strong></p>
+       `<p><strong>Oui, quel qu'il soit : ${NAF ? `les ${NAF.codes.length} codes APE de la nomenclature officielle, rangés en ${V.divisions.length} familles de métiers` : `les ${V.divisions.length} familles de métiers de la nomenclature officielle`}.</strong></p>
         <p>Votre code APE figure sur votre extrait Kbis ou votre avis de situation Insee ; ses deux premiers
         chiffres sont ceux de votre famille de métiers (43.21A, par exemple, appartient à la famille 43).</p>
         <p>Choisissez-la dans <a href="#simulateur">l'outil en haut de page</a>, ou dans
@@ -3111,7 +3110,7 @@ function pageAccueil(V, D, METIERS, ECRANS, C = null, NAF = null, SOURCES = [], 
     </p>
     <p class="gage">
       ${sigle}
-      <span>${V.divisions.length} familles de métiers couvertes</span>
+      <span>${NAF ? `${NAF.codes.length} codes APE couverts` : `${V.divisions.length} familles de métiers couvertes`}</span>
       <span class="doux">— rien à créer, rien à payer pour regarder</span>
     </p>
     <!-- Presque tous les services de veille vendent « sur devis ». Le nôtre
@@ -3120,8 +3119,6 @@ function pageAccueil(V, D, METIERS, ECRANS, C = null, NAF = null, SOURCES = [], 
       <span>Prix affichés, sans devis :</span>
       <span class="doux">${Object.values(FORMULES).map((f) => esc(f.montant)).join(", ").replace(/, ([^,]+)$/, " ou $1")} par mois,
         ou à l'année avec 2 mois offerts</span>
-    </p>
-    <p class="gage gage-tva"><span class="doux">${esc(TVA.mention)}</span>
     </p>
     ${blocCollecte(JO)}
 
@@ -3215,9 +3212,9 @@ ${bandeAvis(AVIS)}
   <div class="enveloppe">
     <div class="rail">
       <span class="rail-fil" data-fil></span>
-      <div class="rail-item" data-paraitre data-compte="${V.divisions.length}">
-        <span class="chiffre">${V.divisions.length}</span>
-        <p class="legende">divisions d'activité couvertes, de la boulangerie au transport routier</p>
+      <div class="rail-item" data-paraitre data-compte="${NAF ? NAF.codes.length : V.divisions.length}">
+        <span class="chiffre">${NAF ? NAF.codes.length : V.divisions.length}</span>
+        <p class="legende">${NAF ? "codes APE couverts" : "familles de métiers couvertes"}, de la boulangerie au transport routier</p>
       </div>
       <div class="rail-item" data-paraitre data-compte="${nbDomaines}">
         <span class="chiffre">${nbDomaines}</span>
@@ -3329,7 +3326,7 @@ ${bandeAvis(AVIS)}
 <section class="section">
   <div class="enveloppe">
     <h2 class="titre-section">Votre métier y est</h2>
-    <p class="intro titre-section">${V.divisions.length} familles de métiers, chacune avec sa fiche.
+    <p class="intro titre-section">${NAF ? `${NAF.codes.length} codes APE, rangés en ${V.divisions.length} familles de métiers` : `${V.divisions.length} familles de métiers`}, chacune avec sa fiche.
     En voici quelques-unes : cliquez la vôtre pour voir ce qui s'applique.</p>
     <div class="panneau-puces">
       <ul class="puces">
@@ -3527,7 +3524,7 @@ function pageDecouvrir(V, ECRANS, C, NAF, SOURCES) {
     { t: "Relues toutes les heures", i: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
       d: `Un robot relit chaque source toutes les heures${C ? `, et le texte des ${C.codes.length} codes suivis une fois par jour` : ""}.` },
     { t: "Triées pour votre métier", i: '<path d="M4 5h16l-6 8v6l-4-2v-4z"/>',
-      d: `${nDomaines} sujets, rattachés aux ${V.divisions.length} familles de métiers${nCodes ? ` et aux ${nCodes} codes APE` : ""}. Ce qui ne vous concerne pas n'arrive pas.` },
+      d: `${nDomaines} sujets, rattachés à ${nCodes ? `${nCodes} codes APE (${V.divisions.length} familles de métiers)` : `${V.divisions.length} familles de métiers`}. Ce qui ne vous concerne pas n'arrive pas.` },
     { t: "Ce qu'il faut faire", i: '<path d="M9 6h11M9 12h11M9 18h11"/><path d="m3.5 6 1 1 2-2M3.5 12l1 1 2-2M3.5 18l1 1 2-2"/>',
       d: "Chaque texte arrive avec les gestes à faire, et le texte lui-même, tel que publié." },
     { t: "Fait, et prouvé", i: '<path d="M12 3 4 6v6c0 4.5 3.4 7.8 8 9 4.6-1.2 8-4.5 8-9V6z"/><path d="m8.5 12 2.5 2.5 4.5-5"/>',
@@ -3626,7 +3623,7 @@ function pageDecouvrir(V, ECRANS, C, NAF, SOURCES) {
     { img: "plan.png", t: "Mon plan", d: "Vos sujets, rangés par rythme de revue : quotidienne, hebdomadaire, mensuelle, trimestrielle." },
     { img: "releve.png", t: "Relevé", d: "Les textes parus, par famille. Chacun avec ce qu'il faut faire et le texte officiel." },
     { img: "registre.png", t: "Registre de preuves", d: "Les revues faites et les décisions prises, datées. C'est ce que demande un auditeur." },
-    { img: "secteurs.png", t: "Secteurs", d: `Les ${V.divisions.length} familles de métiers${nCodes ? ` et leurs ${nCodes} codes APE` : ""}, et ce qui s'applique à chacune.` },
+    { img: "secteurs.png", t: "Secteurs", d: `${nCodes ? `Les ${nCodes} codes APE, rangés en ${V.divisions.length} familles de métiers` : `Les ${V.divisions.length} familles de métiers`}, et ce qui s'applique à chacun.` },
     { img: "reglages.png", t: "Réglages", d: "Votre entreprise, ses chiffres, vos réponses, vos alertes. Le plan se refait dessus, aussitôt." }
   ];
   const vignette = (p) => {
@@ -3765,7 +3762,7 @@ function pageAbonnement(V) {
           `mailto:${SITE.courriel}?subject=${encodeURIComponent(`Démarrer un abonnement — ${f.l}, au mois`)}`)}">ou payer au mois</a>
       </article>`).join("\n      ")}
     </div>
-    <p class="mention-tva">${esc(TVA.mention)}. Prix affichés, sans devis.</p>
+    <p class="mention-tva">Prix affichés, sans devis.</p>
 
     ${paiementComplet() ? `<p class="reserve reserve-ok" style="margin-top:var(--t5)">
       <strong>Paiement en ligne, sécurisé par Stripe.</strong>
