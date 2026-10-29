@@ -119,3 +119,22 @@ jobs:
         run: |
           psql "$SUPABASE_DB_URL" -v ON_ERROR_STOP=1 -q -o /dev/null -f supabase/tests/isolation.sql 2>&1 | sed 's/^psql:[^ ]* NOTICE:  //'
         shell: bash -o pipefail {0}
+      - name: Ce qu'un visiteur non connecté voit (clé publique, comme le site)
+        if: steps.pret.outputs.pret == 'oui'
+        env:
+          CLE: sb_publishable_zJXo39cN5hEAdCQFwm5DkA_ru99Xodj   # publique : elle est dans le site
+          API: https://denpxyqbvjcwsbxjtqpd.supabase.co/rest/v1
+        run: |
+          echec=0
+          for t in registre entreprises membres_entreprise abonnements reponses sujets textes; do
+            corps=$(curl -sS "$API/$t?select=*&limit=1" -H "apikey: $CLE")
+            case "$corps" in
+              "[]"|*'"42501"'*) echo "ok : « $t » ne montre rien";;
+              *) echo "::error::Un visiteur non connecté obtient une réponse de « $t » : ${corps:0:200}"; echec=1;;
+            esac
+          done
+          code=$(curl -sS -o /dev/null -w '%{http_code}' -X POST "$API/registre" -H "apikey: $CLE" \
+                 -H "Content-Type: application/json" -d '{"genre":"revue"}')
+          case "$code" in 2*) echo "::error::Un visiteur non connecté a pu écrire dans le registre (HTTP $code)"; echec=1;;
+                          *) echo "ok : écrire dans le registre est refusé (HTTP $code)";; esac
+          exit $echec
