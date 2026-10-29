@@ -85,6 +85,10 @@ commit;
 const litteral = (v) => v === null || v === undefined ? "null" : `'${String(v).replace(/'/g, "''")}'`;
 const RPC = {
   mes_entreprises: () => "select coalesce(json_agg(t), '[]') from public.mes_entreprises() t",
+  suis_administrateur: () => "select to_json(public.suis_administrateur())",
+  admin_vue: () => "select public.admin_vue()",
+  admin_abonnement: (a) => `select public.admin_abonnement(${litteral(a.entreprise)}, ${litteral(a.nouvelle_formule)}) \\g /dev/null
+select 'null'`,
   creer_entreprise: (a) => `select to_json(public.creer_entreprise(${litteral(a.denomination)}, ${litteral(a.naf)}, ${a.effectif ? Number(a.effectif) : "null"}))`
 };
 
@@ -114,6 +118,7 @@ async function auth(chemin, q, corps, porteur) {
     if (!c || !timingSafeEqual(empreinte(corps.password || "", c.sel), c.empreinte))
       return erreurAuth(400, "invalid_credentials", "Invalid login credentials");
     if (!c.confirme) return erreurAuth(400, "email_not_confirmed", "Email not confirmed");
+    await sql(`update auth.users set last_sign_in_at = now() where id = ${litteral(c.id)}`, SYSTEME);
     return [200, session(c)];
   }
   if (chemin === "/auth/v1/token" && q.get("grant_type") === "refresh_token") {
@@ -175,7 +180,10 @@ function verifie(q) {
     comptes.delete(c.courriel); c.courriel = c.nouvelle; delete c.nouvelle; comptes.set(c.courriel, c);
     sql(`update auth.users set email = ${litteral(c.courriel)} where id = ${litteral(c.id)}`, SYSTEME);
   }
-  if (l.type === "signup") c.confirme = c.confirme || new Date().toISOString();
+  if (l.type === "signup") {
+    c.confirme = c.confirme || new Date().toISOString();
+    sql(`update auth.users set email_confirmed_at = coalesce(email_confirmed_at, now()) where id = ${litteral(c.id)}`, SYSTEME);
+  }
   const s = session(c);
   return vers + `#access_token=${s.access_token}&expires_at=${s.expires_at}&expires_in=${s.expires_in}` +
     `&refresh_token=${s.refresh_token}&token_type=bearer&type=${l.type}`;
@@ -197,7 +205,7 @@ async function rest(chemin, corps, porteur) {
     const code = m ? m[1] : "XX000";
     return [code === "42501" ? (claims ? 403 : 401) : 400, { code, message: m ? m[2] : r.err.trim(), details: null, hint: null }];
   }
-  return [200, JSON.parse(r.sortie.split("\n").pop() || "null")];
+  return [200, JSON.parse(r.sortie || "null")];
 }
 
 createServer(async (req, res) => {

@@ -57,13 +57,16 @@ données » les applique.
 - **`/app/`** demande une session (sinon : la connexion) et ouvre selon la
   formule payée par l'entreprise (`mes_entreprises()` dans la base).
   `/demo/` en est la copie ouverte à tous, avec le jeu d'essai.
+- **`compte/admin.html`** : l'administration, pour l'administrateur seul (une
+  ligne dans `prive.administrateurs`, voir `supabase/README.md`) — les
+  entreprises, leurs comptes, donner ou retirer une formule. Jamais les registres.
 - **Ce qui protège les données**, ce sont les règles de la base (RLS), pas les
   pages : elles sont publiques, comme le code du site.
 
 **Pas encore fait** : les données propres à chaque client (l'espace montre
 encore l'entreprise de démonstration), et l'abonnement réellement relié à
-Stripe. En attendant, un abonnement d'essai se pose à la main dans Supabase
-(SQL Editor) — voir `supabase/README.md`.
+Stripe. En attendant, l'administrateur donne une formule depuis
+`compte/admin.html`.
 
 **Essayer sur un poste**, sans toucher au vrai Supabase : l'imitation
 `outils/supabase-local.mjs` (mode d'emploi en tête du fichier), puis

@@ -212,6 +212,7 @@
       dire(etatM, "");
       entete();   // la session vient peut-être d'arriver par le lien du courriel
       montrerEntreprise();
+      V.suisAdministrateur().then(function (oui) { $("#compte-admin").hidden = !oui; });
     };
 
     V.arrivee().then(function (a) {
@@ -297,6 +298,133 @@
 
     $("#compte-sortir").addEventListener("click", function () {
       V.deconnecter().then(function () { window.location.href = vers("connexion.html"); });
+    });
+  }
+
+  /* --- L'administration du service --------------------------------------------
+     Les entreprises, leur formule et leurs comptes. Jamais leurs registres :
+     la base ne les donne pas (admin_vue ne les lit pas). */
+  var admin = $("#admin-liste");
+  if (admin) {
+    var etatAd = $("#admin-etat");
+    var FORM = {};
+    try { FORM = JSON.parse(admin.getAttribute("data-formules")); } catch (e) { /* noms par défaut */ }
+    var nomRang = function (rang) {
+      for (var k in FORM) if (FORM[k].rang === rang) return FORM[k].l;
+      return "";
+    };
+    var date = function (d) {
+      return d ? new Date(d).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" }) : "—";
+    };
+    var el = function (balise, classe, texte) {
+      var x = document.createElement(balise);
+      if (classe) x.className = classe;
+      if (texte !== undefined) x.textContent = texte;
+      return x;
+    };
+    var moi = V.utilisateur() || {};
+
+    // Le bouton qui envoie à un compte le lien « choisir un mot de passe ».
+    var boutonLien = function (courriel) {
+      var b = el("button", "lien-nu", "Envoyer un lien de mot de passe");
+      b.type = "button";
+      b.addEventListener("click", function () {
+        b.disabled = true; b.textContent = "Envoi…";
+        V.oubli(courriel).then(function (r) { b.textContent = r.ok ? "Lien envoyé" : r.erreur; if (!r.ok) b.disabled = false; });
+      });
+      return b;
+    };
+    var ligneCompte = function (courriel, details, confirme) {
+      var li = el("li", "admin-compte");
+      var t = el("span", "admin-courriel", courriel);
+      li.appendChild(t);
+      var d = el("span", "admin-details", details);
+      if (!confirme) d.appendChild(el("span", "admin-alerte", " · adresse pas encore confirmée"));
+      li.appendChild(d);
+      li.appendChild(boutonLien(courriel));
+      return li;
+    };
+
+    var carteEntreprise = function (e) {
+      var carte = el("article", "carte-connexion admin-entreprise");
+      carte.appendChild(el("h3", "", e.denomination));
+      var infos = "Inscrite le " + date(e.cree_le) + (e.naf ? " · NAF " + e.naf : "") +
+        (e.consultant ? " · suivie par " + e.consultant : "") + (e.active ? "" : " · désactivée");
+      carte.appendChild(el("p", "admin-details", infos));
+
+      var abos = e.abonnements || [];
+      var stripe = abos.filter(function (a) { return a.stripe; })[0];
+      var offert = abos.filter(function (a) { return !a.stripe; })[0];
+      var mienne = (e.membres || []).some(function (m) { return m.courriel === moi.courriel; });
+      var etat = el("p", "admin-formule");
+      etat.appendChild(el("strong", "", e.rang ? "« " + nomRang(e.rang) + " »" : "Aucune formule"));
+      etat.appendChild(document.createTextNode(
+        mienne ? " — votre entreprise : tout est ouvert." :
+        stripe ? " — payée chez Stripe (" + stripe.statut + ")." :
+        offert ? " — donnée par vous." :
+        e.rang && e.consultant ? " — ouverte par l'abonnement de son cabinet consultant." :
+        e.rang ? " — entreprise d'un administrateur : tout est ouvert." : " — l'espace est fermé."));
+      carte.appendChild(etat);
+
+      // Donner ou retirer une formule (un abonnement Stripe n'est jamais touché).
+      var f = el("form", "admin-choix");
+      var id = "f-" + e.id;
+      var lab = el("label", "", stripe ? "Formule offerte en plus de Stripe" : "Donner une formule");
+      lab.htmlFor = id;
+      var choix = el("select"); choix.id = id;
+      choix.appendChild(new Option("Aucune", ""));
+      for (var k in FORM) choix.appendChild(new Option(FORM[k].l, k));
+      choix.value = offert ? offert.formule : "";
+      var ok = el("button", "bouton bouton-sobre", "Appliquer"); ok.type = "submit";
+      var dit = el("span", "etat-compte");
+      f.appendChild(lab); f.appendChild(choix); f.appendChild(ok); f.appendChild(dit);
+      f.addEventListener("submit", function (ev) {
+        ev.preventDefault();
+        ok.disabled = true; dit.textContent = "Enregistrement…";
+        V.adminAbonnement(e.id, choix.value).then(function (r) {
+          ok.disabled = false;
+          if (!r.ok) { dit.textContent = r.erreur; return; }
+          charger("C'est enregistré pour « " + e.denomination + " ».");
+        });
+      });
+      carte.appendChild(f);
+
+      var ul = el("ul", "admin-comptes");
+      (e.membres || []).forEach(function (m) {
+        var role = m.role === "admin" ? "administrateur" : m.role === "lecteur" ? "lecteur" : "membre";
+        ul.appendChild(ligneCompte(m.courriel, role + " · depuis le " + date(m.depuis) +
+          (m.derniere_connexion ? " · dernière connexion le " + date(m.derniere_connexion) : ""), m.confirme));
+      });
+      carte.appendChild(ul);
+      return carte;
+    };
+
+    var charger = function (message) {
+      V.adminVue().then(function (r) {
+        if (!r.ok) {
+          etatAd.textContent = r.code === "42501" ? "Réservé à l'administrateur du service." : r.erreur;
+          return;
+        }
+        var d = r.donnees || {}, ents = d.entreprises || [], seuls = d.sans_entreprise || [];
+        var avec = ents.filter(function (e) { return e.rang > 0; }).length;
+        etatAd.textContent = message || (ents.length + " entreprise" + (ents.length > 1 ? "s" : "") + ", dont " +
+          avec + " avec une formule ; " + seuls.length + " compte" + (seuls.length > 1 ? "s" : "") + " sans entreprise.");
+        var liste = $("#admin-entreprises"); liste.textContent = "";
+        if (!ents.length) liste.appendChild(el("p", "", "Aucune entreprise pour l'instant."));
+        ents.forEach(function (e) { liste.appendChild(carteEntreprise(e)); });
+        var ul = $("#admin-seuls"); ul.textContent = "";
+        if (!seuls.length) ul.appendChild(el("li", "", "Aucun."));
+        seuls.forEach(function (c) {
+          ul.appendChild(ligneCompte(c.courriel, "inscrit le " + date(c.inscrit_le), c.confirme));
+        });
+        admin.hidden = false;
+      });
+    };
+
+    V.session().then(function (s) {
+      if (!s) { window.location.replace(vers("connexion.html?retour=compte/admin.html")); return; }
+      moi = s.utilisateur;
+      charger();
     });
   }
 })();

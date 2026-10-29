@@ -227,6 +227,16 @@
     return rpc("creer_entreprise", { denomination: denomination });
   }
 
+  /* L'administration du service (compte/admin.html). La base refuse ces
+     appels à tout autre compte que l'administrateur. */
+  function suisAdministrateur() {
+    return rpc("suis_administrateur").then(function (r) { return r.ok && r.donnees === true; });
+  }
+  function adminVue() { return rpc("admin_vue"); }
+  function adminAbonnement(entreprise, formule) {
+    return rpc("admin_abonnement", { entreprise: entreprise, nouvelle_formule: formule || null });
+  }
+
   window.VIGIE = {
     ouvert: !!(BASE && CLE),
     session: session,
@@ -234,6 +244,7 @@
     connecter: connecter, inscrire: inscrire, renvoyer: renvoyer, oubli: oubli,
     changer: changer, deconnecter: deconnecter, arrivee: arrivee,
     rpc: rpc, mesEntreprises: mesEntreprises, creerEntreprise: creerEntreprise,
+    suisAdministrateur: suisAdministrateur, adminVue: adminVue, adminAbonnement: adminAbonnement,
     pageDuSite: pageDuSite
   };
 })();

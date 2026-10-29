@@ -54,15 +54,18 @@ mènent à une adresse d'essai (localhost) :
 
 Le jour du nom de domaine, ajouter aussi son adresse.
 
-## Poser un abonnement d'essai (en attendant Stripe)
+## Devenir administrateur (une fois)
 
-Dans **SQL Editor**, une fois le compte créé et l'entreprise nommée :
+Créer son compte sur le site, puis dans **SQL Editor** :
 
 ```sql
-insert into public.abonnements (entreprise_id, formule, periode, statut)
-select id, 'complet', 'an', 'active' from public.entreprises
-where denomination = 'Le nom exact de l''entreprise';
+insert into prive.administrateurs (user_id)
+select id from auth.users where email = 'ton@adresse.fr';
 ```
 
-`formule` : `textes`, `suivi` ou `complet`. Pour le retirer :
-`delete from public.abonnements where entreprise_id = (…)`.
+« Mon compte » montre alors le lien **Administration** (`compte/admin.html`) :
+les entreprises, leurs comptes, et un menu pour **donner ou retirer une
+formule** (essai, paiement par virement…) — sans SQL. Un abonnement payé chez
+Stripe n'y est jamais touché ; chaque action est inscrite dans
+`prive.journal_admin`. L'entreprise de l'administrateur est tout ouverte.
+L'administrateur ne voit jamais les registres, plans ou réponses des clients.

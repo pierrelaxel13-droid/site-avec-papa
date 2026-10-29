@@ -267,7 +267,8 @@ qu'il n'y a pas de client.
 - **Les vrais comptes** : Supabase. `assets/vigie.js` (fetch, sans
   bibliothèque) + `assets/compte.js` (pages `connexion.html`, `compte/creer.html`,
   `compte/oubli.html`, `compte/index.html` = Mon compte, où arrivent les liens
-  des courriels). `assets/session.js` : sur `/app/`, session obligatoire et
+  des courriels ; `compte/admin.html` = l'administration, `admin_vue()` et
+  `admin_abonnement()` dans la base, refusées à tout autre compte). `assets/session.js` : sur `/app/`, session obligatoire et
   formule lue par `mes_entreprises()` ; sur `/demo/`, la visite sans compte.
   La démo est copiée de `app/` vers `demo/` à la fin de build.mjs
   (`copieDemo()`), liens réécrits. Les pages publiques mènent à la démo par

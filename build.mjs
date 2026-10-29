@@ -3995,6 +3995,7 @@ function pageMonCompte() {
         </details>
 
         <p class="rangee rangee-centre" style="margin-top:var(--t5)">
+          <a class="bouton bouton-sobre" id="compte-admin" href="admin.html" hidden>Administration</a>
           <button type="button" class="bouton bouton-sobre" id="compte-sortir">Se déconnecter</button>
         </p>
       </div>
@@ -4002,6 +4003,39 @@ function pageMonCompte() {
   </div>
 </section>`;
   return page({ titre: `Mon compte | ${SITE.nom}`, description: `Votre compte ${SITE.nom}.`,
+    racine: "../", zone: "public", corps, scripts: ["assets/compte.js"], installation: false });
+}
+
+/* L'administration du service, pour l'administrateur seul : la base refuse
+   les données à tout autre compte (supabase/migrations/…_administration.sql).
+   Les entreprises, leur formule, leurs comptes — jamais leurs registres. */
+function pageAdmin() {
+  const formules = Object.fromEntries(Object.entries(FORMULES).map(([id, f]) => [id, { l: f.l, rang: f.rang }]));
+  const corps = `
+<section class="heros heros-court">
+  <div class="enveloppe">
+    <div class="heros-texte"><h1>Administration</h1></div>
+    <p class="heros-sous etat-compte" id="admin-etat" role="status">Chargement…</p>
+  </div>
+</section>
+<section class="section">
+  <div class="enveloppe admin-enveloppe">
+    ${comptesFermes()}
+    <div id="admin-liste" data-formules="${esc(JSON.stringify(formules))}" hidden>
+      <p class="aide-bas admin-rappel">Les registres, plans et réponses des clients n'apparaissent jamais ici :
+      la base ne les donne pas à l'administrateur. Une formule « donnée par vous » ne touche jamais un abonnement payé chez Stripe.</p>
+      <h2 class="titre-section">Les entreprises</h2>
+      <div class="admin-grille" id="admin-entreprises"></div>
+      <h2 class="titre-section">Les comptes sans entreprise</h2>
+      <p class="aide-bas">Inscrits, mais qui n'ont pas encore nommé leur entreprise.</p>
+      <div class="carte-connexion"><ul class="admin-comptes" id="admin-seuls"></ul></div>
+      <p class="rangee rangee-centre" style="margin-top:var(--t5)">
+        <a class="bouton bouton-sobre" href="./">Mon compte</a>
+      </p>
+    </div>
+  </div>
+</section>`;
+  return page({ titre: `Administration | ${SITE.nom}`, description: "Administration du service.",
     racine: "../", zone: "public", corps, scripts: ["assets/compte.js"], installation: false });
 }
 
@@ -4376,6 +4410,7 @@ async function main() {
   await writeFile(join(SORTIE, "compte", "index.html"), pageMonCompte());
   await writeFile(join(SORTIE, "compte", "creer.html"), pageCreer());
   await writeFile(join(SORTIE, "compte", "oubli.html"), pageOubli());
+  await writeFile(join(SORTIE, "compte", "admin.html"), pageAdmin());
 
   await writeFile(join(SORTIE, "app", "index.html"), appTableauBord(V, D, C, LIENS));
   await writeFile(join(SORTIE, "app", "plan.html"), appPlan(V, D, C, LIENS));

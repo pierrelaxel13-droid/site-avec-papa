@@ -17,7 +17,7 @@
 --   D  entreprise suivie par le cabinet C, qui NE l'a PAS autorisé
 --   a_admin, a_lecteur, b_admin, d_admin : leurs membres
 --   c_membre, c_lecteur : membres du cabinet C
---   inconnu : un compte sans rien ; neuf : un compte qui vient d'être créé ; axel : l'administrateur du service
+--   inconnu : un compte sans rien ; neuf : un compte qui vient d'être créé ; seul : un compte qui n'a rien fait ; axel : l'administrateur du service
 -- ===========================================================================
 
 begin;
@@ -68,6 +68,7 @@ insert into auth.users (id, email) values
   ('00000000-0000-0000-0000-0000000000e1', 'inconnu@test.fr'),
   ('00000000-0000-0000-0000-0000000000e2', 'nouveau@test.fr'),
   ('00000000-0000-0000-0000-0000000000e3', 'neuf@test.fr'),
+  ('00000000-0000-0000-0000-0000000000e4', 'seul@test.fr'),
   ('00000000-0000-0000-0000-0000000000f1', 'axel@test.fr');
 
 insert into public.sujets (id, nom, famille, frequence) values
@@ -326,6 +327,52 @@ reset role;
 select set_config('request.jwt.claims', '', true);
 set local role anon;
 select tests.refuse($$select * from public.mes_entreprises()$$, 'un visiteur non connecté ne peut pas l''appeler');
+reset role;
+
+-- =========================================================================
+-- 9. L'administration : réservée à l'administrateur, sans les registres
+-- =========================================================================
+-- L'abonnement de B devient « payé chez Stripe » : l'administrateur ne doit
+-- jamais y toucher.
+update public.abonnements set stripe_abonnement = 'sub_essai_b'
+ where entreprise_id = '00000000-0000-0000-0000-00000000b000';
+
+select tests.qui('00000000-0000-0000-0000-0000000000a1', 'a_admin@test.fr');
+set local role authenticated;
+select tests.ok(not public.suis_administrateur(), 'un client n''est pas administrateur');
+select tests.refuse($$select public.admin_vue()$$, 'un client n''ouvre pas l''administration');
+select tests.refuse($$select public.admin_abonnement('00000000-0000-0000-0000-00000000a000', 'complet')$$,
+  'un client ne se donne pas de formule');
+reset role;
+select set_config('request.jwt.claims', '', true);
+set local role anon;
+select tests.refuse($$select public.admin_vue()$$, 'un visiteur non plus');
+reset role;
+
+select tests.qui('00000000-0000-0000-0000-0000000000f1', 'axel@test.fr');
+set local role authenticated;
+select tests.ok(public.suis_administrateur(), 'l''administrateur est reconnu');
+select tests.ok((select json_array_length(public.admin_vue() -> 'entreprises') >= 3), 'il voit la liste des entreprises');
+select tests.ok((select (public.admin_vue() -> 'entreprises')::text like '%a_admin@test.fr%'), 'avec les adresses de leurs comptes');
+select tests.ok((select (public.admin_vue() -> 'sans_entreprise')::text like '%seul@test.fr%'), 'et les comptes sans entreprise');
+select tests.ok((select (public.admin_vue())::text not like '%Revue chez B%'), 'mais rien de leur registre');
+select tests.ok(tests.compte('select 1 from public.registre') = 0, 'et toujours aucun registre en direct');
+select public.admin_abonnement('00000000-0000-0000-0000-00000000b000', 'complet');
+reset role;
+select tests.ok(prive.rang_entreprise('00000000-0000-0000-0000-00000000b000') = 3, 'il donne la formule complète à B');
+select tests.qui('00000000-0000-0000-0000-0000000000f1', 'axel@test.fr');
+set local role authenticated;
+select public.admin_abonnement('00000000-0000-0000-0000-00000000b000', null);
+reset role;
+select tests.ok(prive.rang_entreprise('00000000-0000-0000-0000-00000000b000') = 1,
+  'il la retire : B garde son abonnement Stripe (Textes), auquel il n''a pas touché');
+select tests.ok((select count(*) = 2 from prive.journal_admin where entreprise_id = '00000000-0000-0000-0000-00000000b000'),
+  'les deux actions sont au journal');
+-- Son entreprise à lui : tout ouvert, sans abonnement.
+select tests.qui('00000000-0000-0000-0000-0000000000f1', 'axel@test.fr');
+set local role authenticated;
+select public.creer_entreprise('Entreprise de l''administrateur (essai)');
+select tests.ok((select bool_and(rang = 3) from public.mes_entreprises()), 'l''entreprise de l''administrateur est tout ouverte');
 reset role;
 
 do $$ begin raise notice 'TOUS LES TESTS D''ISOLATION SONT PASSÉS'; end $$;
