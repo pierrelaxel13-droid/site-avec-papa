@@ -63,7 +63,7 @@
    "id": "cnil",
    "nom": "CNIL — actualités",
    "entrees": 10,
-   "retenus": 2,
+   "retenus": 3,
    "souci": null
   },
   {
@@ -97,7 +97,7 @@
   {
    "id": "ademe",
    "nom": "ADEME — nouvelles publications",
-   "entrees": 93,
+   "entrees": 94,
    "retenus": 2,
    "souci": null
   },
@@ -559,6 +559,29 @@
    "vuLe": "2026-10-29"
   },
   {
+   "source": "cnil",
+   "sourceNom": "CNIL — actualités",
+   "genre": "actualite",
+   "id": "https://www.cnil.fr/fr/sanction-cookies-app-fnac",
+   "titre": "Cookies et application mobile : sanctions de 7 millions d’euros à l’encontre des sociétés FNAC DARTY PARTICIPATIONS ET SERVICES et FNAC DIRECT",
+   "nature": "Publication officielle",
+   "date": "2026-10-29",
+   "corps": "Le 22 octobre 2026, la CNIL a sanctionné les sociétés FNAC DARTY PARTICIPATIONS ET SERVICES et FNAC DIRECT d’une amende de 7&amp;nbsp;millions d’euros pour non-respect des règles applicables en matière de traceurs (cookies).",
+   "lien": "https://www.cnil.fr/fr/sanction-cookies-app-fnac",
+   "domaines": [
+    {
+     "id": "rgpd",
+     "nom": "Données personnelles (RGPD)",
+     "mots": [
+      "cookies"
+     ]
+    }
+   ],
+   "morceaux": 1,
+   "dateTexte": "",
+   "vuLe": "2026-10-29"
+  },
+  {
    "source": "jorf",
    "sourceNom": "Journal officiel de la République française",
    "genre": "texte",
@@ -684,6 +707,75 @@
    ],
    "morceaux": 6,
    "dateTexte": "2006-06-26",
+   "vuLe": "2026-10-28"
+  },
+  {
+   "source": "eurlex-l",
+   "sourceNom": "Journal officiel de l'Union européenne — série L",
+   "genre": "texte",
+   "id": "https://eur-lex.europa.eu/./legal-content/AUTO/?uri=CELEX:32026D2370",
+   "titre": "CELEX:32026D2370: Décision d’exécution (UE) 2026/2370 de la Commission du 28 octobre 2026 concernant les normes harmonisées relatives aux sèche-linge domestiques à tambour élaborées à l’appui du règlement (UE) 2023/2533 et du règlement délégué (UE) 2023/2534",
+   "nature": "Texte officiel",
+   "date": "2026-10-28",
+   "corps": "",
+   "lien": "https://eur-lex.europa.eu/./legal-content/AUTO/?uri=CELEX:32026D2370",
+   "domaines": [
+    {
+     "id": "produits_ce",
+     "nom": "Conformité des produits et marquage CE",
+     "mots": [
+      "normes harmonisees"
+     ]
+    }
+   ],
+   "morceaux": 0,
+   "dateTexte": "2026-10-28",
+   "vuLe": "2026-10-28"
+  },
+  {
+   "source": "eurlex-l",
+   "sourceNom": "Journal officiel de l'Union européenne — série L",
+   "genre": "texte",
+   "id": "https://eur-lex.europa.eu/./legal-content/AUTO/?uri=CELEX:32026R2390",
+   "titre": "CELEX:32026R2390: Règlement d’exécution (UE) 2026/2390 de la Commission du 28 octobre 2026 soumettant à enregistrement les importations d’acide acétylsalicylique originaire de la République populaire de Chine en vue de permettre la perception de droits antidumping sur les importations soumises à enregistrement",
+   "nature": "Texte officiel",
+   "date": "2026-10-28",
+   "corps": "",
+   "lien": "https://eur-lex.europa.eu/./legal-content/AUTO/?uri=CELEX:32026R2390",
+   "domaines": [
+    {
+     "id": "douane",
+     "nom": "Douane et échanges internationaux",
+     "mots": [
+      "importation"
+     ]
+    }
+   ],
+   "morceaux": 0,
+   "dateTexte": "2026-10-28",
+   "vuLe": "2026-10-28"
+  },
+  {
+   "source": "eurlex-l",
+   "sourceNom": "Journal officiel de l'Union européenne — série L",
+   "genre": "texte",
+   "id": "https://eur-lex.europa.eu/./legal-content/AUTO/?uri=CELEX:32026R2412",
+   "titre": "CELEX:32026R2412: Règlement (UE) 2026/2412 de la Commission du 28 octobre 2026 modifiant l’annexe I du règlement (UE) no 10/2011 concernant les matériaux et objets en matière plastique destinés à entrer en contact avec des denrées alimentaires",
+   "nature": "Texte officiel",
+   "date": "2026-10-28",
+   "corps": "",
+   "lien": "https://eur-lex.europa.eu/./legal-content/AUTO/?uri=CELEX:32026R2412",
+   "domaines": [
+    {
+     "id": "alimentaire",
+     "nom": "Hygiène et sécurité des aliments",
+     "mots": [
+      "denrees alimentaires"
+     ]
+    }
+   ],
+   "morceaux": 0,
+   "dateTexte": "2026-10-28",
    "vuLe": "2026-10-28"
   },
   {
@@ -876,75 +968,6 @@
    ],
    "morceaux": 117,
    "dateTexte": "2025-12-30",
-   "vuLe": "2026-10-28"
-  },
-  {
-   "source": "eurlex-l",
-   "sourceNom": "Journal officiel de l'Union européenne — série L",
-   "genre": "texte",
-   "id": "https://eur-lex.europa.eu/./legal-content/AUTO/?uri=OJ:L_202602370",
-   "titre": "OJ:L_202602370: Décision d’exécution (UE) 2026/2370 de la Commission du 28 octobre 2026 concernant les normes harmonisées relatives aux sèche-linge domestiques à tambour élaborées à l’appui du règlement (UE) 2023/2533 et du règlement délégué (UE) 2023/2534",
-   "nature": "Texte officiel",
-   "date": "2026-10-28",
-   "corps": "",
-   "lien": "https://eur-lex.europa.eu/./legal-content/AUTO/?uri=OJ:L_202602370",
-   "domaines": [
-    {
-     "id": "produits_ce",
-     "nom": "Conformité des produits et marquage CE",
-     "mots": [
-      "normes harmonisees"
-     ]
-    }
-   ],
-   "morceaux": 0,
-   "dateTexte": "2026-10-28",
-   "vuLe": "2026-10-28"
-  },
-  {
-   "source": "eurlex-l",
-   "sourceNom": "Journal officiel de l'Union européenne — série L",
-   "genre": "texte",
-   "id": "https://eur-lex.europa.eu/./legal-content/AUTO/?uri=OJ:L_202602390",
-   "titre": "OJ:L_202602390: Règlement d’exécution (UE) 2026/2390 de la Commission du 28 octobre 2026 soumettant à enregistrement les importations d’acide acétylsalicylique originaire de la République populaire de Chine en vue de permettre la perception de droits antidumping sur les importations soumises à enregistrement",
-   "nature": "Texte officiel",
-   "date": "2026-10-28",
-   "corps": "",
-   "lien": "https://eur-lex.europa.eu/./legal-content/AUTO/?uri=OJ:L_202602390",
-   "domaines": [
-    {
-     "id": "douane",
-     "nom": "Douane et échanges internationaux",
-     "mots": [
-      "importation"
-     ]
-    }
-   ],
-   "morceaux": 0,
-   "dateTexte": "2026-10-28",
-   "vuLe": "2026-10-28"
-  },
-  {
-   "source": "eurlex-l",
-   "sourceNom": "Journal officiel de l'Union européenne — série L",
-   "genre": "texte",
-   "id": "https://eur-lex.europa.eu/./legal-content/AUTO/?uri=OJ:L_202602412",
-   "titre": "OJ:L_202602412: Règlement (UE) 2026/2412 de la Commission du 28 octobre 2026 modifiant l’annexe I du règlement (UE) no 10/2011 concernant les matériaux et objets en matière plastique destinés à entrer en contact avec des denrées alimentaires",
-   "nature": "Texte officiel",
-   "date": "2026-10-28",
-   "corps": "",
-   "lien": "https://eur-lex.europa.eu/./legal-content/AUTO/?uri=OJ:L_202602412",
-   "domaines": [
-    {
-     "id": "alimentaire",
-     "nom": "Hygiène et sécurité des aliments",
-     "mots": [
-      "denrees alimentaires"
-     ]
-    }
-   ],
-   "morceaux": 0,
-   "dateTexte": "2026-10-28",
    "vuLe": "2026-10-28"
   },
   {
