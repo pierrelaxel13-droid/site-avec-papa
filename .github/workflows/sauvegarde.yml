@@ -35,12 +35,20 @@ jobs:
       PHRASE: ${{ secrets.SAUVEGARDE_PHRASE }}
     steps:
       - name: Les secrets sont-ils là
+        id: pret
         run: |
-          [ -n "$SOURCE" ] || { echo "::error::Le secret SUPABASE_DB_URL manque."; exit 1; }
-          [ -n "$PHRASE" ] || { echo "::error::Le secret SAUVEGARDE_PHRASE manque : sans phrase de passe, pas de chiffrement, donc pas de sauvegarde."; exit 1; }
+          # Tant que la phrase n'existe pas, on attend sans échouer (pas
+          # d'alerte chaque lundi) ; mais on le dit.
+          if [ -z "$SOURCE" ] || [ -z "$PHRASE" ]; then
+            echo "::notice::Pas de sauvegarde : il manque le secret SAUVEGARDE_PHRASE (ou SUPABASE_DB_URL). Voir supabase/README.md."
+            echo "pret=non" >> "$GITHUB_OUTPUT"; exit 0
+          fi
           [ "${#PHRASE}" -ge 20 ] || { echo "::error::SAUVEGARDE_PHRASE est trop courte : au moins 20 caractères."; exit 1; }
+          echo "pret=oui" >> "$GITHUB_OUTPUT"
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        if: steps.pret.outputs.pret == 'oui'
       - name: Les outils PostgreSQL de la même version que Supabase
+        if: steps.pret.outputs.pret == 'oui'
         run: |
           MAJ=$(psql "$SOURCE" -tAc "show server_version_num" | cut -c1-2)
           echo "Supabase tourne sur PostgreSQL $MAJ"
@@ -51,16 +59,19 @@ jobs:
           echo "/usr/lib/postgresql/$MAJ/bin" >> "$GITHUB_PATH"
           echo "MAJ=$MAJ" >> "$GITHUB_ENV"
       - name: Une base vide, pour l'essai de restauration
+        if: steps.pret.outputs.pret == 'oui'
         run: |
           docker run -d --name essai -e POSTGRES_PASSWORD=essai -p 5433:5432 "postgres:$MAJ" > /dev/null
           for i in $(seq 1 60); do pg_isready -q -h localhost -p 5433 && break; sleep 1; done
       - name: Sauvegarder, chiffrer, restaurer, vérifier
+        if: steps.pret.outputs.pret == 'oui'
         env:
           CIBLE_TEST: postgresql://postgres:essai@localhost:5433/postgres
         run: |
           outils/sauvegarde.sh sauvegarde | tee resultat.txt
           echo "::notice title=Sauvegarde::$(tail -1 resultat.txt)"
       - name: Garder l'archive chiffrée, 30 jours
+        if: steps.pret.outputs.pret == 'oui'
         uses: actions/upload-artifact@v4
         with:
           name: vigie-sauvegarde-${{ github.run_number }}
