@@ -22,6 +22,10 @@ Recherche du flux de 6 sources muettes.
       liens d'actualité sur https://www.inrs.fr/actualites.html :
         /carrefour-actualites.html « ACTUALITÉS »
         /carrefour-actualites.html « Toute l'actualité »
+        /actualites/conducteurs-equipements-de-travail-quel-suivi-medical.html « 28/10/2026 
+ 
+ Conducteurs d’équipements de travail : quel suivi médical ? 
+  »
         /actualites/empoussierement-amiante-scolamiante-maj2026.html « 26/10/2026 
  
  Actualisation des données sur les niveaux d’empoussièrement à l »
@@ -46,12 +50,6 @@ Recherche du flux de 6 sources muettes.
  
  
  Le n »
-        /actualites/TS-885-octobre-2026.html « 08/10/2026 
- 
- Travail et Sécurité : numéro d’octobre 2026 
- 
- 
- Le numéro  »
         /actualites.html « Actualités »
         /carrefour-actualites.html « Actualités »
   → aucun flux trouvé
@@ -72,13 +70,13 @@ Recherche du flux de 6 sources muettes.
     ✘ https://www.urssaf.fr/accueil/outils-documentation/actualites.rss  — injoignable (fetch failed : ECONNRESET) — l'hôte refuse le robot, ou le réseau d'ici le bloque  [adresse actuelle]
     ✘ https://www.urssaf.fr/accueil.html  — injoignable (fetch failed : ECONNRESET) — l'hôte refuse le robot, ou le réseau d'ici le bloque  [page du site]
     ✘ https://www.urssaf.fr/feed/  — injoignable (fetch failed : ECONNRESET) — l'hôte refuse le robot, ou le réseau d'ici le bloque  [chemin courant]
-    ✘ https://www.urssaf.fr/rss  — injoignable (fetch failed : UND_ERR_SOCKET) — l'hôte refuse le robot, ou le réseau d'ici le bloque  [chemin courant]
+    ✘ https://www.urssaf.fr/rss  — injoignable (fetch failed : ECONNRESET) — l'hôte refuse le robot, ou le réseau d'ici le bloque  [chemin courant]
     ✘ https://www.urssaf.fr/rss.xml  — injoignable (fetch failed : ECONNRESET) — l'hôte refuse le robot, ou le réseau d'ici le bloque  [chemin courant]
     ✘ https://www.urssaf.fr/fr/rss.xml  — injoignable (fetch failed : ECONNRESET) — l'hôte refuse le robot, ou le réseau d'ici le bloque  [chemin courant]
-    ✘ https://www.urssaf.fr/feed.xml  — injoignable (fetch failed : UND_ERR_SOCKET) — l'hôte refuse le robot, ou le réseau d'ici le bloque  [chemin courant]
+    ✘ https://www.urssaf.fr/feed.xml  — injoignable (fetch failed : ECONNRESET) — l'hôte refuse le robot, ou le réseau d'ici le bloque  [chemin courant]
     ✘ https://www.urssaf.fr/atom.xml  — injoignable (fetch failed : ECONNRESET) — l'hôte refuse le robot, ou le réseau d'ici le bloque  [chemin courant]
     ✘ https://www.urssaf.fr/index.xml  — injoignable (fetch failed : ECONNRESET) — l'hôte refuse le robot, ou le réseau d'ici le bloque  [chemin courant]
-    ✘ https://www.urssaf.fr/spip.php?page=backend  — injoignable (fetch failed : UND_ERR_SOCKET) — l'hôte refuse le robot, ou le réseau d'ici le bloque  [chemin courant]
+    ✘ https://www.urssaf.fr/spip.php?page=backend  — injoignable (fetch failed : ECONNRESET) — l'hôte refuse le robot, ou le réseau d'ici le bloque  [chemin courant]
   → aucun flux trouvé
 
 ■ acpr — ACPR — Banque de France
@@ -105,8 +103,7 @@ Recherche du flux de 6 sources muettes.
 ■ ansm — ANSM — actualités
     · https://ansm.sante.fr/rss/actualites  — 0 entrées  (application/xml)  [adresse actuelle]
         contenu : <?xml version="1.0" encoding="UTF-8"?> <rss version="2.0"> <channel> <title>Actualités - Ansm.sante.fr</title> <link>https://ansm.sante.fr/actualites/</link> <description>Actualités du jour de l'ANSM</description> </channel> </rss>
-    · https://ansm.sante.fr/rss/informations_securite  — 0 entrées  (application/xml)  [piste connue]
-        contenu : <?xml version="1.0" encoding="UTF-8"?> <rss version="2.0"> <channel> <title>Informations de sécurité - Ansm.sante.fr</title> <link>https://ansm.sante.fr/informations-de-securite/</link> <description>Informations de sécurité du jour de l'ANSM</description> </channel> </rss>
+    ✔ https://ansm.sante.fr/rss/informations_securite  — 3 entrées, la plus récente du 2026-10-28  « Informations de sécurité - Ansm.sante.fr »  [piste connue]
     · https://ansm.sante.fr/page/flux-rss  — 0 entrées  (text/html)  [page du site]
       la page déclare 25 lien(s) de flux
     · https://ansm.sante.fr/rss/actualites?produitsSante=medicaments  — 0 entrées  (application/xml)  [déclaré par la page]
@@ -115,10 +112,8 @@ Recherche du flux de 6 sources muettes.
         contenu : <?xml version="1.0" encoding="UTF-8"?> <rss version="2.0"> <channel> <title>Actualités - Ansm.sante.fr</title> <link>https://ansm.sante.fr/actualites/</link> <description>Actualités du jour de l'ANSM</description> </channel> </rss>
     · https://ansm.sante.fr/rss/informations_securite?produitsSante=medicaments  — 0 entrées  (application/xml)  [déclaré par la page]
         contenu : <?xml version="1.0" encoding="UTF-8"?> <rss version="2.0"> <channel> <title>Informations de sécurité - Ansm.sante.fr</title> <link>https://ansm.sante.fr/informations-de-securite/</link> <description>Informations de sécurité du jour de l'ANSM</description> </channel> </rss>
-    · https://ansm.sante.fr/rss/informations_securite?produitsSante=dispositifs_medicaux  — 0 entrées  (application/xml)  [déclaré par la page]
-        contenu : <?xml version="1.0" encoding="UTF-8"?> <rss version="2.0"> <channel> <title>Informations de sécurité - Ansm.sante.fr</title> <link>https://ansm.sante.fr/informations-de-securite/</link> <description>Informations de sécurité du jour de l'ANSM</description> </channel> </rss>
-    · https://ansm.sante.fr/rss/informations_securite?produitsSante=dispositifs_medicaux_de_diagnostic_in_vitro  — 0 entrées  (application/xml)  [déclaré par la page]
-        contenu : <?xml version="1.0" encoding="UTF-8"?> <rss version="2.0"> <channel> <title>Informations de sécurité - Ansm.sante.fr</title> <link>https://ansm.sante.fr/informations-de-securite/</link> <description>Informations de sécurité du jour de l'ANSM</description> </channel> </rss>
+    ✔ https://ansm.sante.fr/rss/informations_securite?produitsSante=dispositifs_medicaux  — 1 entrées, la plus récente du 2026-10-28  « Informations de sécurité - Ansm.sante.fr »  [déclaré par la page]
+    ✔ https://ansm.sante.fr/rss/informations_securite?produitsSante=dispositifs_medicaux_de_diagnostic_in_vitro  — 2 entrées, la plus récente du 2026-10-28  « Informations de sécurité - Ansm.sante.fr »  [déclaré par la page]
     · https://ansm.sante.fr/rss/disponibilite_produits_sante  — 0 entrées  (application/xml)  [déclaré par la page]
         contenu : <?xml version="1.0" encoding="UTF-8"?> <rss version="2.0"> <channel> <title>Disponibilité des produits de santé - Ansm.sante.fr</title> <link>https://ansm.sante.fr/disponibilites-des-produits-de-sante</link> <description>Informations du jour de l'ANSM sur les tensions d'approvisionnement des produits de santé (médicaments MITM, vaccins, dispositifs médicaux et dispositifs médicaux de diagnostic in vitro)</description> </channel> </rss>
     · https://ansm.sante.fr/rss/disponibilite_produits_sante?produitsSante=medicaments  — 0 entrées  (application/xml)  [déclaré par la page]
@@ -155,28 +150,7 @@ Recherche du flux de 6 sources muettes.
         contenu : <?xml version="1.0" encoding="UTF-8"?> <rss version="2.0"> <channel> <title>Actualités - Ansm.sante.fr</title> <link>https://ansm.sante.fr/actualites/</link> <description>Actualités du jour de l'ANSM</description> </channel> </rss>
     · https://ansm.sante.fr/rss/actualites?domainesMedicaux=imagerie_radiologie  — 0 entrées  (application/xml)  [déclaré par la page]
         contenu : <?xml version="1.0" encoding="UTF-8"?> <rss version="2.0"> <channel> <title>Actualités - Ansm.sante.fr</title> <link>https://ansm.sante.fr/actualites/</link> <description>Actualités du jour de l'ANSM</description> </channel> </rss>
-    ✘ https://ansm.sante.fr/feed/  — HTTP 404  [chemin courant]
-    ✘ https://ansm.sante.fr/rss  — HTTP 404  [chemin courant]
-    ✘ https://ansm.sante.fr/rss.xml  — HTTP 404  [chemin courant]
-    ✘ https://ansm.sante.fr/fr/rss.xml  — HTTP 404  [chemin courant]
-    ✘ https://ansm.sante.fr/feed.xml  — HTTP 404  [chemin courant]
-    ✘ https://ansm.sante.fr/atom.xml  — HTTP 404  [chemin courant]
-    ✘ https://ansm.sante.fr/index.xml  — HTTP 404  [chemin courant]
-    ✘ https://ansm.sante.fr/spip.php?page=backend  — HTTP 404  [chemin courant]
-      liens d'actualité sur https://ansm.sante.fr/page/flux-rss :
-        https://ansm.sante.fr/actualites/a-la-une « Actualités »
-        https://ansm.sante.fr/actualites/?filter%5Bcategories%5D%5B%5D=103 « Décisions relatives à l'organigramme »
-        https://ansm.sante.fr/actualites/?filter%5Bcategories%5D%5B%5D=10# « Désignations et habilitations des inspecteurs »
-        https://ansm.sante.fr/actualites/?filter%5Bcategories%5D%5B%5D=106# « Expertise : nomination d'experts ponctuels »
-        https://ansm.sante.fr/actualites/?filter%5Bcategories%5D%5B%5D=81# « GIS Epiphare »
-        https://ansm.sante.fr/actualites/?filter%5Bcategories%5D%5B%5D=105# « Instances : créations et nominations »
-        https://ansm.sante.fr/actualites/?filter%5Bcategories%5D%5B%5D=104# « Nominations et délégations de signature »
-        https://ansm.sante.fr/actualites/?filter%5Bcategories%5D%5B%5D=127 « Arrêts de commercialisation »
-        https://ansm.sante.fr/actualites/?filter%5Bcategories%5D%5B%5D=108 « Accès dérogatoire »
-        https://ansm.sante.fr/actualites/?filter%5Bcategories%5D%5B%5D=70# « Bonnes pratiques »
-        https://ansm.sante.fr/actualites/?filter%5Bcategories%5D%5B%5D=93# « Classement substances vénéneuses (Listes I et II - Psychotropes/Stupéfiants) »
-        https://ansm.sante.fr/actualites/?filter%5Bcategories%5D%5B%5D=96# « Médicaments biosimilaires »
-  → aucun flux trouvé
+  → RETENUE : https://ansm.sante.fr/rss/informations_securite
 
 ■ boamp — BOAMP — marchés publics
     ✘ https://www.boamp.fr/rss  — HTTP 404  [adresse actuelle]
@@ -194,4 +168,4 @@ Recherche du flux de 6 sources muettes.
         /pages/entreprise-actualites « Actualités »
   → aucun flux trouvé
 
-0 source(s) sur 6 ont maintenant un flux qui répond.
+1 source(s) sur 6 ont maintenant un flux qui répond.
