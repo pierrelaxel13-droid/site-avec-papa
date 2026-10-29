@@ -1,20 +1,17 @@
 /* ==========================================================================
-   Vigie — la « session » et la formule
+   Vigie — la session et la formule, dans l'application
    --------------------------------------------------------------------------
-   AVERTISSEMENT, à lire avant de toucher à ce fichier.
+   Deux cas :
+   - /demo/ : la démonstration. La « formule » choisie est rangée dans le
+     navigateur et retire un voile. Ce n'est PAS une sécurité, et ne doit
+     jamais être présenté comme telle : c'est une visite.
+   - /app/  : l'espace d'un vrai compte. Sans session Supabase, on part à la
+     connexion ; la formule est celle que l'entreprise a payée, lue dans la
+     base (mes_entreprises(), par assets/vigie.js).
 
-   Ceci n'est pas une sécurité, et ne doit jamais être présenté comme telle.
-   Il n'y a pas de serveur : ce fichier pose un jeton dans le navigateur et
-   retire un voile posé au-dessus du contenu. Les pages de l'application sont
-   servies à tout le monde et restent lisibles dans la source, quelle que soit
-   la formule choisie.
-
-   Le tri par formule décrit le produit — qui voit quoi — il ne le protège pas.
-   Une vraie protection suppose un service d'authentification et un serveur qui
-   refuse de servir la page sans jeton valide.
-
-   Le mot de passe de l'écran de connexion n'est lu nulle part, n'est transmis
-   nulle part et n'est enregistré nulle part. Le champ est vidé dès l'envoi.
+   Ce qui protège les DONNÉES d'un abonné, ce sont les règles de la base
+   (supabase/), pas ce voile : les pages elles-mêmes sont publiques, comme le
+   code du site.
    ========================================================================== */
 
 (function () {
@@ -27,21 +24,18 @@
     suivi:   { l: "Textes et suivi", rang: 2 },
     complet: { l: "Veille complète", rang: 3 }
   };
-  /* Sur Cloudflare, /app/ est l'espace d'un vrai compte : sa formule vient du
-     serveur (cookie « pco_formule », posé à la connexion). Ce cookie ne sert
-     qu'à l'affichage ; la porte, c'est functions/app/_middleware.js. */
-  function formuleDuCompte() {
-    if (!/\/app\//.test(window.location.pathname)) return null;
-    var m = document.cookie.match(/(?:^|;\s*)pco_formule=([a-z]+)/);
-    return m ? m[1] : null;
+  var CHEMIN = window.location.pathname;
+  var DANS_APP = CHEMIN.indexOf("/app/") !== -1;
+  var racine = document.body.getAttribute("data-racine") || "./";
+  function cleDuRang(rang) {
+    for (var k in FORMULES) if (FORMULES[k].rang === rang) return k;
+    return null;
   }
 
   // Les noms d'avant la grille du 27 octobre 2026, encore dans des navigateurs.
   var ANCIENNES = { cadrage: "textes", veille: "suivi", preuves: "complet", demo: "complet" };
 
   function lu() {
-    var compte = formuleDuCompte();
-    if (compte && FORMULES[compte]) return compte;
     try {
       var v = window.localStorage.getItem(CLE);
       if (!v) return null;
@@ -62,10 +56,11 @@
     try { window.localStorage.removeItem(CLE); } catch (e) { /* sans effet */ }
   }
 
-  var active = lu();
+  var verrou = document.getElementById("verrou");
+  function ecrire(id, texte) { var el = document.getElementById(id); if (el) el.textContent = texte; }
 
   /* --- Dans l'application : le voile, et ce qu'il dit ----------------------- */
-  var verrou = document.getElementById("verrou");
+  function appliquer(active, compte) {
   if (verrou) {
     var exigee = document.body.getAttribute("data-formule") || "textes";
     var assez = active && FORMULES[active].rang >= (FORMULES[exigee] || FORMULES.textes).rang;
@@ -84,15 +79,19 @@
         if (etiq) etiq.textContent = "Formule " + FORMULES[active].l;
         if (titre) titre.textContent = "Cet écran fait partie de la formule " + FORMULES[exigee].l;
         if (texte) {
-          texte.textContent = "Votre démonstration est ouverte en « " + FORMULES[active].l +
-            " », qui ne comprend pas cet écran. Changez de formule pour le voir, " +
-            "ou consultez la grille des tarifs.";
+          texte.textContent = (compte ? "Votre formule est « " : "Votre démonstration est ouverte en « ") +
+            FORMULES[active].l + " », qui ne comprend pas cet écran. " +
+            (compte ? "Une formule plus complète l'ouvre : voyez la grille des tarifs."
+                    : "Changez de formule pour le voir, ou consultez la grille des tarifs.");
         }
-        if (action) action.textContent = "Changer de formule";
+        if (action) {
+          action.textContent = compte ? "Mon compte" : "Changer de formule";
+          if (compte) action.href = racine + "compte/";
+        }
       }
     }
 
-    if (formuleDuCompte()) {
+    if (compte) {
       var demo = document.querySelector('.bandeau-demo[data-mode="demo"]');
       var vrai = document.querySelector('.bandeau-demo[data-mode="compte"]');
       if (demo && vrai) {
@@ -135,10 +134,70 @@
       if (req && FORMULES[active].rang < req.rang) parts[k].hidden = true;
     }
   }
+  }
 
-  /* --- Sur la page de connexion -------------------------------------------- */
+  /* Le voile sans formule : ce qui manque, et où le régler. Rien de ce que
+     la formule ouvrirait (la cloche) ne reste visible. */
+  function sansFormule(titre, texte, libelle, cible) {
+    var parts = document.querySelectorAll("[data-exige]");
+    for (var k = 0; k < parts.length; k++) parts[k].hidden = true;
+    if (!verrou) return;
+    document.body.classList.add("verrouille");
+    ecrire("verrou-etiq", "Votre compte");
+    ecrire("verrou-titre", titre);
+    ecrire("verrou-texte", texte);
+    var action = document.getElementById("verrou-action");
+    if (action) { action.textContent = libelle; action.href = racine + cible; }
+    var tarifs = document.getElementById("verrou-tarifs");
+    if (tarifs) tarifs.hidden = cible === "abonnement.html";
+  }
+
+  if (!DANS_APP) {
+    appliquer(lu(), false);
+  } else if (!window.VIGIE || !window.VIGIE.ouvert) {
+    // Pas de base configurée : le voile reste, avec la démonstration.
+    appliquer(null, false);
+  } else {
+    // Un vrai compte : le bandeau « Démonstration » ne le concerne jamais.
+    var bandeauDemo = document.querySelector('.bandeau-demo[data-mode="demo"]');
+    if (bandeauDemo) bandeauDemo.hidden = true;
+    if (verrou) {
+      document.body.classList.add("verrouille");
+      ecrire("verrou-etiq", "Un instant");
+      ecrire("verrou-titre", "Ouverture de votre espace…");
+      ecrire("verrou-texte", "");
+    }
+    window.VIGIE.session().then(function (s) {
+      if (!s) {
+        window.location.replace(racine + "connexion.html?retour=" + encodeURIComponent(ici()));
+        return;
+      }
+      return window.VIGIE.mesEntreprises().then(function (r) {
+        if (!r.ok) {
+          sansFormule("Votre espace n'a pas pu s'ouvrir", r.erreur, "Réessayer", ici());
+          return;
+        }
+        var e = r.entreprises[0];
+        if (!e) {
+          sansFormule("Il reste à nommer votre entreprise",
+            "C'est elle qui porte l'abonnement, le plan de veille et le registre. Cela se fait en une ligne, dans votre compte.",
+            "Mon compte", "compte/");
+        } else if (!e.rang) {
+          sansFormule("Votre espace ouvre avec l'abonnement",
+            "Le compte de « " + e.denomination + " » est prêt. Choisissez votre formule : l'espace s'ouvre dès qu'elle est active.",
+            "Choisir ma formule", "abonnement.html");
+        } else {
+          appliquer(cleDuRang(e.rang), true);
+        }
+      });
+    });
+  }
+  function ici() { return CHEMIN.slice(CHEMIN.indexOf("/app/") + 1); }
+
+  /* --- Sur la page des tarifs : ouvrir la démonstration ------------------------ */
   var bouton = document.getElementById("entrer-demo");
   if (bouton) {
+    var active = lu();
     var etat = document.getElementById("etat-session");
     if (etat && active) {
       etat.textContent = "Une démonstration est déjà ouverte en « " + FORMULES[active].l + " ».";

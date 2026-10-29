@@ -31,14 +31,14 @@ GitHub Actions (clé « service », dans les secrets du dépôt, jamais dans le 
   fiches) restent des pages construites par `build.mjs`. Les données d'un client
   sont chargées par la page, après connexion, depuis Supabase.
 - **Pas de bibliothèque Supabase dans le site** : quelques appels `fetch` vers
-  l'API REST de Supabase, dans un seul fichier (`assets/donnees.js`). La règle
+  l'API REST de Supabase, dans un seul fichier (`assets/vigie.js`). La règle
   « aucun script extérieur » reste vraie ; seule l'adresse du projet Supabase
   s'ajoute à la politique de sécurité (`connect-src`).
 - **La démonstration ne change pas** : elle reste dans le navigateur, avec son
   jeu d'essai, sous `/demo/`.
 - **Cloudflare devient inutile** : c'est la base qui protège les données, plus
   un serveur devant les pages. `functions/`, `serveur/` et `cloudflare.yml`
-  seront retirés quand Supabase marchera.
+  ont été retirés le 29 octobre 2026 (ils n'avaient jamais été mis en service).
 
 ## 2. Le commun (écrit par le robot, lu par tous)
 

@@ -17,7 +17,7 @@
 --   D  entreprise suivie par le cabinet C, qui NE l'a PAS autorisé
 --   a_admin, a_lecteur, b_admin, d_admin : leurs membres
 --   c_membre, c_lecteur : membres du cabinet C
---   inconnu : un compte sans rien ; axel : l'administrateur du service
+--   inconnu : un compte sans rien ; neuf : un compte qui vient d'être créé ; axel : l'administrateur du service
 -- ===========================================================================
 
 begin;
@@ -67,6 +67,7 @@ insert into auth.users (id, email) values
   ('00000000-0000-0000-0000-0000000000c2', 'c_lecteur@test.fr'),
   ('00000000-0000-0000-0000-0000000000e1', 'inconnu@test.fr'),
   ('00000000-0000-0000-0000-0000000000e2', 'nouveau@test.fr'),
+  ('00000000-0000-0000-0000-0000000000e3', 'neuf@test.fr'),
   ('00000000-0000-0000-0000-0000000000f1', 'axel@test.fr');
 
 insert into public.sujets (id, nom, famille, frequence) values
@@ -298,6 +299,33 @@ select prive.purger_entreprise('00000000-0000-0000-0000-00000000d000');
 select tests.ok(not exists (select 1 from public.entreprises where id = '00000000-0000-0000-0000-00000000d000'), 'la purge efface l''entreprise D');
 select tests.ok(not exists (select 1 from public.registre where entreprise_id = '00000000-0000-0000-0000-00000000d000'), 'et tout son registre');
 select tests.ok(exists (select 1 from prive.purges where entreprise_id = '00000000-0000-0000-0000-00000000d000'), 'et la purge est journalisée');
+reset role;
+
+-- =========================================================================
+-- 8. Ce que le site lit à la connexion : mes_entreprises()
+-- =========================================================================
+select tests.qui('00000000-0000-0000-0000-0000000000a1', 'a_admin@test.fr');
+set local role authenticated;
+select tests.ok((select count(*) = 1 and bool_and(denomination = 'Entreprise A (essai)' and role = 'admin' and rang = 3)
+                 from public.mes_entreprises()), 'a_admin : sa seule entreprise, admin, formule complète');
+select tests.qui('00000000-0000-0000-0000-0000000000b1', 'b_admin@test.fr');
+select tests.ok((select count(*) = 1 and bool_and(denomination = 'Entreprise B (essai)' and rang = 1)
+                 from public.mes_entreprises()), 'b_admin : seulement B, formule Textes');
+select tests.qui('00000000-0000-0000-0000-0000000000c1', 'c_membre@test.fr');
+select tests.ok((select count(*) = 0 from public.mes_entreprises()), 'le consultant n''y voit pas les entreprises de ses clients');
+select tests.qui('00000000-0000-0000-0000-0000000000e3', 'neuf@test.fr');
+select tests.ok((select count(*) = 0 from public.mes_entreprises()), 'un compte qui vient d''être créé : aucune entreprise');
+-- Un nouveau compte nomme son entreprise : il en est l'admin, sans abonnement.
+select public.creer_entreprise('Entreprise E (essai)');
+select tests.ok((select count(*) = 1 and bool_and(role = 'admin' and rang = 0) from public.mes_entreprises()),
+  'une entreprise qu''on vient de nommer : admin, pas encore d''abonnement');
+select tests.refuse($$insert into public.registre (entreprise_id, genre, objet)
+  select entreprise_id, 'revue', 'sans abonnement' from public.mes_entreprises()$$,
+  'sans abonnement, on n''écrit pas dans le registre');
+reset role;
+select set_config('request.jwt.claims', '', true);
+set local role anon;
+select tests.refuse($$select * from public.mes_entreprises()$$, 'un visiteur non connecté ne peut pas l''appeler');
 reset role;
 
 do $$ begin raise notice 'TOUS LES TESTS D''ISOLATION SONT PASSÉS'; end $$;

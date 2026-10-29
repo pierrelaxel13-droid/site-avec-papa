@@ -8,7 +8,7 @@ Les choix sont expliqués dans `docs/lot5-base-de-donnees.md`.
 | Fichier | Rôle |
 |---|---|
 | `migrations/*.sql` | le schéma, en étapes datées, appliquées une fois chacune, dans l'ordre |
-| `tests/isolation.sql` | 60 vérifications : chacun voit et fait ce qu'il doit, et rien d'autre ; le registre ne se modifie jamais |
+| `tests/isolation.sql` | les vérifications d'isolation : chacun voit et fait ce qu'il doit, et rien d'autre ; le registre ne se modifie jamais |
 | `tests/emulation-supabase.sql` | imite Supabase sur un PostgreSQL vide, **pour les tests seulement** |
 
 L'action **« Base de données »** (`.github/workflows/base.yml`) teste puis
@@ -44,3 +44,25 @@ applique, toute seule, à chaque envoi qui touche ce dossier.
   faisant exprès, désactiver le déclencheur. C'est pour ça qu'il y a la
   **chaîne d'empreintes** : toute entrée falsifiée la casse, et
   `verifier_registre()` le montre. Les tests le vérifient.
+
+## Les réglages à faire une fois dans Supabase
+
+**Authentication → URL Configuration** — sinon les liens des courriels
+mènent à une adresse d'essai (localhost) :
+- *Site URL* : `https://pierrelaxel13-droid.github.io/site-avec-papa/compte/`
+- *Redirect URLs* : ajouter `https://pierrelaxel13-droid.github.io/site-avec-papa/**`
+
+Le jour du nom de domaine, ajouter aussi son adresse.
+
+## Poser un abonnement d'essai (en attendant Stripe)
+
+Dans **SQL Editor**, une fois le compte créé et l'entreprise nommée :
+
+```sql
+insert into public.abonnements (entreprise_id, formule, periode, statut)
+select id, 'complet', 'an', 'active' from public.entreprises
+where denomination = 'Le nom exact de l''entreprise';
+```
+
+`formule` : `textes`, `suivi` ou `complet`. Pour le retirer :
+`delete from public.abonnements where entreprise_id = (…)`.

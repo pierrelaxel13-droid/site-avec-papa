@@ -264,13 +264,18 @@ qu'il n'y a pas de client.
   captures. On y va par le menu, le bouton du héros de l'accueil et le pied
   (pas dans le bandeau : seul « Connexion » y est) ; elle ne mène pas dans
   l'application.
-- **Les vrais comptes** : `functions/` + `serveur/compte.mjs`, sur Cloudflare
-  Pages seulement (`.github/workflows/cloudflare.yml`). La démo est copiée de
-  `app/` vers `demo/` à la fin de build.mjs (`copieDemo()`), liens réécrits.
-  Les pages publiques mènent à la démo par `demo/`, jamais par `app/`. Essayer
-  en local : `node outils/comptes-local.mjs 8820` (faux Stripe, faux KV).
-  Sur GitHub Pages, `/api/` n'existe pas : la connexion le dit (404 attendu
-  sur `api/moi`).
+- **Les vrais comptes** : Supabase. `assets/vigie.js` (fetch, sans
+  bibliothèque) + `assets/compte.js` (pages `connexion.html`, `compte/creer.html`,
+  `compte/oubli.html`, `compte/index.html` = Mon compte, où arrivent les liens
+  des courriels). `assets/session.js` : sur `/app/`, session obligatoire et
+  formule lue par `mes_entreprises()` ; sur `/demo/`, la visite sans compte.
+  La démo est copiée de `app/` vers `demo/` à la fin de build.mjs
+  (`copieDemo()`), liens réécrits. Les pages publiques mènent à la démo par
+  `demo/`, jamais par `app/`. `SITE.supabase` : adresse + clé PUBLIQUE
+  seulement (la construction refuse une clé secrète) ; elle est aussi dans
+  `connect-src` de `POLITIQUE`. Essayer en local : `outils/supabase-local.mjs`
+  (imitation, mode d'emploi en tête) + `VIGIE_SUPABASE=http://localhost:8830
+  node build.mjs`. Le schéma : `supabase/` (voir son README).
 - **Accueil** : l'accroche « la veille faite et jamais écrite » est sous le titre
   (une seule fois dans la page). « Dernière collecte réussie » (`blocCollecte()`)
   prend l'heure de la dernière relève réussie dans COLLECTE_LE, posée par

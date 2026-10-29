@@ -73,6 +73,17 @@ const SITE = {
      consultant QSE ? » de l'accueil et le lien du pied. Allumée depuis que le
      produit a son propre nom (Vigie). false les retire tous les trois. */
   offreConsultant: true,
+  /* La base de données et les comptes : Supabase. Seulement l'adresse du
+     projet et la clé PUBLIQUE (sb_publishable_…), faites pour être dans le
+     site : ce qui protège les données, ce sont les règles de la base. La clé
+     SECRÈTE va dans les secrets GitHub, JAMAIS ici (la construction s'arrête
+     si elle y est). url vide = les pages de compte disent « pas encore ouverts ».
+     Pour essayer sur un poste, avec l'imitation outils/supabase-local.mjs :
+       VIGIE_SUPABASE=http://localhost:8830 node build.mjs */
+  supabase: {
+    url: process.env.VIGIE_SUPABASE || "https://denpxyqbvjcwsbxjtqpd.supabase.co",
+    cle: "sb_publishable_zJXo39cN5hEAdCQFwm5DkA_ru99Xodj"
+  },
   hebergeur: { nom: "GitHub, Inc. (GitHub Pages)", site: "https://github.com",
                adresse: "88 Colin P. Kelly Jr. Street, San Francisco, CA 94107, États-Unis" }
 };
@@ -89,6 +100,14 @@ const lienTel = (classe = "") => aTel()
   ? `<a${classe ? ` class="${classe}"` : ""} href="tel:${esc(SITE.telephoneLien)}">${esc(SITE.telephone)}</a>` : "";
 const parQuoi = () => (aTel() ? "par téléphone ou par courriel" : "par courriel");
 /* Garde-fou : un numéro de remplissage (« 04 00 00 00 00 ») arrête la construction. */
+/* Garde-fou : une clé secrète de Supabase dans le site serait lisible par tous. */
+{
+  const k = SITE.supabase.cle;
+  let role = "";
+  try { role = JSON.parse(Buffer.from(k.split(".")[1] || "", "base64url").toString()).role || ""; } catch { /* pas un jeton */ }
+  if (/^sb_secret_/.test(k) || role === "service_role")
+    throw new Error("SITE.supabase.cle est la clé SECRÈTE de Supabase : elle ne doit jamais être dans le site. Mettre la clé publique (sb_publishable_…).");
+}
 if (/^0\d( 00){4}$|^\+33\d0{8}$/.test(SITE.telephone) || /0{8}$/.test(SITE.telephoneLien))
   throw new Error("SITE.telephone ressemble à un numéro de remplissage : mettre le vrai, ou laisser vide.");
 
@@ -308,13 +327,16 @@ function bandeInstallation(a) {
    publie le site depuis le 27 octobre 2026, ne sait pas envoyer d'en-têtes :
    sans cette balise, la règle « aucun script écrit dans le HTML » tomberait.
    C'est celle de netlify.toml, moins frame-ancestors, qu'une balise ne peut
-   pas porter (le navigateur l'ignore et le signale). */
+   pas porter (le navigateur l'ignore et le signale).
+   connect-src : le site ne parle qu'à lui-même et à Supabase (les comptes et
+   la base). Rien d'autre ne peut être appelé, même par un script injecté. */
+const SUPABASE = SITE.supabase.url ? new URL(SITE.supabase.url).origin : "";
 const POLITIQUE = "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; " +
-  "font-src 'self'; connect-src 'self'; manifest-src 'self'; worker-src 'self'; frame-src 'none'; object-src 'none'; " +
-  "base-uri 'none'; form-action 'self'; upgrade-insecure-requests";
+  `font-src 'self'; connect-src 'self'${SUPABASE ? " " + SUPABASE : ""}; manifest-src 'self'; worker-src 'self'; frame-src 'none'; object-src 'none'; ` +
+  "base-uri 'none'; form-action 'self'" + (/^https:/.test(SUPABASE) || !SUPABASE ? "; upgrade-insecure-requests" : "");
 
 function page({ titre, description, racine = "", zone = "public", actif = "", corps,
-                attrsBody = "", verrou = false, donneesPlan = false, formule = "", scripts = [] }) {
+                attrsBody = "", verrou = false, donneesPlan = false, formule = "", scripts = [], installation = true }) {
   /* Les feuilles de style et les scripts portent la version de l'habillage :
      une page nouvelle ne peut plus être servie avec la feuille de style de la
      veille, gardée par le navigateur (une heure) ou par le service worker. */
@@ -362,7 +384,7 @@ ${zone === "app" ? '<meta name="robots" content="noindex">' : ""}
 <script src="${a("assets/theme.js")}"></script>
 <script src="${a("assets/amorce.js")}"></script>
 </head>
-<body class="zone-${zone}" data-racine="${racine || "./"}" data-courriel="${esc(SITE.courriel)}" data-nom="${esc(SITE.nom)}"${formule ? ` data-formule="${esc(formule)}"` : ""}${attrsBody}>
+<body class="zone-${zone}" data-racine="${racine || "./"}" data-courriel="${esc(SITE.courriel)}" data-nom="${esc(SITE.nom)}"${zone === "app" || scripts.includes("assets/compte.js") ? ` data-supabase="${esc(SITE.supabase.url)}" data-supabase-cle="${esc(SITE.supabase.cle)}"` : ""}${formule ? ` data-formule="${esc(formule)}"` : ""}${attrsBody}>
 
 <a class="evitement" href="#contenu">Aller au contenu</a>
 
@@ -418,7 +440,7 @@ ${zone === "app" ? `<p class="bandeau-demo" data-mode="demo">
   <span data-formule-compte></span>
   Pour l'instant, l'entreprise, le tableau de bord et le registre affichés sont encore ceux
   de la démonstration : vos propres données arrivent bientôt. Les textes, eux, sont les vrais.
-  <a href="${a("api/deconnexion")}">Se déconnecter</a>
+  <a href="${a("compte/")}">Mon compte</a>
 </p>` : ""}
 
 <main id="contenu">
@@ -433,12 +455,12 @@ ${verrou ? `<section class="verrou" id="verrou">
     </p>
     <p class="rangee rangee-centre" style="margin-top:var(--t5)">
       <a class="bouton bouton-accent" href="${a("abonnement.html")}#essayer" id="verrou-action">Ouvrir la démonstration</a>
-      <a class="bouton bouton-sobre" href="${a("abonnement.html")}">Voir les tarifs</a>
+      <a class="bouton bouton-sobre" href="${a("abonnement.html")}" id="verrou-tarifs">Voir les tarifs</a>
     </p>
   </div>
 </section>` : ""}
 ${corps}
-${zone === "public" ? bandeInstallation(a) : ""}
+${zone === "public" && installation ? bandeInstallation(a) : ""}
 </main>
 
 <footer class="pied">
@@ -505,7 +527,8 @@ ${zone === "public" ? bandeInstallation(a) : ""}
       </p>
       <p>
         ${esc(SITE.nom)} est édité par ${esc(SITE.societe)}.
-        Aucun cookie, aucune mesure d'audience, aucune requête vers un service tiers.
+        Aucun cookie, aucune mesure d'audience. Seuls les comptes et l'espace abonné parlent à notre base
+        de données (Supabase).
         Le service fournit un cadre méthodologique, pas un conseil juridique.
       </p>
     </div>
@@ -517,7 +540,8 @@ ${donneesPlan ? `<script src="${a("assets/plan-data.js")}"></script>` : ""}
 ${zone === "app" ? `<script src="${a("assets/avis-data.js")}"></script>
 <script src="${a("assets/entreprise.js")}"></script>
 <script src="${a("assets/avis.js")}"></script>` : ""}
-${zone === "app" || verrou || actif === "connexion" || actif === "abonnement" ? `<script src="${a("assets/session.js")}"></script>` : ""}
+${zone === "app" || scripts.includes("assets/compte.js") ? `<script src="${a("assets/vigie.js")}"></script>` : ""}
+${zone === "app" || verrou || actif === "abonnement" ? `<script src="${a("assets/session.js")}"></script>` : ""}
 ${scripts.map((f) => `<script src="${a(f)}"></script>`).join("\n")}
 </body>
 </html>
@@ -3728,47 +3752,54 @@ function pageAbonnement(V) {
   });
 }
 
+/* --- Les comptes (Supabase, par assets/vigie.js et assets/compte.js) --------
+   Quatre pages : se connecter, créer son compte, mot de passe oublié, et
+   « Mon compte » — où arrivent aussi les liens reçus par courriel. */
+
+/* Le message qui s'affiche si SITE.supabase.url est vide. */
+const comptesFermes = () => `<p class="reserve" data-comptes-fermes hidden>
+          <strong>Les comptes ne sont pas encore ouverts.</strong>
+          Écrivez-nous à <a href="mailto:${esc(SITE.courriel)}">${esc(SITE.courriel)}</a>.
+        </p>`;
+
 function pageConnexion() {
   const corps = `
 <section class="heros">
   <div class="enveloppe">
     <div class="heros-texte"><h1>Connexion</h1></div>
-    <p class="heros-sous">Pour les abonnés. Vous n'avez pas encore de compte ?
-    <a href="abonnement.html">Voir les formules</a>.</p>
+    <p class="heros-sous">Pas encore de compte ? <a href="compte/creer.html">Créez-le</a> en une minute.</p>
 
     <div class="connexion connexion-seule">
       <form class="carte-connexion" id="form-connexion" novalidate>
         <h2>Se connecter à votre espace</h2>
+        ${comptesFermes()}
+        <div class="reserve" id="connexion-deja" hidden></div>
 
-        <p class="reserve" id="connexion-fermee" hidden>
-          <strong>Les comptes ne sont pas encore ouverts sur cette adresse.</strong>
-          En attendant, vous pouvez essayer l'application en démonstration, sans compte.
-        </p>
-        <p class="reserve" id="connexion-deja" hidden></p>
+        <div id="connexion-champs">
+          <div class="champ">
+            <label for="courriel">Adresse électronique</label>
+            <input type="email" id="courriel" name="courriel" autocomplete="username"
+                   inputmode="email" placeholder="prenom@entreprise.fr" spellcheck="false" required>
+          </div>
 
-        <div class="champ">
-          <label for="courriel">Adresse électronique</label>
-          <input type="email" id="courriel" name="courriel" autocomplete="username"
-                 inputmode="email" placeholder="prenom@entreprise.fr" spellcheck="false" required>
+          <div class="champ">
+            <label for="motdepasse">Mot de passe</label>
+            <input type="password" id="motdepasse" name="motdepasse" autocomplete="current-password" required>
+          </div>
+
+          <p class="rangee" style="margin-top:var(--t4)">
+            <button type="submit" class="bouton bouton-accent bouton-large">Se connecter</button>
+          </p>
+          <p class="etat-compte" id="etat-connexion" role="status"></p>
+          <p style="margin-top:var(--t3)">
+            <a href="compte/oubli.html">Mot de passe oublié ?</a>
+          </p>
         </div>
-
-        <div class="champ">
-          <label for="motdepasse">Mot de passe</label>
-          <input type="password" id="motdepasse" name="motdepasse" autocomplete="current-password" required>
-        </div>
-
-        <p class="rangee" style="margin-top:var(--t4)">
-          <button type="submit" class="bouton bouton-accent bouton-large">Se connecter</button>
-        </p>
-        <p class="etat-compte" id="etat-connexion" role="status"></p>
-        <p style="margin-top:var(--t3)">
-          <a href="compte/oubli.html">Mot de passe oublié ?</a>
-        </p>
       </form>
     </div>
 
     <p class="rangee rangee-centre" style="margin-top:var(--t5)">
-      <a class="bouton bouton-sobre" href="abonnement.html#essayer">Ou essayer la démonstration</a>
+      <a class="bouton bouton-sobre" href="abonnement.html#essayer">Ou essayer la démonstration, sans compte</a>
     </p>
   </div>
 </section>`;
@@ -3776,57 +3807,66 @@ function pageConnexion() {
   return page({
     titre: `Connexion | ${SITE.nom}`,
     description: `Connexion à ${SITE.nom}, la veille réglementaire des PME.`,
-    zone: "public", actif: "connexion", corps, scripts: ["assets/compte.js"]
+    zone: "public", actif: "connexion", corps, scripts: ["assets/compte.js"], installation: false
   });
 }
 
-/* --- Après le paiement : créer son mot de passe ---------------------------
-   Stripe renvoie ici avec ?session=cs_… ; la page demande au serveur ce qui a
-   été payé, puis fait choisir un mot de passe. Sans serveur, elle le dit. */
-function pageBienvenue() {
+/* Créer son compte : l'adresse et un mot de passe. Supabase envoie un lien de
+   confirmation ; l'abonnement vient ensuite, et c'est lui qui ouvre l'espace. */
+function pageCreer() {
   const corps = `
 <section class="heros heros-court">
   <div class="enveloppe">
-    <div class="heros-texte"><h1>Bienvenue</h1></div>
-    <p class="heros-sous">Merci pour votre abonnement. Il reste une étape : choisir votre mot de passe.</p>
+    <div class="heros-texte"><h1>Créer votre compte</h1></div>
+    <p class="heros-sous">Votre adresse électronique et un mot de passe. Le compte est gratuit ;
+    votre espace de veille ouvre avec l'abonnement.</p>
   </div>
 </section>
 <section class="section">
   <div class="enveloppe">
     <div class="connexion connexion-seule">
-      <form class="carte-connexion" id="form-bienvenue" novalidate>
-        <h2>Créer votre compte</h2>
-        <p class="etat-compte" id="etat-bienvenue" role="status">Vérification de votre paiement…</p>
-        <div id="bienvenue-champs" hidden>
-          <p class="lecture" id="bienvenue-formule"></p>
+      <form class="carte-connexion" id="form-creer" novalidate>
+        <h2>Vos identifiants</h2>
+        ${comptesFermes()}
+        <div id="creer-champs">
           <div class="champ">
-            <label for="b-courriel">Adresse électronique</label>
-            <input type="email" id="b-courriel" autocomplete="username" readonly>
+            <label for="c-courriel">Adresse électronique <span class="aide">professionnelle, de préférence</span></label>
+            <input type="email" id="c-courriel" autocomplete="username" inputmode="email"
+                   placeholder="prenom@entreprise.fr" spellcheck="false" required>
           </div>
           <div class="champ">
-            <label for="b-motdepasse">Mot de passe <span class="aide">au moins 10 caractères</span></label>
-            <input type="password" id="b-motdepasse" autocomplete="new-password" minlength="10" required>
+            <label for="c-motdepasse">Mot de passe <span class="aide">au moins 10 caractères</span></label>
+            <input type="password" id="c-motdepasse" autocomplete="new-password" minlength="10" required>
           </div>
           <div class="champ">
-            <label for="b-confirme">Le même, une seconde fois</label>
-            <input type="password" id="b-confirme" autocomplete="new-password" minlength="10" required>
+            <label for="c-confirme">Le même, une seconde fois</label>
+            <input type="password" id="c-confirme" autocomplete="new-password" minlength="10" required>
           </div>
           <p class="rangee" style="margin-top:var(--t4)">
             <button type="submit" class="bouton bouton-accent bouton-large">Créer mon compte</button>
           </p>
+          <p class="aide-bas">Votre adresse sert à vous connecter et à recevoir les liens de votre compte,
+          rien d'autre. Voir la <a href="../confidentialite.html">politique de confidentialité</a>.</p>
         </div>
+        <div class="reserve" id="creer-envoye" tabindex="-1" hidden>
+          <p><strong>Plus qu'une étape : ouvrez votre boîte de réception.</strong></p>
+          <p>Un lien de confirmation vient de partir à <strong id="creer-adresse"></strong>.
+          Cliquez dessus : votre compte est alors actif, et vous arrivez dans votre espace.</p>
+          <p>Rien reçu après quelques minutes ? Regardez dans les courriels indésirables.
+          <span id="creer-renvoi"></span></p>
+          <p>Cette adresse a déjà un compte ? <a href="../connexion.html">Connectez-vous</a>.</p>
+        </div>
+        <p class="etat-compte" id="etat-creer" role="status"></p>
+        <p style="margin-top:var(--t3)">Déjà un compte ? <a href="../connexion.html">Se connecter</a></p>
       </form>
     </div>
   </div>
 </section>`;
-  return page({
-    titre: `Bienvenue | ${SITE.nom}`, description: "Créer votre compte après votre abonnement.",
-    racine: "../", zone: "public", corps, scripts: ["assets/compte.js"]
-  });
+  return page({ titre: `Créer un compte | ${SITE.nom}`, description: `Créer votre compte ${SITE.nom}.`,
+    racine: "../", zone: "public", corps, scripts: ["assets/compte.js"], installation: false });
 }
 
-/* Mot de passe oublié : on reçoit un lien par courriel. C'est aussi par là
-   que l'administrateur choisit le sien. */
+/* Mot de passe oublié : on reçoit un lien par courriel. */
 function pageOubli() {
   const corps = `
 <section class="heros heros-court">
@@ -3840,6 +3880,7 @@ function pageOubli() {
     <div class="connexion connexion-seule">
       <form class="carte-connexion" id="form-oubli" novalidate>
         <h2>Recevoir un lien</h2>
+        ${comptesFermes()}
         <div class="champ">
           <label for="o-courriel">Adresse électronique</label>
           <input type="email" id="o-courriel" autocomplete="username" inputmode="email" spellcheck="false" required>
@@ -3854,97 +3895,114 @@ function pageOubli() {
   </div>
 </section>`;
   return page({ titre: `Mot de passe oublié | ${SITE.nom}`, description: "Recevoir un lien pour choisir un nouveau mot de passe.",
-    racine: "../", zone: "public", corps, scripts: ["assets/compte.js"] });
+    racine: "../", zone: "public", corps, scripts: ["assets/compte.js"], installation: false });
 }
 
-/* Le lien reçu par courriel : choisir le nouveau mot de passe. */
-function pageNouveau() {
+/* « Mon compte ». Tout est caché au départ : compte.js montre ce qui
+   correspond à la situation — le choix d'un nouveau mot de passe si l'on
+   arrive par le lien « oublié », sinon le compte. Sans session, il renvoie à
+   la connexion. */
+function pageMonCompte() {
+  const formules = Object.fromEntries(Object.entries(FORMULES).map(([id, f]) => [id, { l: f.l, rang: f.rang }]));
   const corps = `
 <section class="heros heros-court">
   <div class="enveloppe">
-    <div class="heros-texte"><h1>Nouveau mot de passe</h1></div>
+    <div class="heros-texte"><h1>Mon compte</h1></div>
+    <p class="heros-sous etat-compte" id="etat-compte" role="status">Un instant…</p>
   </div>
 </section>
 <section class="section">
   <div class="enveloppe">
     <div class="connexion connexion-seule">
-      <form class="carte-connexion" id="form-nouveau" novalidate>
-        <h2 id="titre-nouveau">Choisir votre mot de passe</h2>
-        <p class="etat-compte" id="etat-nouveau" role="status">Vérification du lien…</p>
-        <div id="nouveau-champs" hidden>
-          <div class="champ">
-            <label for="n-courriel">Adresse électronique</label>
-            <input type="email" id="n-courriel" autocomplete="username" readonly>
-          </div>
-          <div class="champ">
-            <label for="n-motdepasse">Nouveau mot de passe <span class="aide">au moins 10 caractères</span></label>
-            <input type="password" id="n-motdepasse" autocomplete="new-password" minlength="10" required>
-          </div>
-          <div class="champ">
-            <label for="n-confirme">Le même, une seconde fois</label>
-            <input type="password" id="n-confirme" autocomplete="new-password" minlength="10" required>
-          </div>
-          <p class="rangee" style="margin-top:var(--t4)">
-            <button type="submit" class="bouton bouton-accent bouton-large">Enregistrer</button>
-          </p>
+      ${comptesFermes()}
+      <p class="reserve annonce-compte" id="compte-annonce" role="status" hidden></p>
+
+      <form class="carte-connexion" id="compte-nouveau" novalidate hidden>
+        <h2>Choisir votre nouveau mot de passe</h2>
+        <div class="champ">
+          <label for="n-courriel">Adresse électronique</label>
+          <input type="email" id="n-courriel" autocomplete="username" readonly>
         </div>
-        <p style="margin-top:var(--t3)"><a href="oubli.html">Demander un nouveau lien</a></p>
+        <div class="champ">
+          <label for="n-motdepasse">Nouveau mot de passe <span class="aide">au moins 10 caractères</span></label>
+          <input type="password" id="n-motdepasse" autocomplete="new-password" minlength="10" required>
+        </div>
+        <div class="champ">
+          <label for="n-confirme">Le même, une seconde fois</label>
+          <input type="password" id="n-confirme" autocomplete="new-password" minlength="10" required>
+        </div>
+        <p class="rangee" style="margin-top:var(--t4)">
+          <button type="submit" class="bouton bouton-accent bouton-large">Enregistrer</button>
+        </p>
+        <p class="etat-compte" id="etat-nouveau" role="status"></p>
       </form>
+
+      <div id="compte-principal" data-formules="${esc(JSON.stringify(formules))}" hidden>
+        <div class="carte-connexion">
+          <p class="etiq">Connecté</p>
+          <h2 class="compte-adresse" id="compte-adresse"></h2>
+
+          <div id="compte-entreprise" hidden>
+            <p class="compte-entreprise"><strong id="entreprise-nom"></strong></p>
+            <p id="entreprise-role"></p>
+            <p id="entreprise-formule"></p>
+            <p class="rangee" style="margin-top:var(--t4)">
+              <a class="bouton bouton-accent bouton-large" id="entreprise-ouvrir" href="../app/" hidden>Ouvrir mon espace</a>
+              <a class="bouton bouton-accent bouton-large" id="entreprise-tarifs" href="../abonnement.html" hidden>Choisir ma formule</a>
+            </p>
+          </div>
+
+          <form id="form-entreprise" novalidate hidden>
+            <p><strong>Dernière étape : le nom de votre entreprise.</strong>
+            C'est elle qui portera l'abonnement, le plan de veille et le registre ; vous en serez l'administrateur.</p>
+            <div class="champ">
+              <label for="e-nom">Nom de l'entreprise</label>
+              <input type="text" id="e-nom" autocomplete="organization" maxlength="200" required>
+            </div>
+            <p class="rangee" style="margin-top:var(--t4)">
+              <button type="submit" class="bouton bouton-accent bouton-large">Enregistrer</button>
+            </p>
+            <p class="etat-compte" id="etat-entreprise" role="status"></p>
+          </form>
+        </div>
+
+        <details class="carte-connexion repli-compte">
+          <summary>Changer mon mot de passe</summary>
+          <form id="form-motdepasse" novalidate>
+            <div class="champ">
+              <label for="m-motdepasse">Nouveau mot de passe <span class="aide">au moins 10 caractères</span></label>
+              <input type="password" id="m-motdepasse" autocomplete="new-password" minlength="10" required>
+            </div>
+            <div class="champ">
+              <label for="m-confirme">Le même, une seconde fois</label>
+              <input type="password" id="m-confirme" autocomplete="new-password" minlength="10" required>
+            </div>
+            <p class="rangee"><button type="submit" class="bouton bouton-sobre">Enregistrer</button></p>
+            <p class="etat-compte" id="etat-motdepasse" role="status"></p>
+          </form>
+        </details>
+
+        <details class="carte-connexion repli-compte">
+          <summary>Changer mon adresse électronique</summary>
+          <form id="form-adresse" novalidate>
+            <div class="champ">
+              <label for="a-courriel">Nouvelle adresse</label>
+              <input type="email" id="a-courriel" autocomplete="email" inputmode="email" spellcheck="false" required>
+            </div>
+            <p class="rangee"><button type="submit" class="bouton bouton-sobre">Recevoir le lien de confirmation</button></p>
+            <p class="etat-compte" id="etat-adresse" role="status"></p>
+          </form>
+        </details>
+
+        <p class="rangee rangee-centre" style="margin-top:var(--t5)">
+          <button type="button" class="bouton bouton-sobre" id="compte-sortir">Se déconnecter</button>
+        </p>
+      </div>
     </div>
   </div>
 </section>`;
-  return page({ titre: `Nouveau mot de passe | ${SITE.nom}`, description: "Choisir un nouveau mot de passe.",
-    racine: "../", zone: "public", corps, scripts: ["assets/compte.js"] });
-}
-
-/* L'administration : la liste des comptes, pour l'administrateur seul (le
-   serveur refuse les données à tout autre). */
-function pageAdmin() {
-  const corps = `
-<section class="heros heros-court">
-  <div class="enveloppe">
-    <div class="heros-texte"><h1>Administration</h1></div>
-    <p class="heros-sous" id="admin-etat">Chargement…</p>
-    <p class="rangee rangee-centre" id="admin-actions" hidden>
-      <a class="bouton bouton-accent" href="../app/">Ouvrir l'application</a>
-      <a class="bouton bouton-sobre" href="https://dashboard.stripe.com/subscriptions" target="_blank" rel="noopener">Les abonnements, chez Stripe</a>
-      <a class="bouton bouton-sobre" href="../api/deconnexion">Se déconnecter</a>
-    </p>
-  </div>
-</section>
-<section class="section" id="admin-liste" hidden>
-  <div class="enveloppe">
-    <h2 class="titre-section">Les comptes</h2>
-    <div class="tableau-defile">
-      <table class="tableau-admin">
-        <thead><tr><th scope="col">Adresse</th><th scope="col">Créé le</th><th scope="col">Chez Stripe</th><th scope="col">Mot de passe</th></tr></thead>
-        <tbody id="admin-comptes"></tbody>
-      </table>
-    </div>
-  </div>
-</section>`;
-  return page({ titre: `Administration | ${SITE.nom}`, description: "Administration des comptes.",
-    racine: "../", zone: "public", corps, scripts: ["assets/compte.js"] });
-}
-
-/* Un écran que la formule du compte n'ouvre pas : laquelle il faut. */
-function pageFormuleManquante() {
-  const infos = Object.fromEntries(Object.entries(FORMULES).map(([id, f]) => [id, { l: f.l, prix: `${f.prixAn} ou ${f.prix}`, rang: f.rang }]));
-  const corps = `
-<section class="heros heros-court">
-  <div class="enveloppe">
-    <div class="heros-texte"><h1>Cet écran n'est pas dans votre formule</h1></div>
-    <p class="heros-sous" id="formule-manque" data-formules="${esc(JSON.stringify(infos))}">Il fait partie d'une formule plus complète.</p>
-    <p class="rangee rangee-centre">
-      <a class="bouton bouton-accent" href="${esc(lienPaiement("portail") || "../abonnement.html")}">Changer de formule</a>
-      <a class="bouton bouton-sobre" id="formule-retour" href="../app/releve.html">Revenir à mon espace</a>
-    </p>
-  </div>
-</section>`;
-  return page({
-    titre: `Formule | ${SITE.nom}`, description: "Cet écran fait partie d'une autre formule.",
-    racine: "../", zone: "public", corps, scripts: ["assets/compte.js"]
-  });
+  return page({ titre: `Mon compte | ${SITE.nom}`, description: `Votre compte ${SITE.nom}.`,
+    racine: "../", zone: "public", corps, scripts: ["assets/compte.js"], installation: false });
 }
 
 /* --- Les avis : de quoi alimenter la cloche ------------------------------- */
@@ -4170,9 +4228,9 @@ async function poids(chemin) {
 }
 
 /* --- La démonstration, à part ----------------------------------------------
-   Sur Cloudflare, /app/ est fermé : seuls les abonnés y entrent. La
-   démonstration en est une copie exacte sous /demo/, ouverte à tous, avec le
-   jeu d'essai. Les liens d'une page de démo vers une autre restent dans
+   /app/ est l'espace des abonnés : assets/session.js y exige une session
+   Supabase et une formule. La démonstration en est une copie exacte sous
+   /demo/, ouverte à tous, avec le jeu d'essai. Les liens d'une page de démo vers une autre restent dans
    /demo/ : on réécrit « ../app/ » en « ../demo/ ». */
 async function copieDemo() {
   const source = join(SORTIE, "app"), cible = join(SORTIE, "demo");
@@ -4189,29 +4247,7 @@ async function copieDemo() {
   await reecrit(cible);
 }
 
-/* Les en-têtes de sécurité pour Cloudflare Pages (fichier _headers), tirés de
-   netlify.toml pour qu'il n'y ait qu'une source. */
-function entetesCloudflare() {
-  const toml = readFileSync(resolve(RACINE, "netlify.toml"), "utf8");
-  const bloc = toml.split('for = "/*"')[1].split("[[headers]]")[0];
-  const lignes = [...bloc.matchAll(/^\s*([A-Za-z-]+)\s*=\s*"(.*)"\s*$/gm)].map((m) => `  ${m[1]}: ${m[2]}`);
-  if (!lignes.some((l) => l.includes("Content-Security-Policy"))) throw new Error("_headers : la politique de sécurité n'a pas été lue dans netlify.toml.");
-  return ["/*", ...lignes, "", "/assets/polices/*", "  Cache-Control: public, max-age=31536000, immutable", "",
-    "/app/*", "  Cache-Control: private, no-store", "  X-Robots-Tag: noindex", "",
-    "/demo/*", "  X-Robots-Tag: noindex", "",
-    "/compte/*", "  X-Robots-Tag: noindex", "  Cache-Control: no-store", ""].join("\n");
-}
-
 async function main() {
-  // Les formules du serveur (serveur/compte.mjs) doivent dire la même chose.
-  const { FORMULES: SERVEUR, NOM: NOM_SERVEUR } = await import("./serveur/compte.mjs");
-  if (NOM_SERVEUR !== SITE.nom) throw new Error(`serveur/compte.mjs : NOM vaut « ${NOM_SERVEUR} », SITE.nom « ${SITE.nom} » — mettre le même.`);
-  for (const [id, f] of Object.entries(FORMULES)) {
-    const sv = SERVEUR[id];
-    if (!sv || sv.rang !== f.rang || sv.mois !== f.mois * 100 || sv.an !== f.an * 100)
-      throw new Error(`serveur/compte.mjs : la formule « ${id} » ne correspond pas à FORMULES de build.mjs.`);
-  }
-
   const V = await chargeFichier("assets/referentiel.js", "VEILLE");
   const PIEGES = await chargeFichier("contenu/pieges.js", "PIEGES");
   const METIERS = await chargeFichier("contenu/metiers.js", "METIERS");
@@ -4292,7 +4328,7 @@ async function main() {
      sans amorce.js ni les données des alertes, un changement de l'un d'eux
      restait servi dans son ancienne version. */
   const habillage = ["site.css", "polices.css", "app.js", "theme.js", "amorce.js",
-                     "session.js", "entreprise.js", "avis.js", "referentiel.js", "compte.js"];
+                     "session.js", "entreprise.js", "avis.js", "referentiel.js", "compte.js", "vigie.js"];
   const empreinte = createHash("sha256");
   for (const f of habillage) empreinte.update(await readFile(join(SORTIE, "assets", f)));
   empreinte.update(plan);
@@ -4337,11 +4373,9 @@ async function main() {
   await writeFile(join(SORTIE, "decouvrir.html"), pageDecouvrir(V, ECRANS, C, NAF, SOURCES));
   await writeFile(join(SORTIE, "connexion.html"), pageConnexion());
   await mkdir(join(SORTIE, "compte"), { recursive: true });
-  await writeFile(join(SORTIE, "compte", "bienvenue.html"), pageBienvenue());
-  await writeFile(join(SORTIE, "compte", "formule.html"), pageFormuleManquante());
+  await writeFile(join(SORTIE, "compte", "index.html"), pageMonCompte());
+  await writeFile(join(SORTIE, "compte", "creer.html"), pageCreer());
   await writeFile(join(SORTIE, "compte", "oubli.html"), pageOubli());
-  await writeFile(join(SORTIE, "compte", "nouveau.html"), pageNouveau());
-  await writeFile(join(SORTIE, "compte", "admin.html"), pageAdmin());
 
   await writeFile(join(SORTIE, "app", "index.html"), appTableauBord(V, D, C, LIENS));
   await writeFile(join(SORTIE, "app", "plan.html"), appPlan(V, D, C, LIENS));
@@ -4384,7 +4418,6 @@ async function main() {
   }
 
   await copieDemo();
-  await writeFile(join(SORTIE, "_headers"), entetesCloudflare());
 
   const total = await poids(SORTIE);
   console.log(`  public              4 pages (accueil, comment ça marche, abonnement, connexion)`);

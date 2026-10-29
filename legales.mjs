@@ -95,7 +95,7 @@ export function pagesLegales({ page, SITE, FORMULES, TVA, esc, eur }) {
 
   /* --- Politique de confidentialité ----------------------------------------- */
   const confidentialite = gabarit({
-    fichier: "confidentialite.html", titre: "Politique de confidentialité", maj: "28 octobre 2026",
+    fichier: "confidentialite.html", titre: "Politique de confidentialité", maj: "29 octobre 2026",
     sous: "Quelles données nous traitons, pourquoi, combien de temps, et comment exercer vos droits.",
     sections: [
       { t: "En bref", c: `
@@ -169,8 +169,10 @@ export function pagesLegales({ page, SITE, FORMULES, TVA, esc, eur }) {
           <li><strong>Échanges avec les prospects :</strong> trois ans après le dernier contact.</li>
         </ul>` },
       { t: "Cookies", c: `
-        <p>Aujourd'hui : aucun. À l'ouverture de l'espace client, un seul cookie, strictement nécessaire :
-        celui qui garde votre session ouverte. Il ne sert à rien d'autre, et n'appelle pas de consentement.</p>` },
+        <p>Aucun. Quand vous vous connectez à votre compte, votre session (un jeton de connexion, renouvelé
+        toutes les heures) est gardée dans le stockage local de votre navigateur. C'est strictement nécessaire
+        pour rester connecté : elle ne sert à rien d'autre, n'appelle pas de consentement, et « Se déconnecter »
+        l'efface. Votre mot de passe, lui, n'y est jamais gardé.</p>` },
       { t: "Vos droits", c: `
         <p>Vous pouvez demander l'accès à vos données, leur rectification, leur effacement, leur portabilité,
         la limitation de leur traitement, ou vous opposer à un traitement fondé sur notre intérêt légitime.

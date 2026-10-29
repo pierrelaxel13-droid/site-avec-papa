@@ -5,8 +5,7 @@
 métier est la personne — Clément Pierrel, consultant QSE et HSE en exercice —,
 jamais son cabinet : un consultant n'achète pas l'outil d'un confrère.
 Nom, société et concepteur : `SITE.nom`, `SITE.societe`, `SITE.concepteur`
-(build.mjs) ; le nom aussi dans `NOM` (serveur/compte.mjs), vérifié à la
-construction.
+(build.mjs).
 
 **En ligne : https://pierrelaxel13-droid.github.io/site-avec-papa/**
 GitHub Pages publie la branche `main` à chaque envoi et après chaque relève
@@ -42,53 +41,33 @@ vraies captures de l'application, `tarifs.html` affiche les trois formules,
 **L'application** — sous `app/` : tableau de bord, mon plan, relevé, registre,
 et les 88 fiches de secteur (`app/secteur/<code>-<libellé>.html`).
 
-## Ce qui n'existe pas encore, et qui doit être dit
+## Les comptes et la base (Supabase)
 
-**Il n'y a pas de serveur.** La « connexion » pose un jeton dans le navigateur
-et retire un voile posé au-dessus du contenu : **ce n'est pas une sécurité**.
-Les pages de l'application sont servies à tout le monde et leur contenu reste
-lisible dans la source. Les données affichées sont un jeu d'essai — entreprise
-et textes fictifs.
+Projet Supabase `denpxyqbvjcwsbxjtqpd`. Le schéma, ses règles d'accès et ses
+tests sont dans `supabase/` (voir `supabase/README.md`) ; l'action « Base de
+données » les applique.
 
-Les deux faits sont écrits sur les écrans concernés, dans `assets/session.js`
-et en tête de `build.mjs`. **Ils doivent y rester** tant que ces deux services
-ne sont pas en place :
+- **Les pages de compte** : `connexion.html`, `compte/creer.html` (créer son
+  compte : un lien de confirmation part par courriel), `compte/oubli.html`, et
+  `compte/index.html` (« Mon compte » : nommer son entreprise, changer de mot
+  de passe ou d'adresse ; c'est là qu'arrivent les liens des courriels).
+- **`assets/vigie.js`** parle à Supabase, sans bibliothèque (fetch). Seules
+  l'adresse du projet et la clé **publique** sont dans le site (`SITE.supabase`) ;
+  la construction s'arrête si on y met la clé secrète.
+- **`/app/`** demande une session (sinon : la connexion) et ouvre selon la
+  formule payée par l'entreprise (`mes_entreprises()` dans la base).
+  `/demo/` en est la copie ouverte à tous, avec le jeu d'essai.
+- **Ce qui protège les données**, ce sont les règles de la base (RLS), pas les
+  pages : elles sont publiques, comme le code du site.
 
-- **l'authentification** — Netlify Identity ou équivalent, pour que les comptes
-  existent et que les pages ne soient plus servies sans jeton valide ;
-- **le paiement** — Stripe ou équivalent, pour l'abonnement et sa résiliation.
+**Pas encore fait** : les données propres à chaque client (l'espace montre
+encore l'entreprise de démonstration), et l'abonnement réellement relié à
+Stripe. En attendant, un abonnement d'essai se pose à la main dans Supabase
+(SQL Editor) — voir `supabase/README.md`.
 
-### Les vrais comptes (Cloudflare)
-
-GitHub Pages ne sert que des fichiers : il ne peut pas fermer l'application.
-Sur **Cloudflare Pages** (`.github/workflows/cloudflare.yml`), `functions/`
-tourne à côté des pages :
-
-- `functions/app/_middleware.js` — la porte de `/app/` : sans session, vers la
-  connexion ; formule trop basse, vers `compte/formule.html`. La formule est
-  relue chez Stripe toutes les six heures.
-- `functions/api/` — `connexion`, `deconnexion`, `moi`, `bienvenue` (créer son
-  mot de passe après le paiement : Stripe renvoie sur
-  `/compte/bienvenue.html?session={CHECKOUT_SESSION_ID}`).
-- `serveur/compte.mjs` — mots de passe (PBKDF2), cookie signé, appels Stripe,
-  stockage KV « COMPTES ». Ses formules sont vérifiées contre `FORMULES`.
-
-La démonstration est copiée sous `/demo/`, ouverte à tous. Pour essayer tout
-ça sur un poste, sans Cloudflare ni Stripe : `node outils/comptes-local.mjs`.
-
-À faire une fois : un compte Cloudflare et un compte Brevo, puis les secrets
-dans GitHub (`CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID`, `STRIPE_SECRET` —
-clé restreinte en lecture seule —, `ADMIN_COURRIEL`, `BREVO_API_KEY`,
-`EXPEDITEUR`). Le détail est en tête de `cloudflare.yml`.
-
-**L'administrateur** : son adresse est le secret `ADMIN_COURRIEL`. Il ouvre
-tout sans abonnement et voit la liste des comptes (`/compte/admin.html`). Son
-mot de passe n'est écrit nulle part : il le choisit par « Mot de passe
-oublié », comme un client qui a perdu le sien. Les courriels partent par
-Brevo (`BREVO_API_KEY`, `EXPEDITEUR`) ; le lien vaut une heure, une fois.
-
-Pas encore fait : les données propres à chaque client — l'espace montre encore
-l'entreprise de démonstration.
+**Essayer sur un poste**, sans toucher au vrai Supabase : l'imitation
+`outils/supabase-local.mjs` (mode d'emploi en tête du fichier), puis
+`VIGIE_SUPABASE=http://localhost:8830 node build.mjs`.
 
 ### Ouvrir l'abonnement payant
 
@@ -97,15 +76,14 @@ et un au mois par formule)
 (`https://buy.stripe.com/…`) et, si possible, le lien du portail client
 (`https://billing.stripe.com/…`). Rien d'autre : la construction refuse tout
 autre lien, et toute clé Stripe. Tant qu'un lien est vide, le bouton de la
-formule ouvre un courriel. Le paiement ne verrouille pas encore l'application :
-de vrais comptes restent à faire.
+formule ouvre un courriel. Le paiement n'est pas encore relié aux comptes : c'est
+le dernier lot (Stripe écrira dans la table `abonnements`).
 
 La grille, fixée le 28 octobre 2026 : **59, 99 et 149 € par mois, ou 590, 990
 et 1 490 € par an** (« 2 mois offerts »), sans cadrage sur place. Sous
 franchise de TVA : « TVA non applicable, art. 293 B du CGI » (`SITE.tva` ;
 mettre "ht" le jour où la TVA est facturée). Montants dans `FORMULES`
-(build.mjs) et, en centimes, dans `serveur/compte.mjs` — la construction
-vérifie qu'ils concordent et que l'année vaut dix mois.
+(build.mjs) — la construction vérifie que l'année vaut dix mois.
 
 ## Les captures de l'accueil
 

@@ -2950,17 +2950,21 @@ a.defile:hover .avis-appel strong { text-decoration: underline; text-underline-o
 /* Le paiement en ligne est branché : la réserve devient une bonne nouvelle. */
 .reserve.reserve-ok { background: var(--accent-clair); border-color: var(--accent-filet); }
 
-/* Les messages des pages de compte (connexion, bienvenue). */
+/* Les messages des pages de compte (connexion, création, Mon compte). */
 .etat-compte { margin: var(--t3) 0 0; min-height: 1.5em; color: var(--encre); font-weight: 600; }
 .etat-compte:empty { display: none; }
+.etat-compte .lien-nu, .reserve .lien-nu { font: inherit; text-decoration: underline; }
+.aide-bas { margin-top: var(--t4); font-size: .9rem; color: var(--encre-douce); }
+#connexion-deja .rangee, #creer-envoye p + p { margin-top: var(--t3); }
+#creer-envoye:focus { outline: none; }
 
-/* L'administration : un tableau simple, qui défile de côté au téléphone. */
-.tableau-defile { overflow-x: auto; margin-top: var(--t4); border: 1px solid var(--filet); border-radius: var(--r2); background: var(--carte); }
-.tableau-admin { width: 100%; border-collapse: collapse; font-size: .95rem; }
-.tableau-admin th, .tableau-admin td { padding: .75rem 1rem; text-align: left; border-bottom: 1px solid var(--filet); white-space: nowrap; }
-.tableau-admin th { font-size: .8rem; text-transform: uppercase; letter-spacing: .06em; color: var(--encre-douce); }
-.tableau-admin tr:last-child td { border-bottom: 0; }
-.tableau-admin .lien-nu { font: inherit; }
+/* « Mon compte » : l'essentiel dans la première carte, le reste replié. */
+.annonce-compte { margin-bottom: var(--t4); }
+.compte-adresse { overflow-wrap: anywhere; }
+.compte-entreprise { font-size: 1.15rem; margin-bottom: var(--t2); }
+#compte-principal > * + * { margin-top: var(--t4); }
+.repli-compte summary { cursor: pointer; font-weight: 700; font-size: 1.05rem; }
+.repli-compte[open] summary { margin-bottom: var(--t4); }
 
 /* --- 33. Les prix : l'année d'abord, le mois à côté ------------------------ */
 .formule .offre-an { margin: calc(-1 * var(--t2)) 0 0; display: flex; flex-wrap: wrap; align-items: center; gap: .5rem; color: var(--encre-douce); }

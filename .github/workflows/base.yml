@@ -126,7 +126,8 @@ jobs:
           API: https://denpxyqbvjcwsbxjtqpd.supabase.co/rest/v1
         run: |
           echec=0
-          for t in registre entreprises membres_entreprise abonnements reponses sujets textes; do
+          # sujets, textes et collectes sont publics par choix : ils ne sont pas dans la liste.
+          for t in registre entreprises membres_entreprise abonnements reponses plan_sujets profils invitations; do
             corps=$(curl -sS "$API/$t?select=*&limit=1" -H "apikey: $CLE")
             case "$corps" in
               "[]"|*'"42501"'*) echo "ok : « $t » ne montre rien";;
@@ -137,4 +138,8 @@ jobs:
                  -H "Content-Type: application/json" -d '{"genre":"revue"}')
           case "$code" in 2*) echo "::error::Un visiteur non connecté a pu écrire dans le registre (HTTP $code)"; echec=1;;
                           *) echo "ok : écrire dans le registre est refusé (HTTP $code)";; esac
+          code=$(curl -sS -o /dev/null -w '%{http_code}' -X POST "$API/rpc/mes_entreprises" -H "apikey: $CLE" \
+                 -H "Content-Type: application/json" -d '{}')
+          case "$code" in 2*) echo "::error::Un visiteur non connecté a pu appeler mes_entreprises (HTTP $code)"; echec=1;;
+                          *) echo "ok : mes_entreprises est refusé à un visiteur (HTTP $code)";; esac
           exit $echec

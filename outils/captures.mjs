@@ -40,19 +40,19 @@ const BASE = process.env.BASE || "http://127.0.0.1:8080";
 const CHROME = process.env.CHROMIUM || "/opt/pw-browsers/chromium-1194/chrome-linux/chrome";
 
 const ECRANS = [
-  { nom: "bord.png", url: "/app/index.html" },
-  { nom: "plan.png", url: "/app/plan.html" },
-  { nom: "releve.png", url: "/app/releve.html" },
-  { nom: "registre.png", url: "/app/registre.html" },
-  { nom: "secteurs.png", url: "/app/secteurs.html" },
-  { nom: "reglages.png", url: "/app/reglages.html" }
+  { nom: "bord.png", url: "/demo/index.html" },
+  { nom: "plan.png", url: "/demo/plan.html" },
+  { nom: "releve.png", url: "/demo/releve.html" },
+  { nom: "registre.png", url: "/demo/registre.html" },
+  { nom: "secteurs.png", url: "/demo/secteurs.html" },
+  { nom: "reglages.png", url: "/demo/reglages.html" }
 ];
 
 // Le héros montre un téléphone à côté de l'ordinateur : il lui faut une vraie
 // capture au format d'un téléphone, pas un recadrage de l'écran large.
 const TELEPHONES = [
-  { nom: "bord-tel.png", url: "/app/index.html" },
-  { nom: "releve-tel.png", url: "/app/releve.html" }
+  { nom: "bord-tel.png", url: "/demo/index.html" },
+  { nom: "releve-tel.png", url: "/demo/releve.html" }
 ];
 const FORMAT_TEL = { width: 390, height: 844 };
 
