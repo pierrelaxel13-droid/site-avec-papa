@@ -17,6 +17,7 @@
 (function () {
   "use strict";
   var CLE = "pco-session";
+  var CLE_DEMO_CONSULTANT = "pco-demo-consultant";
 
   // Mêmes clés et mêmes rangs que FORMULES dans build.mjs.
   var FORMULES = {
@@ -155,6 +156,7 @@
 
   if (!DANS_APP) {
     appliquer(lu(), false);
+    bandeauDemoConsultant();
   } else if (!window.VIGIE || !window.VIGIE.ouvert) {
     // Pas de base configurée : le voile reste, avec la démonstration.
     appliquer(null, false);
@@ -209,6 +211,39 @@
   }
   function ici() { return CHEMIN.slice(CHEMIN.indexOf("/app/") + 1); }
 
+  /* La démonstration consultant (demo/cabinet.html) : « Ouvrir son espace »
+     ouvre la démonstration en veille complète, vue par le cabinet fictif ; le
+     bandeau le dit sur chaque écran. Entrer par la page des tarifs l'efface. */
+  var versClient = document.querySelectorAll("[data-demo-consultant]");
+  for (var v = 0; v < versClient.length; v++) {
+    versClient[v].addEventListener("click", function (ev) {
+      ouvrir("complet");
+      var l = ev.currentTarget;
+      try {
+        window.localStorage.setItem(CLE_DEMO_CONSULTANT, JSON.stringify({
+          cabinet: l.getAttribute("data-demo-consultant"), client: l.getAttribute("data-demo-client") }));
+      } catch (e) { /* bandeau ordinaire */ }
+    });
+  }
+  function bandeauDemoConsultant() {
+    var b = document.querySelector('.bandeau-demo[data-mode="demo"]');
+    var vu = null;
+    try { vu = JSON.parse(window.localStorage.getItem(CLE_DEMO_CONSULTANT)); } catch (e) { vu = null; }
+    if (!b || !vu || !vu.cabinet || CHEMIN.indexOf("/demo/") === -1) return;
+    var cabinet = vu.cabinet, nom = vu.client || "votre client";
+    b.textContent = "";
+    var fort = document.createElement("strong");
+    fort.textContent = "Démonstration consultant — espace de « " + nom + " ».";
+    b.appendChild(fort);
+    b.appendChild(document.createTextNode(" Vous y êtes en tant que consultant (" + cabinet +
+      ", fictif) : avec un vrai compte, ce que vous cochez entre à son registre, à votre nom. Ici, données fictives. "));
+    var retour = document.createElement("a");
+    retour.href = racine + "demo/cabinet.html";
+    retour.textContent = "Revenir au cabinet";
+    b.appendChild(retour);
+    b.classList.add("bandeau-consultant");
+  }
+
   /* Chez un client, le consultant le voit en haut de chaque écran : de qui
      est cet espace, et le chemin du retour vers son cabinet. */
   function consultant(e) {
@@ -241,6 +276,7 @@
       if (deja) deja.checked = true;
     }
     bouton.addEventListener("click", function () {
+      try { window.localStorage.removeItem(CLE_DEMO_CONSULTANT); } catch (e) { /* rien */ }
       var coche = document.querySelector('input[name="formule"]:checked');
       var f = ouvrir(coche ? coche.value : "complet");
       // Le tableau de bord n'est pas dans « Textes » : on entre par le relevé.

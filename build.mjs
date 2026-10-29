@@ -2544,6 +2544,7 @@ function pageConsultants() {
       vous gagnez du temps sur chaque client, et vous ajoutez une ligne de revenu récurrente à votre facturation.</p>
     <p class="rangee rangee-centre">
       <a class="bouton bouton-accent" href="compte/creer.html?type=cabinet">Créer mon compte consultant</a>
+      <a class="bouton bouton-sobre" href="demo/cabinet.html">Voir la démonstration</a>
       <a class="bouton bouton-sobre" href="#grille">Voir la grille</a>
     </p>
   </div>
@@ -2671,6 +2672,7 @@ function pageConsultants() {
       ligne aussi : d'ici là, nous ouvrons votre abonnement sur simple demande.</p>
     <p class="rangee rangee-centre" style="margin-top:var(--t4)">
       <a class="bouton bouton-accent" href="compte/creer.html?type=cabinet">Créer mon compte consultant</a>
+      <a class="bouton bouton-sobre" href="demo/cabinet.html">Voir la démonstration</a>
       <a class="bouton bouton-sobre" href="mailto:${esc(SITE.courriel)}?subject=${encodeURIComponent("Offre consultant")}">En parler</a>
     </p>
   </div>
@@ -4167,6 +4169,84 @@ function pageCabinet() {
     racine: "../", zone: "public", corps, scripts: ["assets/compte.js"], installation: false });
 }
 
+/* La démonstration consultant (demo/cabinet.html) : la page « Mon cabinet »
+   avec un cabinet et des clients fictifs (contenu/demo.js, DEMO.cabinet).
+   Maçonnerie Vidal est l'entreprise du jeu d'essai : ses chiffres viennent de
+   son registre, et « Ouvrir son espace » entre dans la démonstration avec le
+   bandeau consultant (assets/session.js). Rien n'y est enregistré. */
+function pageCabinetDemo(D) {
+  const C = D.cabinet, E = D.entreprise;
+  const jour = new Date().toISOString().slice(0, 10);
+  const ouvertes = D.registre.filter((r) => r.type === "action" && !r.clos);
+  const vidal = {
+    denomination: E.nom, naf: E.nafComplet, cree_le: "2026-03-02", membres: 1, vidal: true,
+    actions_ouvertes: ouvertes.length,
+    actions_en_retard: ouvertes.filter((r) => r.echeance && r.echeance < jour).length,
+    derniere_trace: D.registre.map((r) => r.date).sort().pop()
+  };
+  // Celui qui s'ouvre d'abord : c'est lui qu'on vient essayer.
+  const clients = [vidal, ...C.clients];
+  const pl = (n, un, plus) => `${n} ${n > 1 ? plus : un}`;
+  const carte = (c) => {
+    const tete = `<h3>${esc(c.denomination)}</h3>
+        <p class="admin-details">Espace créé le ${dateFr(c.cree_le)} · code APE ${esc(c.naf)}</p>`;
+    if (c.acces === false) {
+      return `<article class="carte-connexion admin-entreprise">${tete}
+        <p>Ce client a coupé votre accès : vous ne voyez plus son espace. Lui seul peut le rouvrir, depuis son compte.</p></article>`;
+    }
+    const actions = c.actions_ouvertes
+      ? `<strong>${pl(c.actions_ouvertes, "action ouverte", "actions ouvertes")}</strong>${c.actions_en_retard ? `, dont <span class="admin-alerte">${c.actions_en_retard} en retard</span>` : ""}.`
+      : "Aucune action ouverte.";
+    const compte = c.membres
+      ? `<p class="admin-details">${pl(c.membres, "personne de l'entreprise a", "personnes de l'entreprise ont")} un compte.</p>`
+      : `<p>Votre client n'a pas encore de compte : invitez son responsable.</p>
+        <p class="admin-details">Avec votre compte, vous créez ici son lien d'invitation, à copier ou à envoyer par courriel.</p>`;
+    const ouvrir = c.vidal
+      ? `<a class="bouton bouton-accent" href="index.html" data-demo-consultant="${esc(C.nom)}" data-demo-client="${esc(E.nom)}">Ouvrir son espace</a>`
+      : `<span class="admin-details">Dans la démonstration, seul l'espace de ${esc(E.nom)} s'ouvre.</span>`;
+    return `<article class="carte-connexion admin-entreprise">${tete}
+        <p class="admin-formule">${actions}</p>
+        <p class="admin-details">${c.derniere_trace ? `Dernière trace au registre le ${dateFr(c.derniere_trace)}.` : "Rien au registre pour l'instant."}</p>
+        ${compte}
+        <p class="rangee" style="margin-top:var(--t3)">${ouvrir}</p>
+      </article>`;
+  };
+  const retard = clients.filter((c) => c.actions_en_retard).length;
+  const corps = `
+<p class="bandeau-demo"><strong>Démonstration consultant.</strong> Le cabinet et ses clients sont fictifs ;
+  rien de ce que vous faites ici n'est enregistré. <a href="../compte/creer.html?type=cabinet">Créer mon compte consultant</a> ·
+  <a href="../consultants.html">L'offre consultants</a></p>
+<section class="heros heros-court">
+  <div class="enveloppe">
+    <div class="heros-texte"><p class="etiq">Mon cabinet</p><h1>${esc(C.nom)}</h1></div>
+    <p class="heros-sous">${pl(clients.length, "client", "clients")}${retard ? ` — ${pl(retard, "avec des actions en retard", "avec des actions en retard")}.` : ", aucun en retard."}</p>
+  </div>
+</section>
+<section class="section">
+  <div class="enveloppe admin-enveloppe">
+    <h2 class="titre-section">Vos clients</h2>
+    <p class="aide-bas">Pour chacun : ses actions ouvertes, celles en retard, et la date de sa dernière trace au
+    registre. Vous ne voyez rien d'un client qui a coupé votre accès.</p>
+    <div class="admin-grille">${clients.map(carte).join("")}</div>
+    <div class="carte-connexion">
+      <h2>Ajouter un client</h2>
+      <ol class="etapes-cabinet">
+        <li>Créez son espace ici.</li>
+        <li>Ouvrez-le pour régler son plan de veille (code APE, situations).</li>
+        <li>Invitez son responsable : il crée son compte et voit tout. Il peut couper votre accès quand il veut.</li>
+      </ol>
+      <p>Dans la démonstration, on n'ajoute pas de client : cela se fait avec votre compte consultant.</p>
+      <p class="rangee" style="margin-top:var(--t4)">
+        <a class="bouton bouton-accent" href="../compte/creer.html?type=cabinet">Créer mon compte consultant</a>
+      </p>
+    </div>
+  </div>
+</section>`;
+  return page({ titre: `Démonstration consultant | ${SITE.nom}`,
+    description: "La page d'un cabinet de conseil sur Vigie : ses clients, où ils en sont, leur espace. Démonstration avec des données fictives.",
+    racine: "../", zone: "public", corps, scripts: ["assets/session.js"], installation: false });
+}
+
 /* L'administration du service, pour l'administrateur seul : la base refuse
    les données à tout autre compte (supabase/migrations/…_administration.sql).
    Les entreprises, leur formule, leurs comptes — jamais leurs registres. */
@@ -4626,6 +4706,7 @@ async function main() {
   }
 
   await copieDemo();
+  if (SITE.offreConsultant) await writeFile(join(SORTIE, "demo", "cabinet.html"), pageCabinetDemo(D));
 
   const total = await poids(SORTIE);
   console.log(`  public              4 pages (accueil, comment ça marche, abonnement, connexion)`);

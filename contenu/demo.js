@@ -68,6 +68,22 @@ window.DEMO = {
       par: "Karim Vidal", detail: "Un texte relevé, porté en action." }
   ],
 
+  /* La démonstration consultant (demo/cabinet.html) : un cabinet fictif et
+     ses clients fictifs. Maçonnerie Vidal est l'entreprise ci-dessus : ses
+     chiffres sont calculés depuis son registre, et c'est le seul espace qui
+     s'ouvre. Les autres montrent les autres cas : un client en retard, un
+     client sans compte (à inviter), un client qui a coupé l'accès. */
+  cabinet: {
+    nom: "Cabinet Exemple QSE",
+    clients: [
+      { denomination: "Boulangerie Martin", naf: "10.71C", cree_le: "2026-05-12", membres: 2,
+        actions_ouvertes: 3, actions_en_retard: 2, derniere_trace: "2026-09-02" },
+      { denomination: "Transports Rey", naf: "49.41A", cree_le: "2026-10-20", membres: 0,
+        actions_ouvertes: 0, actions_en_retard: 0, derniere_trace: null },
+      { denomination: "Garage Fabre", naf: "45.20A", cree_le: "2026-04-03", membres: 1, acces: false }
+    ]
+  },
+
   /* La prochaine échéance de revue, par rythme. */
   echeances: [
     { frequence: "hebdomadaire", prochaine: "2026-10-22", retard: false },

@@ -97,7 +97,10 @@ données » les applique.
   `compte/admin.html` (section « Les cabinets ») tant que Stripe n'est pas là ;
   tous les clients du cabinet ont alors la veille complète. L'espace ouvert
   dans l'application est choisi par `VIGIE.choisir()` / `espaceChoisi()`
-  (`mes_acces()` dans la base). Pas encore : la marque blanche (logo,
+  (`mes_acces()` dans la base). Une démonstration sans compte :
+  `demo/cabinet.html` (`pageCabinetDemo()`, cabinet et clients fictifs dans
+  `contenu/demo.js`, `DEMO.cabinet`) ; « Ouvrir son espace » entre dans la
+  démo de Maçonnerie Vidal avec un bandeau consultant. Pas encore : la marque blanche (logo,
   couleurs), et inviter des collègues dans le cabinet.
 
 **Pas encore fait** : l'envoi automatique des courriels (invitations,
