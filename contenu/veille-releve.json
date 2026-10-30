@@ -14,7 +14,7 @@
    "id": "eurlex-l",
    "nom": "Journal officiel de l'Union européenne — série L",
    "entrees": 100,
-   "retenus": 17,
+   "retenus": 16,
    "souci": null
   },
   {
@@ -28,7 +28,7 @@
    "id": "travail",
    "nom": "Ministère du Travail — actualités",
    "entrees": 50,
-   "retenus": 0,
+   "retenus": 1,
    "souci": null
   },
   {
@@ -125,7 +125,7 @@
   {
    "id": "entreprendre",
    "nom": "Entreprendre — service-public.fr",
-   "entrees": 238,
+   "entrees": 237,
    "retenus": 1,
    "souci": null
   },
@@ -263,6 +263,30 @@
    "vuA": "2026-10-30T01:02:55Z"
   },
   {
+   "source": "travail",
+   "sourceNom": "Ministère du Travail — actualités",
+   "genre": "actualite",
+   "id": "https://travail-emploi.gouv.fr/documents-opposables-travail-emploi-formation-professionnelle",
+   "titre": "Documents opposables | Travail - Emploi - Formation professionnelle",
+   "nature": "Publication officielle",
+   "date": "2026-10-30",
+   "corps": "",
+   "lien": "https://travail-emploi.gouv.fr/documents-opposables-travail-emploi-formation-professionnelle",
+   "domaines": [
+    {
+     "id": "enseignement",
+     "nom": "Enseignement, formation et certification qualité",
+     "mots": [
+      "formation professionnelle"
+     ]
+    }
+   ],
+   "morceaux": 0,
+   "dateTexte": "",
+   "vuLe": "2026-10-30",
+   "vuA": "2026-10-30T07:10:17Z"
+  },
+  {
    "source": "cnil",
    "sourceNom": "CNIL — actualités",
    "genre": "actualite",
@@ -335,6 +359,102 @@
    "dateTexte": "2026-10-28",
    "vuLe": "2026-10-29",
    "vuA": "2026-10-29T00:00:00Z"
+  },
+  {
+   "source": "eurlex-l",
+   "sourceNom": "Journal officiel de l'Union européenne — série L",
+   "genre": "texte",
+   "id": "https://eur-lex.europa.eu/./legal-content/AUTO/?uri=OJ:L_202602391",
+   "titre": "OJ:L_202602391: Règlement d’exécution (UE) 2026/2391 de la Commission du 29 octobre 2026 soumettant à enregistrement les importations de certains éthers de cellulose originaires de la République populaire de Chine et de la République de Corée en vue de permettre la perception de droits antidumping sur les importations soumises à enregistrement",
+   "nature": "Texte officiel",
+   "date": "2026-10-29",
+   "corps": "",
+   "lien": "https://eur-lex.europa.eu/./legal-content/AUTO/?uri=OJ:L_202602391",
+   "domaines": [
+    {
+     "id": "douane",
+     "nom": "Douane et échanges internationaux",
+     "mots": [
+      "importation"
+     ]
+    }
+   ],
+   "morceaux": 0,
+   "dateTexte": "2026-10-29",
+   "vuLe": "2026-10-29",
+   "vuA": "2026-10-30T07:10:17Z"
+  },
+  {
+   "source": "eurlex-l",
+   "sourceNom": "Journal officiel de l'Union européenne — série L",
+   "genre": "texte",
+   "id": "https://eur-lex.europa.eu/./legal-content/AUTO/?uri=OJ:L_202602393",
+   "titre": "OJ:L_202602393: Règlement d’exécution (UE) 2026/2393 de la Commission du 29 octobre 2026 instituant un droit antidumping définitif et portant perception définitive du droit provisoire institué sur les importations de filé-lié de PET originaire de la République populaire de Chine",
+   "nature": "Texte officiel",
+   "date": "2026-10-29",
+   "corps": "",
+   "lien": "https://eur-lex.europa.eu/./legal-content/AUTO/?uri=OJ:L_202602393",
+   "domaines": [
+    {
+     "id": "douane",
+     "nom": "Douane et échanges internationaux",
+     "mots": [
+      "importation"
+     ]
+    }
+   ],
+   "morceaux": 0,
+   "dateTexte": "2026-10-29",
+   "vuLe": "2026-10-29",
+   "vuA": "2026-10-30T07:10:17Z"
+  },
+  {
+   "source": "eurlex-l",
+   "sourceNom": "Journal officiel de l'Union européenne — série L",
+   "genre": "texte",
+   "id": "https://eur-lex.europa.eu/./legal-content/AUTO/?uri=OJ:L_202602396",
+   "titre": "OJ:L_202602396: Règlement d’exécution (UE) 2026/2396 de la Commission du 29 octobre 2026 soumettant à enregistrement les importations de certains câbles en acier originaires de la République de l’Inde, du Royaume de Thaïlande et de la République de Turquie en vue de permettre la perception de droits antidumping sur les importations soumises à enregistrement",
+   "nature": "Texte officiel",
+   "date": "2026-10-29",
+   "corps": "",
+   "lien": "https://eur-lex.europa.eu/./legal-content/AUTO/?uri=OJ:L_202602396",
+   "domaines": [
+    {
+     "id": "douane",
+     "nom": "Douane et échanges internationaux",
+     "mots": [
+      "importation"
+     ]
+    }
+   ],
+   "morceaux": 0,
+   "dateTexte": "2026-10-29",
+   "vuLe": "2026-10-29",
+   "vuA": "2026-10-30T07:10:17Z"
+  },
+  {
+   "source": "eurlex-l",
+   "sourceNom": "Journal officiel de l'Union européenne — série L",
+   "genre": "texte",
+   "id": "https://eur-lex.europa.eu/./legal-content/AUTO/?uri=OJ:L_202602472",
+   "titre": "OJ:L_202602472: Décision (UE) 2026/2472 du Conseil du 21 octobre 2026 relative à la position à prendre, au nom de l’Union européenne, dans le cadre de la procédure écrite engagée par les participants à l’arrangement sur les crédits à l’exportation bénéficiant d’un soutien public, en ce qui concerne une attitude commune dérogeant aux règles en matière de taux de primes minimales dans le cadre d’un projet touchant au domaine de l’énergie en Égypte",
+   "nature": "Texte officiel",
+   "date": "2026-10-29",
+   "corps": "",
+   "lien": "https://eur-lex.europa.eu/./legal-content/AUTO/?uri=OJ:L_202602472",
+   "domaines": [
+    {
+     "id": "douane",
+     "nom": "Douane et échanges internationaux",
+     "mots": [
+      "exportation"
+     ]
+    }
+   ],
+   "morceaux": 0,
+   "dateTexte": "2026-10-21",
+   "vuLe": "2026-10-29",
+   "vuA": "2026-10-30T07:10:17Z"
   },
   {
    "source": "ademe",
@@ -1056,102 +1176,6 @@
    "vuA": "2026-10-21T00:00:00Z"
   },
   {
-   "source": "eurlex-l",
-   "sourceNom": "Journal officiel de l'Union européenne — série L",
-   "genre": "texte",
-   "id": "https://eur-lex.europa.eu/./legal-content/AUTO/?uri=CELEX:32021R2117R(12)",
-   "titre": "CELEX:32021R2117R(12): Rectificatif au règlement (UE) 2021/2117 du Parlement européen et du Conseil du 2 décembre 2021 modifiant les règlements (UE) n° 1308/2013 portant organisation commune des marchés dans le secteur des produits agricoles, (UE) n° 1151/2012 relatif aux systèmes de qualité applicables aux produits agricoles et aux denrées alimentaires, (UE) n° 251/2014 concernant la définition, la description, la présentation, l’étiquetage et la protection des indications géographiques des produits vinicoles aromatisés et (UE) n° 228/2013 portant mesures spécifiques dans le domaine de l’agriculture en faveur des régions ultrapériphériques de l’Union (JO L 435 du 6.12.2021)",
-   "nature": "Texte officiel",
-   "date": "2026-10-21",
-   "corps": "",
-   "lien": "https://eur-lex.europa.eu/./legal-content/AUTO/?uri=CELEX:32021R2117R(12)",
-   "domaines": [
-    {
-     "id": "alimentaire",
-     "nom": "Hygiène et sécurité des aliments",
-     "mots": [
-      "denrees alimentaires"
-     ]
-    }
-   ],
-   "morceaux": 0,
-   "dateTexte": "2021-12-02",
-   "vuLe": "2026-10-21",
-   "vuA": "2026-10-21T00:00:00Z"
-  },
-  {
-   "source": "eurlex-l",
-   "sourceNom": "Journal officiel de l'Union européenne — série L",
-   "genre": "texte",
-   "id": "https://eur-lex.europa.eu/./legal-content/AUTO/?uri=CELEX:32026H2335",
-   "titre": "CELEX:32026H2335: Recommandation (UE) 2026/2335 de la Commission du 21 octobre 2026 sur le contrôle de la présence de paraffines chlorées dans les denrées alimentaires",
-   "nature": "Texte officiel",
-   "date": "2026-10-21",
-   "corps": "",
-   "lien": "https://eur-lex.europa.eu/./legal-content/AUTO/?uri=CELEX:32026H2335",
-   "domaines": [
-    {
-     "id": "alimentaire",
-     "nom": "Hygiène et sécurité des aliments",
-     "mots": [
-      "denrees alimentaires"
-     ]
-    }
-   ],
-   "morceaux": 0,
-   "dateTexte": "2026-10-21",
-   "vuLe": "2026-10-21",
-   "vuA": "2026-10-21T00:00:00Z"
-  },
-  {
-   "source": "eurlex-l",
-   "sourceNom": "Journal officiel de l'Union européenne — série L",
-   "genre": "texte",
-   "id": "https://eur-lex.europa.eu/./legal-content/AUTO/?uri=CELEX:32026R2327",
-   "titre": "CELEX:32026R2327: Règlement d’exécution (UE) 2026/2327 de la Commission du 21 octobre 2026 instituant un droit antidumping définitif sur les importations de certains agrumes préparés ou conservés (mandarines, etc.) originaires de la République populaire de Chine à la suite d’un réexamen au titre de l’expiration des mesures mené conformément à l’article 11, paragraphe 2, du règlement (UE) 2016/1036 du Parlement européen et du Conseil",
-   "nature": "Texte officiel",
-   "date": "2026-10-21",
-   "corps": "",
-   "lien": "https://eur-lex.europa.eu/./legal-content/AUTO/?uri=CELEX:32026R2327",
-   "domaines": [
-    {
-     "id": "douane",
-     "nom": "Douane et échanges internationaux",
-     "mots": [
-      "importation"
-     ]
-    }
-   ],
-   "morceaux": 0,
-   "dateTexte": "2026-10-21",
-   "vuLe": "2026-10-21",
-   "vuA": "2026-10-21T00:00:00Z"
-  },
-  {
-   "source": "eurlex-l",
-   "sourceNom": "Journal officiel de l'Union européenne — série L",
-   "genre": "texte",
-   "id": "https://eur-lex.europa.eu/./legal-content/AUTO/?uri=CELEX:32026R2384",
-   "titre": "CELEX:32026R2384: Règlement d’exécution (UE) 2026/2384 de la Commission du 21 octobre 2026 modifiant pour la 363e fois le règlement (CE) no 881/2002 du Conseil instituant certaines mesures restrictives spécifiques à l’encontre de certaines personnes et entités liées aux organisations EIIL (Daech) et Al-Qaida",
-   "nature": "Texte officiel",
-   "date": "2026-10-21",
-   "corps": "",
-   "lien": "https://eur-lex.europa.eu/./legal-content/AUTO/?uri=CELEX:32026R2384",
-   "domaines": [
-    {
-     "id": "douane",
-     "nom": "Douane et échanges internationaux",
-     "mots": [
-      "mesures restrictives"
-     ]
-    }
-   ],
-   "morceaux": 0,
-   "dateTexte": "2026-10-21",
-   "vuLe": "2026-10-21",
-   "vuA": "2026-10-21T00:00:00Z"
-  },
-  {
    "source": "jorf",
    "sourceNom": "Journal officiel de la République française",
    "genre": "texte",
@@ -1275,31 +1299,6 @@
    "dateTexte": "",
    "vuLe": "2026-10-20",
    "vuA": "2026-10-20T00:00:00Z"
-  },
-  {
-   "source": "eurlex-l",
-   "sourceNom": "Journal officiel de l'Union européenne — série L",
-   "genre": "texte",
-   "id": "https://eur-lex.europa.eu/./legal-content/AUTO/?uri=CELEX:32026D2356",
-   "titre": "CELEX:32026D2356: Décision (UE) 2026/2356 du Conseil du 13 octobre 2026 relative à la signature du protocole additionnel à la convention du Conseil de l’Europe relative au blanchiment, au dépistage, à la saisie et à la confiscation des produits du crime et au financement du terrorisme, en ce qui concerne les mesures de lutte contre le blanchiment des capitaux",
-   "nature": "Texte officiel",
-   "date": "2026-10-20",
-   "corps": "",
-   "lien": "https://eur-lex.europa.eu/./legal-content/AUTO/?uri=CELEX:32026D2356",
-   "domaines": [
-    {
-     "id": "finance",
-     "nom": "Services financiers, assurance et LCB-FT",
-     "mots": [
-      "lutte contre le blanchiment",
-      "financement du terrorisme"
-     ]
-    }
-   ],
-   "morceaux": 0,
-   "dateTexte": "2026-10-13",
-   "vuLe": "2026-10-20",
-   "vuA": "2026-10-30T01:02:55Z"
   },
   {
    "source": "douane",
