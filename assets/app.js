@@ -629,6 +629,8 @@
     var ordre = Object.keys(P.f).sort(function (a, b) { return P.f[a].ordre - P.f[b].ordre; });
     var totalDomaines = Object.keys(P.d).length;
     var coches = {};          // les réponses survivent au changement de secteur
+    // Un rythme en français courant, comme dans la phrase engendrée (CHAQUE, build.mjs).
+    var CHAQUE = { quotidienne: "chaque jour", hebdomadaire: "chaque semaine", mensuelle: "chaque mois", trimestrielle: "chaque trimestre" };
 
     function echappe(s) {
       return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;")
@@ -705,8 +707,8 @@
         "), il y a <strong>" + liste.length + " sujets à suivre sur " + totalDomaines + "</strong>" +
         (ajoutes ? ", dont <strong>" + ajoutes + "</strong> ajouté" + (ajoutes > 1 ? "s" : "") +
                    " par vos réponses" : "") +
-        ". Le plus fréquent est à revoir <strong>" +
-        (paquets.length ? paquets[0].l.toLowerCase() : "—") + "</strong>.";
+        ". Le rythme le plus soutenu : <strong>" +
+        (paquets.length ? (CHAQUE[paquets[0].l.toLowerCase()] || paquets[0].l.toLowerCase()) : "—") + "</strong>.";
 
       if (sortie.lien) sortie.lien.href = "demo/secteur/" + div.u + ".html";
     }

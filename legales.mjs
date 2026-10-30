@@ -73,8 +73,8 @@ export function pagesLegales({ page, SITE, FORMULES, TVA, esc, eur }) {
       { t: "Hébergement", c: `
         <p>Le site est hébergé par <strong>${esc(SITE.hebergeur.nom)}</strong>, ${esc(SITE.hebergeur.adresse)}
         (<a href="${esc(SITE.hebergeur.site)}" target="_blank" rel="noopener">${esc(SITE.hebergeur.site.replace(/^https:\/\//, ""))}</a>).</p>
-        <p>L'hébergement des comptes clients et de leurs données sera précisé ici à l'ouverture de l'espace client,
-        et dans la <a href="confidentialite.html">politique de confidentialité</a>.</p>` },
+        <p>Les comptes clients et leurs données sont hébergés par ${manque(E.hebergeurDonnees, "hébergeur des données clients")}.
+        Le détail est dans la <a href="confidentialite.html">politique de confidentialité</a>.</p>` },
       { t: "Contenus et propriété intellectuelle", c: `
         <p>Les textes législatifs et réglementaires reproduits ou cités proviennent des sources officielles
         (Légifrance, Journal officiel, EUR-Lex et sites publics cités sur chaque fiche). Ils sont réutilisés
@@ -95,16 +95,17 @@ export function pagesLegales({ page, SITE, FORMULES, TVA, esc, eur }) {
 
   /* --- Politique de confidentialité ----------------------------------------- */
   const confidentialite = gabarit({
-    fichier: "confidentialite.html", titre: "Politique de confidentialité", maj: "29 octobre 2026",
+    fichier: "confidentialite.html", titre: "Politique de confidentialité", maj: "30 octobre 2026",
     sous: "Quelles données nous traitons, pourquoi, combien de temps, et comment exercer vos droits.",
     sections: [
       { t: "En bref", c: `
         <ul>
-          <li><strong>Aujourd'hui</strong>, le site ne pose aucun cookie, ne mesure pas l'audience et ne
-            transmet aucune donnée : vos réglages et vos cases « Fait » restent dans votre navigateur.</li>
-          <li><strong>À l'ouverture de l'espace client</strong>, les données de votre entreprise — dont votre
-            registre de preuves — seront conservées sur nos serveurs, isolées de celles des autres clients,
-            et ne serviront qu'à vous rendre le service.</li>
+          <li>Le site ne pose <strong>aucun cookie</strong> et ne mesure pas l'audience.</li>
+          <li><strong>Dans votre compte</strong>, les données de votre entreprise — dont votre registre de
+            preuves — sont conservées dans notre base de données, hébergée dans l'Union européenne, isolées de
+            celles des autres clients, et ne servent qu'à vous rendre le service.</li>
+          <li><strong>Dans la démonstration</strong>, rien ne nous est envoyé : ce que vous y faites reste dans
+            votre navigateur.</li>
           <li>Nous ne vendons, ne louons et n'exploitons commercialement aucune donnée. Nous ne les
             utilisons pas pour entraîner des modèles d'intelligence artificielle.</li>
         </ul>` },
@@ -114,7 +115,7 @@ export function pagesLegales({ page, SITE, FORMULES, TVA, esc, eur }) {
         personne qui a fait une revue), c'est votre entreprise qui en est responsable ; nous agissons alors
         pour son compte, comme sous-traitant au sens de l'article 28 du RGPD. Un accord de traitement des
         données sera annexé aux conditions générales de vente.</p>` },
-      { t: "Ce que nous traitons aujourd'hui", c: `
+      { t: "Visite du site, démonstration, courriels", c: `
         <ul>
           <li><strong>Visite du site.</strong> Aucun cookie, aucune mesure d'audience, aucun outil publicitaire.
             L'hébergeur (${esc(SITE.hebergeur.nom)}) traite, pour la sécurité de son service, des données
@@ -126,19 +127,22 @@ export function pagesLegales({ page, SITE, FORMULES, TVA, esc, eur }) {
           <li><strong>Vos courriels.</strong> Quand vous nous écrivez, nous utilisons votre message et votre
             adresse pour vous répondre, et les conservons trois ans après notre dernier échange.</li>
         </ul>` },
-      { t: "À l'ouverture de l'espace client", c: `
-        <p>Les données suivantes seront traitées pour fournir le service souscrit (base légale : l'exécution
+      { t: "Votre compte et votre espace client", c: `
+        <p>Les données suivantes sont traitées pour fournir le service souscrit (base légale : l'exécution
         du contrat) :</p>
         <ul>
-          <li><strong>Compte :</strong> adresse électronique, nom des utilisateurs, mot de passe — conservé
-            uniquement sous forme d'empreinte chiffrée, jamais en clair.</li>
+          <li><strong>Compte :</strong> adresse électronique, mot de passe — conservé uniquement sous forme
+            d'empreinte chiffrée, jamais en clair —, date d'inscription et de dernière connexion, et l'entreprise
+            ou le cabinet dont vous êtes membre, avec votre rôle.</li>
           <li><strong>Entreprise :</strong> dénomination, activité (code NAF), effectif, implantation, et les
             autres informations que vous renseignez dans vos réglages.</li>
           <li><strong>Conformité :</strong> votre plan de veille, vos réponses aux questions de situation, la
             qualification de chaque texte, et votre registre de preuves — revues, décisions, actions, avec
             leur date et leur auteur.</li>
-          <li><strong>Facturation :</strong> formule, montants, factures. Le paiement est traité par notre
-            prestataire de paiement : nous ne voyons jamais votre numéro de carte.</li>
+          <li><strong>Facturation :</strong> formule, montants, factures. Le paiement en ligne n'est pas encore
+            en place ; il sera traité par notre prestataire de paiement, et nous ne verrons jamais votre numéro de carte.</li>
+          <li><strong>Lecture :</strong> les textes du relevé que vous avez déjà ouverts, pour ne vous signaler
+            que les nouveaux.</li>
           <li><strong>Sécurité :</strong> journaux de connexion, pour détecter et prévenir les accès frauduleux
             (base légale : notre intérêt légitime).</li>
         </ul>
@@ -147,14 +151,18 @@ export function pagesLegales({ page, SITE, FORMULES, TVA, esc, eur }) {
         entreprise, et le cas échéant son consultant, si vous l'avez autorisé —, chiffrées en transit, et
         accessibles à l'éditeur uniquement pour le support que vous demandez ou la sécurité du service.</p>` },
       { t: "Nos prestataires", c: `
-        <p>${decider} À confirmer à l'ouverture de l'espace client. Prévus :</p>
+        <p>En place :</p>
         <ul>
-          <li>hébergement de la base de données et des comptes — ${manque(E.hebergeurDonnees, "prestataire et région d'hébergement, dans l'Union européenne")} ;</li>
-          <li>paiement — Stripe Payments Europe Ltd (Irlande) ;</li>
-          <li>envoi des courriels du service (alertes, mot de passe oublié) — Brevo (France) ;</li>
+          <li>hébergement de la base de données et des comptes, et envoi des courriels de compte (confirmation
+            de l'adresse, mot de passe oublié) — ${manque(E.hebergeurDonnees, "prestataire et région d'hébergement, dans l'Union européenne")} ;</li>
           <li>hébergement du site public, et garde des sauvegardes de la base — ${esc(SITE.hebergeur.nom)}
             (États-Unis). Les sauvegardes sont chiffrées (AES-256) avant de lui être confiées, et la clé ne lui
             est jamais donnée : il ne peut pas les lire. Il ne reçoit aucune autre donnée de votre espace client.</li>
+        </ul>
+        <p>Prévus, pas encore en place :</p>
+        <ul>
+          <li>paiement — Stripe Payments Europe Ltd (Irlande) ;</li>
+          <li>envoi des courriels du service (alertes) — Brevo (France).</li>
         </ul>
         <p>Chaque prestataire est lié par un contrat qui encadre le traitement des données. Les transferts hors
         de l'Union européenne, s'il y en a, sont encadrés par les garanties prévues par le RGPD.</p>` },

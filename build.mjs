@@ -28,6 +28,7 @@ import { createHash } from "node:crypto";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { pagesLegales, champsLegauxManquants } from "./legales.mjs";
+import { texteBrut } from "./outils/tri.mjs";
 
 const RACINE = dirname(fileURLToPath(import.meta.url));
 const SORTIE = resolve(RACINE, "_site");
@@ -433,8 +434,7 @@ ${zone === "app" ? `<p class="bandeau-demo" data-mode="demo">
   <strong>Démonstration.</strong>
   <span id="formule-active"></span>
   Les données ci-dessous sont un jeu d'essai (entreprise et textes fictifs).
-  La connexion ne protège rien : elle pose un jeton dans votre navigateur, et le
-  contenu de ces pages reste lisible dans la source.
+  Rien n'est envoyé chez nous : ce que vous faites ici reste dans votre navigateur.
   <a href="${a("abonnement.html")}#essayer">Changer de formule</a> ·
   <a href="${a("index.html")}">Revenir au site</a>
 </p>
@@ -628,6 +628,8 @@ function boutonFait(id, { periode = 0, libelle = "Marquer comme fait", objet = "
 }
 const marqueFait = (id) => `<span class="marque-fait" data-etat-fait="${esc(id)}" hidden>Fait</span>`;
 const JOURS_DE = { quotidienne: 1, hebdomadaire: 7, mensuelle: 31, trimestrielle: 92 };
+/* Un rythme dit en français courant : « à revoir chaque semaine », pas « à revoir hebdomadaire ». */
+const CHAQUE = { quotidienne: "chaque jour", hebdomadaire: "chaque semaine", mensuelle: "chaque mois", trimestrielle: "chaque trimestre" };
 
 function blocDomaine(C, LIENS, id, d, origine, lienSecteur = "", racine = "", fait = false, rang = -1) {
   return `<article class="bloc-domaine" id="domaine-${esc(id)}" data-domaine="${esc(id)}" data-origine="${origine}"${rang >= 0 ? ` data-rang="${rang}"` : ""}${origine === "declencheur" || origine === "hors" ? " hidden" : ""}>
@@ -899,7 +901,7 @@ function ligneRegistre(r) {
         ${champ("Date", dateFr(r.date))}
         ${champ("Par", r.par)}
         ${champ("Échéance", r.echeance ? dateFr(r.echeance) : "—")}
-        ${champ("État", r.clos ? "Close" : "Ouverte")}
+        ${champ("État", r.type === "action" ? (r.clos ? "Close" : "Ouverte") : "Faite")}
       </dl>
       <p class="note-source">Une ligne du registre ne se modifie pas après coup : une
       correction s'ajoute à la suite, avec sa propre date, et celle-ci reste.</p>
@@ -1815,7 +1817,7 @@ function appSecteurs(V, METIERS, NAF) {
     const noms = divs.map((g) => g.d.l);
     return {
       id: `naf-${sec.c}`, nom: sec.l,
-      compte: `${divs.length} division${divs.length > 1 ? "s" : ""}${n ? ` · ${n} codes APE` : ""}`,
+      compte: `${n ? `${n} codes APE · ` : ""}${divs.length} famille${divs.length > 1 ? "s" : ""}`,
       lignes: [esc(noms.slice(0, 3).join(" · ") + (noms.length > 3 ? " …" : ""))]
     };
   }))}
@@ -1923,7 +1925,7 @@ ${rubrique({ etiq: "Où il s'applique", aplat: true, contenu: `
   ${V.divisions.length}.</p>
   <ul class="puces" style="margin-top:var(--t4)">
     ${domaines.map((id) => `<li><a href="../plan.html">
-      <span class="code">${esc(V.domaines[id].frequence.slice(0, 3))}</span>
+      <span class="code">${esc((V.frequences[V.domaines[id].frequence] || {}).l || V.domaines[id].frequence)}</span>
       <span class="nom">${esc(V.domaines[id].nom)}</span></a></li>`).join("")}
   </ul>
   ${secteurs.length ? `<p class="etiq" style="margin-top:var(--t5)">Secteurs concernés</p>
@@ -2189,7 +2191,8 @@ function appReglages(V, D, NAF, METIERS) {
   <div class="enveloppe">
     <ul class="jalons">
       <li><span class="fort">Réglages</span></li>
-      <li><span>Gardés dans ce navigateur</span></li>
+      <li data-demo><span>Gardés dans ce navigateur</span></li>
+      <li data-compte hidden><span>Gardés dans votre compte</span></li>
     </ul>
     <h1>Mon entreprise et mes alertes</h1>
     <p class="chapeau">
@@ -2208,9 +2211,13 @@ function appReglages(V, D, NAF, METIERS) {
 <section class="rubrique" id="volet-entreprise" role="tabpanel" aria-labelledby="onglet-entreprise">
   <div class="enveloppe">
     <h2 class="cache-visuellement">Mon entreprise</h2>
-    <p class="reserve">
-      <strong>Tout reste sur cet appareil.</strong> Rien n'est envoyé à personne ; si vous
+    <p class="reserve" data-demo>
+      <strong>Démonstration : tout reste sur cet appareil.</strong> Rien n'est envoyé à personne ; si vous
       videz les données du navigateur, il faudra tout ressaisir.
+    </p>
+    <p class="reserve reserve-ok" data-compte hidden>
+      <strong>Gardé dans votre compte.</strong> Vous retrouvez ces réglages sur tous vos appareils, et vos
+      collègues aussi.
     </p>
 
     <div class="simulateur simulateur-reglages" style="margin-top:var(--t5)">
@@ -2355,7 +2362,7 @@ function appReglages(V, D, NAF, METIERS) {
     <div class="simulateur simulateur-reglages" style="margin-top:var(--t5)">
       <form class="reglages" id="form-alertes" novalidate>
         <div class="reglage">
-          <label class="etiq" for="a-courriel">Votre adresse e-mail</label>
+          <label class="etiq" for="a-courriel">Votre adresse électronique</label>
           <input type="email" id="a-courriel" name="courriel" placeholder="prenom@entreprise.fr"
                  inputmode="email" spellcheck="false" autocomplete="email">
         </div>
@@ -2403,7 +2410,7 @@ function appReglages(V, D, NAF, METIERS) {
         <hr class="filet">
         <div class="apercu-courriel" id="a-apercu"></div>
         <p class="note-source">
-          Un aperçu : rien n'est envoyé, et votre adresse reste sur cet appareil.
+          Un aperçu : rien n'est envoyé pour l'instant.
         </p>
       </div>
     </div>
@@ -2517,7 +2524,7 @@ function encartsDuSite(V, C, NAF, SOURCES) {
       `Un <strong>registre</strong> daté de chaque revue, décision et action, prêt pour l'auditeur`,
       `Chaque fiche s'enregistre en PDF et s'imprime telle quelle`,
       `L'application s'installe sur le téléphone et s'ouvre même sans réseau`,
-      `Vos réglages restent sur votre appareil : rien n'est envoyé ailleurs`
+      `Vos réglages et votre registre sont gardés dans votre compte : vous les retrouvez sur tous vos appareils`
     ] }
   ];
 }
@@ -2537,7 +2544,8 @@ function encartsDeNous() {
       `Un interlocuteur unique, joignable directement ${parQuoi()}`
     ] },
     { titre: "Ce qu'on fait pour vous", lignes: [
-      ...Object.values(FORMULES).map((f) => `<strong>${esc(f.l)}</strong> (${esc(f.prixAn)} ou ${esc(f.prix)}) : ${esc(f.ouvre.replace(/^En plus : /, "en plus, ").replace(/\.$/, ""))}`),
+      ...Object.values(FORMULES).map((f) => { const o = f.ouvre.replace(/^En plus : /, "en plus, ").replace(/\.$/, "");
+        return `<strong>${esc(f.l)}</strong> (${esc(f.prixAn)} ou ${esc(f.prix)}) : ${esc(o.charAt(0).toLowerCase() + o.slice(1))}`; }),
       `L'année au prix de dix mois. Prix affichés sur la <a href="abonnement.html">page des tarifs</a>, sans devis`
     ] },
     { titre: `Les audits que ${esc(SITE.nom)} prépare`, lignes: [
@@ -2612,7 +2620,7 @@ function dessinVueConsultant() {
     ${pastille(150, 106 + k * 60, t, g, 168)}`).join("")}
   </svg>`;
   return `<figure class="dessin-cadre"><div class="dessin-large">${large}</div><div class="dessin-etroit">${etroit}</div>
-    <figcaption>Illustration de la vue consultant, qui ouvre avec les comptes clients.</figcaption></figure>`;
+    <figcaption>Illustration de la vue consultant.</figcaption></figure>`;
 }
 
 /* Le calcul de marge : servi tout fait pour 10 clients (lisible sans
@@ -2648,8 +2656,8 @@ function pageConsultants() {
       <h2>Tous vos clients, d'un coup d'œil</h2>
       <p class="lecture">Une seule vue pour vos clients : qui est à jour, qui a des revues en retard, qui a des
         textes à analyser. Vous savez où intervenir avant que votre client ne vous appelle.</p>
-      <p class="lecture" style="margin-top:var(--t3)">Et pour eux, c'est votre outil : votre logo, votre nom, vos
-        couleurs, jusque sur les exports PDF qu'ils montrent à l'auditeur.</p>
+      <p class="lecture" style="margin-top:var(--t3)">Et bientôt, pour eux, ce sera votre outil : votre logo, votre
+        nom, vos couleurs, jusque sur les exports PDF qu'ils montrent à l'auditeur (la marque blanche est en préparation).</p>
     </div>
     ${dessinVueConsultant()}
   </div>
@@ -2661,7 +2669,7 @@ function pageConsultants() {
     <ol class="etapes etapes-trois">
       ${[
         ["Vous équipez vos clients", "Pour chacun, vous ouvrez un espace : son métier, ses réponses à quelques questions. Sa veille se fait dessus, aussitôt."],
-        ["Ils voient votre marque", `Dès ${O.paliers.find((p) => p.blanche).de} clients, l'interface et les exports portent votre logo et votre nom. Vous facturez vos clients à votre prix.`],
+        ["Ils voient votre marque", `Dès ${O.paliers.find((p) => p.blanche).de} clients, l'interface et les exports porteront votre logo et votre nom (en préparation). Vous facturez vos clients à votre prix.`],
         ["Vous suivez tout", "Votre vue liste vos clients et ce qui est en retard chez chacun. Le registre de chaque client est prêt pour son audit."]
       ].map(([t, d], k) => `<li class="etape">
         <span class="etape-num">${k + 1}</span>
@@ -2679,8 +2687,8 @@ function pageConsultants() {
       <li class="raison" data-paraitre>
         <span class="numero" aria-hidden="true">1</span>
         <h3>Votre marque, pas la nôtre</h3>
-        <p>À partir de ${O.paliers.find((p) => p.blanche).de} clients, l'espace de vos clients et leurs exports PDF portent
-        votre logo, votre nom et vos couleurs. Pour eux, c'est votre outil.</p>
+        <p>À partir de ${O.paliers.find((p) => p.blanche).de} clients, l'espace de vos clients et leurs exports PDF porteront
+        votre logo, votre nom et vos couleurs : pour eux, ce sera votre outil. La marque blanche est en préparation.</p>
       </li>
       <li class="raison" data-paraitre>
         <span class="numero" aria-hidden="true">2</span>
@@ -2716,7 +2724,7 @@ function pageConsultants() {
         <ul class="formule-donne">
           <li>La formule ${esc(direct.l)} pour chaque client</li>
           <li>La vue consultant : tous vos clients, et leurs retards</li>
-          <li>${p.blanche ? "Votre marque : logo, nom, couleurs, exports PDF" : "Sans marque blanche (dès 6 clients)"}</li>
+          <li>${p.blanche ? "Votre marque : logo, nom, couleurs, exports PDF (en préparation)" : "Sans marque blanche (dès 6 clients)"}</li>
         </ul>
       </article>`).join("\n      ")}
     </div>
@@ -2755,7 +2763,7 @@ function pageConsultants() {
     <div class="deux-colonnes">
       <p class="reserve"><strong>Nous ne démarchons pas vos clients.</strong> Ils vous appartiennent : nous ne les
         contactons pas et ne leur vendons rien en direct. Nous nous y engageons par écrit, dans le contrat consultant.</p>
-      <p class="reserve"><strong>Leurs données ne sont qu'à eux et à vous.</strong> Chaque entreprise sera isolée dans la
+      <p class="reserve"><strong>Leurs données ne sont qu'à eux et à vous.</strong> Chaque entreprise est isolée dans la
         base : elle ne verra que ses données, et vous, que celles de vos clients.</p>
     </div>
     <p class="note-source" style="text-align:center;margin-top:var(--t4)">L'espace consultant est ouvert : votre cabinet,
@@ -2785,7 +2793,7 @@ function pageMetiers(V, NAF) {
   <div class="enveloppe">
     <div class="heros-texte"><h1>Tous les métiers couverts</h1></div>
     <p class="heros-sous">${NAF ? `Les ${NAF.codes.length} codes APE de la nomenclature officielle, rangés en
-      ${V.divisions.length} familles de métiers` : `Les ${V.divisions.length} familles de métiers de la nomenclature officielle`}. Cliquez la vôtre : vous voyez tout de suite ce qui s'applique chez vous.
+      ${V.divisions.length} familles de métiers` : `Les ${V.divisions.length} familles de métiers de la nomenclature officielle`}. Cliquez sur la vôtre : vous voyez tout de suite ce qui s'applique chez vous.
       Votre code APE (par exemple 43.21A) commence par le numéro de votre famille.</p>
   </div>
 </section>
@@ -3062,12 +3070,12 @@ function pageAccueil(V, D, METIERS, ECRANS, C = null, NAF = null, SOURCES = [], 
         ${esc(FORMULES.complet.l)} — un registre daté de chaque revue et de chaque décision, qui s'imprime tel quel.
         Le site ne certifie pas : la décision reste à l'auditeur.</p>`],
       ["Où sont mes données ?",
-       `<p><strong>Aujourd'hui, uniquement sur votre appareil.</strong></p>
-        <p>Votre métier, vos réponses, vos chiffres et vos cases « Fait » restent dans votre navigateur : rien
-        n'est envoyé à un serveur, et le site ne pose ni cookie publicitaire ni mesure d'audience.</p>
-        <p>La contrepartie, c'est qu'ils ne passent pas d'un appareil à l'autre : ce que vous cochez sur
-        l'ordinateur ne se retrouve pas sur le téléphone. De vrais comptes, partagés entre plusieurs personnes
-        et plusieurs appareils, supposent un serveur qui n'est pas encore en place.</p>`],
+       `<p><strong>Dans votre compte, dans une base de données hébergée en Irlande (Union européenne).</strong></p>
+        <p>Votre entreprise, vos réponses, vos cases « Fait » et votre registre sont gardés dans votre compte :
+        vous les retrouvez sur l'ordinateur comme sur le téléphone, et vos collègues invités aussi. Chaque
+        entreprise ne voit que ses propres données. Le site ne pose ni cookie publicitaire ni mesure d'audience.</p>
+        <p>La démonstration, elle, ne garde rien chez nous : ce que vous y faites reste dans votre navigateur.
+        Le détail est dans la <a href="confidentialite.html">politique de confidentialité</a>.</p>`],
       ["Faut-il installer quelque chose ?",
        `<p><strong>Non : tout marche dans le navigateur, sur ordinateur comme sur téléphone.</strong></p>
         <p>Si vous le souhaitez, vous pouvez l'ajouter à l'écran d'accueil :</p>
@@ -3191,8 +3199,8 @@ ${bandeAvis(AVIS)}
 
         <p class="note-source" id="sim-phrase">
           Pour <strong>${esc(divDefaut.l)}</strong> (NAF ${esc(divDefaut.c)}), il y a
-          <strong>${vuDefaut.base.length} sujets à suivre sur ${nbDomaines}</strong>. Le plus
-          fréquent est à revoir <strong>${esc(vuDefaut.groupes.length ? vuDefaut.groupes[0].f.l.toLowerCase() : "—")}</strong>.
+          <strong>${vuDefaut.base.length} sujets à suivre sur ${nbDomaines}</strong>. Le rythme le plus
+          soutenu : <strong>${esc(vuDefaut.groupes.length ? CHAQUE[vuDefaut.groupes[0].id] || vuDefaut.groupes[0].f.l.toLowerCase() : "—")}</strong>.
         </p>
         <p class="note-source">
           C'est un point de départ, pas un avis juridique sur votre situation. Les textes
@@ -3220,7 +3228,7 @@ ${bandeAvis(AVIS)}
       </div>
       <div class="rail-item" data-paraitre data-compte="${V.declencheurs.length}">
         <span class="chiffre">${V.declencheurs.length}</span>
-        <p class="legende">questions sur votre situation, qui ajoutent ou retirent un sujet</p>
+        <p class="legende">questions sur votre situation, qui ajoutent les sujets qui vont avec</p>
       </div>
       <div class="rail-item" data-paraitre>
         <span class="chiffre">ISO</span>
@@ -3272,7 +3280,7 @@ ${bandeAvis(AVIS)}
         <svg class="icone" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16M7 12h10m-7 7h4"/></svg>
         <div><h3>Le tri est fait en amont</h3>
         <p>Seuls les textes qui vous concernent arrivent, chacun avec ce qu'il change
-        chez vous. Ceux qu'on écarte sont notés, avec la raison.</p></div>
+        chez vous. Les autres restent à part, dans un volet replié : rien n'est caché.</p></div>
       </li>
       <li class="trait">
         <svg class="icone" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 12l2 2 4-5"/><rect x="4" y="3" width="16" height="18" rx="2"/></svg>
@@ -3325,7 +3333,7 @@ ${bandeAvis(AVIS)}
   <div class="enveloppe">
     <h2 class="titre-section">Votre métier y est</h2>
     <p class="intro titre-section">${NAF ? `${NAF.codes.length} codes APE, rangés en ${V.divisions.length} familles de métiers` : `${V.divisions.length} familles de métiers`}, chacune avec sa fiche.
-    En voici quelques-unes : cliquez la vôtre pour voir ce qui s'applique.</p>
+    En voici quelques-unes : cliquez sur la vôtre pour voir ce qui s'applique.</p>
     <div class="panneau-puces">
       <ul class="puces">
         ${VITRINE_SECTEURS.map((c) => {
@@ -3352,7 +3360,7 @@ ${bandeAvis(AVIS)}
         <h3>On trie avant de vous envoyer</h3>
         <p>Une veille qui remonte tout ne se lit plus. Seuls les textes qui vous
         concernent arrivent, chacun avec ce qu'il change chez vous et ce qu'il faut
-        faire. Les autres sont écartés, et on vous dit pourquoi.</p>
+        faire. Les autres restent à part, dans un volet replié, pour qui veut vérifier.</p>
       </li>
       <li class="raison" data-paraitre>
         <span class="numero" aria-hidden="true">2</span>
@@ -3429,9 +3437,9 @@ ${bandeAvis(AVIS)}
       </p>
       <p class="reserve">
         <strong>Et ce site, aujourd'hui.</strong>
-        L'application est ouverte en démonstration, avec un jeu d'essai : il n'y a pas encore
-        de comptes ni de paiement. La « connexion » pose un jeton dans votre navigateur et ne
-        protège rien. Tout est écrit sur les écrans concernés.
+        Les comptes sont en place : chaque entreprise a son espace, protégé par mot de passe. Le paiement
+        en ligne ne l'est pas encore : on s'abonne par courriel. La démonstration, elle, reste ouverte à
+        tous, avec une entreprise et des textes d'essai.
       </p>
     </div>
   </div>
@@ -3691,7 +3699,7 @@ function pageDecouvrir(V, ECRANS, C, NAF, SOURCES) {
 <section class="section section-tein">
   <div class="enveloppe">
     <h2 class="titre-section">Ce que vous trouvez dans l'application</h2>
-    <p class="intro titre-section">Six écrans. Cliquez une capture pour la voir en grand.</p>
+    <p class="intro titre-section">Six écrans. Cliquez sur une capture pour la voir en grand.</p>
     <ul class="pieces">
       ${pieces.map((p) => `<li class="piece">
         ${vignette(p)}
@@ -3815,7 +3823,7 @@ function pageAbonnement(V) {
         <span class="numero" aria-hidden="true">—</span>
         <h3>La certification</h3>
         <p>Les organismes certificateurs restent indépendants. On prépare l'audit,
-        on ne le délivre pas.</p>
+        on ne délivre pas le certificat.</p>
       </li>
       <li class="raison" data-paraitre>
         <span class="numero" aria-hidden="true">—</span>
@@ -4637,6 +4645,12 @@ async function main() {
   // n'empêche pas de construire : la page le dit, et montre le jeu d'essai.
   const cheminJO = resolve(RACINE, "contenu/veille-releve.json");
   const JO = existsSync(cheminJO) ? JSON.parse(await readFile(cheminJO, "utf8")) : null;
+  /* Le texte des sources, en clair : un relevé fait avant le nouveau nettoyage
+     (outils/tri.mjs) pouvait garder du HTML encodé. */
+  if (JO && JO.textes) {
+    JO.textes = JO.textes.map((t) => ({ ...t, titre: texteBrut(t.titre), corps: texteBrut(t.corps || ""),
+      nota: t.nota ? texteBrut(t.nota) : t.nota }));
+  }
 
   // Le texte des codes n'existe que si outils/codes.mjs a tourné. Son absence
   // n'empêche pas de construire : les fiches gardent leur lien et le disent.

@@ -27,31 +27,40 @@ Reste à faire :
 - **Le prix** : 49 / 42 / 35 € par client, marque blanche dès 6 clients —
   à confirmer ; la facturation au nombre de clients viendra avec Stripe.
 
-## 2. Perplexity pour mieux conseiller le client
+## 2. Perplexity pour mieux conseiller le client (plan prêt, mis de côté le 30 octobre)
 
 Idée d'Axel : Perplexity donne, à côté de chaque texte, des conseils et les
-sources qui l'entourent (INRS, ministère du Travail, service-public.fr…).
+sources officielles qui l'entourent. Vérifié dans la documentation de l'API
+(Sonar) : `search_domain_filter` limite la recherche à 20 sites ; chaque
+réponse rend ses sources (`search_results` : adresse, titre, date) et son
+coût (`usage.cost`). Ordre de grandeur : moins de 10 € par mois pour une
+quinzaine de nouveaux textes par jour — à confirmer sur la page des prix.
 
-Garde-fous retenus — sans eux, on ne le fait pas :
+Le plan retenu :
 
-- recherche **limitée aux sites officiels** (vérifier d'abord ce que permet
-  l'API de Perplexity : filtre de domaines) ;
-- **chaque lien cité est contrôlé** : site officiel, page qui existe ; sinon la
-  réponse n'est pas montrée ;
-- la réponse s'affiche **à côté** du texte officiel, jamais à sa place ;
-- « proposé par l'IA, à vérifier » et « ne constitue pas un conseil
-  juridique » (seuls les avocats donnent un conseil juridique) ;
-- rien n'entre au registre sans validation du client ;
-- la clé API côté serveur (Supabase), jamais dans le site ; API payante à
-  l'usage (prix à vérifier) ; une ligne dans la page de confidentialité.
+1. C'est le **robot** qui pose la question (GitHub Actions), une fois par
+   nouveau texte, et garde la réponse. Perplexity ne reçoit que le titre et le
+   lien du texte officiel : **aucune donnée de client**.
+2. Recherche limitée aux sites officiels (Légifrance, travail-emploi, INRS,
+   service-public, Urssaf, BOSS, CNIL, écologie, Anses, Ademe, EUR-Lex,
+   impôts, douane…).
+3. Chaque lien cité est contrôlé (site de la liste + page qui existe) ; une
+   réponse sans source valable est jetée ; tout autre lien est retiré.
+4. Affichage **sous** le texte officiel et « Ce que vous devez faire » :
+   « Proposé par l'IA (Perplexity), à vérifier », les sources, « Ne constitue
+   pas un conseil juridique ». Rien n'entre au registre.
+5. Plafond de questions par passage, coût réel au journal ; une ligne dans la
+   page de confidentialité.
 
-À placer maintenant que le lot 7 est fait : Clément pourra relire ce que l'IA propose à ses
-clients.
+**À trancher** : (a) affiché tout de suite avec « à vérifier », ou (b) relu et
+validé par Clément depuis l'Administration d'abord (recommandé au début).
 
-Aussi évoqué : Perplexity comme « deuxième paire d'yeux » du robot (il
-signale, le robot ne garde que ce qu'il retrouve sur Légifrance / le JO). Et,
-plus sûr encore pour une deuxième source du Journal officiel : **l'API
-officielle de Légifrance (PISTE)**, gratuite, sur inscription.
+**Côté Axel** : compte API Perplexity, un peu de crédit, une clé, et le secret
+GitHub `PERPLEXITY_API_KEY` (jamais dans le chat).
+
+Écarté : Perplexity pour trier les textes (invérifiable — l'API officielle de
+Légifrance, PISTE, vaut mieux) ; des conseils calculés pour chaque client (un
+serveur de plus, et des données du client envoyées).
 
 ## 3. Le tri des textes par sujet (fait en partie le 29 octobre)
 

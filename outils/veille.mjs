@@ -44,7 +44,7 @@ import { fileURLToPath } from "node:url";
 import { execFile } from "node:child_process";
 import { promisify } from "node:util";
 import { controle } from "./controles.mjs";
-import { rattache, dateDuTitre, ficheAncienne } from "./tri.mjs";
+import { rattache, dateDuTitre, ficheAncienne, texteBrut } from "./tri.mjs";
 
 const execFileP = promisify(execFile);
 const RACINE = resolve(dirname(fileURLToPath(import.meta.url)), "..");
@@ -123,18 +123,7 @@ const entre = (x, balise) => {
   const m = x.match(new RegExp(`<${balise}[^>]*>([\\s\\S]*?)</${balise}>`, "i"));
   return m ? m[1] : "";
 };
-const texteBrut = (x) => String(x)
-  .replace(/<!\[CDATA\[([\s\S]*?)\]\]>/g, "$1")
-  .replace(/<br\s*\/?>/gi, "\n")
-  .replace(/<\/p>/gi, "\n\n")
-  .replace(/<[^>]+>/g, " ")
-  .replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&quot;/g, '"')
-  .replace(/&#(\d+);/g, (_, n) => String.fromCharCode(Number(n)))
-  .replace(/&(?:nbsp|#160);/g, " ")
-  .replace(/&amp;/g, "&")
-  .replace(/[ \t]+/g, " ")
-  .replace(/\n{3,}/g, "\n\n")
-  .trim();
+
 
 function dateIso(s) {
   if (!s) return "";

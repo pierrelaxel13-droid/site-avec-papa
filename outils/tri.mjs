@@ -121,3 +121,35 @@ export function dateDuTitre(titre) {
   if (a < 1800 || a > 2100) return "";
   return `${a}-${String(mois + 1).padStart(2, "0")}-${String(Number(m[1])).padStart(2, "0")}`;
 }
+
+/* --- Le texte d'une source, en clair ----------------------------------------
+   Des flux envoient leur HTML encodé, parfois deux fois (« &amp;lt;p&amp;gt; »,
+   « &amp;nbsp; ») : on décode d'abord, on retire les balises ensuite, puis on
+   décode ce qui reste. Avant, des pages montraient « <p style=…> » ou
+   « &laquo; loi &raquo; » au lieu du texte. */
+const ENTITES = { nbsp: " ", amp: "&", lt: "<", gt: ">", quot: '"', apos: "'", laquo: "«", raquo: "»",
+  rsquo: "’", lsquo: "‘", rdquo: "”", ldquo: "“", hellip: "…", ndash: "–", mdash: "—", euro: "€",
+  deg: "°", oelig: "œ", OElig: "Œ", aelig: "æ", eacute: "é", egrave: "è", ecirc: "ê", euml: "ë",
+  agrave: "à", acirc: "â", ccedil: "ç", icirc: "î", iuml: "ï", ocirc: "ô", ugrave: "ù", ucirc: "û",
+  uuml: "ü", Eacute: "É", Egrave: "È", Agrave: "À", Ccedil: "Ç", sect: "§", middot: "·", shy: "" };
+const decode = (x) => x.replace(/&(#x[0-9a-f]+|#\d+|[a-z]+);/gi, (tout, e) =>
+  e[0] === "#" ? String.fromCodePoint(e[1] === "x" || e[1] === "X" ? parseInt(e.slice(2), 16) : Number(e.slice(1)))
+    : (e in ENTITES ? ENTITES[e] : tout));
+
+export function texteBrut(x) {
+  let t = String(x).replace(/<!\[CDATA\[([\s\S]*?)\]\]>/g, "$1");
+  for (let i = 0; i < 3 && /&(#x?[0-9a-f]+|[a-z]+);/i.test(t); i++) {
+    const avant = t; t = decode(t); if (t === avant) break;
+  }
+  return t
+    .replace(/<(script|style)\b[\s\S]*?<\/\1>/gi, " ")
+    .replace(/<br\s*\/?>/gi, "\n")
+    .replace(/<\/(p|div|section|li|h[1-6]|tr)>/gi, "\n\n")
+    .replace(/<[^>]+>/g, " ")
+    .replace(/\u00a0/g, " ")
+    .replace(/[ \t]+/g, " ")
+    .replace(/ *\n */g, "\n")
+    .replace(/\n{3,}/g, "\n\n")
+    .trim();
+}
+
