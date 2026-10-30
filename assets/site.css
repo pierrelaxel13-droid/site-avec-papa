@@ -1334,6 +1334,9 @@ html, body, * { scrollbar-width: none; }
   font-size: .9rem; color: var(--encre-tenue);
 }
 .pied-legal { display: flex; flex-wrap: wrap; gap: .4rem 1.4rem; }
+/* Le pied court (page de connexion) : les liens légaux, rien d'autre. */
+.pied-court { padding-block: var(--t4); }
+.pied-court .pied-bas { margin-top: 0; padding-top: 0; border-top: 0; }
 .pied-legal a { text-decoration: underline; text-underline-offset: .2em; }
 
 /* ==========================================================================

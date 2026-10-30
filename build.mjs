@@ -336,7 +336,8 @@ const POLITIQUE = "default-src 'self'; script-src 'self'; style-src 'self' 'unsa
   "base-uri 'none'; form-action 'self'" + (/^https:/.test(SUPABASE) || !SUPABASE ? "; upgrade-insecure-requests" : "");
 
 function page({ titre, description, racine = "", zone = "public", actif = "", corps,
-                attrsBody = "", verrou = false, donneesPlan = false, formule = "", scripts = [], installation = true }) {
+                attrsBody = "", verrou = false, donneesPlan = false, formule = "", scripts = [], installation = true,
+                piedCourt = false }) {
   /* Les feuilles de style et les scripts portent la version de l'habillage :
      une page nouvelle ne peut plus être servie avec la feuille de style de la
      veille, gardée par le navigateur (une heure) ou par le service worker. */
@@ -462,8 +463,9 @@ ${corps}
 ${zone === "public" && installation ? bandeInstallation(a) : ""}
 </main>
 
-<footer class="pied">
+<footer class="pied${piedCourt ? " pied-court" : ""}">
   <div class="enveloppe">
+${piedCourt ? "" : `
     <div class="pied-grille">
       <div>
         <span class="marque">${motMarque()}</span>
@@ -516,6 +518,7 @@ ${zone === "public" && installation ? bandeInstallation(a) : ""}
         </ul>
       </div>
     </div>
+`}
     <div class="pied-bas">
       <p class="pied-legal">
         <span>© ${new Date().getFullYear()} ${esc(SITE.nom)} — tous droits réservés</span>
@@ -524,12 +527,12 @@ ${zone === "public" && installation ? bandeInstallation(a) : ""}
         <a href="${a("cgv.html")}">CGV</a>
         <a href="mailto:${esc(SITE.courriel)}">Contact</a>
       </p>
-      <p>
+      ${piedCourt ? "" : `<p>
         ${esc(SITE.nom)} est édité par ${esc(SITE.societe)}.
         Aucun cookie, aucune mesure d'audience. Seuls les comptes et l'espace abonné parlent à notre base
         de données (Supabase).
         Le service fournit un cadre méthodologique, pas un conseil juridique.
-      </p>
+      </p>`}
     </div>
   </div>
 </footer>
@@ -3904,7 +3907,8 @@ function pageConnexion() {
   return page({
     titre: `Connexion | ${SITE.nom}`,
     description: `Connexion à ${SITE.nom}, la veille réglementaire des PME.`,
-    zone: "public", actif: "connexion", corps, scripts: ["assets/compte.js"], installation: false
+    zone: "public", actif: "connexion", corps, scripts: ["assets/compte.js"], installation: false,
+    piedCourt: true   // la connexion, et rien d'autre : seuls les liens légaux restent en bas
   });
 }
 
