@@ -2717,7 +2717,6 @@ a.carte-vide .carte-aller { display: none; }
 }
 
 /* --- 30. Accueil : prix affichés, normes, questions ------------------------ */
-.gage-prix { margin-top: .4rem; text-align: center; }
 .normes { list-style: none; margin: var(--t5) 0 0; padding: 0; display: grid; gap: var(--t4); grid-template-columns: minmax(0, 1fr); }
 @media (min-width: 46rem) { .normes { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (min-width: 80rem) { .normes { grid-template-columns: repeat(4, minmax(0, 1fr)); } }

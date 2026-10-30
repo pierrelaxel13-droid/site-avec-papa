@@ -3113,13 +3113,6 @@ function pageAccueil(V, D, METIERS, ECRANS, C = null, NAF = null, SOURCES = [], 
       <span>${NAF ? `${NAF.codes.length} codes APE couverts` : `${V.divisions.length} familles de métiers couvertes`}</span>
       <span class="doux">— rien à créer, rien à payer pour regarder</span>
     </p>
-    <!-- Presque tous les services de veille vendent « sur devis ». Le nôtre
-         affiche ses prix : on le dit dès le haut, chiffres tirés de FORMULES. -->
-    <p class="gage gage-prix">
-      <span>Prix affichés, sans devis :</span>
-      <span class="doux">${Object.values(FORMULES).map((f) => esc(f.montant)).join(", ").replace(/, ([^,]+)$/, " ou $1")} par mois,
-        ou à l'année avec 2 mois offerts</span>
-    </p>
     ${blocCollecte(JO)}
 
     <div class="heros-visuel">
