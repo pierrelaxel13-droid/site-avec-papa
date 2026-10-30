@@ -50,7 +50,7 @@
    "nom": "URSSAF — actualités employeurs",
    "entrees": 0,
    "retenus": 0,
-   "souci": "injoignable (fetch failed : UND_ERR_SOCKET) — l'hôte refuse le robot, ou le réseau d'ici le bloque"
+   "souci": "injoignable (fetch failed : ECONNRESET) — l'hôte refuse le robot, ou le réseau d'ici le bloque"
   },
   {
    "id": "bofip",
@@ -154,7 +154,7 @@
    "id": "has",
    "nom": "Haute Autorité de santé",
    "entrees": 50,
-   "retenus": 0,
+   "retenus": 1,
    "souci": null
   },
   {
@@ -261,6 +261,30 @@
    "dateTexte": "",
    "vuLe": "2026-10-30",
    "vuA": "2026-10-30T01:02:55Z"
+  },
+  {
+   "source": "has",
+   "sourceNom": "Haute Autorité de santé",
+   "genre": "actualite",
+   "id": "https://www.has-sante.fr/jcms/p_4586850/fr/chef-fe-du-service-scientifique-service-d-evaluation-des-medicaments-sem-cdi",
+   "titre": "Chef(fe) du service scientifique - Service d’Evaluation des Médicaments (SEM) - CDI",
+   "nature": "Publication officielle",
+   "date": "2026-10-30",
+   "corps": "La HAS recherche un Chef(fe) du service scientifique (H-F) dans le cadre d'un CDI.",
+   "lien": "https://www.has-sante.fr/jcms/p_4586850/fr/chef-fe-du-service-scientifique-service-d-evaluation-des-medicaments-sem-cdi",
+   "domaines": [
+    {
+     "id": "pharma",
+     "nom": "Produits de santé et dispositifs médicaux",
+     "mots": [
+      "medicaments"
+     ]
+    }
+   ],
+   "morceaux": 1,
+   "dateTexte": "",
+   "vuLe": "2026-10-30",
+   "vuA": "2026-10-30T19:25:59Z"
   },
   {
    "source": "travail",
