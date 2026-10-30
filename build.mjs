@@ -337,7 +337,9 @@ const POLITIQUE = "default-src 'self'; script-src 'self'; style-src 'self' 'unsa
 
 function page({ titre, description, racine = "", zone = "public", actif = "", corps,
                 attrsBody = "", verrou = false, donneesPlan = false, formule = "", scripts = [], installation = true,
-                piedCourt = false }) {
+                piedCourt = zone === "app" }) {
+  /* piedCourt : là où le client travaille (l'application, la démo, ses pages
+     de compte, la connexion), le bas de page ne garde que les liens légaux. */
   /* Les feuilles de style et les scripts portent la version de l'habillage :
      une page nouvelle ne peut plus être servie avec la feuille de style de la
      veille, gardée par le navigateur (une heure) ou par le service worker. */
@@ -3966,7 +3968,7 @@ function pageCreer() {
   </div>
 </section>`;
   return page({ titre: `Créer un compte | ${SITE.nom}`, description: `Créer votre compte ${SITE.nom}.`,
-    racine: "../", zone: "public", corps, scripts: ["assets/compte.js"], installation: false });
+    racine: "../", zone: "public", corps, scripts: ["assets/compte.js"], installation: false, piedCourt: true });
 }
 
 /* Mot de passe oublié : on reçoit un lien par courriel. */
@@ -3998,7 +4000,7 @@ function pageOubli() {
   </div>
 </section>`;
   return page({ titre: `Mot de passe oublié | ${SITE.nom}`, description: "Recevoir un lien pour choisir un nouveau mot de passe.",
-    racine: "../", zone: "public", corps, scripts: ["assets/compte.js"], installation: false });
+    racine: "../", zone: "public", corps, scripts: ["assets/compte.js"], installation: false, piedCourt: true });
 }
 
 /* « Mon compte ». Tout est caché au départ : compte.js montre ce qui
@@ -4157,7 +4159,7 @@ function pageMonCompte() {
   </div>
 </section>`;
   return page({ titre: `Mon compte | ${SITE.nom}`, description: `Votre compte ${SITE.nom}.`,
-    racine: "../", zone: "public", corps, scripts: ["assets/compte.js"], installation: false });
+    racine: "../", zone: "public", corps, scripts: ["assets/compte.js"], installation: false, piedCourt: true });
 }
 
 /* Le lien d'invitation mène ici (compte/invitation.html#jeton=…). Le jeton
@@ -4185,7 +4187,7 @@ function pageInvitation() {
   </div>
 </section>`;
   return page({ titre: `Invitation | ${SITE.nom}`, description: `Rejoindre une entreprise sur ${SITE.nom}.`,
-    racine: "../", zone: "public", corps, scripts: ["assets/compte.js"], installation: false });
+    racine: "../", zone: "public", corps, scripts: ["assets/compte.js"], installation: false, piedCourt: true });
 }
 
 /* Mon cabinet (compte/cabinet.html) : la page du consultant. Ses clients,
@@ -4247,7 +4249,7 @@ function pageCabinet() {
   </div>
 </section>`;
   return page({ titre: `Mon cabinet | ${SITE.nom}`, description: `Votre cabinet de conseil sur ${SITE.nom}.`,
-    racine: "../", zone: "public", corps, scripts: ["assets/compte.js"], installation: false });
+    racine: "../", zone: "public", corps, scripts: ["assets/compte.js"], installation: false, piedCourt: true });
 }
 
 /* La démonstration consultant (demo/cabinet.html) : la page « Mon cabinet »
@@ -4325,7 +4327,7 @@ function pageCabinetDemo(D) {
 </section>`;
   return page({ titre: `Démonstration consultant | ${SITE.nom}`,
     description: "La page d'un cabinet de conseil sur Vigie : ses clients, où ils en sont, leur espace. Démonstration avec des données fictives.",
-    racine: "../", zone: "public", corps, scripts: ["assets/session.js"], installation: false });
+    racine: "../", zone: "public", corps, scripts: ["assets/session.js"], installation: false, piedCourt: true });
 }
 
 /* L'administration du service, pour l'administrateur seul : la base refuse
@@ -4367,7 +4369,7 @@ function pageAdmin() {
   </div>
 </section>`;
   return page({ titre: `Administration | ${SITE.nom}`, description: "Administration du service.",
-    racine: "../", zone: "public", corps, scripts: ["assets/compte.js"], installation: false });
+    racine: "../", zone: "public", corps, scripts: ["assets/compte.js"], installation: false, piedCourt: true });
 }
 
 /* --- Les avis : de quoi alimenter la cloche ------------------------------- */
