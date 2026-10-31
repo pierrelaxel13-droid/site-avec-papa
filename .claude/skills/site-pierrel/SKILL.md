@@ -305,7 +305,11 @@ qu'il n'y a pas de client.
   relève, clé `PERPLEXITY_API_KEY`) remplit `contenu/conseils.json` ; build.mjs
   les montre par `blocConseil()` dans la fiche du texte, sous le texte officiel.
   Ne jamais écrire un conseil à la main dans ce fichier, ni en inventer pour
-  essayer : les tests (`outils/conseils.test.mjs`) simulent l'API.
+  essayer : les tests (`outils/conseils.test.mjs`) simulent l'API. API utilisée :
+  l'Agent API (`POST https://api.perplexity.ai/v1/agent`) — pas l'ancienne
+  Sonar (`chat/completions`). Le réseau de la session n'atteint pas Perplexity :
+  essai réel par l'action « Perplexity » (étape `essai`), qui n'affiche que le
+  statut et la forme de la réponse.
 - **Les nouveaux textes** (assets/avis.js) : nouveau = dans le plan, vu par le
   robot (`vuA`, posé par outils/veille.mjs à la première vue) après
   `lus.depuis`, et pas encore ouvert (`lus.ids`). « pco-lus » est gardé par

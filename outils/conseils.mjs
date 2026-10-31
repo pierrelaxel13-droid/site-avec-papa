@@ -39,7 +39,13 @@ export const officiel = (url) => {
   } catch { return false; }
 };
 
-const MODELE = "sonar";
+/* L'Agent API de Perplexity (docs.perplexity.ai/api-reference/agent-post).
+   « effort: low » : un modèle et des réglages de recherche choisis par
+   Perplexity, le niveau le moins cher qui cherche sur le web. La recherche
+   web est l'outil web_search, en « fast » (1 $ les 1 000 recherches), limitée
+   aux sites officiels. */
+const API = "https://api.perplexity.ai/v1/agent";
+const EFFORT = "low";
 const CONSIGNE = [
   "Tu aides une petite entreprise française à appliquer un texte réglementaire officiel.",
   "Réponds en français courant, en 3 à 5 points courts : ce que l'entreprise doit faire concrètement, et pour qui le texte compte.",
@@ -57,34 +63,70 @@ export function question(t) {
     ". Que doit faire concrètement une PME concernée ?";
 }
 
-/* Une question à Perplexity. Rend { ok, texte, sources: [{titre, url}], cout } ou { ok: false, erreur }. */
-export async function demander(t, { cle, fetch: f = fetch } = {}) {
-  const r = await f("https://api.perplexity.ai/chat/completions", {
-    method: "POST",
-    headers: { Authorization: `Bearer ${cle}`, "Content-Type": "application/json" },
-    body: JSON.stringify({
-      model: MODELE,
-      temperature: 0.2,
-      max_tokens: 500,
-      search_domain_filter: SITES_OFFICIELS,
-      messages: [{ role: "system", content: CONSIGNE }, { role: "user", content: question(t) }]
-    }),
-    signal: AbortSignal.timeout(60000)
-  });
-  const j = await r.json().catch(() => ({}));
-  if (!r.ok) return { ok: false, erreur: `HTTP ${r.status} ${String((j.error && j.error.message) || "").slice(0, 160)}` };
-  const texte = (((j.choices || [])[0] || {}).message || {}).content || "";
-  const sources = (j.search_results && j.search_results.length
-    ? j.search_results.map((s) => ({ titre: s.title || "", url: s.url || "" }))
-    : (j.citations || []).map((u) => ({ titre: "", url: u })));
+export function corps(t) {
+  return {
+    effort: EFFORT,
+    instructions: CONSIGNE,
+    input: question(t),
+    language_preference: "fr",
+    max_output_tokens: 2000,
+    tools: [{ type: "web_search", search_type: "fast", max_results: 10,
+              filters: { search_domain_filter: SITES_OFFICIELS } }]
+  };
+}
+
+/* La forme d'une réponse, sans son contenu : pour l'essai et les erreurs. */
+export function forme(j) {
+  return { cles: Object.keys(j || {}).sort(), statut: j && j.status,
+           sorties: ((j && j.output) || []).map((o) => o.type) };
+}
+
+const pause = (ms) => new Promise((r) => setTimeout(r, ms));
+
+/* Une question à Perplexity. Rend { ok, texte, sources: [{titre, url}], cout, modele }
+   ou { ok: false, erreur }. Un 429 est réessayé une fois, après Retry-After (30 s au plus). */
+export async function demander(t, { cle, fetch: f = fetch, attendre = pause } = {}) {
+  let r, j;
+  for (let essai = 0; essai < 2; essai++) {
+    r = await f(API, {
+      method: "POST",
+      headers: { Authorization: `Bearer ${cle}`, "Content-Type": "application/json" },
+      body: JSON.stringify(corps(t)),
+      signal: AbortSignal.timeout(120000)
+    });
+    j = await r.json().catch(() => ({}));
+    if (r.status !== 429 || essai) break;
+    const apres = Number((r.headers && r.headers.get && r.headers.get("retry-after")) || 2);
+    await attendre(Math.min(30, Math.max(1, apres || 2)) * 1000);
+  }
+  if (!r.ok) {
+    const e = j.error || {};
+    // Le message vient de Perplexity : la clé n'y est jamais redite, même par erreur.
+    const message = cle ? String(e.message || "").split(cle).join("***") : String(e.message || "");
+    return { ok: false, statut: r.status, erreur: `HTTP ${r.status}${e.type ? " " + e.type : ""} ${message.slice(0, 160)}`.trim() };
+  }
+  if (j.status && j.status !== "completed") {
+    return { ok: false, statut: r.status, forme: forme(j), erreur: `réponse ${j.status}${j.error && j.error.message ? " : " + String(j.error.message).slice(0, 160) : ""}` };
+  }
+  const sorties = j.output || [];
+  const morceaux = sorties.filter((o) => o.type === "message")
+    .flatMap((o) => o.content || []).filter((c) => c.type === "output_text");
+  const texte = morceaux.map((c) => c.text || "").join("\n\n");
+  // Les sources : les résultats de recherche, et les liens cités dans le texte.
+  const sources = [
+    ...sorties.filter((o) => o.type === "search_results").flatMap((o) => o.results || [])
+      .map((s) => ({ titre: s.title || "", url: s.url || "" })),
+    ...morceaux.flatMap((c) => c.annotations || []).filter((a) => a && a.url)
+      .map((a) => ({ titre: a.title || "", url: a.url }))
+  ];
   const cout = j.usage && j.usage.cost && typeof j.usage.cost.total_cost === "number" ? j.usage.cost.total_cost : null;
-  return { ok: true, texte, sources, cout };
+  return { ok: true, statut: r.status, forme: forme(j), texte, sources, cout, modele: j.effort || j.model || EFFORT };
 }
 
 /* Le texte de la réponse, en clair : sans liens, sans renvois [1], sans mise en forme. */
 export function nettoyer(texte) {
   return String(texte || "")
-    .replace(/\[(\d+(?:,\s*\d+)*)\]/g, "")             // les renvois aux sources
+    .replace(/\[(?:[a-z_]+:)?\d+(?:\s*,\s*(?:[a-z_]+:)?\d+)*\]/gi, "") // les renvois aux sources : [1], [web:4]
     .replace(/\[([^\]]+)\]\((?:https?:)?[^)]*\)/g, "$1") // [mot](lien) → mot
     .replace(/https?:\/\/\S+/g, "")                     // tout lien écrit dans le texte
     .replace(/\*\*|__|`|^#+\s*/gm, "")                  // la mise en forme
@@ -138,7 +180,7 @@ export async function traiter(releve, conseils, { cle, plafond = 10, maintenant 
     if (!rep.ok) { bilan.erreurs++; bilan.derniereErreur = rep.erreur; continue; }
     if (rep.cout) bilan.cout += rep.cout;
     const c = await controle(rep);
-    if (c.garde) { conseils[t.id] = { le: maintenant, modele: MODELE, ...c.garde }; bilan.gardes++; }
+    if (c.garde) { conseils[t.id] = { le: maintenant, modele: rep.modele || EFFORT, ...c.garde }; bilan.gardes++; }
     else { conseils[t.id] = { le: maintenant, ecarte: c.ecarte }; bilan.ecartes++; }
   }
   bilan.cout = Math.round(bilan.cout * 10000) / 10000;
@@ -146,7 +188,34 @@ export async function traiter(releve, conseils, { cle, plafond = 10, maintenant 
 }
 
 /* --- Lancé par la relève -------------------------------------------------- */
-if (process.argv[1] === fileURLToPath(import.meta.url)) {
+if (process.argv[1] === fileURLToPath(import.meta.url) && process.argv.includes("--essai")) {
+  /* L'essai : UNE vraie question, sur un texte officiel public. N'affiche que
+     le statut HTTP, la forme de la réponse et des comptes — jamais la clé,
+     jamais le texte. Rien n'est écrit. */
+  const cle = process.env.PERPLEXITY_API_KEY || "";
+  if (!cle) { console.log("::error::PERPLEXITY_API_KEY absente : créez une clé sur https://console.perplexity.ai, puis le secret du dépôt."); process.exit(1); }
+  // Le premier texte du relevé ; à défaut, un texte connu (lien pris dans contenu/codes.json).
+  const releve = existsSync("contenu/veille-releve.json") ? JSON.parse(readFileSync("contenu/veille-releve.json", "utf8")) : {};
+  const t = (releve.textes || []).find((x) => x.titre && x.lien) ||
+    { id: "essai", titre: "Décret n° 2008-244 du 7 mars 2008 relatif au code du travail (partie réglementaire)",
+      dateTexte: "2008-03-07", lien: "https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000018442415" };
+  const rep = await demander(t, { cle });
+  console.log("statut HTTP :", rep.statut);
+  if (rep.forme) console.log("forme :", JSON.stringify(rep.forme));
+  if (!rep.ok) {
+    console.log("erreur :", rep.erreur);
+    if (rep.statut === 401) console.log("::error::Clé refusée (401) : vérifiez le secret PERPLEXITY_API_KEY, ou refaites une clé sur https://console.perplexity.ai.");
+    if (rep.statut === 429) console.log("::warning::Trop de demandes (429) : réessayer plus tard.");
+    process.exit(1);
+  }
+  const c = await controler(rep);
+  console.log(`modèle : ${rep.modele} ; texte : ${rep.texte.length} caractères ; sources proposées : ${rep.sources.length}, ` +
+    `officielles : ${rep.sources.filter((s) => officiel(s.url)).length} ; coût : ${rep.cout} $`);
+  console.log("contrôle :", c.garde ? `gardée (${c.garde.sources.length} sources valables)` : `écartée — ${c.ecarte}`);
+  process.exit(0);
+}
+
+if (process.argv[1] === fileURLToPath(import.meta.url) && !process.argv.includes("--essai")) {
   const RELEVE = "contenu/veille-releve.json", CONSEILS = "contenu/conseils.json";
   const cle = process.env.PERPLEXITY_API_KEY || "";
   const plafond = Number(process.env.CONSEILS_PLAFOND || 10);

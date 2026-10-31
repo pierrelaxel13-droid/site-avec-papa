@@ -27,25 +27,25 @@ Reste à faire :
 - **Le prix** : 49 / 42 / 35 € par client, marque blanche dès 6 clients —
   à confirmer ; la facturation au nombre de clients viendra avec Stripe.
 
-## 2. Perplexity : construit le 31 octobre, attend la clé
+## 2. Perplexity : construit le 31 octobre, sur l'Agent API
 
 Fait (outils/conseils.mjs, testé par outils/conseils.test.mjs, lancé par la
-relève) : une question par nouveau texte, recherche limitée à 20 sites
-officiels, chaque source contrôlée (site de la liste + page qui répond),
-réponse jetée sans source valable, liens retirés du texte, 10 questions au
-plus par passage, coût noté au journal du robot. Affiché **tout de suite**
-(choix d'Axel), sous le texte officiel : « Proposé par l'IA, à vérifier »,
-ses sources, « Ne constitue pas un conseil juridique ». Une ligne dans la
-politique de confidentialité.
+relève) : une question par nouveau texte à l'**Agent API** de Perplexity
+(`POST https://api.perplexity.ai/v1/agent`, `effort: "low"`, outil
+`web_search` en « fast », limité à 20 sites officiels). Chaque source est
+contrôlée (site de la liste + page qui répond) ; réponse jetée sans source
+valable ; liens et renvois [web:1] retirés du texte ; 10 questions au plus
+par passage ; un 429 attend `Retry-After` puis réessaie une fois ; coût noté
+au journal du robot. Affiché **tout de suite** (choix d'Axel), sous le texte
+officiel : « Proposé par l'IA, à vérifier », ses sources, « Ne constitue pas
+un conseil juridique ». Une ligne dans la politique de confidentialité.
 
-**Côté Axel** : compte API sur perplexity.ai, un peu de crédit, une clé, et
-le secret GitHub `PERPLEXITY_API_KEY` (jamais dans le chat). Puis relancer
-l'action « Relève » : son résumé dit combien de conseils ont été gardés,
-écartés, et ce qu'ils ont coûté.
+La clé est le secret GitHub `PERPLEXITY_API_KEY` (mis par Axel le 31
+octobre ; jamais dans le code ni dans le chat). Pour essayer : action
+« Perplexity », étape `essai` — elle n'affiche que le statut et la forme de
+la réponse. Si la clé fuit un jour : la refaire sur console.perplexity.ai.
 
-À surveiller au premier vrai passage : les noms de paramètres de l'API
-(vérifiés dans leur documentation, mais jamais essayés en vrai) ; la
-qualité des conseils — Clément devrait en lire quelques-uns.
+À surveiller : la qualité des conseils — Clément devrait en lire quelques-uns.
 
 ## 3. Le tri des textes par sujet (fait en partie le 29 octobre)
 
