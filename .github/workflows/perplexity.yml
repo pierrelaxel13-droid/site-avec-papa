@@ -1,0 +1,54 @@
+# ==========================================================================
+# Perplexity : lire sa documentation, et l'essayer — à la demande
+# --------------------------------------------------------------------------
+# La session de travail n'atteint ni docs.perplexity.ai ni api.perplexity.ai ;
+# les machines de GitHub, si. Deux étapes, au choix :
+#   documentation  télécharge l'index (llms.txt) et les pages de l'Agent API,
+#                  et les affiche dans le journal (elles sont publiques) ;
+#   essai          une requête minimale avec la clé (secret PERPLEXITY_API_KEY) :
+#                  n'affiche que le statut HTTP et la FORME de la réponse — jamais
+#                  la clé, jamais le texte complet.
+# ==========================================================================
+name: Perplexity
+
+on:
+  workflow_dispatch:
+    inputs:
+      etape:
+        description: "documentation ou essai"
+        required: true
+        default: documentation
+
+permissions:
+  contents: read
+
+jobs:
+  perplexity:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+
+      - name: La documentation de l'Agent API
+        if: inputs.etape == 'documentation'
+        run: |
+          base=https://docs.perplexity.ai
+          echo "################ llms.txt"
+          curl -sS --max-time 30 "$base/llms.txt" | grep -iE "agent|preset|tool|output|sdk|pricing|rate|search" | head -80
+          for p in docs/agent-api/quickstart docs/agent-api/presets docs/agent-api/tools/overview \
+                   docs/agent-api/tools/web-search docs/agent-api/output-control api-reference/agent-post \
+                   docs/agent-api/models docs/getting-started/pricing docs/admin/rate-limits-usage-tiers; do
+            echo; echo "################ $p"
+            # Les pages existent souvent en Markdown brut ; sinon, la page HTML.
+            if ! curl -sSf --max-time 30 "$base/$p.md" -o page.txt; then
+              curl -sS --max-time 30 "$base/$p" | sed -e 's/<[^>]*>/ /g' | tr -s ' \n' > page.txt || true
+            fi
+            head -c 14000 page.txt
+          done
+
+      - name: Un essai réel, minimal
+        if: inputs.etape == 'essai'
+        env:
+          PERPLEXITY_API_KEY: ${{ secrets.PERPLEXITY_API_KEY }}
+        run: |
+          test -n "$PERPLEXITY_API_KEY" || { echo "::error::Le secret PERPLEXITY_API_KEY est absent."; exit 1; }
+          node outils/conseils.mjs --essai
