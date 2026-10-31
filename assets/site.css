@@ -1597,6 +1597,11 @@ details[open] > summary .chevron { transform: rotate(180deg); }
 .encart-faire .rangee { margin-top: var(--t4); }
 /* La source : en retrait, c'est une référence, pas une consigne. */
 .encart-source { background: var(--papier-pale); }
+/* Le conseil de l'IA : à part, et qui le dit — jamais confondu avec le texte officiel. */
+.encart-ia { border-style: dashed; }
+.encart-ia .texte-ia p { margin: 0 0 var(--t2); }
+.sources-ia { margin: var(--t2) 0 var(--t3); padding-left: 1.2rem; display: grid; gap: .3rem; font-size: .92rem; }
+.sources-ia a { overflow-wrap: anywhere; }
 .encart-source p { margin: 0; font-size: .92rem; color: var(--encre-douce); }
 /* Dans son encart, le texte officiel n'a plus besoin de sa propre boîte. */
 .encart .texte-officiel {

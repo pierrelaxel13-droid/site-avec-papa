@@ -67,6 +67,7 @@ jobs:
           echo "DEBUT=$(date -u +%Y-%m-%dT%H:%M:%SZ)" >> "$GITHUB_ENV"
           node outils/controles.test.mjs
           node outils/tri.test.mjs
+          node outils/conseils.test.mjs
 
       # La Haute Autorité de santé envoie son certificat sans le certificat
       # intermédiaire qui le relie à une autorité reconnue. Un navigateur va le
@@ -125,6 +126,15 @@ jobs:
         run: |
           node outils/veille.mjs --jours 14 2>&1 | tee releve-flux.log || \
             echo "::warning::Relève des flux : $(tail -c 500 releve-flux.log | tr '\n' ' ')"
+
+      # Les conseils de l'IA (Perplexity), une fois par nouveau texte, avec ses
+      # garde-fous (outils/conseils.mjs). Sans le secret PERPLEXITY_API_KEY, rien
+      # n'est demandé ; une erreur ne doit jamais arrêter la relève.
+      - name: Les conseils de l'IA
+        env:
+          PERPLEXITY_API_KEY: ${{ secrets.PERPLEXITY_API_KEY }}
+          CONSEILS_PLAFOND: "10"
+        run: node outils/conseils.mjs || echo "::warning::Les conseils de l'IA n'ont pas pu être demandés à ce passage."
 
       # Les codes consolidés : une fois par jour seulement. contenu/codes.json
       # est suivi par git, et c'est en le comparant que le robot sait ce qui a

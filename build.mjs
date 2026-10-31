@@ -140,6 +140,8 @@ const dateFr = (iso) => new Date(iso + "T12:00:00Z")
 /* Les liens de paiement Stripe, lus dans contenu/paiement.js par main(). Vide :
    le bouton ouvre un courriel. */
 let PAIEMENT = {};
+/* Les conseils proposés par l'IA (outils/conseils.mjs), par identifiant de texte. */
+let CONSEILS = {};
 const lienPaiement = (id, periode) =>
   (id === "portail" ? PAIEMENT.portail : PAIEMENT[id] && PAIEMENT[id][periode]) || "";
 const paiementComplet = () => Object.keys(FORMULES).every((id) => lienPaiement(id, "an") && lienPaiement(id, "mois"));
@@ -1279,6 +1281,32 @@ function listeDeTextes(V, C, LIENS, TEXTES, entrees) {
    existe, l'application sert ces textes-là, avec leur contenu intégral. Quand
    il n'existe pas, elle sert le jeu d'essai — et le dit. Jamais l'un déguisé
    en l'autre. */
+/* Le conseil de l'IA, SOUS le texte officiel, jamais à sa place : ce qu'elle
+   propose, ses sources officielles contrôlées (outils/conseils.mjs), et ce
+   qu'il n'est pas. Rien s'il n'y en a pas, ou s'il a été écarté. */
+function blocConseil(c) {
+  if (!c || !c.texte || !(c.sources || []).length) return "";
+  const lignes = String(c.texte).split("\n").map((l) => l.trim()).filter(Boolean);
+  let html = "", liste = [];
+  const vider = () => { if (liste.length) html += `<ul class="a-faire">${liste.map((x) => `<li>${esc(x)}</li>`).join("")}</ul>`; liste = []; };
+  for (const l of lignes) {
+    if (/^•\s*/.test(l)) liste.push(l.replace(/^•\s*/, ""));
+    else { vider(); html += `<p>${esc(l)}</p>`; }
+  }
+  vider();
+  const nom = (u) => { try { return new URL(u).hostname.replace(/^www\./, ""); } catch { return u; } };
+  return `<section class="encart encart-ia encart-large">
+          <h4 class="encart-titre">Proposé par l'IA, à vérifier</h4>
+          <p class="note-source">Perplexity, le ${esc(dateFr(String(c.le).slice(0, 10)))}, à partir des seules sources officielles ci-dessous.</p>
+          <div class="texte-ia">${html}</div>
+          <p class="etiq" style="margin-top:var(--t3)">Ses sources</p>
+          <ul class="sources-ia">${c.sources.filter((x) => /^https:\/\//.test(x.url)).map((x) =>
+            `<li><a href="${esc(x.url)}" target="_blank" rel="noopener">${esc(x.titre || nom(x.url))}</a>${x.titre ? ` <span class="doux">${esc(nom(x.url))}</span>` : ""}</li>`).join("")}</ul>
+          <p class="note-source"><strong>Ne constitue pas un conseil juridique.</strong> C'est le texte officiel, ci-dessus,
+          qui fait foi ; ce qu'il implique chez vous reste à valider par quelqu'un de compétent.</p>
+        </section>`;
+}
+
 /* La clé d'un texte relevé : la même pour la case « Fait », le registre, la
    cloche et ce que l'abonné a déjà ouvert (assets/avis.js). */
 const cleJO = (t) => `jo:${t.id && !/^http/.test(t.id) ? t.id : slug(t.titre).slice(0, 80)}`;
@@ -1340,6 +1368,7 @@ function ligneJO(V, t, i, releveLe = "") {
           <div class="texte-officiel">${esc(String(t.corps || "")).replace(/\n/g, "<br>")}</div>
           ${t.nota ? `<p class="note-source"><strong>Nota.</strong> ${esc(t.nota)}</p>` : ""}
         </section>
+        ${blocConseil(CONSEILS[t.id])}
         <section class="encart encart-source encart-large">
           <h4 class="encart-titre">D'où vient ce texte</h4>
           <p>
@@ -4645,6 +4674,8 @@ async function main() {
   // n'empêche pas de construire : la page le dit, et montre le jeu d'essai.
   const cheminJO = resolve(RACINE, "contenu/veille-releve.json");
   const JO = existsSync(cheminJO) ? JSON.parse(await readFile(cheminJO, "utf8")) : null;
+  const cheminConseils = resolve(RACINE, "contenu/conseils.json");
+  CONSEILS = existsSync(cheminConseils) ? JSON.parse(await readFile(cheminConseils, "utf8")) : {};
   /* Le texte des sources, en clair : un relevé fait avant le nouveau nettoyage
      (outils/tri.mjs) pouvait garder du HTML encodé. */
   if (JO && JO.textes) {

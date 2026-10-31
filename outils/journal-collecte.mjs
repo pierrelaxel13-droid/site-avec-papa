@@ -53,6 +53,7 @@ const ligne = {
     jo_dernier: bilan.joDernier || null,
     sources: (bilan.rapport || []).map((r) => ({ id: r.id, nom: r.nom, entrees: r.entrees, retenus: r.retenus, souci: r.souci || null, repris: r.repris || 0 })),
     codes,
+    conseils: bilan.conseils || null,
     passage: process.env.GITHUB_RUN_ID
       ? `${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_REPOSITORY}/actions/runs/${process.env.GITHUB_RUN_ID}` : null
   }

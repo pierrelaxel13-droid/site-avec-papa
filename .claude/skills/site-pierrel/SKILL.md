@@ -301,6 +301,11 @@ qu'il n'y a pas de client.
   dans un compte, `suivrePlan()` / `suivreReleve()` refont le tri. Jamais
   d'`hidden` pour cacher un hors-périmètre : un outil qui lit la source le
   verrait. Test : `node outils/perimetre.test.mjs` (lancé par publie.yml).
+- **Les conseils de l'IA** : `outils/conseils.mjs` (Perplexity, lancé par la
+  relève, clé `PERPLEXITY_API_KEY`) remplit `contenu/conseils.json` ; build.mjs
+  les montre par `blocConseil()` dans la fiche du texte, sous le texte officiel.
+  Ne jamais écrire un conseil à la main dans ce fichier, ni en inventer pour
+  essayer : les tests (`outils/conseils.test.mjs`) simulent l'API.
 - **Les nouveaux textes** (assets/avis.js) : nouveau = dans le plan, vu par le
   robot (`vuA`, posé par outils/veille.mjs à la première vue) après
   `lus.depuis`, et pas encore ouvert (`lus.ids`). « pco-lus » est gardé par

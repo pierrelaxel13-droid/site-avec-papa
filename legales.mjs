@@ -159,6 +159,9 @@ export function pagesLegales({ page, SITE, FORMULES, TVA, esc, eur }) {
             (États-Unis). Les sauvegardes sont chiffrées (AES-256) avant de lui être confiées, et la clé ne lui
             est jamais donnée : il ne peut pas les lire. Il ne reçoit aucune autre donnée de votre espace client.</li>
         </ul>
+        <p>Pour les conseils proposés par l'IA à côté des textes : Perplexity AI, Inc. (États-Unis). Il ne reçoit
+        que le titre, la date et le lien de textes officiels, qui sont publics — jamais une donnée de votre
+        entreprise ni de votre compte.</p>
         <p>Prévus, pas encore en place :</p>
         <ul>
           <li>paiement — Stripe Payments Europe Ltd (Irlande) ;</li>
