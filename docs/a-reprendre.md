@@ -92,6 +92,10 @@ Maçonnerie Vidal : 90 → 20.
 
 ## 5. Côté Axel (rien d'urgent)
 
+- Dans Supabase, **Authentication → Sign In / Providers → Email** : longueur
+  minimale du mot de passe à **10** (comme le site) et, si l'option existe,
+  la protection contre les mots de passe déjà fuités. Aujourd'hui, les 10
+  caractères ne sont imposés que par la page (revue de sécurité du 31 octobre).
 - Créer le secret GitHub **`SAUVEGARDE_PHRASE`** (au moins 20 caractères, gardée
   en lieu sûr, copie à Clément) : la sauvegarde hebdomadaire démarre alors.
 - Acheter **`pierrel-co.fr`**, puis un compte **Brevo** : courriels automatiques

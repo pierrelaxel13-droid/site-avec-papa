@@ -10,6 +10,15 @@
    une seconde fois en fin de page pour brancher les boutons.
    ========================================================================== */
 
+/* Jamais dans le cadre d'un autre site (« clickjacking » : un site piégé qui
+   affiche le nôtre en transparence pour faire cliquer). GitHub Pages ne permet
+   pas l'en-tête frame-ancestors ; une page encadrée reste donc invisible, et
+   essaie de prendre toute la fenêtre. */
+if (window.top !== window.self) {
+  document.documentElement.style.visibility = "hidden";
+  try { window.top.location.href = window.location.href; } catch (e) { /* le cadre refuse : la page reste invisible */ }
+}
+
 window.PCO_THEME = (function () {
   "use strict";
   var CLE = "pco-theme";

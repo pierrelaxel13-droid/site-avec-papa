@@ -612,6 +612,36 @@ reset role;
 select tests.ok(tests.compte(format('select 1 from public.registre where entreprise_id = %L and auteur_nom = %L', current_setting('tests.cli'), 'seul@test.fr')) = 1,
   'ce qu''il a fait reste au registre du client, à son nom');
 
+-- ---------------------------------------------------------------------------
+-- 14. Revue de sécurité du 31 octobre 2026
+-- ---------------------------------------------------------------------------
+-- Un admin d'entreprise ne se rattache pas, seul, au cabinet abonné d'un autre.
+select tests.qui('00000000-0000-0000-0000-0000000000b1', 'b_admin@test.fr');
+set local role authenticated;
+select tests.refuse(format('select public.choisir_consultant(%L, %L)', '00000000-0000-0000-0000-00000000b000', current_setting('tests.cab')),
+  'une entreprise ne se rattache pas seule à un cabinet (elle aurait sa veille complète à ses frais)');
+select tests.ok(prive.rang_entreprise('00000000-0000-0000-0000-00000000b000') < 3 or exists (
+    select 1 from public.abonnements a where a.entreprise_id = '00000000-0000-0000-0000-00000000b000' and a.formule = 'complet'),
+  'et son rang ne vient pas de l''abonnement du cabinet');
+reset role;
+-- Le client, lui, peut toujours se détacher de son cabinet.
+select tests.qui('00000000-0000-0000-0000-0000000000e3', 'neuf@test.fr');
+set local role authenticated;
+select public.choisir_consultant(current_setting('tests.cli')::uuid, null);
+select tests.ok((select consultant_id is null from public.entreprises where id = current_setting('tests.cli')::uuid),
+  'le client peut se détacher de son cabinet');
+reset role;
+-- Les réglages personnels d'un membre ne se lisent pas par ses collègues.
+select tests.qui('00000000-0000-0000-0000-0000000000a2', 'a_lecteur@test.fr');
+set local role authenticated;
+select tests.ok(tests.compte('select 1 from public.profils where id <> auth.uid()') = 0,
+  'un collègue ne lit pas le profil (adresse d''alerte, textes ouverts) d''un autre');
+select tests.ok(tests.compte('select 1 from public.collectes') = 0, 'le journal du robot n''est pas lisible par un client');
+reset role;
+set local role anon;
+select tests.refuse('select count(*) from public.collectes', 'ni par un visiteur non connecté');
+reset role;
+
 do $$ begin raise notice 'TOUS LES TESTS D''ISOLATION SONT PASSÉS'; end $$;
 
 rollback;

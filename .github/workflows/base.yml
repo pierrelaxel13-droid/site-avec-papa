@@ -131,8 +131,8 @@ jobs:
           API: https://denpxyqbvjcwsbxjtqpd.supabase.co/rest/v1
         run: |
           echec=0
-          # sujets, textes et collectes sont publics par choix : ils ne sont pas dans la liste.
-          for t in registre entreprises membres_entreprise abonnements reponses plan_sujets profils invitations; do
+          # sujets et textes sont publics par choix : ils ne sont pas dans la liste.
+          for t in registre entreprises membres_entreprise abonnements reponses plan_sujets profils invitations collectes; do
             corps=$(curl -sS "$API/$t?select=*&limit=1" -H "apikey: $CLE")
             case "$corps" in
               "[]"|*'"42501"'*) echo "ok : « $t » ne montre rien";;

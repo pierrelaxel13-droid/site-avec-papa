@@ -74,6 +74,10 @@ jobs:
       - name: Le plan ne montre que ce qui concerne l'entreprise
         run: node outils/perimetre.test.mjs
 
+      # La revue de sécurité du 31 octobre : export CSV, liens des sources, cadre.
+      - name: Les tests de sécurité du site
+        run: node outils/securite.test.mjs
+
       - uses: actions/upload-pages-artifact@v3
         with:
           path: _site

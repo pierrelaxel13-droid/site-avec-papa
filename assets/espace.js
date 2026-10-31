@@ -223,7 +223,14 @@
      l'empreinte de chaque ligne — de quoi montrer à un auditeur que rien n'a
      bougé. */
   function exporter(liste) {
-    var champ = function (v) { var t = String(v == null ? "" : v); return /[";\n\r]/.test(t) ? '"' + t.replace(/"/g, '""') + '"' : t; };
+    /* Une cellule qui commence par = + - @ serait une formule pour le tableur : une
+       action saisie « =LIEN_HYPERTEXTE(…) » s'exécuterait chez qui ouvre l'export.
+       On la neutralise par une apostrophe, comme le recommande l'OWASP. */
+    var champ = function (v) {
+      var t = String(v == null ? "" : v);
+      if (/^[=+\-@\t\r]/.test(t) && typeof v !== "number") t = "'" + t;
+      return /[";\n\r]/.test(t) ? '"' + t.replace(/"/g, '""') + '"' : t;
+    };
     var nom = ((M.lire("pco-entreprise") || {}).nom || "entreprise");
     var lignes = [["N°", "Date", "Nature", "Objet", "Détail", "Décision ou état", "Échéance", "Corrige le n°",
                    "Par", "Inscrite le", "Empreinte"]].concat(liste.map(function (r) {

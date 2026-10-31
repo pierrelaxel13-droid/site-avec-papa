@@ -269,7 +269,7 @@ async function relevéFlux(V, s, depuis) {
       id: e.lien || `${s.id}:${e.titre}`,
       titre: e.titre, nature: s.genre === "texte" ? "Texte officiel" : "Publication officielle",
       date: e.date || DEJA_VUS.get(e.lien || `${s.id}:${e.titre}`) || AUJOURDHUI,
-      corps: e.corps, lien: e.lien, domaines
+      corps: e.corps, lien: /^https?:\/\//i.test(e.lien || "") ? e.lien : "", domaines
     });
   }
   return { entrees: entrees.length, retenus };

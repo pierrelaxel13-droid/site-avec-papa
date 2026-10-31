@@ -1349,7 +1349,7 @@ function ligneJO(V, t, i, releveLe = "") {
             ${quand !== vu ? `Texte du ${esc(dateFr(quand))}, relevé le ${esc(dateFr(vu))}`
                            : `Publié le ${esc(dateFr(quand))}`}${
               t.id && !/^http/.test(t.id) ? ` — identifiant ${esc(t.id)}` : ""}.
-            ${t.lien ? `<a href="${esc(t.lien)}" target="_blank" rel="noopener">Voir chez la source ${sortant}</a>` : ""}
+            ${/^https?:\/\//i.test(t.lien || "") ? `<a href="${esc(t.lien)}" target="_blank" rel="noopener">Voir chez la source ${sortant}</a>` : ""}
             En cas de doute, c'est la source qui fait foi.
           </p>
         </section>
