@@ -883,6 +883,7 @@
         });
         admin.hidden = false;
         robot();
+        conseilsIA();
       });
     };
 
@@ -914,6 +915,32 @@
             li.appendChild(el("span", "admin-details" + (a.niveau === "grave" ? " admin-alerte" : ""), (a.niveau === "grave" ? "Grave : " : "") + a.quoi));
           });
           if (d.passage) { var a = el("a", "", "Voir le passage chez GitHub"); a.href = d.passage; a.target = "_blank"; a.rel = "noopener"; li.appendChild(a); }
+          ul.appendChild(li);
+        });
+      });
+    };
+
+    /* Les conseils de l'IA : combien gardés, combien écartés, et ce que l'IA
+       dit « à revoir » — un texte qui ne concernerait pas son sujet. */
+    var conseilsIA = function () {
+      var ul = $("#admin-conseils");
+      if (!ul) return;
+      V.rpc("admin_conseils", {}).then(function (r) {
+        ul.textContent = "";
+        if (!r.ok) { ul.appendChild(el("li", "", r.erreur)); return; }
+        var c = r.donnees || {};
+        $("#admin-conseils-etat").textContent = (c.gardes || 0) + " conseil" + ((c.gardes || 0) > 1 ? "s" : "") + " montré" +
+          ((c.gardes || 0) > 1 ? "s" : "") + " aux abonnés, " + (c.ecartes || 0) + " réponse" + ((c.ecartes || 0) > 1 ? "s" : "") +
+          " écartée" + ((c.ecartes || 0) > 1 ? "s" : "") + " par les contrôles. À revoir : les textes où l'IA estime que le sujet ne va pas. " +
+          "Rien n'est retiré du relevé sans Clément.";
+        var l = c.a_revoir || [];
+        if (!l.length) { ul.appendChild(el("li", "", "Rien à revoir.")); return; }
+        l.forEach(function (x) {
+          var li = el("li", "admin-compte");
+          li.appendChild(el("span", "admin-courriel", x.titre || x.texte_id));
+          li.appendChild(el("span", "admin-details", "Le " + new Date(x.le).toLocaleDateString("fr-FR", { day: "numeric", month: "long" }) +
+            (x.metier ? " · pour le métier NAF " + x.metier : " · conseil général") +
+            (x.details && x.details.qui ? " · selon l'IA, concerne : " + x.details.qui : "")));
           ul.appendChild(li);
         });
       });

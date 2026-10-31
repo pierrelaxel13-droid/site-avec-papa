@@ -642,6 +642,91 @@ set local role anon;
 select tests.refuse('select count(*) from public.collectes', 'ni par un visiteur non connecté');
 reset role;
 
+-- ---------------------------------------------------------------------------
+-- 15. Les conseils de l'IA : formule 2 les généraux, formule 3 aussi ceux de
+--     SA famille de métiers ; personne d'autre
+-- ---------------------------------------------------------------------------
+-- F : formule « Textes et suivi », division 47 ; son admin : inconnu.
+insert into public.entreprises (id, denomination, naf) values
+  ('00000000-0000-0000-0000-00000000f000', 'Entreprise F (essai)', '47.11F');
+insert into public.membres_entreprise (entreprise_id, user_id, role) values
+  ('00000000-0000-0000-0000-00000000f000', '00000000-0000-0000-0000-0000000000e1', 'admin');
+insert into public.abonnements (entreprise_id, formule, periode, statut) values
+  ('00000000-0000-0000-0000-00000000f000', 'suivi', 'mois', 'active');
+insert into public.reponses (entreprise_id, declencheur, valeur) values
+  ('00000000-0000-0000-0000-00000000f000', 'vehicules', true);
+-- L'entreprise de l'administrateur prend un code APE : elle ne doit pas compter.
+update public.entreprises set naf = '62' where denomination = 'Entreprise de l''administrateur (essai)';
+insert into public.conseils (texte_id, metier, titre, texte, sources) values
+  ('T_C1', '',   'Arrêté C1 (essai)', 'Conseil général C1', '[{"url":"https://www.legifrance.gouv.fr/"}]'),
+  ('T_C1', '43', 'Arrêté C1 (essai)', 'Conseil C1 pour le bâtiment', '[]'),
+  ('T_C1', '10', 'Arrêté C1 (essai)', 'Conseil C1 pour l''alimentaire', '[]'),
+  ('T_C1', '47', 'Arrêté C1 (essai)', 'Conseil C1 pour le commerce', '[]');
+insert into public.conseils (texte_id, metier, titre, ecarte, details) values
+  ('T_C2', '', 'Arrêté C2 (essai)', 'aucune source officielle valable', '{}'),
+  ('T_C3', '', 'Arrêté C3 (essai)', 'l''IA estime que le texte ne concerne pas ce sujet', '{"concerne":"non"}');
+
+set local role anon;
+select tests.refuse('select * from public.conseils', 'un visiteur non connecté ne lit pas les conseils');
+select tests.refuse($$select public.conseils_lire('00000000-0000-0000-0000-00000000a000', array['T_C1'])$$, 'ni par la fonction');
+reset role;
+
+select tests.qui('00000000-0000-0000-0000-0000000000a1', 'a_admin@test.fr');
+set local role authenticated;
+select tests.refuse('select * from public.conseils', 'un client ne lit pas la table des conseils en direct');
+select tests.ok((select json_array_length(public.conseils_lire('00000000-0000-0000-0000-00000000a000', array['T_C1','T_C2','T_C3']) -> 'conseils') = 2),
+  'formule complète (A, bâtiment) : le conseil général et celui de sa famille, rien d''écarté');
+select tests.ok((select (public.conseils_lire('00000000-0000-0000-0000-00000000a000', array['T_C1']))::text not like '%alimentaire%'
+                    and (public.conseils_lire('00000000-0000-0000-0000-00000000a000', array['T_C1']))::text not like '%commerce%'),
+  'jamais le conseil fait pour une autre famille');
+select tests.refuse($$select public.conseils_lire('00000000-0000-0000-0000-00000000d000', array['T_C1'])$$,
+  'ni les conseils d''une autre entreprise');
+select tests.refuse('select * from prive.clients_conseils()', 'la liste des clients du robot n''est pas lisible par un client');
+select tests.refuse('select public.admin_conseils()', 'ni la page des conseils de l''administration');
+reset role;
+
+select tests.qui('00000000-0000-0000-0000-0000000000b1', 'b_admin@test.fr');
+set local role authenticated;
+select tests.ok((select json_array_length(c -> 'conseils') = 0 and (c ->> 'rang')::int = 1
+                 from public.conseils_lire('00000000-0000-0000-0000-00000000b000', array['T_C1']) c),
+  'formule Textes (B) : aucun conseil');
+reset role;
+
+select tests.qui('00000000-0000-0000-0000-0000000000e1', 'inconnu@test.fr');
+set local role authenticated;
+select tests.ok((select json_array_length(c -> 'conseils') = 1 and (c -> 'conseils' -> 0 ->> 'metier') is null
+                 from public.conseils_lire('00000000-0000-0000-0000-00000000f000', array['T_C1']) c),
+  'formule Textes et suivi (F, commerce) : le conseil général seulement, pas celui de sa famille');
+reset role;
+
+select tests.qui('00000000-0000-0000-0000-0000000000c1', 'c_membre@test.fr');
+set local role authenticated;
+select tests.refuse($$select public.conseils_lire('00000000-0000-0000-0000-00000000a000', array['T_C1'])$$,
+  'A a retiré l''accès à son consultant : il ne lit pas ses conseils');
+reset role;
+update public.entreprises set acces_consultant = true where id = '00000000-0000-0000-0000-00000000a000';
+select tests.qui('00000000-0000-0000-0000-0000000000c1', 'c_membre@test.fr');
+set local role authenticated;
+select tests.ok((select json_array_length(public.conseils_lire('00000000-0000-0000-0000-00000000a000', array['T_C1']) -> 'conseils') = 2),
+  'A le lui rend : il lit les conseils de A');
+select tests.refuse($$select public.conseils_lire('00000000-0000-0000-0000-00000000d000', array['T_C1'])$$,
+  'mais pas ceux de D, qui ne l''a pas autorisé');
+reset role;
+
+select tests.ok((select count(*) = 0 from prive.clients_conseils() where rang < 2), 'le robot ne compte que les formules 2 et 3');
+select tests.ok(exists (select 1 from prive.clients_conseils() where division = '47' and rang = 2 and contexte = array['vehicules']),
+  'il voit F : division, formule et situations, de quoi calculer son plan');
+select tests.ok(exists (select 1 from prive.clients_conseils() where division = '43' and rang = 3), 'et A');
+select tests.ok(not exists (select 1 from prive.clients_conseils() where division in ('56', '62')),
+  'ni B (formule Textes) ni l''entreprise de l''administrateur');
+
+select tests.qui('00000000-0000-0000-0000-0000000000f1', 'axel@test.fr');
+set local role authenticated;
+select tests.ok((select (c ->> 'gardes')::int = 4 and (c ->> 'ecartes')::int = 2 and json_array_length(c -> 'a_revoir') = 1
+                    and c -> 'a_revoir' -> 0 ->> 'titre' = 'Arrêté C3 (essai)' from public.admin_conseils() c),
+  'l''administrateur voit ce que l''IA dit « à revoir », avec le titre du texte');
+reset role;
+
 do $$ begin raise notice 'TOUS LES TESTS D''ISOLATION SONT PASSÉS'; end $$;
 
 rollback;

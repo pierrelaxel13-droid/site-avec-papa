@@ -86,6 +86,9 @@ const litteral = (v) => v === null || v === undefined ? "null" : `'${String(v).r
 const json = (v) => `${litteral(JSON.stringify(v ?? {}))}::jsonb`;
 const RPC = {
   espace_lire: (a) => `select public.espace_lire(${litteral(a.e)})`,
+  conseils_lire: (a) => `select public.conseils_lire(${litteral(a.e)},
+    (select coalesce(array_agg(x), '{}') from jsonb_array_elements_text(${json(a.ids || [])}) x))`,
+  admin_conseils: () => "select public.admin_conseils()",
   espace_reglages: (a) => `select public.espace_reglages(${litteral(a.e)}, ${json(a.nouveaux)}) \\g /dev/null
 select 'null'`,
   espace_fait: (a) => `select to_json(public.espace_fait(${litteral(a.e)}, ${litteral(a.quoi)}, ${litteral(a.intitule)}, ${litteral(a.sujet)}, ${a.fait ? "true" : "false"}))`,

@@ -381,8 +381,100 @@
     });
   }
 
+  /* --- Les conseils de l'IA, sous chaque texte du relevé --------------------
+     Ils sont dans la base, pas dans la page : conseils_lire ne rend que ce que
+     la formule paie — rien en Textes, le conseil général en Textes et suivi,
+     et aussi celui du métier de l'entreprise en Veille complète. Tout est
+     posé par textContent : rien de ce qui vient de l'IA n'est lu comme du HTML. */
+  function bloc(classe, titre) {
+    var s = document.createElement("section");
+    s.className = "encart encart-ia " + classe;
+    var h = document.createElement("h4");
+    h.className = "encart-titre";
+    h.textContent = titre;
+    s.appendChild(h);
+    return s;
+  }
+  function para(classe, texte) {
+    var p = document.createElement("p");
+    if (classe) p.className = classe;
+    p.textContent = texte;
+    return p;
+  }
+  function hote(u) { try { return new URL(u).hostname.replace(/^www\./, ""); } catch (e) { return u; } }
+  function blocConseil(c, metierNom) {
+    var s = bloc("", c.metier ? "Pour votre métier, proposé par l'IA, à vérifier" : "Proposé par l'IA, à vérifier");
+    var le = new Date(c.le).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" });
+    s.appendChild(para("note-source", "Perplexity, le " + le + (c.metier ? ", pour " + (metierNom || "votre famille de métiers") +
+      " (NAF " + c.metier + ")" : "") + ", à partir des seules sources officielles ci-dessous."));
+    var d = c.details || {};
+    var corps = document.createElement("div");
+    corps.className = "texte-ia";
+    if (d.qui) corps.appendChild(para("", "Qui est concerné : " + d.qui));
+    var ul = null;
+    String(c.texte || "").split("\n").forEach(function (l) {
+      l = l.trim();
+      if (!l) return;
+      if (/^•\s*/.test(l)) {
+        if (!ul) { ul = document.createElement("ul"); ul.className = "a-faire"; corps.appendChild(ul); }
+        var li = document.createElement("li");
+        li.textContent = l.replace(/^•\s*/, "");
+        ul.appendChild(li);
+      } else { ul = null; corps.appendChild(para("", l)); }
+    });
+    if (d.quand) corps.appendChild(para("", "Pour quand : le " + d.quand + " — date écrite dans le texte officiel."));
+    s.appendChild(corps);
+    var sources = (c.sources || []).filter(function (x) { return /^https:\/\//.test(x.url || ""); });
+    if (sources.length) {
+      s.appendChild(para("etiq", "Ses sources"));
+      var su = document.createElement("ul");
+      su.className = "sources-ia";
+      sources.forEach(function (x) {
+        var li = document.createElement("li"), a = document.createElement("a");
+        a.href = x.url; a.target = "_blank"; a.rel = "noopener";
+        a.textContent = x.titre || hote(x.url);
+        li.appendChild(a);
+        if (x.titre) { var sp = document.createElement("span"); sp.className = "doux"; sp.textContent = " " + hote(x.url); li.appendChild(sp); }
+        su.appendChild(li);
+      });
+      s.appendChild(su);
+    }
+    var nb = para("note-source", "");
+    var fort = document.createElement("strong");
+    fort.textContent = "Ne constitue pas un conseil juridique.";
+    nb.appendChild(fort);
+    nb.appendChild(document.createTextNode(" C'est le texte officiel, ci-dessus, qui fait foi ; ce qu'il implique chez vous reste à valider par quelqu'un de compétent."));
+    s.appendChild(nb);
+    return s;
+  }
+  function conseilsIA() {
+    var places = $$("[data-conseil]");
+    if (!places.length || !M.espace) return;
+    var ids = places.map(function (p) { return p.getAttribute("data-conseil"); }).slice(0, 500);
+    V.rpc("conseils_lire", { e: M.espace.id, ids: ids }).then(function (r) {
+      if (!r.ok) return;            // sans réponse, la page reste celle des textes officiels
+      var d = r.donnees || {}, rang = Number(d.rang) || 0;
+      var noms = {}, div = (window.PLAN && window.PLAN.div) || {};
+      Object.keys(div).forEach(function (k) { noms[k] = div[k].l; });
+      var par = {};
+      (d.conseils || []).forEach(function (c) { (par[c.texte_id] = par[c.texte_id] || []).push(c); });
+      places.forEach(function (p) {
+        p.textContent = "";
+        var liste = par[p.getAttribute("data-conseil")] || [];
+        liste.forEach(function (c) { p.appendChild(blocConseil(c, noms[c.metier])); });
+        if (rang < 2) {
+          p.appendChild(para("note-source", "Un conseil proposé par l'IA s'affiche ici dans les formules Textes et suivi et Veille complète."));
+        } else if (rang < 3 && liste.length) {
+          p.appendChild(para("note-source", "Le conseil pour votre métier est inclus dans la Veille complète."));
+        }
+        p.hidden = !p.childNodes.length;
+      });
+    });
+  }
+
   M.quandPret(function () {
     $$("[data-compte]").forEach(function (el) { el.hidden = false; });
+    conseilsIA();
     reprise();
     sansCodeApe();
     datesDuPlan();

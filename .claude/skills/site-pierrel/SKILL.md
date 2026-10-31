@@ -301,15 +301,18 @@ qu'il n'y a pas de client.
   dans un compte, `suivrePlan()` / `suivreReleve()` refont le tri. Jamais
   d'`hidden` pour cacher un hors-périmètre : un outil qui lit la source le
   verrait. Test : `node outils/perimetre.test.mjs` (lancé par publie.yml).
-- **Les conseils de l'IA** : `outils/conseils.mjs` (Perplexity, lancé par la
-  relève, clé `PERPLEXITY_API_KEY`) remplit `contenu/conseils.json` ; build.mjs
-  les montre par `blocConseil()` dans la fiche du texte, sous le texte officiel.
-  Ne jamais écrire un conseil à la main dans ce fichier, ni en inventer pour
-  essayer : les tests (`outils/conseils.test.mjs`) simulent l'API. API utilisée :
-  l'Agent API (`POST https://api.perplexity.ai/v1/agent`) — pas l'ancienne
-  Sonar (`chat/completions`). Le réseau de la session n'atteint pas Perplexity :
-  essai réel par l'action « Perplexity » (étape `essai`), qui n'affiche que le
-  statut et la forme de la réponse.
+- **Les conseils de l'IA** : `outils/conseils.mjs` (Perplexity, Agent API
+  `POST https://api.perplexity.ai/v1/agent`, lancé par la relève, clé
+  `PERPLEXITY_API_KEY`, base `SUPABASE_DB_URL`) écrit dans la table `conseils`
+  de la base — jamais dans le dépôt ni dans les pages. Formule 2 : conseil
+  général ; formule 3 : + celui de sa division NAF ; lus par `conseils_lire`
+  (migration 10). Le robot ne demande que pour les textes du plan d'un client
+  payant (`prive.clients_conseils`). Dans le relevé, build.mjs pose une place
+  vide (`data-conseil`), remplie par assets/espace.js dans un compte ; la
+  démonstration dit ce qui s'y affiche, sans conseil inventé. Ne jamais écrire
+  un conseil à la main, ni en inventer pour essayer : les tests simulent l'API.
+  Le réseau de la session n'atteint pas Perplexity : essai réel par l'action
+  « Perplexity » (étape `essai`). Essai d'affichage : outils/supabase-local.mjs.
 - **Les nouveaux textes** (assets/avis.js) : nouveau = dans le plan, vu par le
   robot (`vuA`, posé par outils/veille.mjs à la première vue) après
   `lus.depuis`, et pas encore ouvert (`lus.ids`). « pco-lus » est gardé par

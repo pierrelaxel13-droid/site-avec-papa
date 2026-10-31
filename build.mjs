@@ -140,8 +140,6 @@ const dateFr = (iso) => new Date(iso + "T12:00:00Z")
 /* Les liens de paiement Stripe, lus dans contenu/paiement.js par main(). Vide :
    le bouton ouvre un courriel. */
 let PAIEMENT = {};
-/* Les conseils proposés par l'IA (outils/conseils.mjs), par identifiant de texte. */
-let CONSEILS = {};
 const lienPaiement = (id, periode) =>
   (id === "portail" ? PAIEMENT.portail : PAIEMENT[id] && PAIEMENT[id][periode]) || "";
 const paiementComplet = () => Object.keys(FORMULES).every((id) => lienPaiement(id, "an") && lienPaiement(id, "mois"));
@@ -156,17 +154,19 @@ const FORMULES = {
                      "Vos réglages : votre métier, vos réponses, vos chiffres"] },
   suivi:   { l: "Textes et suivi", rang: 2, mois: 99, an: 990,
              pour: "Vous voulez aussi savoir quoi revoir, et quand.",
-             ouvre: "En plus : votre plan de veille, le tableau de bord et les alertes.",
+             ouvre: "En plus : votre plan de veille, le tableau de bord, les alertes et les conseils de l'IA.",
              donne: ["Tout ce que donne la formule Textes",
                      "Votre plan de veille : chaque sujet à son rythme, avec la case « Fait »",
                      "Le tableau de bord : les revues en retard et les textes à analyser",
-                     "Les alertes : la cloche qui compte les nouveautés à lire"] },
+                     "Les alertes : la cloche qui compte les nouveautés à lire",
+                     "Sous chaque texte, un conseil proposé par l'IA, avec ses sources officielles"] },
   complet: { l: "Veille complète", rang: 3, mois: 149, an: 1490,
              pour: "Vous passez un audit ou une certification.",
-             ouvre: "Tout, le registre de preuves compris.",
+             ouvre: "Tout, le registre de preuves et le conseil de l'IA pour votre métier compris.",
              donne: ["Tout ce que donne la formule Textes et suivi",
                      "Le registre de preuves : chaque revue, décision et action, datée",
                      "Imprimable tel quel pour l'auditeur",
+                     "Le conseil de l'IA pour votre métier, en plus du conseil général",
                      "Pensé pour ISO 14001, ISO 45001, MASE et Qualiopi"] }
 };
 
@@ -1284,26 +1284,17 @@ function listeDeTextes(V, C, LIENS, TEXTES, entrees) {
 /* Le conseil de l'IA, SOUS le texte officiel, jamais à sa place : ce qu'elle
    propose, ses sources officielles contrôlées (outils/conseils.mjs), et ce
    qu'il n'est pas. Rien s'il n'y en a pas, ou s'il a été écarté. */
-function blocConseil(c) {
-  if (!c || !c.texte || !(c.sources || []).length) return "";
-  const lignes = String(c.texte).split("\n").map((l) => l.trim()).filter(Boolean);
-  let html = "", liste = [];
-  const vider = () => { if (liste.length) html += `<ul class="a-faire">${liste.map((x) => `<li>${esc(x)}</li>`).join("")}</ul>`; liste = []; };
-  for (const l of lignes) {
-    if (/^•\s*/.test(l)) liste.push(l.replace(/^•\s*/, ""));
-    else { vider(); html += `<p>${esc(l)}</p>`; }
-  }
-  vider();
-  const nom = (u) => { try { return new URL(u).hostname.replace(/^www\./, ""); } catch { return u; } };
-  return `<section class="encart encart-ia encart-large">
+/* Le conseil de l'IA n'est jamais écrit dans la page : il est dans la base,
+   et seuls les abonnés qui y ont droit le lisent (conseils_lire). Dans un
+   compte, assets/espace.js remplit la place ; dans la démonstration, une
+   phrase dit ce qui s'affiche ici — sans conseil inventé. */
+function placeConseil(t) {
+  return `<div class="place-conseil encart-large" data-conseil="${esc(t.id)}" data-compte hidden></div>
+        <section class="encart encart-ia encart-large" data-demo>
           <h4 class="encart-titre">Proposé par l'IA, à vérifier</h4>
-          <p class="note-source">Perplexity, le ${esc(dateFr(String(c.le).slice(0, 10)))}, à partir des seules sources officielles ci-dessous.</p>
-          <div class="texte-ia">${html}</div>
-          <p class="etiq" style="margin-top:var(--t3)">Ses sources</p>
-          <ul class="sources-ia">${c.sources.filter((x) => /^https:\/\//.test(x.url)).map((x) =>
-            `<li><a href="${esc(x.url)}" target="_blank" rel="noopener">${esc(x.titre || nom(x.url))}</a>${x.titre ? ` <span class="doux">${esc(nom(x.url))}</span>` : ""}</li>`).join("")}</ul>
-          <p class="note-source"><strong>Ne constitue pas un conseil juridique.</strong> C'est le texte officiel, ci-dessus,
-          qui fait foi ; ce qu'il implique chez vous reste à valider par quelqu'un de compétent.</p>
+          <p>Dans un compte <strong>Textes et suivi</strong> ou <strong>Veille complète</strong>, un conseil proposé par l'IA
+          s'affiche ici, sous le texte officiel, avec ses sources officielles ; en Veille complète, un second, pour votre métier.
+          La démonstration n'en montre pas : nous n'en inventons pas pour l'exemple.</p>
         </section>`;
 }
 
@@ -1368,7 +1359,7 @@ function ligneJO(V, t, i, releveLe = "") {
           <div class="texte-officiel">${esc(String(t.corps || "")).replace(/\n/g, "<br>")}</div>
           ${t.nota ? `<p class="note-source"><strong>Nota.</strong> ${esc(t.nota)}</p>` : ""}
         </section>
-        ${blocConseil(CONSEILS[t.id])}
+        ${placeConseil(t)}
         <section class="encart encart-source encart-large">
           <h4 class="encart-titre">D'où vient ce texte</h4>
           <p>
@@ -4396,6 +4387,11 @@ function pageAdmin() {
       <p class="aide-bas" id="admin-robot-etat">Les derniers passages, du plus récent au plus ancien. Un passage
       « en alerte » a été mené au bout, mais quelque chose y est anormal : c'est écrit dessous.</p>
       <div class="carte-connexion"><ul class="admin-comptes admin-collectes" id="admin-collectes"></ul></div>
+      <h2 class="titre-section">Les conseils de l'IA</h2>
+      <p class="aide-bas" id="admin-conseils-etat">Demandés à Perplexity seulement pour les textes qui touchent le plan d'un
+      client en formule Textes et suivi ou Veille complète. Ci-dessous, ceux où l'IA estime que le texte ne concerne pas
+      le sujet où le robot l'a rangé : à revoir par Clément. Rien n'est retiré du relevé sans lui.</p>
+      <div class="carte-connexion"><ul class="admin-comptes" id="admin-conseils"></ul></div>
       <h2 class="titre-section">Les comptes sans entreprise</h2>
       <p class="aide-bas">Inscrits, mais qui n'ont pas encore nommé leur entreprise.</p>
       <div class="carte-connexion"><ul class="admin-comptes" id="admin-seuls"></ul></div>
@@ -4674,8 +4670,6 @@ async function main() {
   // n'empêche pas de construire : la page le dit, et montre le jeu d'essai.
   const cheminJO = resolve(RACINE, "contenu/veille-releve.json");
   const JO = existsSync(cheminJO) ? JSON.parse(await readFile(cheminJO, "utf8")) : null;
-  const cheminConseils = resolve(RACINE, "contenu/conseils.json");
-  CONSEILS = existsSync(cheminConseils) ? JSON.parse(await readFile(cheminConseils, "utf8")) : {};
   /* Le texte des sources, en clair : un relevé fait avant le nouveau nettoyage
      (outils/tri.mjs) pouvait garder du HTML encodé. */
   if (JO && JO.textes) {

@@ -160,8 +160,11 @@ export function pagesLegales({ page, SITE, FORMULES, TVA, esc, eur }) {
             est jamais donnée : il ne peut pas les lire. Il ne reçoit aucune autre donnée de votre espace client.</li>
         </ul>
         <p>Pour les conseils proposés par l'IA à côté des textes : Perplexity AI, Inc. (États-Unis). Il ne reçoit
-        que le titre, la date et le lien de textes officiels, qui sont publics — jamais une donnée de votre
-        entreprise ni de votre compte.</p>
+        que des informations publiques : le titre, la date, le lien et le début de textes officiels, les sujets de
+        veille du site où ils sont rangés et ce que le site fait suivre sur ces sujets ; pour la Veille complète,
+        aussi le nom d'une famille de métiers (par exemple « travaux de construction spécialisés »), sans rien qui
+        dise de quelle entreprise il s'agit. Jamais une donnée de votre entreprise ni de votre compte : ni nom, ni
+        adresse, ni réponse, ni registre.</p>
         <p>Prévus, pas encore en place :</p>
         <ul>
           <li>paiement — Stripe Payments Europe Ltd (Irlande) ;</li>

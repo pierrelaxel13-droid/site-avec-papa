@@ -127,12 +127,16 @@ jobs:
           node outils/veille.mjs --jours 14 2>&1 | tee releve-flux.log || \
             echo "::warning::Relève des flux : $(tail -c 500 releve-flux.log | tr '\n' ' ')"
 
-      # Les conseils de l'IA (Perplexity), une fois par nouveau texte, avec ses
-      # garde-fous (outils/conseils.mjs). Sans le secret PERPLEXITY_API_KEY, rien
-      # n'est demandé ; une erreur ne doit jamais arrêter la relève.
+      # Les conseils de l'IA (Perplexity), avec leurs garde-fous
+      # (outils/conseils.mjs) : seulement pour les textes qui touchent le plan
+      # d'un client en formule 2 ou 3 — lus dans la base, où les conseils sont
+      # aussi écrits (jamais dans le dépôt, qui est public). Sans client, sans
+      # la base ou sans la clé, rien n'est demandé ; une erreur ne doit jamais
+      # arrêter la relève.
       - name: Les conseils de l'IA
         env:
           PERPLEXITY_API_KEY: ${{ secrets.PERPLEXITY_API_KEY }}
+          SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
           CONSEILS_PLAFOND: "10"
         run: node outils/conseils.mjs || echo "::warning::Les conseils de l'IA n'ont pas pu être demandés à ce passage."
 

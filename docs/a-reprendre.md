@@ -27,23 +27,48 @@ Reste à faire :
 - **Le prix** : 49 / 42 / 35 € par client, marque blanche dès 6 clients —
   à confirmer ; la facturation au nombre de clients viendra avec Stripe.
 
-## 2. Perplexity : construit le 31 octobre, sur l'Agent API
+## 2. Perplexity : les conseils de l'IA, réservés aux formules 2 et 3
 
-Fait (outils/conseils.mjs, testé par outils/conseils.test.mjs, lancé par la
-relève) : une question par nouveau texte à l'**Agent API** de Perplexity
-(`POST https://api.perplexity.ai/v1/agent`, `effort: "low"`, outil
-`web_search` en « fast », limité à 20 sites officiels). Chaque source est
-contrôlée (site de la liste + page qui répond) ; réponse jetée sans source
-valable ; liens et renvois [web:1] retirés du texte ; 10 questions au plus
-par passage ; un 429 attend `Retry-After` puis réessaie une fois ; coût noté
-au journal du robot. Affiché **tout de suite** (choix d'Axel), sous le texte
-officiel : « Proposé par l'IA, à vérifier », ses sources, « Ne constitue pas
-un conseil juridique ». Une ligne dans la politique de confidentialité.
+Fait le 31 octobre (outils/conseils.mjs, testé par outils/conseils.test.mjs ;
+base : migration 10, testée par supabase/tests/isolation.sql section 15).
 
-La clé est le secret GitHub `PERPLEXITY_API_KEY` (mis par Axel le 31
-octobre ; jamais dans le code ni dans le chat). Pour essayer : action
-« Perplexity », étape `essai` — elle n'affiche que le statut et la forme de
-la réponse. Si la clé fuit un jour : la refaire sur console.perplexity.ai.
+**Qui paie quoi** (choix d'Axel) : formule 2 « Textes et suivi », un conseil
+par texte, le même pour tous ; formule 3 « Veille complète », le même plus un
+conseil pour sa famille de métiers (division NAF). Formule 1 : aucun.
+
+**On ne paie que pour un vrai client** : le robot lit dans la base les
+entreprises qui paient la formule 2 ou 3 (abonnement actif ou « offert » ;
+l'entreprise de l'administrateur ne compte pas), calcule leur plan comme le
+site, et ne demande que pour les textes qui touchent l'un de ces plans. Sans
+client : zéro question, zéro centime.
+
+**Personne ne lit ce qu'il ne paie pas** : les conseils sont dans la table
+`conseils` de la base (aucun droit pour le navigateur), lus par
+`conseils_lire`, qui vérifie l'entreprise et sa formule. Rien dans les pages,
+rien dans le dépôt (contenu/conseils.json est supprimé).
+
+**Le robot et l'IA ensemble** : le robot donne le début du texte officiel,
+les sujets où il l'a rangé et ce que le référentiel fait déjà suivre ; l'IA
+répond en cases (concerne / qui / à faire / quand). Une date « quand » absente
+du texte officiel est retirée. « Ne concerne pas ce sujet » n'est pas montré
+et part dans l'administration (« Les conseils de l'IA ») pour Clément : l'IA
+ne retire jamais un texte du relevé.
+
+Garde-fous inchangés : Agent API (`POST https://api.perplexity.ai/v1/agent`,
+`effort: "low"`, `web_search` « fast » limité à 20 sites officiels) ; chaque
+source contrôlée ; liens et renvois retirés ; 10 questions au plus par
+passage ; un 429 attend `Retry-After` ; coût noté au journal.
+
+Premier vrai passage (31 octobre, ancienne version, 10 textes) : 4 gardés,
+6 jetés faute de source officielle « qui répond ». Depuis, une page d'un site
+officiel qui refuse les robots (401, 403, 429 — Légifrance le fait) compte
+comme existante, et le journal dit pourquoi chaque réponse est jetée. **À
+regarder au premier passage avec un client** : la part de réponses jetées.
+
+La clé : secret GitHub `PERPLEXITY_API_KEY` (crédit payé sur
+console.perplexity.ai — le crédit offert ne suffit pas pour l'Agent API). Si
+elle fuit un jour : la refaire sur console.perplexity.ai. Essai : action
+« Perplexity », étape `essai`.
 
 À surveiller : la qualité des conseils — Clément devrait en lire quelques-uns.
 
