@@ -1,5 +1,5 @@
 {
- "le": "2026-10-29T21:59:59.430Z",
+ "le": "2026-10-31T12:49:41.936Z",
  "bilan": [
   {
    "id": "inrs",
@@ -9,7 +9,8 @@
    "flux": [],
    "essais": 11,
    "refus": [
-    "HTTP 404"
+    "HTTP 404",
+    "injoignable (fetch failed : UND_ERR_SOCKET) — l'hôte refuse le robot, ou le réseau d'ici le bloque"
    ]
   },
   {
@@ -31,6 +32,7 @@
    "flux": [],
    "essais": 10,
    "refus": [
+    "injoignable (fetch failed : UND_ERR_SOCKET) — l'hôte refuse le robot, ou le réseau d'ici le bloque",
     "injoignable (fetch failed : ECONNRESET) — l'hôte refuse le robot, ou le réseau d'ici le bloque"
    ]
   },
@@ -49,54 +51,13 @@
   {
    "id": "ansm",
    "nom": "ANSM — actualités",
-   "retenue": "https://ansm.sante.fr/rss/actualites",
-   "derniere": "2026-10-29",
-   "flux": [
-    {
-     "url": "https://ansm.sante.fr/rss/actualites",
-     "entrees": 1,
-     "derniere": "2026-10-29",
-     "titre": "Actualités - Ansm.sante.fr",
-     "d_ou": "adresse actuelle"
-    },
-    {
-     "url": "https://ansm.sante.fr/rss/informations_securite",
-     "entrees": 5,
-     "derniere": "2026-10-28",
-     "titre": "Informations de sécurité - Ansm.sante.fr",
-     "d_ou": "piste connue"
-    },
-    {
-     "url": "https://ansm.sante.fr/rss/actualites?produitsSante=medicaments",
-     "entrees": 1,
-     "derniere": "2026-10-29",
-     "titre": "Actualités - Ansm.sante.fr",
-     "d_ou": "déclaré par la page"
-    },
-    {
-     "url": "https://ansm.sante.fr/rss/informations_securite?produitsSante=medicaments",
-     "entrees": 1,
-     "derniere": "2026-10-28",
-     "titre": "Informations de sécurité - Ansm.sante.fr",
-     "d_ou": "déclaré par la page"
-    },
-    {
-     "url": "https://ansm.sante.fr/rss/informations_securite?produitsSante=dispositifs_medicaux",
-     "entrees": 2,
-     "derniere": "2026-10-28",
-     "titre": "Informations de sécurité - Ansm.sante.fr",
-     "d_ou": "déclaré par la page"
-    },
-    {
-     "url": "https://ansm.sante.fr/rss/informations_securite?produitsSante=dispositifs_medicaux_de_diagnostic_in_vitro",
-     "entrees": 2,
-     "derniere": "2026-10-28",
-     "titre": "Informations de sécurité - Ansm.sante.fr",
-     "d_ou": "déclaré par la page"
-    }
-   ],
-   "essais": 26,
-   "refus": []
+   "retenue": null,
+   "derniere": null,
+   "flux": [],
+   "essais": 34,
+   "refus": [
+    "HTTP 404"
+   ]
   },
   {
    "id": "boamp",
