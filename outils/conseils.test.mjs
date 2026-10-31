@@ -161,6 +161,19 @@ ok(appels === 1, "au bout d'une semaine, elle l'est");
 const revoir = await traiter({ textes: [t("X", "sst")] }, [], [{ division: "43", rang: 2, contexte: [] }],
   { V, cle: "k", demande: async () => ({ ...r, texte: "CONCERNE : non" }), controle });
 ok(revoir.bilan.aRevoir === 1 && revoir.lignes[0].texte === null && revoir.lignes[0].details.concerne === "non", "« à revoir » est compté et écrit, sans conseil");
+/* --- Le plafond du mois (10 $ par défaut ; ici 5 $ pour l'essai) --- */
+appels = 0;
+const presque = await traiter(releve, [], clients, { V, cle: "k", demande, controle, depense: 4.99, budget: 5 });
+ok(appels === 2 && presque.bilan.budgetAtteint && presque.bilan.attente === 2,
+  "à 4,99 $ sur 5 $ : on finit la question en cours, puis plus rien — le reste attend le mois suivant");
+ok(Math.abs(presque.bilan.depenseMois - 5.0022) < 1e-9 && presque.lignes.every((l) => l.cout === 0.0061), "chaque conseil garde son coût, et le total du mois est dit");
+appels = 0;
+const plein = await traiter(releve, [], clients, { V, cle: "k", demande, controle, depense: 5, budget: 5 });
+ok(appels === 0 && plein.bilan.budgetAtteint && plein.lignes.length === 0, "plafond atteint : aucune question");
+appels = 0;
+const libre2 = await traiter(releve, [], clients, { V, cle: "k", demande, controle, depense: 0.5, budget: 5 });
+ok(appels === 4 && !libre2.bilan.budgetAtteint, "sous le plafond : le passage va jusqu'au bout");
+
 const erreur = await traiter({ textes: [t("E", "sst")] }, [], clients, { V, cle: "k", demande: async () => ({ ok: false, erreur: "HTTP 401" }), controle });
 ok(erreur.bilan.erreurs === 2 && erreur.bilan.derniereErreur === "HTTP 401" && erreur.lignes.length === 0, "une erreur de l'API est comptée et dite, sans rien écrire");
 

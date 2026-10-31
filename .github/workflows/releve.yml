@@ -138,6 +138,7 @@ jobs:
           PERPLEXITY_API_KEY: ${{ secrets.PERPLEXITY_API_KEY }}
           SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
           CONSEILS_PLAFOND: "10"
+          CONSEILS_BUDGET_MOIS: "10"     # dollars par mois, tous clients confondus
         run: node outils/conseils.mjs || echo "::warning::Les conseils de l'IA n'ont pas pu être demandés à ce passage."
 
       # Les codes consolidés : une fois par jour seulement. contenu/codes.json

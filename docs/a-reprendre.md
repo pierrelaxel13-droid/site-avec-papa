@@ -54,6 +54,14 @@ du texte officiel est retirée. « Ne concerne pas ce sujet » n'est pas montré
 et part dans l'administration (« Les conseils de l'IA ») pour Clément : l'IA
 ne retire jamais un texte du relevé.
 
+**Plafond de dépense** : 10 $ par mois, tous clients confondus
+(`CONSEILS_BUDGET_MOIS` dans releve.yml ; migration 11). Chaque conseil garde
+son coût ; atteint, le robot ne demande plus rien jusqu'au mois suivant, et le
+dit au passage. La dépense du mois s'affiche dans l'administration. Ordre de
+grandeur attendu : 0,003 $ la question, ~4 nouveaux textes par jour, un
+conseil général partagé par tous les clients et un par métier — quelques
+dollars par mois au plus ; le rattrapage du premier client (~0,20 $) une fois.
+
 Garde-fous inchangés : Agent API (`POST https://api.perplexity.ai/v1/agent`,
 `effort: "low"`, `web_search` « fast » limité à 20 sites officiels) ; chaque
 source contrôlée ; liens et renvois retirés ; 10 questions au plus par

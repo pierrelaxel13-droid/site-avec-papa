@@ -931,7 +931,9 @@
         var c = r.donnees || {};
         $("#admin-conseils-etat").textContent = (c.gardes || 0) + " conseil" + ((c.gardes || 0) > 1 ? "s" : "") + " montré" +
           ((c.gardes || 0) > 1 ? "s" : "") + " aux abonnés, " + (c.ecartes || 0) + " réponse" + ((c.ecartes || 0) > 1 ? "s" : "") +
-          " écartée" + ((c.ecartes || 0) > 1 ? "s" : "") + " par les contrôles. À revoir : les textes où l'IA estime que le sujet ne va pas. " +
+          " écartée" + ((c.ecartes || 0) > 1 ? "s" : "") + " par les contrôles. Dépense du mois : " +
+          String(Number(c.depense_mois || 0).toFixed(2)).replace(".", ",") + " $ (le robot s'arrête à 10 $ par mois). " +
+          "À revoir : les textes où l'IA estime que le sujet ne va pas. " +
           "Rien n'est retiré du relevé sans Clément.";
         var l = c.a_revoir || [];
         if (!l.length) { ul.appendChild(el("li", "", "Rien à revoir.")); return; }

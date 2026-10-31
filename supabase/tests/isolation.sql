@@ -720,11 +720,16 @@ select tests.ok(exists (select 1 from prive.clients_conseils() where division = 
 select tests.ok(not exists (select 1 from prive.clients_conseils() where division in ('56', '62')),
   'ni B (formule Textes) ni l''entreprise de l''administrateur');
 
+-- Le coût de chaque conseil : le total du mois pour l'administration.
+update public.conseils set cout = 0.0123 where texte_id = 'T_C1' and metier = '';
+update public.conseils set cout = 0.5, le = now() - interval '40 days' where texte_id = 'T_C1' and metier = '10';
 select tests.qui('00000000-0000-0000-0000-0000000000f1', 'axel@test.fr');
 set local role authenticated;
 select tests.ok((select (c ->> 'gardes')::int = 4 and (c ->> 'ecartes')::int = 2 and json_array_length(c -> 'a_revoir') = 1
                     and c -> 'a_revoir' -> 0 ->> 'titre' = 'Arrêté C3 (essai)' from public.admin_conseils() c),
   'l''administrateur voit ce que l''IA dit « à revoir », avec le titre du texte');
+select tests.ok((select (public.admin_conseils() ->> 'depense_mois')::numeric = 0.0123),
+  'et ce que les conseils ont coûté ce mois-ci (pas le mois dernier)');
 reset role;
 
 do $$ begin raise notice 'TOUS LES TESTS D''ISOLATION SONT PASSÉS'; end $$;

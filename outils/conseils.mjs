@@ -37,7 +37,8 @@
      réponse sont retirés : seules les sources contrôlées s'affichent.
    - Affiché SOUS le texte officiel, avec « Proposé par l'IA, à vérifier » et
      « Ne constitue pas un conseil juridique ». Rien n'entre au registre.
-   - Plafond de questions par passage ; le coût réel est noté au journal.
+   - Plafond de questions par passage (10), et de dépense par mois (10 $,
+     CONSEILS_BUDGET_MOIS) ; le coût réel est noté au journal et dans la base.
 
    Tests : node outils/conseils.test.mjs (sans réseau, réponses simulées).
    Essai réel : action « Perplexity », étape essai (node outils/conseils.mjs --essai).
@@ -303,10 +304,14 @@ export function besoins(V, releve, clients) {
 }
 
 /* Un passage. existants : [{texte_id, metier, le, ecarte}] déjà en base.
+   depense : ce que les conseils ont déjà coûté ce mois-ci ($) ; budget : le
+   plafond du mois ($) — atteint, on ne demande plus rien jusqu'au mois suivant.
    Rend { bilan, lignes } : les lignes à écrire dans la table conseils. */
 export async function traiter(releve, existants, clients, { V, cle, plafond = 10, maintenant = new Date().toISOString(),
+                                                           depense = 0, budget = 10,
                                                            demande = demander, controle = controler } = {}) {
-  const bilan = { clients: clients.length, demandes: 0, gardes: 0, ecartes: 0, aRevoir: 0, erreurs: 0, cout: 0, attente: 0 };
+  const bilan = { clients: clients.length, demandes: 0, gardes: 0, ecartes: 0, aRevoir: 0, erreurs: 0, cout: 0, attente: 0,
+                  depenseMois: Number(depense) || 0, budgetMois: budget };
   const deja = new Map(existants.map((x) => [`${x.texte_id}|${x.metier || ""}`, x]));
   // Une réponse écartée se redemande au bout d'une semaine, pas avant.
   const aRedemander = (c) => c.ecarte && (Date.parse(maintenant) - Date.parse(c.le)) > 7 * 86400000;
@@ -320,13 +325,15 @@ export async function traiter(releve, existants, clients, { V, cle, plafond = 10
   if (!cle) return { bilan, lignes: [], sansCle: true };
   const lignes = [];
   for (const { t, metier } of restants.slice(0, plafond)) {
+    if (bilan.depenseMois + bilan.cout >= budget) { bilan.budgetAtteint = true; break; }
     bilan.demandes++;
     let rep;
     try { rep = await demande(t, { cle, V, metier }); } catch (e) { rep = { ok: false, erreur: String(e.message || e).slice(0, 160) }; }
     if (!rep.ok) { bilan.erreurs++; bilan.derniereErreur = rep.erreur; continue; }
     if (rep.cout) bilan.cout += rep.cout;
     const c = await controle(rep, t);
-    const ligne = { texte_id: String(t.id), metier, titre: String(t.titre || "").slice(0, 1000), le: maintenant, modele: rep.modele || EFFORT };
+    const ligne = { texte_id: String(t.id), metier, titre: String(t.titre || "").slice(0, 1000), le: maintenant,
+                    modele: rep.modele || EFFORT, cout: rep.cout > 0 ? rep.cout : 0 };
     if (c.garde) { lignes.push({ ...ligne, texte: c.garde.texte, sources: c.garde.sources, details: c.garde.details, ecarte: null }); bilan.gardes++; }
     else {
       lignes.push({ ...ligne, texte: null, sources: [], details: c.details || {}, ecarte: c.ecarte.slice(0, 300) });
@@ -337,6 +344,8 @@ export async function traiter(releve, existants, clients, { V, cle, plafond = 10
     }
   }
   bilan.cout = Math.round(bilan.cout * 10000) / 10000;
+  bilan.attente = Math.max(0, restants.length - bilan.demandes);
+  bilan.depenseMois = Math.round((bilan.depenseMois + bilan.cout) * 10000) / 10000;
   return { bilan, lignes };
 }
 
@@ -349,16 +358,20 @@ export function lireBase(sql, ids) {
   const clients = JSON.parse(sql("select coalesce(json_agg(c), '[]') from prive.clients_conseils() c") || "[]");
   const existants = JSON.parse(sql(`select coalesce(json_agg(json_build_object('texte_id', texte_id, 'metier', metier, 'le', le, 'ecarte', ecarte)), '[]')
     from public.conseils where texte_id in (select jsonb_array_elements_text(:'ids'::jsonb))`, { ids: JSON.stringify(ids) }) || "[]");
-  return { clients, existants };
+  const depense = Number(sql("select coalesce(sum(cout), 0) from public.conseils where le >= date_trunc('month', now())") || 0);
+  return { clients, existants, depense };
 }
 export function ecrireBase(sql, lignes) {
   if (!lignes.length) return;
-  sql(`insert into public.conseils (texte_id, metier, titre, le, modele, texte, sources, details, ecarte)
-    select x.texte_id, x.metier, x.titre, x.le, x.modele, x.texte, coalesce(x.sources, '[]'), coalesce(x.details, '{}'), x.ecarte
+  // Redemandé dans le même mois : le coût s'ajoute, pour que le total du mois soit juste.
+  sql(`insert into public.conseils (texte_id, metier, titre, le, modele, texte, sources, details, ecarte, cout)
+    select x.texte_id, x.metier, x.titre, x.le, x.modele, x.texte, coalesce(x.sources, '[]'), coalesce(x.details, '{}'), x.ecarte, coalesce(x.cout, 0)
     from jsonb_to_recordset(:'j'::jsonb) as x(texte_id text, metier text, titre text, le timestamptz, modele text,
-                                              texte text, sources jsonb, details jsonb, ecarte text)
+                                              texte text, sources jsonb, details jsonb, ecarte text, cout numeric)
     on conflict (texte_id, metier) do update set titre = excluded.titre, le = excluded.le, modele = excluded.modele,
-      texte = excluded.texte, sources = excluded.sources, details = excluded.details, ecarte = excluded.ecarte`,
+      texte = excluded.texte, sources = excluded.sources, details = excluded.details, ecarte = excluded.ecarte,
+      cout = case when public.conseils.le >= date_trunc('month', excluded.le) then public.conseils.cout + excluded.cout
+                  else excluded.cout end`,
     { j: JSON.stringify(lignes) });
 }
 
@@ -404,6 +417,7 @@ if (PRINCIPAL && !process.argv.includes("--essai")) {
   const url = process.env.SUPABASE_DB_URL || "";
   const cle = process.env.PERPLEXITY_API_KEY || "";
   const plafond = Number(process.env.CONSEILS_PLAFOND || 10);
+  const budget = Number(process.env.CONSEILS_BUDGET_MOIS || 10);
   let bilan = null, note = "";
   try {
     if (!url) {
@@ -411,8 +425,8 @@ if (PRINCIPAL && !process.argv.includes("--essai")) {
     } else {
       const releve = lireReleve();
       const sql = base(url);
-      const { clients, existants } = lireBase(sql, (releve.textes || []).map((t) => String(t.id || "")).filter(Boolean));
-      const r = await traiter(releve, existants, clients, { V: referentiel(), cle, plafond });
+      const { clients, existants, depense } = lireBase(sql, (releve.textes || []).map((t) => String(t.id || "")).filter(Boolean));
+      const r = await traiter(releve, existants, clients, { V: referentiel(), cle, plafond, depense, budget });
       bilan = r.bilan;
       ecrireBase(sql, r.lignes);
       note = r.sansClient ? "Aucun client en formule Textes et suivi ou Veille complète : aucun conseil demandé (rien n'est dépensé)."
@@ -420,7 +434,9 @@ if (PRINCIPAL && !process.argv.includes("--essai")) {
         : `${bilan.clients} client(s) en formule 2 ou 3 ; ${bilan.demandes} demandés, ${bilan.gardes} gardés, ${bilan.ecartes} écartés ` +
           `(dont ${bilan.aRevoir} à revoir), ${bilan.erreurs} erreurs, ${bilan.attente} en attente ; coût ${bilan.cout} $.` +
           (bilan.raisons ? ` Écartés : ${Object.entries(bilan.raisons).map(([k, v]) => `${k} (${v})`).join(", ")}.` : "") +
+          ` Ce mois : ${bilan.depenseMois} $ sur ${budget} $.` +
           (bilan.derniereErreur ? ` Dernière erreur : ${bilan.derniereErreur}` : "");
+      if (bilan.budgetAtteint) console.log(`::warning title=Conseils de l'IA::Plafond du mois atteint (${bilan.depenseMois} $ sur ${budget} $) : plus aucune question jusqu'au mois prochain. ${bilan.attente} conseil(s) en attente.`);
     }
     console.log(`::notice title=Conseils de l'IA::${note}`);
   } catch (e) {
