@@ -3286,3 +3286,14 @@ a.puce-fixe { text-decoration: none; color: inherit; }
 .formule-donne li, .formule-donne li:first-child { font-weight: 700; color: var(--encre); }
 /* « Installer l'application » à la taille de « Une question avant de vous abonner ? ». */
 .installation h2 { font-size: clamp(.95rem, .55rem + 1.6vw, 1.9rem); }
+/* Le tableau de bord d'un compte, en tableau (3 novembre 2026). */
+.tableau-bord { width: 100%; border-collapse: collapse; font-size: .97rem; }
+.tableau-bord th, .tableau-bord td { padding: .8rem .9rem; text-align: left; vertical-align: middle; border-bottom: 1px solid var(--filet); }
+.tableau-bord thead th { font-size: .78rem; font-weight: 600; letter-spacing: .06em; text-transform: uppercase;
+  color: var(--encre-tenue); border-bottom-color: var(--filet-fort); }
+.tableau-bord tbody th { font-weight: 600; }
+.tableau-bord tbody th a { color: var(--encre); }
+.tableau-bord .nombre { font-size: 1.35rem; font-weight: 700; font-variant-numeric: tabular-nums; color: var(--encre); white-space: nowrap; }
+.tableau-bord td:last-child { color: var(--encre-douce); }
+.tableau-bord tr.alerte .nombre, .tableau-bord tr.alerte th a { color: var(--ambre); }
+@media (max-width: 30rem) { .tableau-bord th, .tableau-bord td { padding: .65rem .45rem; font-size: .9rem; } }

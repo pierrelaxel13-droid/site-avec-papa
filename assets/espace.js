@@ -112,32 +112,40 @@
     var aJour = plan.length - aFaire.length;
     var suivantes = plan.filter(function (x) { return !x.aFaire; })
       .sort(function (a, b) { return a.prochaine < b.prochaine ? -1 : 1; }).slice(0, 6);
-    if (plan.length) html += rubrique("Où vous en êtes",
-      '<dl class="compteurs compteurs-liens">' +
-      "<div" + (aFaire.length ? ' class="alerte"' : "") + '><dt class="etiq">Revues à faire</dt><dd><span class="grand">' +
-        aFaire.length + '</span><a class="lien-carte" href="plan.html"><span class="cache-visuellement">Voir le plan de veille</span></a></dd></div>' +
-      '<div><dt class="etiq">Revues à jour</dt><dd><span class="grand">' + aJour + "</span>" +
-        '<span class="precision">sur ' + plan.length + ' domaines suivis</span><a class="lien-carte" href="plan.html"><span class="cache-visuellement">Voir le plan de veille</span></a></dd></div>' +
-      (function () {
-        var ouv = M.actions(), auj = new Date().toISOString().slice(0, 10);
-        var retard = ouv.filter(function (a) { return a.echeance < auj; }).length;
-        return "<div" + (retard ? ' class="alerte"' : "") + '><dt class="etiq">Actions ouvertes</dt><dd><span class="grand">' + ouv.length + "</span>" +
-          (retard ? '<span class="precision">dont ' + retard + " en retard</span>" : "") +
-          '<a class="lien-carte" href="#bord-actions"><span class="cache-visuellement">Voir les actions</span></a></dd></div>';
-      })() +
-      '<div><dt class="etiq">Entrées au registre</dt><dd><span class="grand" id="bord-n-registre">…</span>' +
-        '<a class="lien-carte" href="registre.html"><span class="cache-visuellement">Voir le registre</span></a></dd></div>' +
-      "</dl>");
-    if (aFaire.length) {
-      html += rubrique("À faire maintenant",
-        '<p class="lecture">Les revues jamais faites, ou dont le rythme est dépassé. Cochez-les dans votre plan : ' +
-        "chacune s'inscrit, datée, dans votre registre.</p>" +
-        '<ul class="liste-echeances" style="margin-top:var(--t4)">' + aFaire.slice(0, 8).map(function (x) {
-          return '<li class="retard"><a href="plan.html#domaine-' + echappe(x.id) + '"><span class="etiq">' + echappe(x.nom) +
-            '</span><span class="mono">' + (x.le ? "dernière le " + echappe(jour(x.le)) : "jamais faite") + "</span></a></li>";
+    /* Le tableau de bord en tableau (3 novembre 2026, demandé par Axel) :
+       une ligne par indicateur, son nombre, et ce qu'il veut dire. */
+    if (plan.length) html += rubrique("Tableau de bord", (function () {
+      var ouv = M.actions(), auj = new Date().toISOString().slice(0, 10);
+      var retard = ouv.filter(function (a) { return a.echeance < auj; }).length;
+      var rangee = function (alerte, lien, nom, nombre, detail) {
+        return "<tr" + (alerte ? ' class="alerte"' : "") + '><th scope="row"><a href="' + lien + '">' + nom + "</a></th>" +
+          '<td class="nombre">' + nombre + "</td><td>" + detail + "</td></tr>";
+      };
+      var c = window.PCO_AVIS ? window.PCO_AVIS.chiffres() : null;
+      var nb = function (x) { return x == null ? "—" : x; };
+      return '<table class="tableau-bord"><thead><tr><th scope="col">Indicateur</th><th scope="col">Nombre</th>' +
+        '<th scope="col">Détail</th></tr></thead><tbody>' +
+        rangee(false, "releve.html", "Textes publiés", nb(c && c.publies), "relevés ces 14 derniers jours aux sources officielles") +
+        rangee(false, "releve.html", "Textes applicables", nb(c && c.applicables), "ceux qui touchent votre plan de veille") +
+        rangee(false, "releve.html", "Textes lus", nb(c && c.lus),
+          c ? "sur " + c.applicables + " applicables, ouverts depuis le début de votre suivi" : "") +
+        rangee(retard, "#bord-actions", "Actions à réaliser", ouv.length,
+          retard ? "dont " + retard + " en retard" : ouv.length ? "aucune en retard" : "aucune pour l'instant") +
+        "</tbody></table>";
+    })());
+    /* Les textes applicables que personne n'a encore ouverts (3 novembre 2026 :
+       « Textes en attente » remplace « À faire maintenant »). */
+    var attente = window.PCO_AVIS ? window.PCO_AVIS.enAttente() : [];
+    if (attente.length) {
+      html += rubrique("Textes en attente",
+        '<p class="lecture">Les textes qui touchent votre plan et que vous n\'avez pas encore ouverts. ' +
+        "Ouvrez-les dans le relevé : ils passeront dans les textes lus.</p>" +
+        '<ul class="liste-echeances" style="margin-top:var(--t4)">' + attente.slice(0, 8).map(function (x) {
+          return '<li><a href="' + echappe(x.u) + '"><span class="etiq">' + echappe(x.t) +
+            '</span><span class="mono">' + echappe(jour(x.d)) + "</span></a></li>";
         }).join("") + "</ul>" +
-        (aFaire.length > 8 ? '<p style="margin-top:var(--t4)"><a class="lien-fleche" href="plan.html">Et ' + (aFaire.length - 8) +
-          " autre" + (aFaire.length - 8 > 1 ? "s" : "") + " dans votre plan</a></p>" : ""));
+        (attente.length > 8 ? '<p style="margin-top:var(--t4)"><a class="lien-fleche" href="releve.html">Et ' + (attente.length - 8) +
+          " autre" + (attente.length - 8 > 1 ? "s" : "") + " dans le relevé</a></p>" : ""));
     }
     if (suivantes.length) {
       html += rubrique("Prochaines revues", '<ul class="liste-echeances">' + suivantes.map(function (x) {

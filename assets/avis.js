@@ -64,9 +64,10 @@
     }
   }
   function garder() {
-    // On n'oublie que ce qui ne peut plus être nouveau.
+    // On garde ce qui est encore au relevé : les textes ouverts comptent comme
+    // « lus » au tableau de bord, même s'ils étaient là avant le début du suivi.
     var encore = {};
-    tous.forEach(function (a) { if (a.v > lus.depuis) encore[a.k] = 1; });
+    tous.forEach(function (a) { encore[a.k] = 1; });
     lus.ids = lus.ids.filter(function (k) { return encore[k]; });
     return M.ecrire(CLE, { depuis: lus.depuis, ids: lus.ids });
   }
@@ -99,6 +100,27 @@
     return tous.filter(function (a) { return !p || !a.ds || a.ds.some(function (id) { return dedans[id]; }); });
   }
 
+  /* Les chiffres du tableau de bord (assets/espace.js) : les textes du relevé
+     (pas les changements d'articles de code), ceux qui touchent le plan, et,
+     parmi eux, ceux que la personne a ouverts depuis le début de son suivi. */
+  window.PCO_AVIS = {
+    chiffres: function () {
+      var textes = function (l) { return l.filter(function (a) { return a.k.indexOf("jo:") === 0; }); };
+      var ouverts = {};
+      lus.ids.forEach(function (k) { ouverts[k] = 1; });
+      var applicables = textes(dansPlan());
+      return { publies: textes(tous).length, applicables: applicables.length,
+               lus: applicables.filter(function (a) { return ouverts[a.k]; }).length };
+    },
+    /* Les textes applicables pas encore ouverts, du plus récent au plus ancien. */
+    enAttente: function () {
+      var ouverts = {};
+      lus.ids.forEach(function (k) { ouverts[k] = 1; });
+      return dansPlan().filter(function (a) { return a.k.indexOf("jo:") === 0 && !ouverts[a.k]; })
+        .sort(function (x, y) { return x.d < y.d ? 1 : -1; });
+    }
+  };
+
   function ouvrirTexte(k) {
     if (lus.ids.indexOf(k) !== -1) return;
     lus.ids.push(k);
@@ -107,7 +129,7 @@
   }
   function toutLu() {
     lus.depuis = maintenant();
-    lus.ids = [];
+    lus.ids = tous.map(function (a) { return a.k; });
     garder();
     rendre();
   }
