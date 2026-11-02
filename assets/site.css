@@ -3249,3 +3249,7 @@ a.puce-fixe { text-decoration: none; color: inherit; }
 [data-page="presentation"] .etape { align-items: center; }
 [data-page="presentation"] .reserve-seule { max-width: 42rem; margin-inline: auto; }
 [data-page="presentation"] .reserve-seule .reserve { margin: 0; }
+/* Présentation : les cinq étapes, sous le titre, centrées comme le reste. */
+[data-page="presentation"] .heros .etapes { margin-top: var(--t5); }
+[data-page="presentation"] .heros .etape { align-items: center; }
+[data-page="presentation"] .heros .etape :is(h3, p) { text-align: center; hyphens: manual; }

@@ -3500,9 +3500,9 @@ function pageDecouvrir(V, ECRANS, C, NAF, SOURCES) {
         [["eurlex-l", "EUR-Lex"], ["travail", "ministère du Travail"], ["cnil", "CNIL"], ["anses", "ANSES"], ["has", "HAS"]]
           .filter(([id]) => confirmees.some((x) => x.id === id)).map(([, l]) => l).join(", "))}…` },
     { t: "Relues toutes les heures", i: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
-      d: `Un robot relit chaque source toutes les heures${C ? `, et le texte des ${C.codes.length} codes suivis une fois par jour` : ""}.` },
-    { t: "Triées pour votre métier", i: '<path d="M4 5h16l-6 8v6l-4-2v-4z"/>',
-      d: `${nDomaines} sujets, rattachés à ${nCodes ? `${nCodes} codes APE (${V.divisions.length} familles de métiers)` : `${V.divisions.length} familles de métiers`}. Ce qui ne vous concerne pas n'arrive pas.` },
+      d: "Une mise à jour toutes les heures." },
+    { t: "Sélectionnez votre code NAF", i: '<path d="M4 5h16l-6 8v6l-4-2v-4z"/>',
+      d: `Parmi les ${nCodes || V.divisions.length} proposés. Répondez aux questions pour affiner les spécificités de votre société.` },
     { t: "Ce qu'il faut faire", i: '<path d="M9 6h11M9 12h11M9 18h11"/><path d="m3.5 6 1 1 2-2M3.5 12l1 1 2-2M3.5 18l1 1 2-2"/>',
       d: "Chaque texte arrive avec les gestes à faire, et le texte lui-même, tel que publié." },
     { t: "Fait, et prouvé", i: '<path d="M12 3 4 6v6c0 4.5 3.4 7.8 8 9 4.6-1.2 8-4.5 8-9V6z"/><path d="m8.5 12 2.5 2.5 4.5-5"/>',
@@ -3617,12 +3617,6 @@ function pageDecouvrir(V, ECRANS, C, NAF, SOURCES) {
     <div class="heros-texte">
       <h1>Les étapes de la construction de votre veille réglementaire individualisée</h1>
     </div>
-  </div>
-</section>
-
-<section class="section">
-  <div class="enveloppe">
-    <h2 class="titre-section">Du Journal officiel à votre écran</h2>
     <ol class="etapes">
       ${etapes.map((e, k) => `<li class="etape">
         <span class="etape-num">${k + 1}</span>
