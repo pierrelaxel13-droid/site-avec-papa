@@ -3253,3 +3253,9 @@ a.puce-fixe { text-decoration: none; color: inherit; }
 [data-page="presentation"] .heros .etapes { margin-top: var(--t5); }
 [data-page="presentation"] .heros .etape { align-items: center; }
 [data-page="presentation"] .heros .etape :is(h3, p) { text-align: center; hyphens: manual; }
+/* Présentation : six étapes, trois par rangée au bureau ; pas de flèche en
+   bout de rangée. */
+@media (min-width: 64rem) {
+  .etapes.etapes-six { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--t5) var(--t4); }
+  .etapes-six .etape:nth-child(3)::after { display: none; }
+}

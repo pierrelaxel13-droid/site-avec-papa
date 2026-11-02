@@ -3505,8 +3505,10 @@ function pageDecouvrir(V, ECRANS, C, NAF, SOURCES) {
       d: `Parmi les ${nCodes || V.divisions.length} proposés. Répondez aux questions pour affiner les spécificités de votre société.` },
     { t: "Votre synthèse, chaque jour", i: '<path d="M9 6h11M9 12h11M9 18h11"/><path d="m3.5 6 1 1 2-2M3.5 12l1 1 2-2M3.5 18l1 1 2-2"/>',
       d: "Chaque jour, votre synthèse est mise à jour avec les textes qui vous sont applicables." },
-    { t: "Fait, et prouvé", i: '<path d="M12 3 4 6v6c0 4.5 3.4 7.8 8 9 4.6-1.2 8-4.5 8-9V6z"/><path d="m8.5 12 2.5 2.5 4.5-5"/>',
-      d: "Vous cochez « fait » ; la date est gardée, et le registre la montre à l'auditeur." }
+    { t: "Votre plan d'actions", i: '<rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4V3h6v1M9 10h6M9 14h6M9 18h3"/>',
+      d: "Un plan d'actions vous est proposé pour répondre aux exigences réglementaires." },
+    { t: "Votre conformité, validée", i: '<path d="M12 3 4 6v6c0 4.5 3.4 7.8 8 9 4.6-1.2 8-4.5 8-9V6z"/><path d="m8.5 12 2.5 2.5 4.5-5"/>',
+      d: "Validez votre conformité réglementaire en confirmant la réalisation du plan d'actions." }
   ];
 
   /* Le dessin d'une fiche : ce qu'on voit en ouvrant un texte. */
@@ -3617,7 +3619,7 @@ function pageDecouvrir(V, ECRANS, C, NAF, SOURCES) {
     <div class="heros-texte">
       <h1>Les étapes de la construction de votre veille réglementaire individualisée</h1>
     </div>
-    <ol class="etapes">
+    <ol class="etapes etapes-six">
       ${etapes.map((e, k) => `<li class="etape">
         <span class="etape-num">${k + 1}</span>
         <span class="etape-icone">${icone(e.i)}</span>
