@@ -1803,7 +1803,9 @@ details[open] > summary .chevron { transform: rotate(180deg); }
 .formules { display: grid; gap: var(--t4); margin-top: var(--t5); }
 /* `align-items: start` laisserait trois cartes de hauteurs différentes, et
    `margin-bottom: auto` sur le texte ne pourrait plus aligner les boutons. */
-@media (min-width: 58rem) { .formules { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+/* Trois de front à partir de 1 200 px : plus étroit, le nom de l'offre 02
+   ne tiendrait plus sur une ligne (3 novembre 2026). */
+@media (min-width: 75rem) { .formules { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
 .formule {
   min-width: 0;
   background: var(--carte);
@@ -3263,3 +3265,8 @@ a.puce-fixe { text-decoration: none; color: inherit; }
 .raisons-deux .raison .numero { margin-inline: auto; }
 .raisons-deux .raison h3 { text-align: center; }
 .zone-public .raisons-deux .raison p { text-align: center; hyphens: manual; }
+/* Le nom de l'offre tient sur une seule ligne, jusqu'au téléphone. */
+.formule { container-type: inline-size; }
+.nom-offre { white-space: nowrap; text-transform: none; letter-spacing: 0; font-weight: 700;
+             font-size: clamp(.66rem, 3.6cqi, .95rem); }
+@media (max-width: 22rem) { .nom-offre { font-size: 3.6cqi; } }

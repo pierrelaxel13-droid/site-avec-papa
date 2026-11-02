@@ -3506,7 +3506,7 @@ function pageDecouvrir(V, ECRANS, C, NAF, SOURCES) {
       d: "Une mise à jour toutes les heures." },
     { t: "Sélectionnez votre code NAF", i: '<path d="M4 5h16l-6 8v6l-4-2v-4z"/>',
       d: `Parmi les ${nCodes || V.divisions.length} proposés. Répondez aux questions pour affiner les spécificités de votre société.` },
-    { t: "Votre synthèse, chaque jour", i: '<path d="M9 6h11M9 12h11M9 18h11"/><path d="m3.5 6 1 1 2-2M3.5 12l1 1 2-2M3.5 18l1 1 2-2"/>',
+    { t: "Vos textes sous forme de synthèse", i: '<path d="M9 6h11M9 12h11M9 18h11"/><path d="m3.5 6 1 1 2-2M3.5 12l1 1 2-2M3.5 18l1 1 2-2"/>',
       d: "Chaque jour, votre synthèse est mise à jour avec les textes qui vous sont applicables." },
     { t: "Votre plan d'actions", i: '<rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4V3h6v1M9 10h6M9 14h6M9 18h3"/>',
       d: "Un plan d'actions vous est proposé pour répondre aux exigences réglementaires." },
@@ -3717,7 +3717,7 @@ function pageAbonnement(V) {
 
     <div class="formules">
       ${Object.entries(FORMULES).map(([id, f], k) => `<article class="formule${id === "complet" ? " mise-en-avant" : ""}" data-paraitre>
-        <span class="etiq">0${k + 1} — ${esc(f.carte || f.l)}</span>
+        <span class="etiq nom-offre">0${k + 1} — ${esc(f.carte || f.l)}</span>
         <!-- L'année d'abord : en entreprise, la veille est une ligne de budget annuel. -->
         <p class="prix"><span class="grand">${esc(eur(f.an))}</span> <span class="etiq">par an</span></p>
         <p class="offre-an"><span class="pastille-offre">2 mois offerts</span> ou <strong>${esc(f.prix)}</strong></p>
