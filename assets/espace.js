@@ -133,19 +133,26 @@
           retard ? "dont " + retard + " en retard" : ouv.length ? "aucune en retard" : "aucune pour l'instant") +
         "</tbody></table>";
     })());
-    /* Les textes applicables que personne n'a encore ouverts (3 novembre 2026 :
-       « Textes en attente » remplace « À faire maintenant »). */
+    /* « Textes en attente » (3 novembre 2026) : par sujet du plan, le nombre de
+       textes applicables que personne n'a encore ouverts. Un texte rattaché à
+       deux sujets compte dans les deux. */
     var attente = window.PCO_AVIS ? window.PCO_AVIS.enAttente() : [];
-    if (attente.length) {
+    var sujetsPlan = {}, P = window.PLAN || { d: {} };
+    ((window.PCO_AVIS && window.PCO_AVIS.plan()) || Object.keys(P.d)).forEach(function (id) { sujetsPlan[id] = 1; });
+    var parSujet = {};
+    attente.forEach(function (x) {
+      (x.ds || []).forEach(function (id) { if (sujetsPlan[id]) parSujet[id] = (parSujet[id] || 0) + 1; });
+    });
+    var sujetsAttente = Object.keys(parSujet).sort(function (a, b) { return parSujet[b] - parSujet[a]; });
+    if (sujetsAttente.length) {
       html += rubrique("Textes en attente",
-        '<p class="lecture">Les textes qui touchent votre plan et que vous n\'avez pas encore ouverts. ' +
+        '<p class="lecture">Par sujet de votre plan, les textes que vous n\'avez pas encore ouverts. ' +
         "Ouvrez-les dans le relevé : ils passeront dans les textes lus.</p>" +
-        '<ul class="liste-echeances" style="margin-top:var(--t4)">' + attente.slice(0, 8).map(function (x) {
-          return '<li><a href="' + echappe(x.u) + '"><span class="etiq">' + echappe(x.t) +
-            '</span><span class="mono">' + echappe(jour(x.d)) + "</span></a></li>";
-        }).join("") + "</ul>" +
-        (attente.length > 8 ? '<p style="margin-top:var(--t4)"><a class="lien-fleche" href="releve.html">Et ' + (attente.length - 8) +
-          " autre" + (attente.length - 8 > 1 ? "s" : "") + " dans le relevé</a></p>" : ""));
+        '<ul class="liste-echeances" style="margin-top:var(--t4)">' + sujetsAttente.map(function (id) {
+          var n = parSujet[id];
+          return '<li class="retard"><a href="releve.html"><span class="etiq">' + echappe((P.d[id] || {}).n || id) +
+            '</span><span class="mono">' + n + " texte" + (n > 1 ? "s" : "") + "</span></a></li>";
+        }).join("") + "</ul>");
     }
     if (suivantes.length) {
       html += rubrique("Prochaines revues", '<ul class="liste-echeances">' + suivantes.map(function (x) {

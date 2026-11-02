@@ -112,6 +112,7 @@
       return { publies: textes(tous).length, applicables: applicables.length,
                lus: applicables.filter(function (a) { return ouverts[a.k]; }).length };
     },
+    plan: function () { return plan(); },
     /* Les textes applicables pas encore ouverts, du plus récent au plus ancien. */
     enAttente: function () {
       var ouverts = {};
