@@ -514,7 +514,6 @@ ${piedCourt ? "" : `
         <ul>
           <li><a href="${a("le-site.html")}">Sources officielles uniquement</a></li>
           <li><a href="${a("nous.html")}">Un interlocuteur unique</a></li>
-          <li><a href="${a("abonnement.html")}">Prix affichés, sans devis</a></li>
         </ul>
       </div>`}
       <div>
@@ -3725,7 +3724,6 @@ function pageAbonnement(V) {
           `mailto:${SITE.courriel}?subject=${encodeURIComponent(`Démarrer un abonnement — ${f.l}, au mois`)}`)}">Abonnement mensuel</a>
       </article>`).join("\n      ")}
     </div>
-    <p class="mention-tva">Prix affichés, sans devis.</p>
 
     ${paiementComplet() ? `<p class="reserve reserve-ok" style="margin-top:var(--t5)">
       <strong>Paiement en ligne, sécurisé par Stripe.</strong>
