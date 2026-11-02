@@ -2220,10 +2220,6 @@ function appReglages(V, D, NAF, METIERS) {
       <li data-compte hidden><span>Gardés dans votre compte</span></li>
     </ul>
     <h1>Mon entreprise et mes alertes</h1>
-    <p class="chapeau">
-      Dites qui vous êtes : on en déduit ce qui vous concerne. Puis choisissez ce que
-      vous voulez recevoir.
-    </p>
 
     <div class="bascule" role="tablist" aria-label="Réglages" data-bascule style="margin-inline:0">
       <span class="bascule-curseur" aria-hidden="true"></span>
