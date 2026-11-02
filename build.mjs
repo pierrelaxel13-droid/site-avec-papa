@@ -3767,10 +3767,7 @@ function pageAbonnement(V) {
 
 <section class="section">
   <div class="enveloppe">
-    <p class="lecture">
-      <strong>Laquelle prendre ?</strong>
-      ${Object.values(FORMULES).map((f) => `${esc(f.pour.replace(/\.$/, ""))} : <strong>${esc(f.l)}</strong>.`).join(" ")}
-    </p>
+    <h2 class="titre-section">Nos offres</h2>
 
     <div class="formules">
       ${Object.entries(FORMULES).map(([id, f], k) => `<article class="formule${id === "complet" ? " mise-en-avant" : ""}" data-paraitre>
