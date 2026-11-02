@@ -2282,7 +2282,7 @@ function appReglages(V, D, NAF, METIERS) {
                  placeholder="${esc(D.entreprise.effectif)}" inputmode="numeric">
         </div>
         <div class="reglage">
-          <label class="etiq" for="e-responsable">Qui s'en occupe chez vous</label>
+          <label class="etiq" for="e-responsable">Dirigeant</label>
           <input type="text" id="e-responsable" name="responsable" placeholder="${esc(D.entreprise.responsable)}" autocomplete="name">
         </div>
         <!-- Votre entreprise en chiffres. Ces informations la décrivent sur le
