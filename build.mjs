@@ -151,7 +151,8 @@ const FORMULES = {
              surCarte: false,   // la carte ne dit pas « pour qui » (choix d'Axel, 2 novembre 2026)
              donne: ["L'ensemble des textes applicables à votre société, par catégorie (santé, hygiène, sécurité, environnement, ressources humaines), en fonction des spécificités de votre structure",
                      "Les sources et les liens des textes",
-                     "Les alertes : une alerte vous rappelle de prendre connaissance des nouveautés"] },
+                     "Les alertes : une alerte vous rappelle de prendre connaissance des nouveautés",
+                     "Tableau de bord de suivi"] },
   suivi:   { l: "Textes et suivi", carte: "État des lieux réglementaire et plan d'actions", rang: 2, mois: 99, an: 990,
              pour: "Vous voulez aussi savoir quoi revoir, et quand.",
              ouvre: "En plus : votre plan de veille, le tableau de bord, les alertes et les conseils de l'IA.",
@@ -821,7 +822,7 @@ ${rubrique({ etiq: "Dernières traces", aplat: true, contenu: `
   return page({
     titre: `Tableau de bord | ${SITE.nom}`,
     description: "Tableau de bord de la veille réglementaire.",
-    racine: "../", zone: "app", actif: "bord", corps, verrou: true, formule: "suivi", donneesPlan: true
+    racine: "../", zone: "app", actif: "bord", corps, verrou: true, formule: "textes", donneesPlan: true
   });
 }
 

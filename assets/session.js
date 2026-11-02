@@ -111,7 +111,7 @@
        laisser cliquer vers un voile. */
     if (active) {
       var exige = {
-        "index.html": "suivi", "plan.html": "suivi", "releve.html": "textes",
+        "index.html": "textes", "plan.html": "suivi", "releve.html": "textes",
         "registre.html": "complet", "secteurs.html": "textes",
         "textes.html": "textes", "reglages.html": "textes"
       };
@@ -279,8 +279,8 @@
       try { window.localStorage.removeItem(CLE_DEMO_CONSULTANT); } catch (e) { /* rien */ }
       var coche = document.querySelector('input[name="formule"]:checked');
       var f = ouvrir(coche ? coche.value : "complet");
-      // Le tableau de bord n'est pas dans « Textes » : on entre par le relevé.
-      window.location.href = FORMULES[f].rang >= 2 ? "demo/index.html" : "demo/releve.html";
+      // Le tableau de bord est ouvert dès la formule « Textes » (3 novembre 2026).
+      window.location.href = "demo/index.html";
     });
   }
 
