@@ -3281,3 +3281,5 @@ a.puce-fixe { text-decoration: none; color: inherit; }
 .bande-finale h2, .bande-accueil h2 { max-width: none; white-space: nowrap; font-size: clamp(.95rem, .55rem + 1.6vw, 1.9rem); }
 /* Offres : toutes les lignes en gras, de la même couleur (3 novembre 2026). */
 .formule-donne li, .formule-donne li:first-child { font-weight: 700; color: var(--encre); }
+/* « Installer l'application » à la taille de « Une question avant de vous abonner ? ». */
+.installation h2 { font-size: clamp(.95rem, .55rem + 1.6vw, 1.9rem); }
