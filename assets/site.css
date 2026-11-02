@@ -367,6 +367,18 @@ html, body, * { scrollbar-width: none; }
 }
 .menu .bouton:hover { background: var(--bouton-fond); }
 
+/* L'icône de « Accueil », alignée sur le texte. */
+.menu a:has(.icone-menu) { display: inline-flex; align-items: center; gap: .4rem; }
+.icone-menu { width: 1.1rem; height: 1.1rem; flex: none; }
+
+/* « Connexion » : au bureau, dernier lien du menu ; au téléphone, dans le
+   bandeau, toujours visible (le reste du menu se replie). */
+.connexion-telephone { display: none; }
+@media (max-width: 62rem) {
+  .connexion-telephone { display: inline-flex; }
+  .menu .connexion-bureau { display: none; }
+}
+
 /* Hors du menu repliable : il doit rester visible sur téléphone, où le reste
    du menu disparaît derrière le bouton à trois traits. */
 .bouton-bandeau {

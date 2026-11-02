@@ -350,10 +350,17 @@ function page({ titre, description, racine = "", zone = "public", actif = "", co
   const lien = (href, libelle, cle) =>
     `<a href="${a(href)}"${actif === cle ? ' aria-current="page"' : ""}>${libelle}</a>`;
 
+  /* Le menu du site, dans l'ordre voulu par Axel (2 novembre 2026) : Accueil,
+     Présentation (la page « Comment ça marche »), S'abonner, Connexion. Au
+     téléphone, « Connexion » reste dans le bandeau, hors du menu replié. */
+  const maison = `<svg class="icone-menu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+        stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 10.5 12 3.5l8.5 7"/>
+        <path d="M5.5 9v10.5h4.5v-6h4v6h4.5V9"/></svg>`;
   const menuPublic = `
-      ${lien("index.html", "Le produit", "produit")}
-      ${lien("decouvrir.html", "Comment ça marche", "decouvrir")}
+      ${lien("index.html", `${maison}Accueil`, "produit")}
+      ${lien("decouvrir.html", "Présentation", "decouvrir")}
       ${lien("abonnement.html", "S'abonner", "abonnement")}
+      <a class="bouton bouton-bandeau connexion-bureau" href="${a("connexion.html")}">Connexion</a>
       ${selecteurTheme}`;
 
   const menuApp = `
@@ -399,7 +406,7 @@ ${zone === "app" ? '<meta name="robots" content="noindex">' : ""}
     <a class="marque" href="${a(zone === "app" ? "app/index.html" : "index.html")}">
       ${motMarque()}
     </a>
-    ${zone === "public" ? `<a class="bouton bouton-bandeau" href="${a("connexion.html")}">Connexion</a>` : ""}
+    ${zone === "public" ? `<a class="bouton bouton-bandeau connexion-telephone" href="${a("connexion.html")}">Connexion</a>` : ""}
     ${zone === "app" ? `<div class="cloche-boite" data-exige="suivi">
       <button type="button" class="cloche" id="cloche" aria-expanded="false" aria-controls="panneau-avis">
         <span class="cache-visuellement">Nouveaux textes</span>
@@ -482,8 +489,8 @@ ${piedCourt ? "" : `
       <div>
         <h2>Le site</h2>
         <ul>
-          <li><a href="${a("index.html")}">Le produit</a></li>
-          <li><a href="${a("decouvrir.html")}">Comment ça marche</a></li>
+          <li><a href="${a("index.html")}">Accueil</a></li>
+          <li><a href="${a("decouvrir.html")}">Présentation</a></li>
           <li><a href="${a("abonnement.html")}">S'abonner et voir les tarifs</a></li>
           ${SITE.offreConsultant ? `<li><a href="${a("consultants.html")}">Offre consultants QSE</a></li>` : ""}
           ${lienPaiement("portail") ? `<li><a href="${esc(lienPaiement("portail"))}">Gérer ou résilier mon abonnement</a></li>` : ""}
@@ -3127,18 +3134,17 @@ function pageAccueil(V, D, METIERS, ECRANS, C = null, NAF = null, SOURCES = [], 
 <section class="heros">
   <div class="enveloppe">
     <div class="heros-texte">
-      <h1>La veille réglementaire de votre métier</h1>
+      <h1>Votre veille réglementaire, notre préoccupation</h1>
     </div>
-    <!-- Notre meilleur argument, dans le premier écran. -->
-    <p class="heros-accroche">L'écart le plus souvent relevé en audit n'est pas l'absence de veille :
-      c'est la veille faite et jamais écrite.</p>
     <p class="heros-sous">
-      Dites ce que vous faites : vous voyez ce qui s'applique chez vous, quoi faire quand
-      un texte paraît, et chaque revue est datée, prête pour l'auditeur.
+      Vigie réglementaire vous accompagne dans votre démarche en vous proposant un service complet
+      de veille réglementaire, vous permettant de suivre les évolutions législatives et normatives dans
+      les domaines de la santé, de la sécurité, de l'hygiène, de l'environnement et des ressources humaines.
+      Vigie réglementaire vous accompagne également dans la mise en conformité de votre société.
     </p>
     <p class="rangee rangee-centre">
       <a class="bouton bouton-accent" href="#simulateur">Voir ce qui me concerne</a>
-      <a class="bouton bouton-sobre" href="decouvrir.html">Comment ça marche</a>
+      <a class="bouton bouton-sobre" href="decouvrir.html">Présentation</a>
       <a class="bouton bouton-sobre" href="abonnement.html">Les tarifs</a>
     </p>
     <p class="gage">
