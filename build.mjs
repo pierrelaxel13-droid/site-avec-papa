@@ -3142,15 +3142,9 @@ function pageAccueil(V, D, METIERS, ECRANS, C = null, NAF = null, SOURCES = [], 
       les domaines de la santé, de la sécurité, de l'hygiène, de l'environnement et des ressources humaines.
       Vigie réglementaire vous accompagne également dans la mise en conformité de votre société.
     </p>
-    <p class="rangee rangee-centre">
-      <a class="bouton bouton-accent" href="#simulateur">Voir ce qui me concerne</a>
-      <a class="bouton bouton-sobre" href="decouvrir.html">Présentation</a>
-      <a class="bouton bouton-sobre" href="abonnement.html">Les tarifs</a>
-    </p>
     <p class="gage">
       ${sigle}
       <span>${NAF ? `${NAF.codes.length} codes APE couverts` : `${V.divisions.length} familles de métiers couvertes`}</span>
-      <span class="doux">— rien à créer, rien à payer pour regarder</span>
     </p>
     ${blocCollecte(JO)}
 
@@ -3266,7 +3260,9 @@ ${bandeAvis(AVIS)}
 
 <section class="section section-tein">
   <div class="enveloppe">
-    <h2 class="titre-section">Un outil pour chaque façon de travailler</h2>
+    <h2 class="titre-section">Un outil qui répond à vos besoins</h2>
+    <p class="intro titre-section">Quel que soit votre domaine d'activité, chaque entreprise doit se tenir informée
+      des textes réglementaires qui lui sont applicables et mettre en place les actions nécessaires pour y répondre.</p>
 
     <div class="bascule" role="tablist" aria-label="Profil" data-bascule>
       <span class="bascule-curseur" aria-hidden="true"></span>
@@ -3277,27 +3273,19 @@ ${bandeAvis(AVIS)}
     <ul class="traits" id="profil-dirigeant" role="tabpanel" aria-labelledby="onglet-dirigeant">
       <li class="trait">
         <svg class="icone" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 7v5l3 2"/><circle cx="12" cy="12" r="9"/></svg>
-        <div><h3>Ce qui est en retard, tout de suite</h3>
-        <p>Le tableau de bord s'ouvre sur les revues en retard, les textes qui attendent
-        une décision et les actions ouvertes. Pas de fil d'actualité à éplucher.</p></div>
+        <div><h3>Une synthèse globale des textes qui vous sont applicables</h3>
+        <p>Seuls les textes qui vous concernent vous sont présentés. Les autres restent à part,
+        mais sont accessibles.</p></div>
       </li>
       <li class="trait">
         <svg class="icone" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h14v16l-7-3-7 3Z"/><path d="M9 9h6"/></svg>
-        <div><h3>Ce qui vous concerne, écrit noir sur blanc</h3>
-        <p>Votre plan dit quels sujets s'appliquent, à quel rythme les revoir et qui
-        s'en occupe. C'est un document, pas une conversation.</p></div>
+        <div><h3>Un plan d'actions préconisées</h3>
+        <p>Pour répondre aux textes passés, présents et futurs.</p></div>
       </li>
       <li class="trait">
-        <svg class="icone" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 20V9l9-5 9 5v11"/><path d="M9 20v-6h6v6"/></svg>
-        <div><h3>De quoi répondre à un donneur d'ordre</h3>
-        <p>Les fiches de secteur situent un client ou un sous-traitant en deux minutes :
-        ce qui s'applique chez lui, et ce qu'il devrait pouvoir montrer.</p></div>
-      </li>
-      <li class="trait">
-        <svg class="icone" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 18V6m5 12V10m5 8V4m5 14v-7"/></svg>
-        <div><h3>Un prix affiché</h3>
-        <p>Les offres comparables sont presque toutes « sur devis ». La grille est sur
-        la page des tarifs, sans formulaire à remplir d'abord.</p></div>
+        <svg class="icone" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 6h12M8 12h12M8 18h12"/><path d="M4 6h.01M4 12h.01M4 18h.01"/></svg>
+        <div><h3>Un tableau des textes publiés chaque jour</h3>
+        <p>Avec l'ensemble des liens pour y accéder.</p></div>
       </li>
     </ul>
 
