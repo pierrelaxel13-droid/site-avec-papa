@@ -145,24 +145,24 @@ const lienPaiement = (id, periode) =>
 const paiementComplet = () => Object.keys(FORMULES).every((id) => lienPaiement(id, "an") && lienPaiement(id, "mois"));
 
 const FORMULES = {
-  textes:  { l: "Textes", rang: 1, mois: 59, an: 590,
+  textes:  { l: "Textes", carte: "État des lieux réglementaire", rang: 1, mois: 59, an: 590,
              pour: "Vous voulez savoir ce qui paraît pour votre métier.",
              ouvre: "Les textes de votre métier, chacun avec ce qu'il faut faire, et la fiche de chaque métier (732 codes APE).",
              surCarte: false,   // la carte ne dit pas « pour qui » (choix d'Axel, 2 novembre 2026)
              donne: ["L'ensemble des textes applicables à votre société, par catégorie (santé, hygiène, sécurité, environnement, ressources humaines), en fonction des spécificités de votre structure",
-                     "Les sources et les liens des textes"] },
-  suivi:   { l: "Textes et suivi", rang: 2, mois: 99, an: 990,
+                     "Les sources et les liens des textes",
+                     "Les alertes : une alerte vous rappelle de prendre connaissance des nouveautés"] },
+  suivi:   { l: "Textes et suivi", carte: "État des lieux réglementaire et plan d'actions", rang: 2, mois: 99, an: 990,
              pour: "Vous voulez aussi savoir quoi revoir, et quand.",
              ouvre: "En plus : votre plan de veille, le tableau de bord, les alertes et les conseils de l'IA.",
-             donne: ["Tout ce que donne la formule Textes",
+             donne: ["Tout ce que donne l'offre État des lieux réglementaire",
                      "Votre plan de veille : chaque sujet à son rythme, avec la case « Fait »",
                      "Le tableau de bord : les revues en retard et les textes à analyser",
-                     "Les alertes : la cloche qui compte les nouveautés à lire",
                      "Sous chaque texte, un conseil proposé par l'IA, avec ses sources officielles"] },
   complet: { l: "Veille complète", rang: 3, mois: 149, an: 1490,
              pour: "Vous passez un audit ou une certification.",
              ouvre: "Tout, le registre de preuves et le conseil de l'IA pour votre métier compris.",
-             donne: ["Tout ce que donne la formule Textes et suivi",
+             donne: ["Tout ce que donne l'offre État des lieux réglementaire et plan d'actions",
                      "Le registre de preuves : chaque revue, décision et action, datée",
                      "Imprimable tel quel pour l'auditeur",
                      "Le conseil de l'IA pour votre métier, en plus du conseil général",
@@ -407,7 +407,7 @@ ${zone === "app" ? '<meta name="robots" content="noindex">' : ""}
       ${motMarque()}
     </a>
     ${zone === "public" ? `<a class="bouton bouton-bandeau connexion-telephone" href="${a("connexion.html")}">Connexion</a>` : ""}
-    ${zone === "app" ? `<div class="cloche-boite" data-exige="suivi">
+    ${zone === "app" ? `<div class="cloche-boite" data-exige="textes">
       <button type="button" class="cloche" id="cloche" aria-expanded="false" aria-controls="panneau-avis">
         <span class="cache-visuellement">Nouveaux textes</span>
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"
@@ -3714,16 +3714,16 @@ function pageAbonnement(V) {
 
     <div class="formules">
       ${Object.entries(FORMULES).map(([id, f], k) => `<article class="formule${id === "complet" ? " mise-en-avant" : ""}" data-paraitre>
-        <span class="etiq">0${k + 1} — ${esc(f.l)}</span>
+        <span class="etiq">0${k + 1} — ${esc(f.carte || f.l)}</span>
         <!-- L'année d'abord : en entreprise, la veille est une ligne de budget annuel. -->
         <p class="prix"><span class="grand">${esc(eur(f.an))}</span> <span class="etiq">par an</span></p>
         <p class="offre-an"><span class="pastille-offre">2 mois offerts</span> ou <strong>${esc(f.prix)}</strong></p>
         ${f.surCarte === false ? "" : `<p class="pour">${esc(f.pour)}</p>`}
         <ul class="formule-donne">${f.donne.map((d) => `<li>${esc(d)}</li>`).join("")}</ul>
         <a class="bouton ${id === "complet" ? "bouton-accent" : "bouton-sobre"}" href="${esc(lienPaiement(id, "an") ||
-          `mailto:${SITE.courriel}?subject=${encodeURIComponent(`Démarrer un abonnement — ${f.l}, à l'année`)}`)}">S'abonner à l'année</a>
+          `mailto:${SITE.courriel}?subject=${encodeURIComponent(`Démarrer un abonnement — ${f.l}, à l'année`)}`)}">Abonnement annuel</a>
         <a class="lien-mois" href="${esc(lienPaiement(id, "mois") ||
-          `mailto:${SITE.courriel}?subject=${encodeURIComponent(`Démarrer un abonnement — ${f.l}, au mois`)}`)}">ou payer au mois</a>
+          `mailto:${SITE.courriel}?subject=${encodeURIComponent(`Démarrer un abonnement — ${f.l}, au mois`)}`)}">Abonnement mensuel</a>
       </article>`).join("\n      ")}
     </div>
     <p class="mention-tva">Prix affichés, sans devis.</p>
@@ -3733,17 +3733,13 @@ function pageAbonnement(V) {
       Les boutons ouvrent la page de paiement de Stripe : par carte, prélevé chaque année ou chaque mois.
       Vos coordonnées bancaires ne passent jamais par ce site.
       ${lienPaiement("portail") ? `Vous pouvez <a href="${esc(lienPaiement("portail"))}">gérer ou résilier votre abonnement</a> à tout moment.` : ""}
-    </p>` : `<p class="reserve" style="margin-top:var(--t5)">
-      <strong>Le paiement en ligne n'est pas encore branché.</strong>
-      Les boutons ouvrent pour l'instant un courriel à ${esc(SITE.courriel)} :
-      le prélèvement automatique suppose un service de paiement, qui n'est pas encore en place.
-    </p>`}
+    </p>` : ""}
   </div>
 </section>
 
 <section class="section section-tein" id="essayer">
   <div class="enveloppe">
-    <h2 class="titre-section">Essayer avant de s'abonner</h2>
+    <h2 class="titre-section">Démarrer un essai gratuit</h2>
     <p class="intro titre-section">Sans compte et sans mot de passe, avec un jeu d'essai.
     La formule choisie décide des écrans ouverts — c'est exactement ce qui se passera
     avec un vrai abonnement.</p>
@@ -3753,7 +3749,7 @@ function pageAbonnement(V) {
         ${Object.keys(FORMULES).map((id) => `<label class="choix-formule">
           <input type="radio" name="formule" value="${esc(id)}"${id === "complet" ? " checked" : ""}>
           <span class="corps">
-            <span class="titre">${esc(FORMULES[id].l)}</span>
+            <span class="titre">${esc(FORMULES[id].carte || FORMULES[id].l)}</span>
             <span class="prix">${esc(FORMULES[id].prixAn)} ou ${esc(FORMULES[id].prix)}</span>
             <span class="ouvre">${esc(FORMULES[id].ouvre)}</span>
           </span>
@@ -3764,33 +3760,6 @@ function pageAbonnement(V) {
       </p>
       <p class="etiq rangee rangee-centre" id="etat-session" role="status" style="margin-top:var(--t3)"></p>
     </div>
-  </div>
-</section>
-
-<section class="section">
-  <div class="enveloppe">
-    <h2 class="titre-section">Ce qui n'est pas compris</h2>
-    <ul class="raisons">
-      <li class="raison" data-paraitre>
-        <span class="numero" aria-hidden="true">—</span>
-        <h3>Le conseil juridique</h3>
-        <p>Sur un point litigieux, vous serez orienté vers un avocat. Le service donne
-        un cadre méthodologique, il ne tranche pas le droit.</p>
-      </li>
-      <li class="raison" data-paraitre>
-        <span class="numero" aria-hidden="true">—</span>
-        <h3>La certification</h3>
-        <p>Les organismes certificateurs restent indépendants. On prépare l'audit,
-        on ne délivre pas le certificat.</p>
-      </li>
-      <li class="raison" data-paraitre>
-        <span class="numero" aria-hidden="true">—</span>
-        <h3>Les démarches à votre place</h3>
-        <p>Les déclarations auprès de l'administration restent les vôtres. Plusieurs
-        établissements, groupes, secteurs très réglementés : sur devis, parce que ce qui
-        s'applique change tout.</p>
-      </li>
-    </ul>
   </div>
 </section>
 
