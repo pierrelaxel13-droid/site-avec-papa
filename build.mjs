@@ -3739,21 +3739,8 @@ function pageAbonnement(V) {
 <section class="section section-tein" id="essayer">
   <div class="enveloppe">
     <h2 class="titre-section">Démarrer une démonstration gratuite</h2>
-    <p class="intro titre-section">Sans compte et sans mot de passe, avec un jeu d'essai.
-    La formule choisie décide des écrans ouverts — c'est exactement ce qui se passera
-    avec un vrai abonnement.</p>
 
     <div class="essai" id="essai">
-      <div class="choix-formules" id="choix-formules">
-        ${Object.keys(FORMULES).map((id) => `<label class="choix-formule">
-          <input type="radio" name="formule" value="${esc(id)}"${id === "complet" ? " checked" : ""}>
-          <span class="corps">
-            <span class="titre">${esc(FORMULES[id].carte || FORMULES[id].l)}</span>
-            <span class="prix">${esc(FORMULES[id].prixAn)} ou ${esc(FORMULES[id].prix)}</span>
-            <span class="ouvre">${esc(FORMULES[id].ouvre)}</span>
-          </span>
-        </label>`).join("\n")}
-      </div>
       <p class="rangee rangee-centre" style="margin-top:var(--t4)">
         <button type="button" class="bouton bouton-accent" id="entrer-demo">Entrer en démonstration</button>
       </p>
