@@ -13,7 +13,8 @@
                (5xx), ou ne répond pas dans les 20 s. Ça ne veut pas dire que
                le lien est mauvais : à ouvrir à la main.
      bon       tout le reste (2xx, 3xx)
-   Seuls les liens morts font échouer l'action.
+   Seuls les liens morts font échouer l'action — sauf ceux qui ne sont que
+   dans le relevé : ils viennent du flux d'une source (avertissement).
 
    Politesse : deux requêtes à la fois par site au plus, une pause entre deux,
    et un nom de robot qui dit qui nous sommes.
@@ -112,5 +113,13 @@ const rapport = [
 ].join("\n");
 console.log("\n" + rapport);
 if (process.env.GITHUB_STEP_SUMMARY) await appendFile(process.env.GITHUB_STEP_SUMMARY, rapport + "\n");
-for (const r of morts.slice(0, 50)) console.log(`::error::Lien mort : ${r.url} (${r.statut || r.erreur}) sur ${ou.get(r.url)[0]}`);
-process.exit(morts.length ? 1 : 0);
+/* Un lien mort qui n'est que dans le relevé vient du flux d'une source (la
+   douane a retiré sa page, par exemple) : nous n'y pouvons rien, et il partira
+   avec le texte, au bout de 14 jours. Il est signalé, sans faire échouer
+   l'action. Un lien mort ailleurs — fiches, référentiel, pages — est à nous. */
+const releve = (f) => /(^|\/)releve\.html$/.test(f);
+const duReleve = morts.filter((r) => ou.get(r.url).every(releve));
+const aCorriger = morts.filter((r) => !duReleve.includes(r));
+for (const r of duReleve.slice(0, 50)) console.log(`::warning::Lien mort chez la source (relevé) : ${r.url} (${r.statut || r.erreur})`);
+for (const r of aCorriger.slice(0, 50)) console.log(`::error::Lien mort : ${r.url} (${r.statut || r.erreur}) sur ${ou.get(r.url)[0]}`);
+process.exit(aCorriger.length ? 1 : 0);

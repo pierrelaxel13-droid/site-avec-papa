@@ -70,6 +70,12 @@ jobs:
                    /app/releve.html /app/secteurs.html /assets/site.css \
                    /assets/amorce.js; do
             code=$(curl -sS -o /dev/null -w "%{http_code}" --max-time 30 "$SITE$p" || echo 000)
+            # Pendant que GitHub Pages remplace le site, une page peut répondre
+            # 503 une fois : on réessaie 15 s plus tard avant de crier.
+            if [ "$code" != "200" ]; then
+              sleep 15
+              code=$(curl -sS -o /dev/null -w "%{http_code}" --max-time 30 "$SITE$p" || echo 000)
+            fi
             echo "  $code  $p"
             [ "$code" = "200" ] || { echo "::error::$p répond $code"; faute=1; }
           done

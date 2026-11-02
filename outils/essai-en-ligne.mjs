@@ -158,8 +158,10 @@ async function essai() {
     ok(await p.locator("#registre-compte .ligne-registre").count() === 3, "registre : 3 entrées (plan, revue, correction), chaîne intacte");
     ok(sql(`select intact from public.verifier_registre(${litteral(e)})`) === "t", "la base confirme : chaîne d'empreintes intacte");
     await p.goto(SITE + "app/index.html"); await pret(p);
-    await p.waitForFunction(() => (document.querySelector("#bord-n-registre")?.textContent || "…") !== "…", null, { timeout: 30000 });
-    ok((await p.locator("#bord-n-registre").textContent()) === "3", "tableau de bord : 3 entrées au registre");
+    // Le tableau de bord (3 novembre 2026) : le tableau des textes, et les dernières traces du registre.
+    await p.waitForFunction(() => document.querySelectorAll("#bord-traces .ligne-registre").length > 0, null, { timeout: 30000 });
+    ok((await p.locator(".tableau-bord tbody tr").count()) === 4 && (await p.locator("#bord-traces .ligne-registre").count()) === 3,
+      "tableau de bord : le tableau (publiés, applicables, lus, actions) et les 3 dernières traces du registre");
 
     // 6 bis. Décider sur un texte du relevé, en tirer une action, la clore, télécharger le registre.
     await p.goto(SITE + "app/releve.html"); await pret(p);
