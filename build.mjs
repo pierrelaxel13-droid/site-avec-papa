@@ -3339,28 +3339,25 @@ ${bandeAvis(AVIS)}
     <div id="profil-qhse" role="tabpanel" aria-labelledby="onglet-qhse" hidden>
     <ul class="traits">
       <li class="trait">
-        <svg class="icone" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16M7 12h10m-7 7h4"/></svg>
-        <div><h3>Le tri est fait en amont</h3>
-        <p>Seuls les textes qui vous concernent arrivent, chacun avec ce qu'il change
-        chez vous. Les autres restent à part, dans un volet replié : rien n'est caché.</p></div>
+        <svg class="icone" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 7v5l3 2"/><circle cx="12" cy="12" r="9"/></svg>
+        <div><h3>Une synthèse globale des textes qui vous sont applicables</h3>
+        <p>Seuls les textes qui vous concernent vous sont présentés. Les autres restent à part,
+        mais sont accessibles.</p></div>
       </li>
       <li class="trait">
-        <svg class="icone" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 12l2 2 4-5"/><rect x="4" y="3" width="16" height="18" rx="2"/></svg>
-        <div><h3>Le registre que l'auditeur demande</h3>
-        <p>Chaque revue, chaque décision, chaque action est datée et conservée.
-        Une ligne ne se réécrit pas : une correction s'ajoute. Il s'imprime tel quel.</p></div>
+        <svg class="icone" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 12l2 2 4-5"/><circle cx="12" cy="12" r="9"/></svg>
+        <div><h3>Réalisation de votre conformité réglementaire</h3>
+        <p>Une synthèse des textes qui vous sont applicables, et de ceux qui sont appliqués dans votre société.</p></div>
       </li>
       <li class="trait">
-        <svg class="icone" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M12 3v3m0 12v3M3 12h3m12 0h3M5.6 5.6l2.1 2.1m8.6 8.6 2.1 2.1m0-12.8-2.1 2.1M7.7 16.3l-2.1 2.1"/></svg>
-        <div><h3>Votre situation change la liste</h3>
-        <p>${V.declencheurs.length} questions — installation classée, amiante, appareils de levage,
-        transport de marchandises — ajoutent les sujets qui vont avec.</p></div>
+        <svg class="icone" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h14v16l-7-3-7 3Z"/><path d="M9 9h6"/></svg>
+        <div><h3>Un plan d'actions préconisées</h3>
+        <p>Pour répondre aux textes passés, présents et futurs.</p></div>
       </li>
       <li class="trait">
-        <svg class="icone" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 3 7v5c0 5 3.8 8.3 9 9 5.2-.7 9-4 9-9V7Z"/></svg>
-        <div><h3>Les sources sont citées</h3>
-        <p>Chaque sujet porte ses textes et les sources officielles où les vérifier.
-        Rien ne vous est demandé sur parole.</p></div>
+        <svg class="icone" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 6h12M8 12h12M8 18h12"/><path d="M4 6h.01M4 12h.01M4 18h.01"/></svg>
+        <div><h3>Un tableau des textes publiés chaque jour</h3>
+        <p>Avec l'ensemble des liens pour y accéder.</p></div>
       </li>
     </ul>
     <div class="normes-onglet">
