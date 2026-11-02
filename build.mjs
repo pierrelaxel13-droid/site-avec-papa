@@ -3503,8 +3503,8 @@ function pageDecouvrir(V, ECRANS, C, NAF, SOURCES) {
       d: "Une mise à jour toutes les heures." },
     { t: "Sélectionnez votre code NAF", i: '<path d="M4 5h16l-6 8v6l-4-2v-4z"/>',
       d: `Parmi les ${nCodes || V.divisions.length} proposés. Répondez aux questions pour affiner les spécificités de votre société.` },
-    { t: "Ce qu'il faut faire", i: '<path d="M9 6h11M9 12h11M9 18h11"/><path d="m3.5 6 1 1 2-2M3.5 12l1 1 2-2M3.5 18l1 1 2-2"/>',
-      d: "Chaque texte arrive avec les gestes à faire, et le texte lui-même, tel que publié." },
+    { t: "Votre synthèse, chaque jour", i: '<path d="M9 6h11M9 12h11M9 18h11"/><path d="m3.5 6 1 1 2-2M3.5 12l1 1 2-2M3.5 18l1 1 2-2"/>',
+      d: "Chaque jour, votre synthèse est mise à jour avec les textes qui vous sont applicables." },
     { t: "Fait, et prouvé", i: '<path d="M12 3 4 6v6c0 4.5 3.4 7.8 8 9 4.6-1.2 8-4.5 8-9V6z"/><path d="m8.5 12 2.5 2.5 4.5-5"/>',
       d: "Vous cochez « fait » ; la date est gardée, et le registre la montre à l'auditeur." }
   ];
