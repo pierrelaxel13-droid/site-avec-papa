@@ -3276,3 +3276,8 @@ a.puce-fixe { text-decoration: none; color: inherit; }
 .rail-item .legende { margin-inline: auto; }
 /* Un nom trop long pour une ligne lisible (l'offre 03) passe à la ligne, à la taille des autres. */
 .nom-offre-long { white-space: normal; }
+/* « Une question avant de vous abonner ? » : plus petit, sur une seule ligne
+   (accueil et page S'abonner). */
+.bande-finale h2, .bande-accueil h2 { max-width: none; white-space: nowrap; font-size: clamp(.95rem, .55rem + 1.6vw, 1.9rem); }
+/* Offres : toutes les lignes en gras, de la même couleur (3 novembre 2026). */
+.formule-donne li, .formule-donne li:first-child { font-weight: 700; color: var(--encre); }
