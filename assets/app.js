@@ -717,7 +717,11 @@
 
     // Une recherche venue d'ailleurs (?q=boulangerie) choisit la division.
     try {
-      var q = new URLSearchParams(window.location.search).get("q");
+      var params = new URLSearchParams(window.location.search);
+      // Un métier choisi sur l'accueil (?metier=43) ouvre l'outil sur lui.
+      var metier = params.get("metier");
+      if (metier && P.div[metier]) choix.value = metier;
+      var q = params.get("q");
       if (q) {
         var n = normalise(q);
         var trouve = Object.keys(P.div).filter(function (c) {

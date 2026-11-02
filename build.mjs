@@ -358,6 +358,7 @@ function page({ titre, description, racine = "", zone = "public", actif = "", co
         <path d="M5.5 9v10.5h4.5v-6h4v6h4.5V9"/></svg>`;
   const menuPublic = `
       ${lien("index.html", `${maison}Accueil`, "produit")}
+      <a href="${a("index.html")}#contact">Nous contacter</a>
       ${lien("decouvrir.html", "Présentation", "decouvrir")}
       ${lien("abonnement.html", "S'abonner", "abonnement")}
       <a class="bouton bouton-bandeau connexion-bureau" href="${a("connexion.html")}">Connexion</a>
@@ -2951,6 +2952,122 @@ function blocCollecte(JO) {
     </p>`;
 }
 
+/* --- « Ce qui s'applique chez vous » : l'outil, sur la page Présentation ----
+   Le même calcul que l'application (assets/app.js, simulateur()). Arrivé par
+   un métier de l'accueil (?metier=43), il s'ouvre sur ce métier. */
+function sectionSimulateur(V) {
+  const nbDomaines = Object.keys(V.domaines).length;
+  const divDefaut = V.divisions.filter((d) => d.c === "43")[0] || V.divisions[0];
+  const vuDefaut = perimetre(V, divDefaut.c);
+  const parSection = V.sections.map((s) => ({
+    s, divisions: V.divisions.filter((d) => d.s === s.c)
+  })).filter((g) => g.divisions.length);
+  return `
+<section class="section section-tein" id="simulateur">
+  <div class="enveloppe">
+    <h2 class="titre-section">Ce qui s'applique chez vous</h2>
+    <p class="intro titre-section">Choisissez votre métier, cochez ce qui est vrai chez vous.
+    La liste se met à jour toute seule, et c'est le même calcul que dans l'application.</p>
+
+    <div class="simulateur">
+      <div class="reglages">
+        <div class="reglage">
+          <label class="etiq" for="choix-division">Votre métier</label>
+          <select id="choix-division">
+            ${parSection.map((g) => `<optgroup label="${esc(g.s.c)} — ${esc(g.s.l)}">
+              ${g.divisions.map((d) => `<option value="${esc(d.c)}"${d.c === divDefaut.c ? " selected" : ""}>${esc(d.c)} — ${esc(d.l)}</option>`).join("")}
+            </optgroup>`).join("")}
+          </select>
+        </div>
+        <div class="reglage">
+          <span class="etiq">Ce qui est vrai chez vous</span>
+          <div class="cases" id="sim-questions">
+            ${questionsSimulateur(vuDefaut.declencheurs)}
+          </div>
+        </div>
+      </div>
+
+      <div class="resultat">
+        <h3 id="sim-titre">${esc(divDefaut.l)}</h3>
+        <p>Ce que ça représente, sur l'ensemble des sujets suivis.</p>
+        <hr class="filet">
+
+        <ul class="coup-d-oeil">
+          <li>
+            <span class="pastille"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h14v16l-7-3-7 3Z"/></svg></span>
+            <span><span class="etiq">Sujets à suivre</span><span class="valeur" id="sim-total">${vuDefaut.base.length}</span></span>
+          </li>
+          <li>
+            <span class="pastille ambre"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span>
+            <span><span class="etiq">À revoir le plus souvent</span><span class="valeur" id="sim-rythme">${esc(vuDefaut.groupes.length ? vuDefaut.groupes[0].f.l : "—")}</span></span>
+          </li>
+          <li>
+            <span class="pastille verte"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></span>
+            <span><span class="etiq">Ajoutés par vos réponses</span><span class="valeur" id="sim-contexte">0</span></span>
+          </li>
+        </ul>
+
+        <div class="jauge" id="sim-jauge" aria-hidden="true">
+          ${Array.from({ length: nbDomaines }, (_, i) =>
+            `<span${i < vuDefaut.base.length ? ' class="pleine"' : ""}></span>`).join("")}
+        </div>
+
+        <ul class="rythmes" id="sim-rythmes">
+          ${vuDefaut.groupes.map((g) => {
+            const noms = g.base.map((id) => V.domaines[id].nom);
+            const reste = noms.length - 3;
+            return `<li>
+            <span class="nom">${esc(g.f.l)}</span>
+            <span class="mots">${esc(noms.slice(0, 3).join(" · "))}${reste > 0 ? ` <span class="reste">et ${reste} autre${reste > 1 ? "s" : ""}</span>` : ""}</span>
+            <span class="compte">${g.base.length}</span>
+          </li>`; }).join("")}
+        </ul>
+
+        <p class="note-source" id="sim-phrase">
+          Pour <strong>${esc(divDefaut.l)}</strong> (NAF ${esc(divDefaut.c)}), il y a
+          <strong>${vuDefaut.base.length} sujets à suivre sur ${nbDomaines}</strong>. Le rythme le plus
+          soutenu : <strong>${esc(vuDefaut.groupes.length ? CHAQUE[vuDefaut.groupes[0].id] || vuDefaut.groupes[0].f.l.toLowerCase() : "—")}</strong>.
+        </p>
+        <p class="note-source">
+          C'est un point de départ, pas un avis juridique sur votre situation. Les textes
+          viennent de Légifrance et des sites publics cités sur chaque sujet.
+        </p>
+        <p class="rangee" style="margin-top:var(--t4)">
+          <a class="bouton bouton-accent" href="abonnement.html">Démarrer un abonnement</a>
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+`;
+}
+
+/* --- D'où viennent les textes (page Présentation) -------------------------- */
+function sectionSources(V) {
+  return `
+<section class="section">
+  <div class="enveloppe">
+    <h2 class="titre-section">D'où viennent les textes</h2>
+    <p class="intro titre-section">Toutes publiques, toutes citées : vous pouvez vérifier
+    chaque ligne vous-même.</p>
+    <ul class="sources-bande">
+      ${V.sourcesGenerales.map((s) => `<li><a href="${esc(s.url)}" target="_blank" rel="noopener">${esc(s.nom)} ${sortant}</a></li>`).join("\n")}
+    </ul>
+    <div class="deux-colonnes" style="margin-top:var(--t6)">
+      <p class="reserve">
+        <strong>Et ce site, aujourd'hui.</strong>
+        Les comptes sont en place : chaque entreprise a son espace, protégé par mot de passe. Le paiement
+        en ligne ne l'est pas encore : on s'abonne par courriel. La démonstration, elle, reste ouverte à
+        tous, avec une entreprise et des textes d'essai.
+      </p>
+    </div>
+  </div>
+</section>
+
+`;
+}
+
 function pageAccueil(V, D, METIERS, ECRANS, C = null, NAF = null, SOURCES = [], AVIS = [], JO = null) {
   const nbDomaines = Object.keys(V.domaines).length;
   const defaut = "43";                      // Travaux de construction spécialisés
@@ -3131,7 +3248,7 @@ function pageAccueil(V, D, METIERS, ECRANS, C = null, NAF = null, SOURCES = [], 
   ];
 
   const corps = `
-<section class="heros">
+<section class="heros heros-accueil">
   <div class="enveloppe">
     <div class="heros-texte">
       <h1>Votre veille réglementaire, notre préoccupation</h1>
@@ -3156,83 +3273,6 @@ function pageAccueil(V, D, METIERS, ECRANS, C = null, NAF = null, SOURCES = [], 
 </section>
 
 ${bandeAvis(AVIS)}
-
-<section class="section section-tein" id="simulateur">
-  <div class="enveloppe">
-    <h2 class="titre-section">Ce qui s'applique chez vous</h2>
-    <p class="intro titre-section">Choisissez votre métier, cochez ce qui est vrai chez vous.
-    La liste se met à jour toute seule, et c'est le même calcul que dans l'application.</p>
-
-    <div class="simulateur">
-      <div class="reglages">
-        <div class="reglage">
-          <label class="etiq" for="choix-division">Votre métier</label>
-          <select id="choix-division">
-            ${parSection.map((g) => `<optgroup label="${esc(g.s.c)} — ${esc(g.s.l)}">
-              ${g.divisions.map((d) => `<option value="${esc(d.c)}"${d.c === divDefaut.c ? " selected" : ""}>${esc(d.c)} — ${esc(d.l)}</option>`).join("")}
-            </optgroup>`).join("")}
-          </select>
-        </div>
-        <div class="reglage">
-          <span class="etiq">Ce qui est vrai chez vous</span>
-          <div class="cases" id="sim-questions">
-            ${questionsSimulateur(vuDefaut.declencheurs)}
-          </div>
-        </div>
-      </div>
-
-      <div class="resultat">
-        <h3 id="sim-titre">${esc(divDefaut.l)}</h3>
-        <p>Ce que ça représente, sur l'ensemble des sujets suivis.</p>
-        <hr class="filet">
-
-        <ul class="coup-d-oeil">
-          <li>
-            <span class="pastille"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h14v16l-7-3-7 3Z"/></svg></span>
-            <span><span class="etiq">Sujets à suivre</span><span class="valeur" id="sim-total">${vuDefaut.base.length}</span></span>
-          </li>
-          <li>
-            <span class="pastille ambre"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span>
-            <span><span class="etiq">À revoir le plus souvent</span><span class="valeur" id="sim-rythme">${esc(vuDefaut.groupes.length ? vuDefaut.groupes[0].f.l : "—")}</span></span>
-          </li>
-          <li>
-            <span class="pastille verte"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></span>
-            <span><span class="etiq">Ajoutés par vos réponses</span><span class="valeur" id="sim-contexte">0</span></span>
-          </li>
-        </ul>
-
-        <div class="jauge" id="sim-jauge" aria-hidden="true">
-          ${Array.from({ length: nbDomaines }, (_, i) =>
-            `<span${i < vuDefaut.base.length ? ' class="pleine"' : ""}></span>`).join("")}
-        </div>
-
-        <ul class="rythmes" id="sim-rythmes">
-          ${vuDefaut.groupes.map((g) => {
-            const noms = g.base.map((id) => V.domaines[id].nom);
-            const reste = noms.length - 3;
-            return `<li>
-            <span class="nom">${esc(g.f.l)}</span>
-            <span class="mots">${esc(noms.slice(0, 3).join(" · "))}${reste > 0 ? ` <span class="reste">et ${reste} autre${reste > 1 ? "s" : ""}</span>` : ""}</span>
-            <span class="compte">${g.base.length}</span>
-          </li>`; }).join("")}
-        </ul>
-
-        <p class="note-source" id="sim-phrase">
-          Pour <strong>${esc(divDefaut.l)}</strong> (NAF ${esc(divDefaut.c)}), il y a
-          <strong>${vuDefaut.base.length} sujets à suivre sur ${nbDomaines}</strong>. Le rythme le plus
-          soutenu : <strong>${esc(vuDefaut.groupes.length ? CHAQUE[vuDefaut.groupes[0].id] || vuDefaut.groupes[0].f.l.toLowerCase() : "—")}</strong>.
-        </p>
-        <p class="note-source">
-          C'est un point de départ, pas un avis juridique sur votre situation. Les textes
-          viennent de Légifrance et des sites publics cités sur chaque sujet.
-        </p>
-        <p class="rangee" style="margin-top:var(--t4)">
-          <a class="bouton bouton-accent" href="abonnement.html">Démarrer un abonnement</a>
-        </p>
-      </div>
-    </div>
-  </div>
-</section>
 
 <section class="section">
   <div class="enveloppe">
@@ -3264,10 +3304,11 @@ ${bandeAvis(AVIS)}
     <p class="intro titre-section">Quel que soit votre domaine d'activité, chaque entreprise doit se tenir informée
       des textes réglementaires qui lui sont applicables et mettre en place les actions nécessaires pour y répondre.</p>
 
-    <div class="bascule" role="tablist" aria-label="Profil" data-bascule>
+    <div class="bascule bascule-trois" role="tablist" aria-label="Profil" data-bascule>
       <span class="bascule-curseur" aria-hidden="true"></span>
       <button type="button" role="tab" id="onglet-dirigeant" aria-selected="true" aria-controls="profil-dirigeant">Dirigeant</button>
       <button type="button" role="tab" id="onglet-qhse" aria-selected="false" aria-controls="profil-qhse">Responsable QHSE</button>
+      <button type="button" role="tab" id="onglet-consultant" aria-selected="false" aria-controls="profil-consultant">Consultant</button>
     </div>
 
     <ul class="traits" id="profil-dirigeant" role="tabpanel" aria-labelledby="onglet-dirigeant">
@@ -3276,6 +3317,11 @@ ${bandeAvis(AVIS)}
         <div><h3>Une synthèse globale des textes qui vous sont applicables</h3>
         <p>Seuls les textes qui vous concernent vous sont présentés. Les autres restent à part,
         mais sont accessibles.</p></div>
+      </li>
+      <li class="trait">
+        <svg class="icone" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 12l2 2 4-5"/><circle cx="12" cy="12" r="9"/></svg>
+        <div><h3>Réalisation de votre conformité réglementaire</h3>
+        <p>Une synthèse des textes qui vous sont applicables, et de ceux qui sont appliqués dans votre société.</p></div>
       </li>
       <li class="trait">
         <svg class="icone" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h14v16l-7-3-7 3Z"/><path d="M9 9h6"/></svg>
@@ -3289,7 +3335,8 @@ ${bandeAvis(AVIS)}
       </li>
     </ul>
 
-    <ul class="traits" id="profil-qhse" role="tabpanel" aria-labelledby="onglet-qhse" hidden>
+    <div id="profil-qhse" role="tabpanel" aria-labelledby="onglet-qhse" hidden>
+    <ul class="traits">
       <li class="trait">
         <svg class="icone" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16M7 12h10m-7 7h4"/></svg>
         <div><h3>Le tri est fait en amont</h3>
@@ -3315,31 +3362,51 @@ ${bandeAvis(AVIS)}
         Rien ne vous est demandé sur parole.</p></div>
       </li>
     </ul>
-  </div>
-</section>
+    <div class="normes-onglet">
+    <p class="normes-intro"><strong>Pour votre certification.</strong> Ce que la norme demande sur la réglementation, et ce que le
+    site vous donne pour le montrer à l'auditeur.</p>
+    <ul class="normes">
+      ${[
+        { n: "ISO 14001", t: "Environnement",
+          demande: "Connaître vos obligations de conformité (§ 6.1.3) et évaluer votre conformité, en gardant la preuve (§ 9.1.2).",
+          donne: "La liste de ce qui s'applique chez vous, les textes qui paraissent, et chaque évaluation datée au registre." },
+        { n: "ISO 45001", t: "Santé et sécurité au travail",
+          demande: "Déterminer les exigences légales applicables (§ 6.1.3) et évaluer votre conformité, preuve à l'appui (§ 9.1.2).",
+          donne: "Les sujets santé-sécurité de votre métier, ce qu'il faut faire pour chaque texte, et la case « fait » datée." },
+        { n: "MASE", t: "Entreprises intervenantes",
+          demande: "Connaître et suivre la réglementation qui s'applique à vos interventions, et le montrer.",
+          donne: "La fiche de votre métier, ce qu'il faut faire pour chaque texte, et un registre qui s'imprime tel quel pour l'audit." },
+        { n: "Qualiopi", t: "Organismes de formation",
+          demande: "Une veille légale et réglementaire sur la formation professionnelle, et son exploitation (indicateur 23).",
+          donne: "Le sujet « Enseignement, formation et certification qualité » suivi à son rythme, revue après revue." }
+      ].map((x) => `<li class="norme">
+        <p class="norme-nom">${esc(x.n)} <span>${esc(x.t)}</span></p>
+        <p><strong>Elle demande :</strong> ${esc(x.demande)}</p>
+        <p><strong>Le site donne :</strong> ${esc(x.donne)}</p>
+      </li>`).join("")}
+    </ul>
+    <p class="note-source" style="text-align:center;margin-top:var(--t4)">Le site ne certifie
+    pas : il vous aide à tenir et à montrer votre veille. La décision reste à l'auditeur.</p>
+    </div>
+    </div>
 
-<section class="section">
-  <div class="enveloppe">
-    <h2 class="titre-section">À quoi ça ressemble</h2>
-
-    ${vitrine(ECRANS, {
-      image: "releve.png",
-      alt: "Le relevé des textes : chaque texte daté, rattaché à un domaine, avec l'état de la décision.",
-      titre: "Ce qui vous concerne, et rien d'autre",
-      texte: `Une veille qui remonte tout ne se lit plus, et le texte qui comptait se perd.
-        Ici le tri est fait avant, sur votre métier : chaque texte arrive avec ce qu'il change
-        chez vous et ce qu'il faut faire.`,
-      bouton: "En savoir plus sur le site", lien: "le-site.html"
-    })}
-
-    ${vitrine(ECRANS, {
-      image: "registre.png",
-      alt: "Le registre de preuves : revues, décisions et actions, chronologiques et datées.",
-      titre: "Ce qu'un auditeur demande vraiment",
-      texte: `Chaque revue, chaque décision, chaque action est datée et conservée. Le jour de
-        l'audit, le registre s'imprime tel quel : la preuve que la veille est faite.`,
-      bouton: "En savoir plus sur nous", lien: "nous.html"
-    })}
+    <ul class="traits" id="profil-consultant" role="tabpanel" aria-labelledby="onglet-consultant" hidden>
+      <li class="trait">
+        <svg class="icone" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18M9 20V10"/></svg>
+        <div><h3>Tous vos clients dans un tableau</h3>
+        <p>Un espace de cabinet liste vos entreprises clientes, avec pour chacune ses actions ouvertes et celles en retard.</p></div>
+      </li>
+      <li class="trait">
+        <svg class="icone" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 3 7v5c0 5 3.8 8.3 9 9 5.2-.7 9-4 9-9V7Z"/><path d="M9 12l2 2 4-5"/></svg>
+        <div><h3>Chaque client garde la main</h3>
+        <p>C'est le client qui vous autorise à entrer dans son espace, et il peut retirer cet accès à tout moment.</p></div>
+      </li>
+      <li class="trait">
+        <svg class="icone" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 12l2 2 4-5"/><rect x="4" y="3" width="16" height="18" rx="2"/></svg>
+        <div><h3>Votre travail reste chez le client</h3>
+        <p>Les revues et décisions que vous faites pour lui s'inscrivent à son registre, à votre nom et datées.</p></div>
+      </li>
+    </ul>
   </div>
 </section>
 
@@ -3353,9 +3420,9 @@ ${bandeAvis(AVIS)}
         ${VITRINE_SECTEURS.map((c) => {
           const d = V.divisions.filter((x) => x.c === c)[0];
           if (!d) throw new Error(`Vitrine de secteurs : division ${c} inconnue.`);
-          return `<li><button type="button" class="puce-fixe" data-division="${esc(d.c)}"
+          return `<li><a class="puce-fixe" href="decouvrir.html?metier=${esc(d.c)}#simulateur"
             title="Voir ce qui s'applique : ${esc(d.l)}">
-          <span class="code">${esc(d.c)}</span><span class="nom">${esc(d.l)}</span></button></li>`;
+          <span class="code">${esc(d.c)}</span><span class="nom">${esc(d.l)}</span></a></li>`;
         }).join("\n")}
       </ul>
     </div>
@@ -3395,67 +3462,6 @@ ${bandeAvis(AVIS)}
         entreprises à leurs audits. Et en face, un interlocuteur unique, joignable directement ${parQuoi()}.</p>
       </li>
     </ul>
-  </div>
-</section>
-
-<!-- Pour votre certification. Les services de veille se présentent d'abord
-     par norme (ISO 14001, ISO 45001, MASE) : c'est la question qu'un dirigeant
-     se pose en premier — « est-ce que ça me sert pour l'audit ? ». Chaque
-     carte dit ce que la norme demande sur la réglementation, puis ce que le
-     site donne. Les numéros de chapitre sont ceux des normes en vigueur. -->
-<section class="section">
-  <div class="enveloppe">
-    <h2 class="titre-section">Pour votre certification</h2>
-    <p class="intro titre-section">Ce que la norme demande sur la réglementation, et ce que le
-    site vous donne pour le montrer à l'auditeur.</p>
-    <ul class="normes">
-      ${[
-        { n: "ISO 14001", t: "Environnement",
-          demande: "Connaître vos obligations de conformité (§ 6.1.3) et évaluer votre conformité, en gardant la preuve (§ 9.1.2).",
-          donne: "La liste de ce qui s'applique chez vous, les textes qui paraissent, et chaque évaluation datée au registre." },
-        { n: "ISO 45001", t: "Santé et sécurité au travail",
-          demande: "Déterminer les exigences légales applicables (§ 6.1.3) et évaluer votre conformité, preuve à l'appui (§ 9.1.2).",
-          donne: "Les sujets santé-sécurité de votre métier, ce qu'il faut faire pour chaque texte, et la case « fait » datée." },
-        { n: "MASE", t: "Entreprises intervenantes",
-          demande: "Connaître et suivre la réglementation qui s'applique à vos interventions, et le montrer.",
-          donne: "La fiche de votre métier, ce qu'il faut faire pour chaque texte, et un registre qui s'imprime tel quel pour l'audit." },
-        { n: "Qualiopi", t: "Organismes de formation",
-          demande: "Une veille légale et réglementaire sur la formation professionnelle, et son exploitation (indicateur 23).",
-          donne: "Le sujet « Enseignement, formation et certification qualité » suivi à son rythme, revue après revue." }
-      ].map((x) => `<li class="norme">
-        <p class="norme-nom">${esc(x.n)} <span>${esc(x.t)}</span></p>
-        <p><strong>Elle demande :</strong> ${esc(x.demande)}</p>
-        <p><strong>Le site donne :</strong> ${esc(x.donne)}</p>
-      </li>`).join("")}
-    </ul>
-    <p class="note-source" style="text-align:center;margin-top:var(--t4)">Le site ne certifie
-    pas : il vous aide à tenir et à montrer votre veille. La décision reste à l'auditeur.</p>
-  </div>
-</section>
-
-<section class="section">
-  <div class="enveloppe">
-    <h2 class="titre-section">D'où viennent les textes</h2>
-    <p class="intro titre-section">Toutes publiques, toutes citées : vous pouvez vérifier
-    chaque ligne vous-même.</p>
-    <ul class="sources-bande">
-      ${V.sourcesGenerales.map((s) => `<li><a href="${esc(s.url)}" target="_blank" rel="noopener">${esc(s.nom)} ${sortant}</a></li>`).join("\n")}
-    </ul>
-    <div class="deux-colonnes" style="margin-top:var(--t6)">
-      <p class="reserve">
-        <strong>Ce que le service ne fait pas.</strong>
-        Ce n'est pas un conseil juridique, et la liste des textes qui vous concernent n'est
-        pas garantie complète. Chaque texte reste à vérifier sur
-        <a href="https://www.legifrance.gouv.fr" target="_blank" rel="noopener">Légifrance</a>,
-        et ce qu'il implique chez vous, à valider par quelqu'un de compétent.
-      </p>
-      <p class="reserve">
-        <strong>Et ce site, aujourd'hui.</strong>
-        Les comptes sont en place : chaque entreprise a son espace, protégé par mot de passe. Le paiement
-        en ligne ne l'est pas encore : on s'abonne par courriel. La démonstration, elle, reste ouverte à
-        tous, avec une entreprise et des textes d'essai.
-      </p>
-    </div>
   </div>
 </section>
 
@@ -3499,9 +3505,7 @@ ${SITE.offreConsultant ? `<section class="section">
     <span class="marque">${motMarque()}</span>
     <h2>${SITE.premierEchange ? "Un premier échange d'une heure, sans engagement" : "Une question avant de vous abonner ?"}</h2>
     <p class="mentions">
-      Écrivez-nous : un interlocuteur unique vous répond. ${esc(SITE.nom)} est conçu avec un consultant
-      QSE et HSE en exercice, pour tenir votre veille, garder vos preuves et préparer vos audits
-      (ISO 14001, ISO 45001, MASE, Qualiopi).
+      Contactez-nous, et notre équipe vous répondra dans les meilleurs délais.
     </p>
     <p class="rangee">
       <a class="bouton bouton-accent" href="mailto:${esc(SITE.courriel)}">${esc(SITE.courriel)}</a>
@@ -3665,7 +3669,7 @@ function pageDecouvrir(V, ECRANS, C, NAF, SOURCES) {
     </p>
   </div>
 </section>
-
+${sectionSimulateur(V)}
 <section class="section">
   <div class="enveloppe">
     <h2 class="titre-section">Du Journal officiel à votre écran</h2>
@@ -3724,7 +3728,7 @@ function pageDecouvrir(V, ECRANS, C, NAF, SOURCES) {
   </div>
 </section>
 
-<section class="section">
+${sectionSources(V)}<section class="section">
   <div class="enveloppe">
     <h2 class="titre-section">Ce que le site ne fait pas</h2>
     <div class="deux-colonnes" style="margin-top:var(--t5)">
@@ -3743,9 +3747,9 @@ function pageDecouvrir(V, ECRANS, C, NAF, SOURCES) {
 </section>`;
 
   return page({
-    titre: `Comment ça marche | ${SITE.nom}`,
+    titre: `Présentation | ${SITE.nom}`,
     description: "Du Journal officiel à la case « fait » : ce que le site va chercher, comment il trie, et ce que vous voyez.",
-    zone: "public", actif: "decouvrir", corps
+    zone: "public", actif: "decouvrir", corps, donneesPlan: true
   });
 }
 

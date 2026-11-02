@@ -888,6 +888,10 @@ html, body, * { scrollbar-width: none; }
   background: var(--accent);
   transition: transform .34s cubic-bezier(.22, .9, .25, 1);
 }
+/* Trois profils : le curseur fait un tiers. */
+.bascule-trois { max-width: 44rem; }
+.bascule-trois .bascule-curseur { width: calc((100% - 8px) / 3); }
+@media (max-width: 30rem) { .bascule-trois button { padding-inline: .4rem; font-size: .9rem; } }
 .bascule button {
   position: relative;
   min-height: 3rem; padding: .7rem 1rem;
@@ -3187,3 +3191,19 @@ mark.a-decider { background: #E6E1FF; color: #3B1FBF; }
 .liste-nouveaux a:hover { border-color: var(--accent); }
 .liste-nouveaux .avis-titre { font-size: 1rem; overflow-wrap: anywhere; }
 .liste-nouveaux .avis-separateur { padding: .4rem 0; background: none; border: 0; }
+
+/* --- Accueil, « Un outil qui répond à vos besoins » (2 novembre 2026) ------
+   Texte plus petit et justifié, à la demande d'Axel ; les normes (ISO,
+   MASE, Qualiopi) vivent dans l'onglet « Responsable QHSE ». */
+/* Justifié dès que les colonnes sont assez larges ; au téléphone, deux
+   colonnes étroites justifiées font de grands trous entre les mots. */
+@media (min-width: 40rem) { #profil-dirigeant, #profil-qhse, #profil-consultant { text-align: justify; hyphens: auto; } }
+#profil-dirigeant .trait h3, #profil-qhse .trait h3, #profil-consultant .trait h3 { font-size: 1.05rem; text-align: left; hyphens: manual; }
+#profil-dirigeant .trait p, #profil-qhse .trait p, #profil-consultant .trait p { font-size: .95rem; }
+.normes-onglet { margin-top: var(--t6); }
+.normes-onglet .normes-intro { max-width: 60ch; margin: 0 auto var(--t4); font-size: .98rem; text-align: center; }
+.normes-onglet .norme p { font-size: .93rem; }
+a.puce-fixe { text-decoration: none; color: inherit; }
+/* Le titre de l'accueil et sa phrase, plus petits (2 novembre 2026). */
+.heros-accueil h1 { font-size: clamp(1.95rem, 1rem + 3.7vw, 3.6rem); max-width: 22ch; }
+.heros-accueil .heros-sous { font-size: clamp(.98rem, .94rem + .3vw, 1.12rem); max-width: 64ch; }
