@@ -3197,7 +3197,20 @@ mark.a-decider { background: #E6E1FF; color: #3B1FBF; }
    MASE, Qualiopi) vivent dans l'onglet « Responsable QHSE ». */
 /* Justifié dès que les colonnes sont assez larges ; au téléphone, deux
    colonnes étroites justifiées font de grands trous entre les mots. */
-@media (min-width: 40rem) { #profil-dirigeant, #profil-qhse, #profil-consultant { text-align: justify; hyphens: auto; } }
+/* Une seule règle pour le texte courant des pages publiques (3 novembre
+   2026, « il faut une cohérence ») : justifié dès que la colonne est assez
+   large, aligné à gauche au téléphone. Les titres, les introductions
+   centrées et les étiquettes ne bougent pas. */
+@media (min-width: 40rem) {
+  .zone-public .trait p, .zone-public .raison p, .zone-public .norme p,
+  .zone-public .faq-reponse p, .zone-public .faq-reponse li,
+  .zone-public .bande-finale .mentions, .zone-public .lecture, .zone-public .reserve,
+  .zone-public .etape p, .zone-public .piece p, .zone-public .legende li,
+  .zone-public .formule-donne li, .zone-public .normes-intro,
+  .zone-public .installation p, .zone-public .resultat .note-source {
+    text-align: justify; hyphens: auto;
+  }
+}
 #profil-dirigeant .trait h3, #profil-qhse .trait h3, #profil-consultant .trait h3 { font-size: 1.05rem; text-align: left; hyphens: manual; }
 #profil-dirigeant .trait p, #profil-qhse .trait p, #profil-consultant .trait p { font-size: .95rem; }
 .normes-onglet { margin-top: var(--t6); }
@@ -3215,3 +3228,10 @@ a.puce-fixe { text-decoration: none; color: inherit; }
 .rail-item .chiffre { font-size: clamp(1.6rem, 1.1rem + 2vw, 2.3rem); }
 .rail-item .legende { font-size: .93rem; }
 .offre-profil { margin-top: var(--t5); }
+/* « Pourquoi nous », cinq raisons : trois puis deux au bureau. Cinq de front
+   faisaient des colonnes trop étroites pour un texte justifié. */
+@media (min-width: 64rem) {
+  .raisons-cinq { grid-auto-flow: row; grid-template-columns: repeat(6, minmax(0, 1fr)); }
+  .raisons.raisons-cinq > li { grid-column: span 2; }
+  .raisons.raisons-cinq > li:nth-child(4), .raisons.raisons-cinq > li:nth-child(5) { grid-column: span 3; }
+}

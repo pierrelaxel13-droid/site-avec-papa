@@ -3419,7 +3419,7 @@ ${bandeAvis(AVIS)}
 <section class="section section-tein">
   <div class="enveloppe">
     <h2 class="titre-section">Pourquoi nous</h2>
-    <ul class="raisons">
+    <ul class="raisons raisons-cinq">
       <li class="raison" data-paraitre>
         <span class="numero" aria-hidden="true">1</span>
         <h3>On trie avant de vous envoyer</h3>
@@ -3441,8 +3441,8 @@ ${bandeAvis(AVIS)}
       </li>
       <li class="raison" data-paraitre>
         <span class="numero" aria-hidden="true">4</span>
-        <h3>Conçu sur le terrain</h3>
-        <p>${esc(SITE.nom)} a été conçu avec un consultant QSE et HSE en exercice, qui prépare des
+        <h3>Conçu par une équipe de consultants QHSE seniors</h3>
+        <p>${esc(SITE.nom)} a été conçu par des consultants QHSE en exercice, qui préparent des
         entreprises à leurs audits. Et en face, un interlocuteur unique, joignable directement ${parQuoi()}.</p>
       </li>
       <li class="raison" data-paraitre>
@@ -3469,24 +3469,7 @@ ${SITE.offreConsultant ? `<section class="section">
   </div>
 </section>
 
-` : ""}<section class="section section-tein" id="questions">
-  <div class="enveloppe">
-    <h2 class="titre-section">Vos questions</h2>
-    <p class="intro titre-section">Les réponses courtes d'abord, le détail ensuite.
-    Ce qui n'est pas encore en place est dit tel quel.</p>
-    <div class="faq">
-      ${faq.map((t) => `<section class="faq-theme">
-        <h3>${esc(t.theme)}</h3>
-        ${t.questions.map(([q, r]) => `<details class="faq-question">
-          <summary>${esc(q).replace(/ ([?!:;])/g, "\u00a0$1")}</summary>
-          <div class="faq-reponse">${r}</div>
-        </details>`).join("")}
-      </section>`).join("")}
-    </div>
-  </div>
-</section>
-
-<section class="bande-finale bande-accueil" id="contact">
+` : ""}<section class="bande-finale bande-accueil" id="contact">
   <div class="enveloppe">
     <span class="marque">${motMarque()}</span>
     <h2>${SITE.premierEchange ? "Un premier échange d'une heure, sans engagement" : "Une question avant de vous abonner ?"}</h2>
