@@ -71,22 +71,24 @@
        tiennent : des surfaces franchement distinctes les unes des autres
        (fond, section teintée, carte), des filets visibles, et une teinte
        d'accent plus claire et plus saturée que celle du clair — sur du
-       quasi-noir, l'indigo du jour devient gris. */
+       quasi-noir, l'indigo du jour devient gris.
+       3 novembre 2026 : fonds et cartes éclaircis d'un cran, à la demande
+       d'Axel (« légèrement plus clair »). */
     --accent:        #8E7CFF;
     --accent-fonce:  #A99BFF;
-    --accent-clair:  #221C45;
+    --accent-clair:  #2C2556;
     --accent-filet:  #3A3175;
     --encre:         #EEF1F8;
     --encre-douce:   #A8B0C4;
     --encre-tenue:   #828AA0;
-    --papier:        #0B0D14;
-    --papier-tein:   #10131D;
-    --papier-pale:   #0E111A;
-    --carte:         #161A26;
-    --carte-pale:    #1C2130;
-    --creme:         #141222;
-    --filet:         #262C3C;
-    --filet-fort:    #39415A;
+    --papier:        #161923;
+    --papier-tein:   #1C202D;
+    --papier-pale:   #191C27;
+    --carte:         #222736;
+    --carte-pale:    #282E3F;
+    --creme:         #201E30;
+    --filet:         #333A4E;
+    --filet-fort:    #485069;
     --filet-controle:#8C94AB;
     --vert:          #4ADE94;
     --vert-fond:     #0D3326;
@@ -98,7 +100,7 @@
        dégradé du thème clair, traduit arrêt par arrêt, virait au brun verdâtre. */
     --degrade-heros: radial-gradient(118% 86% at 16% -8%, rgba(142, 124, 255, .26), transparent 58%),
                      radial-gradient(96% 76% at 88% 6%, rgba(72, 196, 180, .13), transparent 54%),
-                     linear-gradient(180deg, #121622 0%, #0B0D14 100%);
+                     linear-gradient(180deg, #1D2130 0%, #161923 100%);
     --degrade-puce:  linear-gradient(135deg, #2C2560, #1E2C4E 55%, #2A2168);
     --fil-rail:      linear-gradient(180deg, #4A3F93, #2C5467 45%, #4A3F93);
     --ombre-1: 0 1px 2px rgba(0, 0, 0, .5), 0 10px 24px -16px rgba(0, 0, 0, .8);
@@ -113,22 +115,23 @@
      tiennent : des surfaces franchement distinctes les unes des autres
      (fond, section teintée, carte), des filets visibles, et une teinte
      d'accent plus claire et plus saturée que celle du clair — sur du
-     quasi-noir, l'indigo du jour devient gris. */
+     quasi-noir, l'indigo du jour devient gris.
+     3 novembre 2026 : fonds et cartes éclaircis d'un cran. */
   --accent:        #8E7CFF;
   --accent-fonce:  #A99BFF;
-  --accent-clair:  #221C45;
+  --accent-clair:  #2C2556;
   --accent-filet:  #3A3175;
   --encre:         #EEF1F8;
   --encre-douce:   #A8B0C4;
   --encre-tenue:   #828AA0;
-  --papier:        #0B0D14;
-  --papier-tein:   #10131D;
-  --papier-pale:   #0E111A;
-  --carte:         #161A26;
-  --carte-pale:    #1C2130;
-  --creme:         #141222;
-  --filet:         #262C3C;
-  --filet-fort:    #39415A;
+  --papier:        #161923;
+  --papier-tein:   #1C202D;
+  --papier-pale:   #191C27;
+  --carte:         #222736;
+  --carte-pale:    #282E3F;
+  --creme:         #201E30;
+  --filet:         #333A4E;
+  --filet-fort:    #485069;
   --filet-controle:#8C94AB;
   --vert:          #4ADE94;
   --vert-fond:     #0D3326;
@@ -140,7 +143,7 @@
      dégradé du thème clair, traduit arrêt par arrêt, virait au brun verdâtre. */
   --degrade-heros: radial-gradient(118% 86% at 16% -8%, rgba(142, 124, 255, .26), transparent 58%),
                    radial-gradient(96% 76% at 88% 6%, rgba(72, 196, 180, .13), transparent 54%),
-                   linear-gradient(180deg, #121622 0%, #0B0D14 100%);
+                   linear-gradient(180deg, #1D2130 0%, #161923 100%);
   --degrade-puce:  linear-gradient(135deg, #2C2560, #1E2C4E 55%, #2A2168);
   --fil-rail:      linear-gradient(180deg, #4A3F93, #2C5467 45%, #4A3F93);
   --ombre-1: 0 1px 2px rgba(0, 0, 0, .5), 0 10px 24px -16px rgba(0, 0, 0, .8);
