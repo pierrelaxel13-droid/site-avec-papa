@@ -3209,3 +3209,9 @@ a.puce-fixe { text-decoration: none; color: inherit; }
 .heros-accueil .heros-sous { font-size: clamp(.98rem, .94rem + .3vw, 1.12rem); max-width: 64ch; }
 /* « Démarrer un abonnement », plus petit (2 novembre 2026). */
 .heros-abonnement h1 { font-size: clamp(1.9rem, 1rem + 3.2vw, 3.2rem); }
+/* Accueil (2 novembre 2026) : la question de fin plus petite ; les chiffres
+   de la bande blanche aussi ; « Découvrir l'offre » sous chaque profil. */
+.bande-accueil h2 { max-width: 24ch; font-size: clamp(1.6rem, 1rem + 2.2vw, 2.4rem); }
+.rail-item .chiffre { font-size: clamp(1.6rem, 1.1rem + 2vw, 2.3rem); }
+.rail-item .legende { font-size: .93rem; }
+.offre-profil { margin-top: var(--t5); }

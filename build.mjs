@@ -3310,7 +3310,8 @@ ${bandeAvis(AVIS)}
       <button type="button" role="tab" id="onglet-consultant" aria-selected="false" aria-controls="profil-consultant">Consultant</button>
     </div>
 
-    <ul class="traits" id="profil-dirigeant" role="tabpanel" aria-labelledby="onglet-dirigeant">
+    <div id="profil-dirigeant" role="tabpanel" aria-labelledby="onglet-dirigeant">
+    <ul class="traits">
       <li class="trait">
         <svg class="icone" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 7v5l3 2"/><circle cx="12" cy="12" r="9"/></svg>
         <div><h3>Une synthèse globale des textes qui vous sont applicables</h3>
@@ -3333,6 +3334,8 @@ ${bandeAvis(AVIS)}
         <p>Avec l'ensemble des liens pour y accéder.</p></div>
       </li>
     </ul>
+    <p class="rangee rangee-centre offre-profil"><a class="bouton bouton-accent" href="abonnement.html">Découvrir l'offre</a></p>
+    </div>
 
     <div id="profil-qhse" role="tabpanel" aria-labelledby="onglet-qhse" hidden>
     <ul class="traits">
@@ -3387,13 +3390,15 @@ ${bandeAvis(AVIS)}
     <p class="note-source" style="text-align:center;margin-top:var(--t4)">Le site ne certifie
     pas : il vous aide à tenir et à montrer votre veille. La décision reste à l'auditeur.</p>
     </div>
+    <p class="rangee rangee-centre offre-profil"><a class="bouton bouton-accent" href="abonnement.html">Découvrir l'offre</a></p>
     </div>
 
-    <ul class="traits" id="profil-consultant" role="tabpanel" aria-labelledby="onglet-consultant" hidden>
+    <div id="profil-consultant" role="tabpanel" aria-labelledby="onglet-consultant" hidden>
+    <ul class="traits">
       <li class="trait">
         <svg class="icone" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18M9 20V10"/></svg>
         <div><h3>Tous vos clients dans un tableau</h3>
-        <p>Un espace de cabinet liste vos entreprises clientes, avec pour chacune ses actions ouvertes et celles en retard.</p></div>
+        <p>Un espace liste les entreprises que vous accompagnez, avec pour chacune d'entre elles un suivi.</p></div>
       </li>
       <li class="trait">
         <svg class="icone" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 3 7v5c0 5 3.8 8.3 9 9 5.2-.7 9-4 9-9V7Z"/><path d="M9 12l2 2 4-5"/></svg>
@@ -3406,28 +3411,8 @@ ${bandeAvis(AVIS)}
         <p>Les revues et décisions que vous faites pour lui s'inscrivent à son registre, à votre nom et datées.</p></div>
       </li>
     </ul>
-  </div>
-</section>
-
-<section class="section">
-  <div class="enveloppe">
-    <h2 class="titre-section">Votre métier y est</h2>
-    <p class="intro titre-section">${NAF ? `${NAF.codes.length} codes APE, rangés en ${V.divisions.length} familles de métiers` : `${V.divisions.length} familles de métiers`}, chacune avec sa fiche.
-    En voici quelques-unes : cliquez sur la vôtre pour voir ce qui s'applique.</p>
-    <div class="panneau-puces">
-      <ul class="puces">
-        ${VITRINE_SECTEURS.map((c) => {
-          const d = V.divisions.filter((x) => x.c === c)[0];
-          if (!d) throw new Error(`Vitrine de secteurs : division ${c} inconnue.`);
-          return `<li><a class="puce-fixe" href="decouvrir.html?metier=${esc(d.c)}#simulateur"
-            title="Voir ce qui s'applique : ${esc(d.l)}">
-          <span class="code">${esc(d.c)}</span><span class="nom">${esc(d.l)}</span></a></li>`;
-        }).join("\n")}
-      </ul>
+    <p class="rangee rangee-centre offre-profil"><a class="bouton bouton-accent" href="consultants.html">Découvrir l'offre</a></p>
     </div>
-    <p class="rangee rangee-centre" style="margin-top:var(--t5)">
-      <a class="bouton bouton-accent" href="metiers.html">Voir tout</a>
-    </p>
   </div>
 </section>
 
@@ -3460,6 +3445,13 @@ ${bandeAvis(AVIS)}
         <p>${esc(SITE.nom)} a été conçu avec un consultant QSE et HSE en exercice, qui prépare des
         entreprises à leurs audits. Et en face, un interlocuteur unique, joignable directement ${parQuoi()}.</p>
       </li>
+      <li class="raison" data-paraitre>
+        <span class="numero" aria-hidden="true">5</span>
+        <h3>Votre métier est présent</h3>
+        <p>${NAF ? `Les ${NAF.codes.length} codes APE de la nomenclature, rangés en ${V.divisions.length} familles de métiers` : `${V.divisions.length} familles de métiers`},
+        de la boulangerie au transport routier : chacun a sa fiche, avec ce qui s'applique chez lui.
+        <a href="metiers.html">Voir tous les métiers</a>.</p>
+      </li>
     </ul>
   </div>
 </section>
@@ -3472,11 +3464,6 @@ ${SITE.offreConsultant ? `<section class="section">
   <div class="enveloppe">
     <div class="bloc-consultant">
       <h2>Vous êtes consultant QSE ?</h2>
-      <ul>
-        <li>Livrez la veille à vos clients <strong>sous votre marque</strong>.</li>
-        <li>Gagnez <strong>plusieurs heures par mois et par client</strong>.</li>
-        <li>Ajoutez une <strong>ligne de revenu récurrente</strong> à votre facturation.</li>
-      </ul>
       <p class="rangee"><a class="bouton bouton-accent" href="consultants.html">Découvrir l'offre consultant</a></p>
     </div>
   </div>
@@ -3499,10 +3486,17 @@ ${SITE.offreConsultant ? `<section class="section">
   </div>
 </section>
 
-<section class="bande-finale" id="contact">
+<section class="bande-finale bande-accueil" id="contact">
   <div class="enveloppe">
     <span class="marque">${motMarque()}</span>
     <h2>${SITE.premierEchange ? "Un premier échange d'une heure, sans engagement" : "Une question avant de vous abonner ?"}</h2>
+    <p class="mentions">
+      Vigie réglementaire vous accompagne dans votre démarche en vous proposant un service complet de veille
+      réglementaire, vous permettant de suivre les évolutions législatives et normatives dans les domaines de la
+      santé, de la sécurité, de l'hygiène, de l'environnement et des ressources humaines. Vigie réglementaire vous
+      accompagne également dans la mise en conformité de votre société.
+    </p>
+    <p class="mentions">Nous accompagnons les dirigeants, les responsables QHSE et les consultants.</p>
     <p class="mentions">
       Contactez-nous, et notre équipe vous répondra dans les meilleurs délais.
     </p>
