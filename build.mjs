@@ -3286,7 +3286,7 @@ ${bandeAvis(AVIS)}
       </div>
       <div class="rail-item" data-paraitre data-compte="${V.declencheurs.length}">
         <span class="chiffre">${V.declencheurs.length}</span>
-        <p class="legende">questions sur votre situation, qui ajoutent les sujets qui vont avec</p>
+        <p class="legende">questions qui permettent de préciser les spécificités de votre structure et d'individualiser la veille</p>
       </div>
       <div class="rail-item" data-paraitre>
         <span class="chiffre">ISO</span>
