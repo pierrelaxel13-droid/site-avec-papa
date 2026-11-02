@@ -162,7 +162,7 @@ const FORMULES = {
                      "Les alertes : une alerte vous rappelle de prendre connaissance des nouveautés",
                      "Préconisation des actions pour répondre aux nouvelles exigences",
                      "Tableau de bord de suivi de réalisation des actions"] },
-  complet: { l: "Veille complète", carte: "État des lieux réglementaire, plan d'actions, état de conformité réglementaire", rang: 3, mois: 149, an: 1490,
+  complet: { l: "Veille complète", carte: "État des lieux réglementaire, plan d'actions, état de conformité réglementaire", rang: 3, surCarte: false, mois: 149, an: 1490,
              pour: "Vous passez un audit ou une certification.",
              ouvre: "Tout, le registre de preuves et le conseil de l'IA pour votre métier compris.",
              donne: ["Tout ce que donne l'offre État des lieux réglementaire et plan d'actions",
