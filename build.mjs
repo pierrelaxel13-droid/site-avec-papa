@@ -148,10 +148,9 @@ const FORMULES = {
   textes:  { l: "Textes", rang: 1, mois: 59, an: 590,
              pour: "Vous voulez savoir ce qui paraît pour votre métier.",
              ouvre: "Les textes de votre métier, chacun avec ce qu'il faut faire, et la fiche de chaque métier (732 codes APE).",
-             donne: ["Le relevé des textes de votre métier, mis à jour toutes les heures",
-                     "Pour chaque texte : ce qu'il faut faire, et le texte lui-même, à côté de sa source",
-                     "La fiche de chaque métier (732 codes APE), et les codes relus article par article",
-                     "Vos réglages : votre métier, vos réponses, vos chiffres"] },
+             surCarte: false,   // la carte ne dit pas « pour qui » (choix d'Axel, 2 novembre 2026)
+             donne: ["L'ensemble des textes applicables à votre société, par catégorie (santé, hygiène, sécurité, environnement, ressources humaines), en fonction des spécificités de votre structure",
+                     "Les sources et les liens des textes"] },
   suivi:   { l: "Textes et suivi", rang: 2, mois: 99, an: 990,
              pour: "Vous voulez aussi savoir quoi revoir, et quand.",
              ouvre: "En plus : votre plan de veille, le tableau de bord, les alertes et les conseils de l'IA.",
@@ -3755,13 +3754,9 @@ ${sectionSources(V)}<section class="section">
 
 function pageAbonnement(V) {
   const corps = `
-<section class="heros">
+<section class="heros heros-abonnement">
   <div class="enveloppe">
     <div class="heros-texte"><h1>Démarrer un abonnement</h1></div>
-    <p class="heros-sous">
-      Trois formules, à l'année ou au mois. Le prix est affiché, sans devis : les
-      offres comparables sont presque toutes « sur devis ».
-    </p>
   </div>
 </section>
 
@@ -3775,7 +3770,7 @@ function pageAbonnement(V) {
         <!-- L'année d'abord : en entreprise, la veille est une ligne de budget annuel. -->
         <p class="prix"><span class="grand">${esc(eur(f.an))}</span> <span class="etiq">par an</span></p>
         <p class="offre-an"><span class="pastille-offre">2 mois offerts</span> ou <strong>${esc(f.prix)}</strong></p>
-        <p class="pour">${esc(f.pour)}</p>
+        ${f.surCarte === false ? "" : `<p class="pour">${esc(f.pour)}</p>`}
         <ul class="formule-donne">${f.donne.map((d) => `<li>${esc(d)}</li>`).join("")}</ul>
         <a class="bouton ${id === "complet" ? "bouton-accent" : "bouton-sobre"}" href="${esc(lienPaiement(id, "an") ||
           `mailto:${SITE.courriel}?subject=${encodeURIComponent(`Démarrer un abonnement — ${f.l}, à l'année`)}`)}">S'abonner à l'année</a>

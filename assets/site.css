@@ -3207,3 +3207,5 @@ a.puce-fixe { text-decoration: none; color: inherit; }
 /* Le titre de l'accueil et sa phrase, plus petits (2 novembre 2026). */
 .heros-accueil h1 { font-size: clamp(1.95rem, 1rem + 3.7vw, 3.6rem); max-width: 22ch; }
 .heros-accueil .heros-sous { font-size: clamp(.98rem, .94rem + .3vw, 1.12rem); max-width: 64ch; }
+/* « Démarrer un abonnement », plus petit (2 novembre 2026). */
+.heros-abonnement h1 { font-size: clamp(1.9rem, 1rem + 3.2vw, 3.2rem); }
