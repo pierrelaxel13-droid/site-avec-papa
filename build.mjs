@@ -3757,7 +3757,6 @@ function pageAbonnement(V) {
       <p class="rangee rangee-centre" style="margin-top:var(--t4)">
         <button type="button" class="bouton bouton-accent" id="entrer-demo">Entrer en démonstration</button>
       </p>
-      <p class="etiq rangee rangee-centre" id="etat-session" role="status" style="margin-top:var(--t3)"></p>
     </div>
   </div>
 </section>

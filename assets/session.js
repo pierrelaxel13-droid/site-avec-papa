@@ -266,10 +266,6 @@
   var bouton = document.getElementById("entrer-demo");
   if (bouton) {
     var active = lu();
-    var etat = document.getElementById("etat-session");
-    if (etat && active) {
-      etat.textContent = "Une démonstration est déjà ouverte en « " + FORMULES[active].l + " ».";
-    }
     // On recoche la formule déjà ouverte : revenir ici ne doit pas la perdre.
     if (active) {
       var deja = document.querySelector('input[name="formule"][value="' + active + '"]');
