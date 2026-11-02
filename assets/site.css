@@ -3235,3 +3235,11 @@ a.puce-fixe { text-decoration: none; color: inherit; }
   .raisons.raisons-cinq > li { grid-column: span 2; }
   .raisons.raisons-cinq > li:nth-child(4), .raisons.raisons-cinq > li:nth-child(5) { grid-column: span 3; }
 }
+/* Moins d'espace entre les parties des pages publiques (3 novembre 2026,
+   « l'espace est trop important »). */
+.zone-public .section { padding-block: clamp(2.25rem, 1.5rem + 3vw, 4rem); }
+.zone-public .bande-finale { padding-block: clamp(2.5rem, 1.6rem + 3.5vw, 4.5rem); }
+/* « Pourquoi nous » sur l'accueil : deux et deux, assez large pour un texte justifié. */
+@media (min-width: 64rem) {
+  .raisons.raisons-deux { grid-auto-flow: row; grid-template-columns: repeat(2, minmax(0, 1fr)); max-width: 62rem; margin-inline: auto; }
+}

@@ -480,7 +480,7 @@ ${piedCourt ? "" : `
     <div class="pied-grille">
       <div>
         <span class="marque">${motMarque()}</span>
-        <p>${esc(SITE.bareme)}, pour les PME.<br>Conçu avec un consultant QSE et HSE en exercice.</p>
+        <p>${esc(SITE.bareme)}, pour les PME.</p>
         <p style="margin-top:var(--t3)">
           <a href="mailto:${esc(SITE.courriel)}">${esc(SITE.courriel)}</a>${aTel() ? `<br>
           ${lienTel()}` : ""}
@@ -491,7 +491,7 @@ ${piedCourt ? "" : `
         <ul>
           <li><a href="${a("index.html")}">Accueil</a></li>
           <li><a href="${a("decouvrir.html")}">Présentation</a></li>
-          <li><a href="${a("abonnement.html")}">S'abonner et voir les tarifs</a></li>
+          <li><a href="${a("abonnement.html")}">Abonnement et tarifs</a></li>
           ${SITE.offreConsultant ? `<li><a href="${a("consultants.html")}">Offre consultants QSE</a></li>` : ""}
           ${lienPaiement("portail") ? `<li><a href="${esc(lienPaiement("portail"))}">Gérer ou résilier mon abonnement</a></li>` : ""}
           <li><a href="${a("connexion.html")}">Connexion</a></li>
@@ -512,7 +512,6 @@ ${piedCourt ? "" : `
         <!-- Le produit, pas un cabinet : la caution métier est la personne qui
              l'a conçu. Quatre lignes, pour garder le pied symétrique. -->
         <ul>
-          <li><a href="${a("nous.html")}">Conçu avec un consultant QSE en exercice</a></li>
           <li><a href="${a("le-site.html")}">Sources officielles uniquement</a></li>
           <li><a href="${a("nous.html")}">Un interlocuteur unique</a></li>
           <li><a href="${a("abonnement.html")}">Prix affichés, sans devis</a></li>
@@ -3419,38 +3418,27 @@ ${bandeAvis(AVIS)}
 <section class="section section-tein">
   <div class="enveloppe">
     <h2 class="titre-section">Pourquoi nous</h2>
-    <ul class="raisons raisons-cinq">
+    <ul class="raisons raisons-deux">
       <li class="raison" data-paraitre>
         <span class="numero" aria-hidden="true">1</span>
         <h3>On trie avant de vous envoyer</h3>
-        <p>Une veille qui remonte tout ne se lit plus. Seuls les textes qui vous
-        concernent arrivent, chacun avec ce qu'il change chez vous et ce qu'il faut
-        faire. Les autres restent à part, dans un volet replié, pour qui veut vérifier.</p>
+        <p>Disposer d'un état des lieux réglementaire.</p>
       </li>
       <li class="raison" data-paraitre>
         <span class="numero" aria-hidden="true">2</span>
         <h3>Vous pouvez le prouver</h3>
-        <p>Une veille qui n'est pas écrite ne compte pas devant l'auditeur. Ici, chaque revue
-        et chaque décision est datée et conservée, et s'imprime telle quelle.</p>
+        <p>Un plan d'actions pour répondre aux textes qui vous sont applicables.</p>
       </li>
       <li class="raison" data-paraitre>
         <span class="numero" aria-hidden="true">3</span>
-        <h3>Le prix est affiché</h3>
-        <p>Presque toutes les offres comparables sont « sur devis ». La nôtre est sur la
-        page des tarifs, sans formulaire à remplir d'abord.</p>
-      </li>
-      <li class="raison" data-paraitre>
-        <span class="numero" aria-hidden="true">4</span>
         <h3>Conçu par une équipe de consultants QHSE seniors</h3>
         <p>${esc(SITE.nom)} a été conçu par des consultants QHSE en exercice, qui préparent des
         entreprises à leurs audits. Et en face, un interlocuteur unique, joignable directement ${parQuoi()}.</p>
       </li>
       <li class="raison" data-paraitre>
-        <span class="numero" aria-hidden="true">5</span>
+        <span class="numero" aria-hidden="true">4</span>
         <h3>Votre métier est présent</h3>
-        <p>${NAF ? `Les ${NAF.codes.length} codes APE de la nomenclature, rangés en ${V.divisions.length} familles de métiers` : `${V.divisions.length} familles de métiers`},
-        de la boulangerie au transport routier : chacun a sa fiche, avec ce qui s'applique chez lui.
-        <a href="metiers.html">Voir tous les métiers</a>.</p>
+        <p>Une veille adaptée à votre société : ${NAF ? `${NAF.codes.length} codes NAF` : `${V.divisions.length} familles de métiers`}, des questions sur les spécificités de votre société, pour une veille réglementaire individualisée.</p>
       </li>
     </ul>
   </div>
@@ -3473,13 +3461,6 @@ ${SITE.offreConsultant ? `<section class="section">
   <div class="enveloppe">
     <span class="marque">${motMarque()}</span>
     <h2>${SITE.premierEchange ? "Un premier échange d'une heure, sans engagement" : "Une question avant de vous abonner ?"}</h2>
-    <p class="mentions">
-      Vigie réglementaire vous accompagne dans votre démarche en vous proposant un service complet de veille
-      réglementaire, vous permettant de suivre les évolutions législatives et normatives dans les domaines de la
-      santé, de la sécurité, de l'hygiène, de l'environnement et des ressources humaines. Vigie réglementaire vous
-      accompagne également dans la mise en conformité de votre société.
-    </p>
-    <p class="mentions">Nous accompagnons les dirigeants, les responsables QHSE et les consultants.</p>
     <p class="mentions">
       Contactez-nous, et notre équipe vous répondra dans les meilleurs délais.
     </p>
