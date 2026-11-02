@@ -3259,3 +3259,7 @@ a.puce-fixe { text-decoration: none; color: inherit; }
   .etapes.etapes-six { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--t5) var(--t4); }
   .etapes-six .etape:nth-child(3)::after { display: none; }
 }
+/* Accueil, « Pourquoi nous » : le numéro centré dans sa carte, et le titre avec lui. */
+.raisons-deux .raison .numero { margin-inline: auto; }
+.raisons-deux .raison h3 { text-align: center; }
+.zone-public .raisons-deux .raison p { text-align: center; hyphens: manual; }
