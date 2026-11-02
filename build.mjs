@@ -3612,10 +3612,10 @@ function pageDecouvrir(V, ECRANS, C, NAF, SOURCES) {
   };
 
   const corps = `
-<section class="heros heros-court">
+<section class="heros heros-court heros-accueil">
   <div class="enveloppe">
     <div class="heros-texte">
-      <h1>Comment ça marche</h1>
+      <h1>Les étapes de la construction de votre veille réglementaire individualisée</h1>
     </div>
     <p class="heros-sous">
       Du Journal officiel à la case « fait » : ce que le site va chercher, comment il
