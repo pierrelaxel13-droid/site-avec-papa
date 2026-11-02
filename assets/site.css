@@ -3270,3 +3270,9 @@ a.puce-fixe { text-decoration: none; color: inherit; }
 .nom-offre { white-space: nowrap; text-transform: none; letter-spacing: 0; font-weight: 700;
              font-size: clamp(.66rem, 3.6cqi, .95rem); }
 @media (max-width: 22rem) { .nom-offre { font-size: 3.6cqi; } }
+/* Accueil : les chiffres (732, 44, 22, ISO) et leurs légendes, centrés. */
+.rail-item { text-align: center; padding-left: 0; }
+.rail-item::before { display: none; }
+.rail-item .legende { margin-inline: auto; }
+/* Un nom trop long pour une ligne lisible (l'offre 03) passe à la ligne, à la taille des autres. */
+.nom-offre-long { white-space: normal; }

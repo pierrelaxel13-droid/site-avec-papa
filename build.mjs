@@ -162,14 +162,11 @@ const FORMULES = {
                      "Les alertes : une alerte vous rappelle de prendre connaissance des nouveautés",
                      "Préconisation des actions pour répondre aux nouvelles exigences",
                      "Tableau de bord de suivi de réalisation des actions"] },
-  complet: { l: "Veille complète", rang: 3, mois: 149, an: 1490,
+  complet: { l: "Veille complète", carte: "État des lieux réglementaire, plan d'actions, état de conformité réglementaire", rang: 3, mois: 149, an: 1490,
              pour: "Vous passez un audit ou une certification.",
              ouvre: "Tout, le registre de preuves et le conseil de l'IA pour votre métier compris.",
              donne: ["Tout ce que donne l'offre État des lieux réglementaire et plan d'actions",
-                     "Le registre de preuves : chaque revue, décision et action, datée",
-                     "Imprimable tel quel pour l'auditeur",
-                     "Le conseil de l'IA pour votre métier, en plus du conseil général",
-                     "Pensé pour ISO 14001, ISO 45001, MASE et Qualiopi"] }
+                     "Établissement d'un tableau de synthèse de veille réglementaire"] }
 };
 
 /* --- L'offre consultant ----------------------------------------------------
@@ -3431,9 +3428,8 @@ ${bandeAvis(AVIS)}
       </li>
       <li class="raison" data-paraitre>
         <span class="numero" aria-hidden="true">3</span>
-        <h3>Conçu par une équipe de consultants QHSE seniors</h3>
-        <p>${esc(SITE.nom)} a été conçu par des consultants QHSE en exercice, qui préparent des
-        entreprises à leurs audits. Et en face, un interlocuteur unique, joignable directement ${parQuoi()}.</p>
+        <h3>Une équipe de consultants séniors</h3>
+        <p>Une équipe de consultants séniors à votre service.</p>
       </li>
       <li class="raison" data-paraitre>
         <span class="numero" aria-hidden="true">4</span>
@@ -3717,7 +3713,7 @@ function pageAbonnement(V) {
 
     <div class="formules">
       ${Object.entries(FORMULES).map(([id, f], k) => `<article class="formule${id === "complet" ? " mise-en-avant" : ""}" data-paraitre>
-        <span class="etiq nom-offre">0${k + 1} — ${esc(f.carte || f.l)}</span>
+        <span class="etiq nom-offre${(f.carte || f.l).length > 55 ? " nom-offre-long" : ""}">0${k + 1} — ${esc(f.carte || f.l)}</span>
         <!-- L'année d'abord : en entreprise, la veille est une ligne de budget annuel. -->
         <p class="prix"><span class="grand">${esc(eur(f.an))}</span> <span class="etiq">par an</span></p>
         <p class="offre-an"><span class="pastille-offre">2 mois offerts</span> ou <strong>${esc(f.prix)}</strong></p>
