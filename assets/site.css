@@ -3243,3 +3243,9 @@ a.puce-fixe { text-decoration: none; color: inherit; }
 @media (min-width: 64rem) {
   .raisons.raisons-deux { grid-auto-flow: row; grid-template-columns: repeat(2, minmax(0, 1fr)); max-width: 62rem; margin-inline: auto; }
 }
+/* Présentation (3 novembre 2026) : dans les parties blanches, tout le texte
+   est centré — les étapes, « Votre plan, à son rythme », les encadrés. */
+[data-page="presentation"] main > section.section:not(.section-tein):not(.installation) :is(h2, h3, p, li) { text-align: center; hyphens: manual; }
+[data-page="presentation"] .etape { align-items: center; }
+[data-page="presentation"] .reserve-seule { max-width: 42rem; margin-inline: auto; }
+[data-page="presentation"] .reserve-seule .reserve { margin: 0; }

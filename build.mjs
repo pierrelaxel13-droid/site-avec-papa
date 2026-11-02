@@ -3052,7 +3052,7 @@ function sectionSources(V) {
     <ul class="sources-bande">
       ${V.sourcesGenerales.map((s) => `<li><a href="${esc(s.url)}" target="_blank" rel="noopener">${esc(s.nom)} ${sortant}</a></li>`).join("\n")}
     </ul>
-    <div class="deux-colonnes" style="margin-top:var(--t6)">
+    <div class="reserve-seule" style="margin-top:var(--t5)">
       <p class="reserve">
         <strong>Et ce site, aujourd'hui.</strong>
         Les comptes sont en place : chaque entreprise a son espace, protégé par mot de passe. Le paiement
@@ -3418,12 +3418,12 @@ ${bandeAvis(AVIS)}
     <ul class="raisons raisons-deux">
       <li class="raison" data-paraitre>
         <span class="numero" aria-hidden="true">1</span>
-        <h3>On trie avant de vous envoyer</h3>
+        <h3>État des lieux réglementaire</h3>
         <p>Disposer d'un état des lieux réglementaire.</p>
       </li>
       <li class="raison" data-paraitre>
         <span class="numero" aria-hidden="true">2</span>
-        <h3>Vous pouvez le prouver</h3>
+        <h3>Plan d'actions</h3>
         <p>Un plan d'actions pour répondre aux textes qui vous sont applicables.</p>
       </li>
       <li class="raison" data-paraitre>
@@ -3434,7 +3434,7 @@ ${bandeAvis(AVIS)}
       </li>
       <li class="raison" data-paraitre>
         <span class="numero" aria-hidden="true">4</span>
-        <h3>Votre métier est présent</h3>
+        <h3>Une veille réglementaire individualisée</h3>
         <p>Une veille adaptée à votre société : ${NAF ? `${NAF.codes.length} codes NAF` : `${V.divisions.length} familles de métiers`}, des questions sur les spécificités de votre société, pour une veille réglementaire individualisée.</p>
       </li>
     </ul>
@@ -3617,13 +3617,9 @@ function pageDecouvrir(V, ECRANS, C, NAF, SOURCES) {
     <div class="heros-texte">
       <h1>Les étapes de la construction de votre veille réglementaire individualisée</h1>
     </div>
-    <p class="heros-sous">
-      Du Journal officiel à la case « fait » : ce que le site va chercher, comment il
-      trie, et ce que vous voyez. En cinq étapes et trois dessins.
-    </p>
   </div>
 </section>
-${sectionSimulateur(V)}
+
 <section class="section">
   <div class="enveloppe">
     <h2 class="titre-section">Du Journal officiel à votre écran</h2>
@@ -3637,6 +3633,7 @@ ${sectionSimulateur(V)}
     </ol>
   </div>
 </section>
+${sectionSimulateur(V)}
 
 <section class="section section-tein">
   <div class="enveloppe deux-temps">
@@ -3703,7 +3700,7 @@ ${sectionSources(V)}<section class="section">
   return page({
     titre: `Présentation | ${SITE.nom}`,
     description: "Du Journal officiel à la case « fait » : ce que le site va chercher, comment il trie, et ce que vous voyez.",
-    zone: "public", actif: "decouvrir", corps, donneesPlan: true
+    zone: "public", actif: "decouvrir", corps, donneesPlan: true, attrsBody: ' data-page="presentation"'
   });
 }
 
