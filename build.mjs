@@ -3738,7 +3738,7 @@ function pageAbonnement(V) {
 
 <section class="section section-tein" id="essayer">
   <div class="enveloppe">
-    <h2 class="titre-section">Démarrer un essai gratuit</h2>
+    <h2 class="titre-section">Démarrer une démonstration gratuite</h2>
     <p class="intro titre-section">Sans compte et sans mot de passe, avec un jeu d'essai.
     La formule choisie décide des écrans ouverts — c'est exactement ce qui se passera
     avec un vrai abonnement.</p>
