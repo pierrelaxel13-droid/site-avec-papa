@@ -140,6 +140,8 @@ const dateFr = (iso) => new Date(iso + "T12:00:00Z")
 /* Les liens de paiement Stripe, lus dans contenu/paiement.js par main(). Vide :
    le bouton ouvre un courriel. */
 let PAIEMENT = {};
+/* Les normes de référence par sujet (contenu/normes.js) : seules les validées s'affichent. */
+let NORMES = {};
 /* Les sources relevées qui ne sont pas officielles (« officielle: false » dans
    contenu/sources.js, ex. Prism'emploi) : leurs publications le disent. */
 let NON_OFFICIELLES = new Set();
@@ -655,6 +657,9 @@ function blocDomaine(C, LIENS, id, d, origine, lienSecteur = "", racine = "", fa
         <a class="lien-officiel" href="${esc(L.url)}" target="_blank" rel="noopener"
            title="${esc(L.quoi)}">${esc(intituleDuLien(L))} ${sortant}</a></li>`;
       }).join("")}</ul>
+      ${(NORMES[id] || []).filter((x) => x.valide).length ? `<span class="etiq" style="margin-top:var(--t4)">Normes de référence</span>
+      <ul class="normes-sujet">${NORMES[id].filter((x) => x.valide).map((x) => `<li><strong>${esc(x.ref)}</strong> — ${esc(x.titre)}</li>`).join("")}</ul>
+      <p class="note-source">Texte payant, chez l'AFNOR. Une norme est volontaire, sauf si un texte la rend obligatoire.</p>` : ""}
     </div>
   </div>
   ${lienSecteur ? `<p style="margin-top:var(--t4)">
@@ -4634,6 +4639,12 @@ function pageAdmin() {
       <div class="carte-connexion"><ul class="admin-comptes" id="admin-messages"></ul></div>
       <h2 class="titre-section">Les entreprises</h2>
       <div class="admin-grille" id="admin-entreprises"></div>
+      ${Object.values(NORMES).flat().length ? `<h2 class="titre-section">Les normes de référence, à valider</h2>
+      <p class="aide-bas">Proposées par l'assistant, par sujet. Rien ne s'affiche chez les clients avant validation :
+      passer « valide » à true dans contenu/normes.js, après relecture de la référence et de l'intitulé.</p>
+      <div class="carte-connexion"><ul class="admin-comptes">${Object.entries(NORMES).flatMap(([id, l]) => l.map((x) =>
+        `<li class="admin-compte"><span class="admin-courriel">${esc(x.ref)} — ${esc(x.titre)}</span>
+        <span class="admin-details">Sujet : ${esc(id)} · ${x.valide ? "validée, affichée" : "à valider, pas affichée"}</span></li>`)).join("")}</ul></div>` : ""}
       <h2 class="titre-section">Les cabinets de conseil</h2>
       <p class="aide-bas">Tant que le paiement en ligne n'existe pas, c'est ici qu'on ouvre l'abonnement consultant
       d'un cabinet : tous ses clients ont alors la veille complète.</p>
@@ -4937,6 +4948,13 @@ async function main() {
   // La nomenclature NAF entière : 732 codes APE. Son absence n'empêche pas de
   // construire — la page des secteurs retombe sur les 88 divisions seules.
   const LIENS = await chargeFichier("contenu/liens.js", "LIENS");
+  if (existsSync(resolve(RACINE, "contenu/normes.js"))) {
+    NORMES = await chargeFichier("contenu/normes.js", "NORMES") || {};
+    const V0 = await chargeFichier("assets/referentiel.js", "VEILLE");
+    for (const id of Object.keys(NORMES)) if (!V0.domaines[id]) throw new Error(`contenu/normes.js : « ${id} » n'est pas un sujet du référentiel.`);
+    const n = Object.values(NORMES).flat(), ok = n.filter((x) => x.valide).length;
+    console.log(`Normes : ${n.length} proposées, ${ok} validées (seules celles-ci s'affichent).`);
+  }
 
   const SOURCES = await chargeFichier("contenu/sources.js", "SOURCES");
   NON_OFFICIELLES = new Set(SOURCES.filter((x) => x.officielle === false).map((x) => x.id));
