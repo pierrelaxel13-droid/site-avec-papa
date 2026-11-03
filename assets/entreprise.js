@@ -113,7 +113,7 @@
      d'essai et le dit. Sans JavaScript, elle montre le plan du jeu d'essai,
      posé à la construction. */
   function suivrePlan() {
-    if (!document.getElementById("plan-total") || !P) return;
+    if (!document.querySelector("[data-plan-total]") || !P) return;
     var garde = lire(CLE_E);
     if (!garde || !garde.naf) return;
     var vue = perimetre(garde.naf, garde.contexte || []);

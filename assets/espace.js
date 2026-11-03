@@ -353,7 +353,7 @@
     if (chez && garde.nom) chez.textContent = garde.nom;
     var resp = $("#plan-responsable");
     if (resp && !garde.responsable) resp.textContent = "à compléter";
-    if (garde.naf || !$("#plan-total")) return;
+    if (garde.naf || !$("[data-plan-total]")) return;
     $$("main > section").forEach(function (s) {
       if (!s.classList.contains("tete-app") && s.id !== "verrou") s.hidden = true;
     });

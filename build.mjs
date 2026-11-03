@@ -971,20 +971,6 @@ function appPlan(V, D, C, LIENS) {
                `<span data-compte hidden data-prochaine="${esc(g.id)}"></span>`].filter(Boolean)
     };
   }))}
-  ${aSavoir("Ce qui a servi à faire ce plan", `
-  <dl class="faits">
-    <div><dt class="etiq">Domaines suivis</dt><dd><span class="grand" id="plan-total">${total}</span></dd></div>
-    <div><dt class="etiq">Code de l'entreprise</dt><dd><span class="grand" id="plan-naf">${esc(D.entreprise.nafComplet || D.entreprise.naf)}</span></dd></div>
-    <div><dt class="etiq">Responsable</dt><dd id="plan-responsable">${esc(D.entreprise.responsable)}</dd></div>
-  </dl>
-  <p style="margin-top:var(--t4)">
-    <span class="etiq">Contexte retenu</span><span id="plan-contexte">${esc(contexteNoms.join(" · "))}</span>
-  </p>
-  <dl class="fiche-chiffres" id="plan-chiffres" hidden></dl>
-  <p class="note-source" id="plan-origine">
-    Ce plan est celui du jeu d'essai. Renseignez votre entreprise dans
-    <a href="reglages.html">Réglages</a> : il se refera dessus, ici même.
-  </p>`)}
   </div>
 </section>
 

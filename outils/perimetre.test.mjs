@@ -62,7 +62,6 @@ ok((plan.match(/data-ecartes-total>(\d+)</) || [])[1] === String(hors.length), `
 ok(new RegExp(`data-plan-total>${liste.length}<`).test(plan), `plan : l'en-tête annonce ${liste.length}`);
 ok(new RegExp(`${div.b.length} par son code APE`).test(plan), `plan : l'en-tête dit ${div.b.length} par le code APE`);
 ok(!/vous ne verrez que ses sujets/.test(plan), "plan : l'ancienne phrase ambiguë a disparu");
-ok(new RegExp(`id="plan-total">${liste.length}<`).test(plan), "plan : « Domaines suivis » dit le même chiffre");
 
 /* --- Relevé --- */
 const releve = readFileSync(`${SITE}/demo/releve.html`, "utf8");
