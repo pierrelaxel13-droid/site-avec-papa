@@ -14,7 +14,7 @@
    "id": "eurlex-l",
    "nom": "Journal officiel de l'Union européenne — série L",
    "entrees": 100,
-   "retenus": 19,
+   "retenus": 18,
    "souci": null
   },
   {
@@ -97,7 +97,7 @@
   {
    "id": "ademe",
    "nom": "ADEME — nouvelles publications",
-   "entrees": 81,
+   "entrees": 82,
    "retenus": 2,
    "souci": null
   },
@@ -160,7 +160,7 @@
   {
    "id": "ansm",
    "nom": "ANSM — actualités",
-   "entrees": 0,
+   "entrees": 1,
    "retenus": 0,
    "souci": null
   },
@@ -229,6 +229,30 @@
    "dateTexte": "",
    "vuLe": "2026-11-03",
    "vuA": "2026-11-02T23:34:11Z"
+  },
+  {
+   "source": "travail",
+   "sourceNom": "Ministère du Travail — actualités",
+   "genre": "actualite",
+   "id": "https://travail-emploi.gouv.fr/documents-opposables-travail-emploi-formation-professionnelle",
+   "titre": "Documents opposables | Travail - Emploi - Formation professionnelle",
+   "nature": "Publication officielle",
+   "date": "2026-11-03",
+   "corps": "",
+   "lien": "https://travail-emploi.gouv.fr/documents-opposables-travail-emploi-formation-professionnelle",
+   "domaines": [
+    {
+     "id": "enseignement",
+     "nom": "Enseignement, formation et certification qualité",
+     "mots": [
+      "formation professionnelle"
+     ]
+    }
+   ],
+   "morceaux": 0,
+   "dateTexte": "",
+   "vuLe": "2026-11-03",
+   "vuA": "2026-10-30T07:10:17Z"
   },
   {
    "source": "jorf",
@@ -375,12 +399,36 @@
    "source": "eurlex-l",
    "sourceNom": "Journal officiel de l'Union européenne — série L",
    "genre": "texte",
-   "id": "https://eur-lex.europa.eu/./legal-content/AUTO/?uri=OJ:L_202602383",
-   "titre": "OJ:L_202602383: Directive (UE) 2026/2383 du Parlement européen et du Conseil du 21 octobre 2026 modifiant les directives 2009/43/CE et 2009/81/CE en ce qui concerne la simplification des transferts intra-UE de produits liés à la défense et la simplification des marchés publics dans les domaines de la sécurité et de la défense",
+   "id": "https://eur-lex.europa.eu/./legal-content/AUTO/?uri=CELEX:32026D2405",
+   "titre": "CELEX:32026D2405: Décision d’exécution (UE) 2026/2405 de la Commission du 30 octobre 2026 ne modifiant pas le règlement d’exécution (UE) 2022/2127 afin d’apporter une modification mineure et une modification administrative à l’autorisation de l’Union pour la famille de produits biocides dénommée Ecolab UA BPF 1-Propanol [notifiée sous le numéro C(2026) 7659]",
    "nature": "Texte officiel",
    "date": "2026-11-02",
    "corps": "",
-   "lien": "https://eur-lex.europa.eu/./legal-content/AUTO/?uri=OJ:L_202602383",
+   "lien": "https://eur-lex.europa.eu/./legal-content/AUTO/?uri=CELEX:32026D2405",
+   "domaines": [
+    {
+     "id": "chimie",
+     "nom": "Produits chimiques et risque chimique",
+     "mots": [
+      "produits biocides"
+     ]
+    }
+   ],
+   "morceaux": 0,
+   "dateTexte": "2026-10-30",
+   "vuLe": "2026-11-02",
+   "vuA": "2026-11-03T13:03:14Z"
+  },
+  {
+   "source": "eurlex-l",
+   "sourceNom": "Journal officiel de l'Union européenne — série L",
+   "genre": "texte",
+   "id": "https://eur-lex.europa.eu/./legal-content/AUTO/?uri=CELEX:32026L2383",
+   "titre": "CELEX:32026L2383: Directive (UE) 2026/2383 du Parlement européen et du Conseil du 21 octobre 2026 modifiant les directives 2009/43/CE et 2009/81/CE en ce qui concerne la simplification des transferts intra-UE de produits liés à la défense et la simplification des marchés publics dans les domaines de la sécurité et de la défense",
+   "nature": "Texte officiel",
+   "date": "2026-11-02",
+   "corps": "",
+   "lien": "https://eur-lex.europa.eu/./legal-content/AUTO/?uri=CELEX:32026L2383",
    "domaines": [
     {
      "id": "marches_publics",
@@ -393,18 +441,18 @@
    "morceaux": 0,
    "dateTexte": "2026-10-21",
    "vuLe": "2026-11-02",
-   "vuA": "2026-11-03T06:51:14Z"
+   "vuA": "2026-11-03T13:03:14Z"
   },
   {
    "source": "eurlex-l",
    "sourceNom": "Journal officiel de l'Union européenne — série L",
    "genre": "texte",
-   "id": "https://eur-lex.europa.eu/./legal-content/AUTO/?uri=OJ:L_202602405",
-   "titre": "OJ:L_202602405: Décision d’exécution (UE) 2026/2405 de la Commission du 30 octobre 2026 ne modifiant pas le règlement d’exécution (UE) 2022/2127 afin d’apporter une modification mineure et une modification administrative à l’autorisation de l’Union pour la famille de produits biocides dénommée Ecolab UA BPF 1-Propanol [notifiée sous le numéro C(2026) 7659]",
+   "id": "https://eur-lex.europa.eu/./legal-content/AUTO/?uri=CELEX:32026R2406",
+   "titre": "CELEX:32026R2406: Règlement d’exécution (UE) 2026/2406 de la Commission du 30 octobre 2026 accordant une autorisation de l’Union pour la famille de produits biocides dénommée PAA based disinfectants — BPF2 conformément au règlement (UE) no 528/2012 du Parlement européen et du Conseil",
    "nature": "Texte officiel",
    "date": "2026-11-02",
    "corps": "",
-   "lien": "https://eur-lex.europa.eu/./legal-content/AUTO/?uri=OJ:L_202602405",
+   "lien": "https://eur-lex.europa.eu/./legal-content/AUTO/?uri=CELEX:32026R2406",
    "domaines": [
     {
      "id": "chimie",
@@ -417,31 +465,7 @@
    "morceaux": 0,
    "dateTexte": "2026-10-30",
    "vuLe": "2026-11-02",
-   "vuA": "2026-11-03T06:51:14Z"
-  },
-  {
-   "source": "eurlex-l",
-   "sourceNom": "Journal officiel de l'Union européenne — série L",
-   "genre": "texte",
-   "id": "https://eur-lex.europa.eu/./legal-content/AUTO/?uri=OJ:L_202602406",
-   "titre": "OJ:L_202602406: Règlement d’exécution (UE) 2026/2406 de la Commission du 30 octobre 2026 accordant une autorisation de l’Union pour la famille de produits biocides dénommée PAA based disinfectants — BPF2 conformément au règlement (UE) no 528/2012 du Parlement européen et du Conseil",
-   "nature": "Texte officiel",
-   "date": "2026-11-02",
-   "corps": "",
-   "lien": "https://eur-lex.europa.eu/./legal-content/AUTO/?uri=OJ:L_202602406",
-   "domaines": [
-    {
-     "id": "chimie",
-     "nom": "Produits chimiques et risque chimique",
-     "mots": [
-      "produits biocides"
-     ]
-    }
-   ],
-   "morceaux": 0,
-   "dateTexte": "2026-10-30",
-   "vuLe": "2026-11-02",
-   "vuA": "2026-11-03T06:51:14Z"
+   "vuA": "2026-11-03T13:03:14Z"
   },
   {
    "source": "jorf",
@@ -630,30 +654,6 @@
    "dateTexte": "",
    "vuLe": "2026-10-30",
    "vuA": "2026-10-30T19:25:59Z"
-  },
-  {
-   "source": "travail",
-   "sourceNom": "Ministère du Travail — actualités",
-   "genre": "actualite",
-   "id": "https://travail-emploi.gouv.fr/documents-opposables-travail-emploi-formation-professionnelle",
-   "titre": "Documents opposables | Travail - Emploi - Formation professionnelle",
-   "nature": "Publication officielle",
-   "date": "2026-10-30",
-   "corps": "",
-   "lien": "https://travail-emploi.gouv.fr/documents-opposables-travail-emploi-formation-professionnelle",
-   "domaines": [
-    {
-     "id": "enseignement",
-     "nom": "Enseignement, formation et certification qualité",
-     "mots": [
-      "formation professionnelle"
-     ]
-    }
-   ],
-   "morceaux": 0,
-   "dateTexte": "",
-   "vuLe": "2026-10-30",
-   "vuA": "2026-10-30T07:10:17Z"
   },
   {
    "source": "eurlex-l",
@@ -1460,37 +1460,6 @@
    ],
    "morceaux": 0,
    "dateTexte": "2026-10-21",
-   "vuLe": "2026-10-22",
-   "vuA": "2026-10-22T00:00:00Z"
-  },
-  {
-   "source": "eurlex-l",
-   "sourceNom": "Journal officiel de l'Union européenne — série L",
-   "genre": "texte",
-   "id": "https://eur-lex.europa.eu/./legal-content/AUTO/?uri=CELEX:32026R2340",
-   "titre": "CELEX:32026R2340: Règlement d’exécution (UE) 2026/2340 de la Commission du 22 octobre 2026 relative à la non-approbation de l’extension de l’utilisation de la substance de base Urtica spp. conformément au règlement (CE) no 1107/2009 du Parlement européen et du Conseil concernant la mise sur le marché des produits phytopharmaceutiques",
-   "nature": "Texte officiel",
-   "date": "2026-10-22",
-   "corps": "",
-   "lien": "https://eur-lex.europa.eu/./legal-content/AUTO/?uri=CELEX:32026R2340",
-   "domaines": [
-    {
-     "id": "produits_ce",
-     "nom": "Conformité des produits et marquage CE",
-     "mots": [
-      "mise sur le marche"
-     ]
-    },
-    {
-     "id": "agri",
-     "nom": "Agriculture, pêche et santé des végétaux et animaux",
-     "mots": [
-      "produits phytopharmaceutiques"
-     ]
-    }
-   ],
-   "morceaux": 0,
-   "dateTexte": "2026-10-22",
    "vuLe": "2026-10-22",
    "vuA": "2026-10-22T00:00:00Z"
   },
