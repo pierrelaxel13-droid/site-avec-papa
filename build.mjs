@@ -372,7 +372,6 @@ function page({ titre, description, racine = "", zone = "public", actif = "", co
       ${lien("app/actions.html", "Plan d'actions", "actions")}
       ${lien("app/conformite.html", "Conformité réglementaire", "conformite")}
       ${lien("app/releve.html", "Relevé", "releve")}
-      ${lien("app/registre.html", "Registre", "registre")}
       ${lien("app/textes.html", "Textes", "textes")}
       ${lien("app/reglages.html", "Réglages", "reglages")}
       ${selecteurTheme}`;
@@ -3804,8 +3803,8 @@ function pageDecouvrir(V, ECRANS, C, NAF, SOURCES) {
 
   /* L'application, écran par écran : des captures, qu'un clic agrandit. */
   const pieces = [
-    { img: "bord.png", t: "Tableau de bord", d: "Ce qui est en retard, ce qui attend une décision, ce qu'il faut faire maintenant." },
-    { img: "plan.png", t: "Mon plan", d: "Vos sujets, rangés par rythme de revue : quotidienne, hebdomadaire, mensuelle, trimestrielle." },
+    { img: "bord.png", t: "Tableaux de bord", d: "" },
+    { img: "plan.png", t: "Ma veille réglementaire", d: "" },
     { img: "releve.png", t: "Relevé", d: "Les textes parus, par famille. Chacun avec ce qu'il faut faire et le texte officiel." },
     { img: "registre.png", t: "Registre de preuves", d: "Les revues faites et les décisions prises, datées. C'est ce que demande un auditeur." },
     { img: "secteurs.png", t: "Secteurs", d: `${nCodes ? `Les ${nCodes} codes APE, rangés en ${V.divisions.length} familles de métiers` : `Les ${V.divisions.length} familles de métiers`}, et ce qui s'applique à chacun.` },
@@ -3873,7 +3872,7 @@ function pageDecouvrir(V, ECRANS, C, NAF, SOURCES) {
       ${pieces.map((p) => `<li class="piece">
         ${vignette(p)}
         <h3>${esc(p.t)}</h3>
-        <p>${esc(p.d)}</p>
+        ${p.d ? `<p>${esc(p.d)}</p>` : ""}
       </li>`).join("")}
     </ul>
   </div>
