@@ -3365,3 +3365,20 @@ a.puce-fixe { text-decoration: none; color: inherit; }
 .tableau-plan .lien-officiel { display: block; margin-top: .25rem; font-size: .82rem; color: var(--accent); }
 .tableau-plan .lien-officiel svg { width: .8em; height: .8em; }
 .tableau-plan td:first-child time { color: var(--encre); }
+
+/* --- Conformité réglementaire (3 novembre 2026) ------------------------- */
+.tableau-conformite select, .tableau-conformite input {
+  width: 100%; font: inherit; font-size: .9rem; color: var(--encre);
+  background: var(--carte); border: 1px solid var(--filet-fort); border-radius: var(--r1); padding: .4rem .55rem;
+}
+.tableau-conformite select[data-statut="conforme"] { border-color: var(--vert, #1f8a4c); }
+.tableau-conformite select[data-statut="partiel"] { border-color: var(--ambre); }
+.tableau-conformite select[data-statut="non_conforme"] { border-color: var(--rouge, #c0392b); }
+.tableau-conformite .conf-etat { margin-top: .3rem; }
+.conf-form { display: flex; gap: .4rem; align-items: center; }
+.conf-form .bouton { padding: .4rem .8rem; font-size: .85rem; white-space: nowrap; }
+@media (min-width: 48rem) {
+  .tableau-conformite td:nth-child(1) { width: 34%; }
+  .tableau-conformite td:nth-child(2) { width: 10rem; }
+  .tableau-conformite td:nth-child(3) { width: 14rem; }
+}

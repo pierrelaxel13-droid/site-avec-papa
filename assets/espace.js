@@ -21,9 +21,11 @@
   var $$ = function (s, r) { return [].slice.call((r || document).querySelectorAll(s)); };
   var JOURS = { quotidienne: 1, hebdomadaire: 7, mensuelle: 31, trimestrielle: 92 };
   var GENRES = { revue: "Revue", qualification: "Qualification", decision: "Décision",
-                 action: "Action", plan: "Plan de veille", correction: "Correction" };
+                 action: "Action", plan: "Plan de veille", correction: "Correction",
+                 conformite: "Évaluation de conformité" };
   var STATUTS = { applicable: "S'applique chez nous", a_suivre: "À suivre", sans_objet: "Ne nous concerne pas",
-                  ouverte: "à faire", faite: "faite" };
+                  ouverte: "à faire", faite: "faite",
+                  conforme: "Conforme", partiel: "Partiellement conforme", non_conforme: "Non conforme", a_evaluer: "À évaluer" };
   var COURTS = { applicable: "S'applique", a_suivre: "À suivre", sans_objet: "Sans objet" };
 
   function echappe(s) {

@@ -93,6 +93,7 @@ const RPC = {
 select 'null'`,
   espace_fait: (a) => `select to_json(public.espace_fait(${litteral(a.e)}, ${litteral(a.quoi)}, ${litteral(a.intitule)}, ${litteral(a.sujet)}, ${a.fait ? "true" : "false"}))`,
   espace_qualifier: (a) => `select to_json(public.espace_qualifier(${litteral(a.e)}, ${litteral(a.quoi)}, ${litteral(a.intitule)}, ${litteral(a.statut)}, ${litteral(a.note)}))`,
+  espace_conformite: (a) => `select to_json(public.espace_conformite(${litteral(a.e)}, ${litteral(a.quoi)}, ${litteral(a.intitule)}, ${litteral(a.statut)}, ${litteral(a.note)}))`,
   espace_action: (a) => `select to_json(public.espace_action(${litteral(a.e)}, ${litteral(a.quoi)}, ${litteral(a.intitule)}, ${litteral(a.echeance)}, ${litteral(a.note)}))`,
   espace_action_faite: (a) => `select to_json(public.espace_action_faite(${litteral(a.e)}, ${Number(a.action) || 0}))`,
   inviter: (a) => `select to_json(public.inviter(${litteral(a.courriel)}, ${litteral(a.role || "membre")}::public.role_membre, ${litteral(a.entreprise)}::uuid, null))`,

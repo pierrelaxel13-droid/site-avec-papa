@@ -117,6 +117,24 @@
     });
   };
 
+  /* L'évaluation de conformité (formule Veille complète) : dans un compte, une
+     entrée du registre par évaluation ; dans la démonstration, le navigateur. */
+  M.conformites = function () { return compte ? (copie(memoire.conformites) || {}) : (local("pco-conformite") || {}); };
+  M.evaluer = function (cle, intitule, statut, note) {
+    if (!compte) {
+      var tout = local("pco-conformite") || {};
+      tout[cle] = { statut: statut, le: aujourdhui(), note: note || null, par: "vous" };
+      return Promise.resolve(poserLocal("pco-conformite", tout) ? { ok: true } : { erreur: REFUS });
+    }
+    return V.rpc("espace_conformite", { e: M.espace.id, quoi: cle, intitule: intitule, statut: statut, note: note || null })
+      .then(function (r) {
+        if (!r.ok) return r;
+        memoire.conformites = memoire.conformites || {};
+        memoire.conformites[cle] = { statut: statut, le: r.donnees, note: note || null };
+        return { ok: true };
+      });
+  };
+
   /* Les réglages tels que le formulaire les connaît, depuis la base. */
   function reglagesDepuis(en, reponses) {
     var rg = en.reglages || {};
@@ -151,6 +169,7 @@
           memoire["pco-faits"] = d.faits || {};
           memoire.qualifications = d.qualifications || {};
           memoire.actions = d.actions || [];
+          memoire.conformites = d.conformites || {};
           document.body.classList.add("espace-compte");
           ouvrir();
         });

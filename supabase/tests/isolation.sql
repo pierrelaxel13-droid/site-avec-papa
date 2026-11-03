@@ -503,6 +503,28 @@ select tests.refuse($$select public.espace_action_faite('00000000-0000-0000-0000
   (select max(id) from public.registre))$$, 'ni de clôture chez une autre entreprise');
 reset role;
 
+-- 11 bis. L'évaluation de conformité (formule Veille complète)
+select tests.qui('00000000-0000-0000-0000-0000000000a1', 'a_admin@test.fr');
+set local role authenticated;
+select tests.ok(public.espace_conformite('00000000-0000-0000-0000-00000000a000', 'ref:code-du-travail', 'Code du travail', 'non_conforme', null) = current_date,
+  'évaluer un texte « non conforme »');
+select public.espace_conformite('00000000-0000-0000-0000-00000000a000', 'ref:code-du-travail', 'Code du travail', 'conforme', 'DUERP daté.');
+select tests.ok((public.espace_lire('00000000-0000-0000-0000-00000000a000') -> 'conformites' -> 'ref:code-du-travail' ->> 'statut') = 'conforme',
+  'réévaluer : la dernière évaluation fait foi');
+select tests.ok(tests.compte($$select 1 from public.registre where cle = 'ref:code-du-travail' and genre = 'conformite'$$) = 2,
+  'et la première reste au registre');
+select tests.refuse($$select public.espace_conformite('00000000-0000-0000-0000-00000000a000', 'ref:x', 'x', 'bof', null)$$, 'une évaluation inconnue est refusée');
+reset role;
+select tests.qui('00000000-0000-0000-0000-0000000000a2', 'a_lecteur@test.fr');
+set local role authenticated;
+select tests.refuse($$select public.espace_conformite('00000000-0000-0000-0000-00000000a000', 'ref:x', 'x', 'conforme', null)$$, 'un lecteur n''évalue pas');
+reset role;
+select tests.qui('00000000-0000-0000-0000-0000000000b1', 'b_admin@test.fr');
+set local role authenticated;
+select tests.refuse($$select public.espace_conformite('00000000-0000-0000-0000-00000000b000', 'ref:x', 'x', 'conforme', null)$$, 'formule Textes : pas d''évaluation de conformité');
+select tests.refuse($$select public.espace_conformite('00000000-0000-0000-0000-00000000a000', 'ref:x', 'x', 'conforme', null)$$, 'ni chez une autre entreprise');
+reset role;
+
 -- =========================================================================
 -- 12. L'équipe : voir, inviter, changer un rôle, retirer
 -- =========================================================================
