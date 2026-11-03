@@ -89,6 +89,10 @@ const RPC = {
   conseils_lire: (a) => `select public.conseils_lire(${litteral(a.e)},
     (select coalesce(array_agg(x), '{}') from jsonb_array_elements_text(${json(a.ids || [])}) x))`,
   admin_conseils: () => "select public.admin_conseils()",
+  admin_messages: () => "select public.admin_messages()",
+  admin_message_lu: (a) => `select public.admin_message_lu(${Number(a.message) || 0}, ${a.lu ? "true" : "false"}) \\g /dev/null
+select 'null'`,
+  contacter: (a) => `select to_json(public.contacter(${litteral(a.nom)}, ${litteral(a.entreprise)}, ${litteral(a.courriel)}, ${litteral(a.telephone)}, ${litteral(a.objet)}, ${litteral(a.message)}))`,
   espace_reglages: (a) => `select public.espace_reglages(${litteral(a.e)}, ${json(a.nouveaux)}) \\g /dev/null
 select 'null'`,
   espace_fait: (a) => `select to_json(public.espace_fait(${litteral(a.e)}, ${litteral(a.quoi)}, ${litteral(a.intitule)}, ${litteral(a.sujet)}, ${a.fait ? "true" : "false"}))`,

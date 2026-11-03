@@ -525,6 +525,30 @@ select tests.refuse($$select public.espace_conformite('00000000-0000-0000-0000-0
 select tests.refuse($$select public.espace_conformite('00000000-0000-0000-0000-00000000a000', 'ref:x', 'x', 'conforme', null)$$, 'ni chez une autre entreprise');
 reset role;
 
+-- 11 ter. Le formulaire de contact
+select set_config('request.jwt.claims', '', true);
+set local role anon;
+select tests.ok(public.contacter('Jeanne Essai', 'Boulangerie', 'Jeanne@Test.fr', null, 'offres', 'Bonjour'), 'un visiteur laisse un message');
+select tests.refuse($$select public.contacter('', null, 'a@b.fr', null, 'offres', 'x')$$, 'sans nom : refusé');
+select tests.refuse($$select public.contacter('X', null, 'pas-une-adresse', null, 'offres', 'x')$$, 'adresse invalide : refusée');
+select tests.refuse($$select public.contacter('X', null, 'a@b.fr', null, 'piratage', 'x')$$, 'objet inconnu : refusé');
+select public.contacter('Jeanne Essai', null, 'jeanne@test.fr', null, 'autre', 'deux');
+select public.contacter('Jeanne Essai', null, 'jeanne@test.fr', null, 'autre', 'trois');
+select tests.refuse($$select public.contacter('Jeanne Essai', null, 'jeanne@test.fr', null, 'autre', 'quatre')$$, 'pas plus de 3 messages par adresse et par heure');
+select tests.refuse('select count(*) from public.messages_contact', 'un visiteur ne lit pas les messages');
+select tests.refuse('select public.admin_messages()', 'ni par la fonction de l''administration');
+reset role;
+select tests.qui('00000000-0000-0000-0000-0000000000a1', 'a_admin@test.fr');
+set local role authenticated;
+select tests.refuse('select count(*) from public.messages_contact', 'un client ne lit pas les messages');
+select tests.refuse('select public.admin_messages()', 'ni l''administration des messages');
+reset role;
+select tests.qui('00000000-0000-0000-0000-0000000000f1', 'axel@test.fr');
+set local role authenticated;
+select tests.ok((select count(*) >= 3 from json_array_elements(public.admin_messages()) m where m ->> 'courriel' = 'jeanne@test.fr'),
+  'l''administrateur du service lit les messages (adresse mise en minuscules)');
+reset role;
+
 -- =========================================================================
 -- 12. L'équipe : voir, inviter, changer un rôle, retirer
 -- =========================================================================

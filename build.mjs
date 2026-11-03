@@ -400,7 +400,7 @@ ${zone === "app" ? '<meta name="robots" content="noindex">' : ""}
 <script src="${a("assets/theme.js")}"></script>
 <script src="${a("assets/amorce.js")}"></script>
 </head>
-<body class="zone-${zone}" data-racine="${racine || "./"}" data-courriel="${esc(SITE.courriel)}" data-nom="${esc(SITE.nom)}"${zone === "app" || scripts.includes("assets/compte.js") ? ` data-supabase="${esc(SITE.supabase.url)}" data-supabase-cle="${esc(SITE.supabase.cle)}"` : ""}${formule ? ` data-formule="${esc(formule)}"` : ""}${attrsBody}>
+<body class="zone-${zone}" data-racine="${racine || "./"}" data-courriel="${esc(SITE.courriel)}" data-nom="${esc(SITE.nom)}"${zone === "app" || scripts.includes("assets/compte.js") || scripts.includes("assets/contact.js") ? ` data-supabase="${esc(SITE.supabase.url)}" data-supabase-cle="${esc(SITE.supabase.cle)}"` : ""}${formule ? ` data-formule="${esc(formule)}"` : ""}${attrsBody}>
 
 <a class="evitement" href="#contenu">Aller au contenu</a>
 
@@ -556,7 +556,7 @@ ${zone === "app" ? `<script src="${a("assets/vigie.js")}"></script>
 ${zone === "app" ? `<script src="${a("assets/avis-data.js")}"></script>
 <script src="${a("assets/entreprise.js")}"></script>
 <script src="${a("assets/avis.js")}"></script>` : ""}
-${zone !== "app" && scripts.includes("assets/compte.js") ? `<script src="${a("assets/vigie.js")}"></script>` : ""}
+${zone !== "app" && (scripts.includes("assets/compte.js") || scripts.includes("assets/contact.js")) ? `<script src="${a("assets/vigie.js")}"></script>` : ""}
 ${zone === "app" || verrou || actif === "abonnement" ? `<script src="${a("assets/session.js")}"></script>` : ""}
 ${zone === "app" ? `<script src="${a("assets/espace.js")}"></script>` : ""}
 ${scripts.map((f) => `<script src="${a(f)}"></script>`).join("\n")}
@@ -3212,14 +3212,6 @@ function sectionSources(V) {
     <ul class="sources-bande">
       ${V.sourcesGenerales.map((s) => `<li><a href="${esc(s.url)}" target="_blank" rel="noopener">${esc(s.nom)} ${sortant}</a></li>`).join("\n")}
     </ul>
-    <div class="reserve-seule" style="margin-top:var(--t5)">
-      <p class="reserve">
-        <strong>Et ce site, aujourd'hui.</strong>
-        Les comptes sont en place : chaque entreprise a son espace, protégé par mot de passe. Le paiement
-        en ligne ne l'est pas encore : on s'abonne par courriel. La démonstration, elle, reste ouverte à
-        tous, avec une entreprise et des textes d'essai.
-      </p>
-    </div>
   </div>
 </section>
 
@@ -3620,18 +3612,55 @@ ${SITE.offreConsultant ? `<section class="section">
     <p class="mentions">
       Contactez-nous, et notre équipe vous répondra dans les meilleurs délais.
     </p>
-    <p class="rangee">
-      <a class="bouton bouton-accent" href="mailto:${esc(SITE.courriel)}">${esc(SITE.courriel)}</a>
-      ${lienTel("bouton bouton-sobre")}
-    </p>
+    ${formulaireContact()}
   </div>
 </section>`;
 
   return page({
     titre: `${SITE.nom} — ${SITE.bareme}`,
     description: "Votre veille réglementaire tenue et prouvable : plan de veille, relevé des textes de votre métier, registre de preuves prêt pour l'audit.",
-    zone: "public", actif: "produit", corps, donneesPlan: true
+    zone: "public", actif: "produit", corps, donneesPlan: true, scripts: ["assets/contact.js"]
   });
+}
+
+/* --- Le formulaire de contact (3 novembre 2026) ------------------------------
+   Enregistré dans la base par public.contacter() (migration 13), lu dans
+   l'espace administrateur. Aucun champ ne porte de « name » : sans le script,
+   rien ne part dans l'adresse de la page. Le champ « site » est un piège à
+   robots, caché aux personnes : rempli, l'envoi est ignoré. */
+function formulaireContact() {
+  return `<form class="form-contact" id="form-contact" method="post" novalidate>
+      <div class="contact-grille">
+        <div class="champ"><label for="c-nom">Nom et prénom <span class="requis">*</span></label>
+          <input type="text" id="c-nom" autocomplete="name" maxlength="200" required></div>
+        <div class="champ"><label for="c-entreprise">Entreprise</label>
+          <input type="text" id="c-entreprise" autocomplete="organization" maxlength="200"></div>
+        <div class="champ"><label for="c-courriel">Adresse électronique <span class="requis">*</span></label>
+          <input type="email" id="c-courriel" autocomplete="email" inputmode="email" spellcheck="false" maxlength="320" required></div>
+        <div class="champ"><label for="c-telephone">Téléphone</label>
+          <input type="tel" id="c-telephone" autocomplete="tel" maxlength="40"></div>
+        <div class="champ contact-large"><label for="c-objet">Objet</label>
+          <select id="c-objet">
+            <option value="offres">Une question sur les offres</option>
+            <option value="demonstration">Une démonstration</option>
+            ${SITE.offreConsultant ? `<option value="consultant">L'offre consultant</option>` : ""}
+            <option value="autre">Autre</option>
+          </select></div>
+        <div class="champ contact-large"><label for="c-message">Votre message <span class="requis">*</span></label>
+          <textarea id="c-message" rows="5" maxlength="5000" required></textarea></div>
+        <div class="contact-piege" aria-hidden="true"><label for="c-site">Ne pas remplir</label>
+          <input type="text" id="c-site" tabindex="-1" autocomplete="off"></div>
+      </div>
+      <label class="contact-accord"><input type="checkbox" id="c-accord">
+        <span>J'accepte que ces informations servent à me répondre (voir la <a href="confidentialite.html">politique de confidentialité</a>).</span></label>
+      <p class="rangee"><button type="submit" class="bouton bouton-accent">Envoyer le message</button></p>
+      <p class="etat-contact" id="etat-contact" role="status"></p>
+      <p class="contact-autre">Ou écrivez-nous à <a href="mailto:${esc(SITE.courriel)}">${esc(SITE.courriel)}</a>${SITE.telephone ? ` · ${lienTel("")}` : ""}.</p>
+    </form>
+    <div class="form-contact contact-merci" id="contact-merci" hidden tabindex="-1">
+      <p><strong>Merci, votre message est bien envoyé.</strong></p>
+      <p>Nous vous répondons dans les meilleurs délais, à l'adresse indiquée.</p>
+    </div>`;
 }
 
 /* --- Comment ça marche ------------------------------------------------------
@@ -3655,13 +3684,11 @@ function pageDecouvrir(V, ECRANS, C, NAF, SOURCES) {
 
   const etapes = [
     { t: "Les sources officielles", i: '<path d="M6 3h9l3 3v15H6z"/><path d="M15 3v3h3M9 11h6M9 15h6"/>',
-      d: `${confirmees.length} sources publiques interrogées, Journal officiel en tête : ${esc(
-        [["eurlex-l", "EUR-Lex"], ["travail", "ministère du Travail"], ["cnil", "CNIL"], ["anses", "ANSES"], ["has", "HAS"]]
-          .filter(([id]) => confirmees.some((x) => x.id === id)).map(([, l]) => l).join(", "))}…` },
-    { t: "Relues toutes les heures", i: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
-      d: "Une mise à jour toutes les heures." },
-    { t: "Sélectionnez votre code NAF", i: '<path d="M4 5h16l-6 8v6l-4-2v-4z"/>',
-      d: `Parmi les ${nCodes || V.divisions.length} proposés. Répondez aux questions pour affiner les spécificités de votre société.` },
+      d: "Un croisement de l'ensemble des sources officielles disponibles." },
+    { t: "Mise à jour quotidienne des textes", i: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+      d: "Chaque jour, les nouveaux textes sont intégrés à votre veille." },
+    { t: "Une veille réglementaire individualisée", i: '<path d="M4 5h16l-6 8v6l-4-2v-4z"/>',
+      d: `${nCodes || V.divisions.length} codes NAF, et des questions sur les spécificités de votre entreprise permettant d'individualiser votre veille réglementaire.` },
     { t: "Vos textes sous forme de synthèse", i: '<path d="M9 6h11M9 12h11M9 18h11"/><path d="m3.5 6 1 1 2-2M3.5 12l1 1 2-2M3.5 18l1 1 2-2"/>',
       d: "Chaque jour, votre synthèse est mise à jour avec les textes qui vous sont applicables." },
     { t: "Votre plan d'actions", i: '<rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4V3h6v1M9 10h6M9 14h6M9 18h3"/>',
@@ -3788,7 +3815,6 @@ function pageDecouvrir(V, ECRANS, C, NAF, SOURCES) {
     </ol>
   </div>
 </section>
-${sectionSimulateur(V)}
 
 <section class="section section-tein">
   <div class="enveloppe deux-temps">
@@ -3834,7 +3860,7 @@ ${sectionSimulateur(V)}
   </div>
 </section>
 
-${sectionSources(V)}<section class="section">
+${sectionSources(V)}<section class="section ne-fait-pas">
   <div class="enveloppe">
     <h2 class="titre-section">Ce que le site ne fait pas</h2>
     <div class="deux-colonnes" style="margin-top:var(--t5)">
@@ -4497,6 +4523,9 @@ function pageAdmin() {
     <div id="admin-liste" data-formules="${esc(JSON.stringify(formules))}" hidden>
       <p class="aide-bas admin-rappel">Les registres, plans et réponses des clients n'apparaissent jamais ici :
       la base ne les donne pas à l'administrateur. Une formule « donnée par vous » ne touche jamais un abonnement payé chez Stripe.</p>
+      <h2 class="titre-section">Les messages reçus</h2>
+      <p class="aide-bas" id="admin-messages-etat">Ceux du formulaire de contact de l'accueil.</p>
+      <div class="carte-connexion"><ul class="admin-comptes" id="admin-messages"></ul></div>
       <h2 class="titre-section">Les entreprises</h2>
       <div class="admin-grille" id="admin-entreprises"></div>
       <h2 class="titre-section">Les cabinets de conseil</h2>

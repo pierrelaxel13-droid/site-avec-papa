@@ -142,6 +142,8 @@ export function pagesLegales({ page, SITE, FORMULES, TVA, esc, eur }) {
           <li><strong>Facturation :</strong> formule, montants, factures, et l'identifiant de votre abonnement chez
             notre prestataire de paiement. Le paiement, par carte bancaire ou par prélèvement SEPA, est traité par ce
             prestataire : nous ne voyons jamais votre numéro de carte ni votre IBAN.</li>
+          <li><strong>Contact :</strong> ce que vous écrivez dans le formulaire de contact (nom, entreprise, adresse
+            électronique, téléphone si vous le donnez, message), pour vous répondre ; conservé 3 ans au plus, puis effacé.</li>
           <li><strong>Lecture :</strong> les textes du relevé que vous avez déjà ouverts, pour ne vous signaler
             que les nouveaux.</li>
           <li><strong>Sécurité :</strong> journaux de connexion, pour détecter et prévenir les accès frauduleux

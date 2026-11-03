@@ -897,6 +897,7 @@
         admin.hidden = false;
         robot();
         conseilsIA();
+        messagesContact();
       });
     };
 
@@ -956,6 +957,40 @@
           li.appendChild(el("span", "admin-details", "Le " + new Date(x.le).toLocaleDateString("fr-FR", { day: "numeric", month: "long" }) +
             (x.metier ? " · pour le métier NAF " + x.metier : " · conseil général") +
             (x.details && x.details.qui ? " · selon l'IA, concerne : " + x.details.qui : "")));
+          ul.appendChild(li);
+        });
+      });
+    };
+
+    /* Les messages du formulaire de contact (accueil) : du plus récent au plus
+       ancien, avec « Répondre » (courriel) et « Marquer comme lu ». Tout est
+       posé par textContent : un message n'est jamais lu comme du HTML. */
+    var OBJETS = { offres: "Question sur les offres", demonstration: "Démonstration", consultant: "Offre consultant", autre: "Autre" };
+    var messagesContact = function () {
+      var ul = $("#admin-messages");
+      if (!ul) return;
+      V.rpc("admin_messages", {}).then(function (r) {
+        ul.textContent = "";
+        if (!r.ok) { ul.appendChild(el("li", "", r.erreur)); return; }
+        var l = r.donnees || [];
+        var nonLus = l.filter(function (m) { return !m.lu; }).length;
+        $("#admin-messages-etat").textContent = l.length
+          ? l.length + " message" + (l.length > 1 ? "s" : "") + ", dont " + nonLus + " non lu" + (nonLus > 1 ? "s" : "") + "."
+          : "Aucun message pour l'instant.";
+        l.forEach(function (m) {
+          var li = el("li", "admin-compte admin-message" + (m.lu ? " message-lu" : ""));
+          li.appendChild(el("span", "admin-courriel", (m.lu ? "" : "● ") + m.nom + (m.entreprise ? " — " + m.entreprise : "")));
+          li.appendChild(el("span", "admin-details", new Date(m.recu_le).toLocaleString("fr-FR", { day: "numeric", month: "long", hour: "2-digit", minute: "2-digit" }) +
+            " · " + (OBJETS[m.objet] || m.objet) + " · " + m.courriel + (m.telephone ? " · " + m.telephone : "")));
+          li.appendChild(el("p", "message-texte", m.message));
+          var outils = el("span", "equipe-outils");
+          var rep = el("a", "lien-nu", "Répondre");
+          rep.href = "mailto:" + encodeURIComponent(m.courriel) + "?subject=" + encodeURIComponent("Votre message à Vigie");
+          outils.appendChild(rep);
+          outils.appendChild(bouton(m.lu ? "Marquer comme non lu" : "Marquer comme lu", function () {
+            V.rpc("admin_message_lu", { message: m.id, lu: !m.lu }).then(messagesContact);
+          }));
+          li.appendChild(outils);
           ul.appendChild(li);
         });
       });

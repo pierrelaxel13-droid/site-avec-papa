@@ -3571,3 +3571,39 @@ a.puce-fixe { text-decoration: none; color: inherit; }
 #paie-formulaire > * + * { margin-top: var(--t3); }
 #paiement .carte-connexion p.precision, #paiement #paie-compte p { font-size: .88rem; color: var(--encre-tenue); }
 #paiement #paie-compte p:first-child { font-size: 1rem; color: var(--encre); }
+
+/* Présentation : « Ce que le site ne fait pas » en petit (3 novembre 2026). */
+.ne-fait-pas .titre-section { font-size: clamp(1.15rem, 1rem + .6vw, 1.4rem); }
+.ne-fait-pas .reserve { font-size: .85rem; line-height: 1.55; padding: var(--t3) var(--t4); }
+.ne-fait-pas .reserve strong { font-weight: 600; }
+.ne-fait-pas .deux-colonnes { margin-top: var(--t3) !important; }
+
+/* --- Le formulaire de contact (3 novembre 2026) -------------------------- */
+.form-contact {
+  max-width: 44rem; margin: var(--t5) 0 0; text-align: left;
+  background: var(--carte); border: 1px solid var(--filet); border-radius: var(--r3);
+  padding: clamp(1.2rem, .8rem + 1.6vw, 2rem);
+}
+.contact-grille { display: grid; gap: 0 var(--t3); grid-template-columns: minmax(0, 1fr); }
+@media (min-width: 40rem) { .contact-grille { grid-template-columns: repeat(2, minmax(0, 1fr)); } .contact-large { grid-column: 1 / -1; } }
+.form-contact .champ label { font-weight: 500; font-size: .88rem; color: var(--encre-douce); }
+.form-contact .champ input, .form-contact .champ select, .form-contact .champ textarea {
+  width: 100%; padding: .65rem .85rem; background: var(--papier); color: var(--encre);
+  border: 1px solid var(--filet-fort); border-radius: var(--r1); font: inherit; font-size: .98rem;
+}
+.form-contact .champ textarea { resize: vertical; min-height: 8rem; line-height: 1.5; }
+.form-contact .champ select:focus-visible, .form-contact .champ textarea:focus-visible { border-color: var(--accent); outline-offset: 2px; }
+.form-contact .requis { color: var(--accent); }
+.contact-piege { position: absolute; left: -10000px; width: 1px; height: 1px; overflow: hidden; }
+.contact-accord { display: flex; gap: .6rem; align-items: flex-start; font-size: .88rem; color: var(--encre-douce); cursor: pointer; }
+.contact-accord input { margin: .2rem 0 0; width: 1.05rem; height: 1.05rem; accent-color: var(--accent); flex: none; }
+.form-contact .rangee { margin-top: var(--t4); }
+.etat-contact { margin: var(--t3) 0 0; font-size: .9rem; }
+.etat-contact:empty { display: none; }
+.etat-contact.etat-erreur { color: var(--rouge); }
+.contact-autre { margin: var(--t3) 0 0; font-size: .85rem; color: var(--encre-tenue); }
+.contact-merci p { margin: 0 0 .4rem; }
+.contact-merci:focus { outline: none; }
+.admin-message .message-texte { margin: .4rem 0 .2rem; white-space: pre-wrap; overflow-wrap: anywhere; font-size: .9rem; color: var(--encre); }
+.admin-message.message-lu { opacity: .7; }
+.admin-message .equipe-outils { display: flex; gap: 1rem; flex-wrap: wrap; align-items: center; }
