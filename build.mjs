@@ -497,6 +497,7 @@ ${piedCourt ? "" : `
           <li><a href="${a("abonnement.html")}">Abonnement et tarifs</a></li>
           ${SITE.offreConsultant ? `<li><a href="${a("consultants.html")}">Offre consultants QSE</a></li>` : ""}
           ${lienPaiement("portail") ? `<li><a href="${esc(lienPaiement("portail"))}">Gérer ou résilier mon abonnement</a></li>` : ""}
+          <li><a href="${a("contact.html")}">Nous contacter</a></li>
           <li><a href="${a("connexion.html")}">Connexion</a></li>
         </ul>
       </div>

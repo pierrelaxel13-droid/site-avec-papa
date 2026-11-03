@@ -3687,3 +3687,30 @@ a.puce-fixe { text-decoration: none; color: inherit; }
 .section-contact .contact-autre { margin: var(--t3) 0 0; font-size: .8rem; color: var(--encre-tenue); text-align: left; }
 .section-contact .contact-merci { padding: clamp(1.25rem, .9rem + 1.5vw, 2rem); }
 .section-contact .contact-merci p { font-size: .95rem; }
+
+/* --- Bas de page, sobre (3 novembre 2026, demandé par Axel) --------------
+   Comme sur la plupart des sites : petites colonnes de liens, intitulés
+   discrets, une ligne légale fine en bas. Tailles fixes, qui ne grandissent
+   plus avec l'écran. */
+.pied { padding-block: clamp(2rem, 1.5rem + 2vw, 3rem) 1.25rem; font-size: .85rem; }
+.pied-grille { gap: 1.75rem; }
+@media (min-width: 48rem) { .pied-grille { grid-template-columns: minmax(0, 1.6fr) repeat(3, minmax(0, 1fr)); gap: 2rem; } }
+.pied .marque { font-size: 1.05rem; margin-bottom: .6rem; }
+.pied .marque svg { width: 1.15rem; height: 1.15rem; }
+.pied-grille p { margin: 0; font-size: .82rem; line-height: 1.55; color: var(--encre-tenue); max-width: 30ch; }
+.pied-grille p + p { margin-top: .6rem !important; }
+.pied h2 { font-size: .82rem; font-weight: 600; letter-spacing: 0; margin: 0 0 .7rem; color: var(--encre); }
+.pied ul { margin: 0; }
+.pied li { margin-bottom: .45rem; font-size: .82rem; line-height: 1.4; }
+.pied a { color: var(--encre-tenue); }
+.pied a:hover { color: var(--accent); text-decoration: none; }
+.pied-bas { margin-top: 1.75rem; padding-top: 1rem; gap: .5rem; font-size: .76rem; color: var(--encre-tenue); }
+.pied-bas p { margin: 0; line-height: 1.5; text-align: left !important; }
+.pied-legal { gap: .3rem 1.1rem; align-items: center; }
+.pied-legal a { text-decoration: none; }
+.pied-legal a:hover { text-decoration: underline; }
+@media (min-width: 48rem) { .pied-legal > span { margin-right: auto; } }
+.pied-court { padding-block: 1rem; }
+@media (max-width: 47.99rem) {
+  .pied-grille { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.5rem 1rem; }
+}
