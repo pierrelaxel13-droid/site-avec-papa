@@ -78,8 +78,8 @@
   /* Connecté, le bouton « Connexion » de l'en-tête devient « Mon compte ». */
   function entete() {
     V.session().then(function (s) {
-      var b = document.querySelector(".bouton-bandeau");
-      if (s && b) { b.textContent = "Mon compte"; b.href = vers("compte/"); }
+      // Les deux boutons du bandeau (bureau et téléphone) disent « Mon compte ».
+      if (s) [].forEach.call(document.querySelectorAll(".bouton-bandeau"), function (b) { b.textContent = "Mon compte"; b.href = vers("compte/"); });
     });
   }
   if (V && V.ouvert) entete();
@@ -320,7 +320,8 @@
         var d = r.donnees || {};
         var liste = $("#equipe-liste");
         liste.textContent = "";
-        (d.membres || []).forEach(function (m) {
+        // Votre propre ligne n'est pas montrée : la liste dit qui d'autre a accès.
+        (d.membres || []).filter(function (m) { return !m.moi; }).forEach(function (m) {
           var li = document.createElement("li");
           li.className = "admin-compte";
           var t = document.createElement("span"); t.className = "admin-courriel";
@@ -380,7 +381,7 @@
     var fi = $("#form-inviter");
     fi.addEventListener("submit", function (ev) {
       ev.preventDefault();
-      var etatI = $("#etat-inviter"), adresse = $("#i-courriel").value.trim().toLowerCase(), role = $("#i-role").value;
+      var etatI = $("#etat-inviter"), adresse = $("#i-courriel").value.trim().toLowerCase(), role = "membre";   // le rôle se change ensuite dans la liste de l'équipe
       if (!adresseValable(adresse)) { dire(etatI, "Entrez une adresse électronique valable."); return; }
       dire(etatI, "Création…");
       V.mesEntreprises().then(function (m) {

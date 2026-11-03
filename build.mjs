@@ -4082,14 +4082,12 @@ function pageOubli() {
 function pageMonCompte() {
   const formules = Object.fromEntries(Object.entries(FORMULES).map(([id, f]) => [id, { l: f.l, rang: f.rang }]));
   const corps = `
-<section class="heros heros-court">
+<section class="section compte-page">
   <div class="enveloppe">
-    <div class="heros-texte"><h1>Mon compte</h1></div>
-    <p class="heros-sous etat-compte" id="etat-compte" role="status">Un instant…</p>
-  </div>
-</section>
-<section class="section">
-  <div class="enveloppe">
+    <div class="compte-tete">
+      <h1>Mon compte</h1>
+      <p class="etat-compte" id="etat-compte" role="status">Un instant…</p>
+    </div>
     <div class="connexion connexion-seule">
       ${comptesFermes()}
       <p class="reserve annonce-compte" id="compte-annonce" role="status" hidden></p>
@@ -4116,8 +4114,7 @@ function pageMonCompte() {
 
       <div id="compte-principal" data-formules="${esc(JSON.stringify(formules))}" hidden>
         <div class="carte-connexion">
-          <p class="etiq">Connecté</p>
-          <h2 class="compte-adresse" id="compte-adresse"></h2>
+          <p class="compte-connecte">Connecté avec <span class="compte-adresse" id="compte-adresse"></span></p>
 
           <div id="compte-entreprise" hidden>
             <p class="compte-entreprise"><strong id="entreprise-nom"></strong></p>
@@ -4160,29 +4157,19 @@ function pageMonCompte() {
         </div>
 
         <div class="carte-connexion" id="compte-equipe" hidden>
-          <h2>Votre équipe</h2>
+          <h2>Inviter un membre de votre équipe</h2>
+          <form id="form-inviter" class="form-inviter" method="post" novalidate hidden>
+            <label class="cache-visuellement" for="i-courriel">Son adresse électronique</label>
+            <input type="email" id="i-courriel" autocomplete="off" inputmode="email" spellcheck="false" required
+                   placeholder="adresse@entreprise.fr">
+            <button type="submit" class="bouton bouton-accent">Inviter</button>
+          </form>
+          <p class="etat-compte" id="etat-inviter" role="status"></p>
           <ul class="admin-comptes" id="equipe-liste"></ul>
           <div id="equipe-attente" hidden>
-            <p class="etiq" style="margin-top:var(--t4)">Invitations en attente</p>
+            <p class="compte-sous-titre">Invitations en attente</p>
             <ul class="admin-comptes" id="equipe-invitations"></ul>
           </div>
-          <form id="form-inviter" method="post" novalidate hidden>
-            <p class="etiq" style="margin-top:var(--t4)">Inviter quelqu'un</p>
-            <div class="champ">
-              <label for="i-courriel">Son adresse électronique</label>
-              <input type="email" id="i-courriel" autocomplete="off" inputmode="email" spellcheck="false" required>
-            </div>
-            <div class="champ">
-              <label for="i-role">Ce qu'elle pourra faire</label>
-              <select id="i-role">
-                <option value="membre">Membre — cocher les revues, décider sur les textes</option>
-                <option value="lecteur">Lecteur — consulter seulement</option>
-                <option value="admin">Administrateur — tout, y compris les réglages et l'équipe</option>
-              </select>
-            </div>
-            <p class="rangee"><button type="submit" class="bouton bouton-sobre">Créer l'invitation</button></p>
-            <p class="etat-compte" id="etat-inviter" role="status"></p>
-          </form>
           <div class="reserve reserve-ok" id="invitation-lien" hidden>
             <p><strong>Envoyez-lui ce lien.</strong> Il est valable 7 jours et ne sert qu'une fois ; elle y créera
             son compte avec l'adresse <b id="i-pour"></b>.</p>
@@ -4194,8 +4181,10 @@ function pageMonCompte() {
           </div>
         </div>
 
-        <details class="carte-connexion repli-compte">
-          <summary>Changer mon mot de passe</summary>
+        <div class="carte-connexion compte-reglages">
+          <h2>Paramètres du compte</h2>
+        <details class="ligne-reglage">
+          <summary><span>Mot de passe</span><span class="modifier">Modifier</span></summary>
           <form id="form-motdepasse" method="post" novalidate>
             <div class="champ">
               <label for="m-motdepasse">Nouveau mot de passe <span class="aide">au moins 10 caractères</span></label>
@@ -4210,8 +4199,8 @@ function pageMonCompte() {
           </form>
         </details>
 
-        <details class="carte-connexion repli-compte">
-          <summary>Changer mon adresse électronique</summary>
+        <details class="ligne-reglage">
+          <summary><span>Adresse électronique</span><span class="modifier">Modifier</span></summary>
           <form id="form-adresse" method="post" novalidate>
             <div class="champ">
               <label for="a-courriel">Nouvelle adresse</label>
@@ -4221,6 +4210,7 @@ function pageMonCompte() {
             <p class="etat-compte" id="etat-adresse" role="status"></p>
           </form>
         </details>
+        </div>
 
         <p class="rangee rangee-centre" style="margin-top:var(--t5)">
           <a class="bouton bouton-sobre" id="compte-admin" href="admin.html" hidden>Administration</a>
@@ -4231,7 +4221,7 @@ function pageMonCompte() {
   </div>
 </section>`;
   return page({ titre: `Mon compte | ${SITE.nom}`, description: `Votre compte ${SITE.nom}.`,
-    racine: "../", zone: "public", corps, scripts: ["assets/compte.js"], installation: false, piedCourt: true });
+    racine: "../", zone: "public", corps, attrsBody: ' data-page="compte"', scripts: ["assets/compte.js"], installation: false, piedCourt: true });
 }
 
 /* Le lien d'invitation mène ici (compte/invitation.html#jeton=…). Le jeton

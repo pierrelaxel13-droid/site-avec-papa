@@ -3444,3 +3444,52 @@ a.puce-fixe { text-decoration: none; color: inherit; }
 .conf-compteurs .conf-vert .grand { color: var(--vert); }
 .conf-compteurs .conf-rouge { border-color: var(--rouge); background: var(--rouge-fond); }
 .conf-compteurs .conf-rouge .grand { color: var(--rouge); }
+
+/* --- Mon compte, plus sobre (3 novembre 2026, demandé par Axel) -----------
+   Un titre à taille normale, des cartes aux angles moins ronds, pas de
+   triangles devant les réglages : une ligne par réglage, avec « Modifier ». */
+[data-page="compte"] .compte-page { padding-top: clamp(2rem, 1.2rem + 3vw, 3.5rem); }
+[data-page="compte"] .compte-tete { max-width: 36rem; margin: 0 auto var(--t5); }
+[data-page="compte"] .compte-tete h1 { font-size: clamp(1.7rem, 1.3rem + 1.6vw, 2.3rem); letter-spacing: -.02em; margin: 0; }
+[data-page="compte"] .compte-tete .etat-compte { margin: .4rem 0 0; color: var(--encre-tenue); font-size: .95rem; }
+[data-page="compte"] .compte-tete .etat-compte:empty { display: none; }
+[data-page="compte"] .connexion-seule { max-width: 36rem; }
+[data-page="compte"] .carte-connexion { border-radius: var(--r2); box-shadow: none; padding: clamp(1.2rem, .9rem + 1.2vw, 1.75rem); }
+[data-page="compte"] .carte-connexion h2 { font-size: 1.08rem; font-weight: 600; margin: 0 0 var(--t3); letter-spacing: 0; }
+[data-page="compte"] #compte-principal > * + * { margin-top: var(--t3); }
+[data-page="compte"] .compte-connecte { margin: 0 0 var(--t3); font-size: .9rem; color: var(--encre-tenue); }
+[data-page="compte"] .compte-connecte .compte-adresse { color: var(--encre); font-weight: 500; }
+[data-page="compte"] .compte-entreprise { font-size: 1.3rem; margin: 0 0 .25rem; }
+[data-page="compte"] #entreprise-role, [data-page="compte"] #entreprise-formule { margin: 0; font-size: .95rem; color: var(--encre-douce); }
+[data-page="compte"] #entreprise-ouvrir, [data-page="compte"] #entreprise-tarifs { width: 100%; justify-content: center; }
+[data-page="compte"] .compte-sous-titre { margin: var(--t4) 0 0; font-size: .9rem; color: var(--encre-tenue); }
+
+/* Inviter : l'adresse et le bouton sur une ligne. */
+[data-page="compte"] .form-inviter { display: flex; gap: .5rem; }
+[data-page="compte"] .form-inviter input {
+  flex: 1; min-width: 0; font: inherit; font-size: .98rem; color: var(--encre);
+  background: var(--fond); border: 1px solid var(--filet-fort); border-radius: var(--r1); padding: .6rem .8rem;
+}
+[data-page="compte"] .form-inviter .bouton { flex: none; }
+[data-page="compte"] #etat-inviter:empty { display: none; }
+[data-page="compte"] #equipe-liste:not(:empty) { margin-top: var(--t3); }
+
+/* Paramètres du compte : une ligne par réglage. */
+[data-page="compte"] .ligne-reglage { border-top: 1px solid var(--filet); }
+[data-page="compte"] .ligne-reglage summary {
+  display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+  padding: .85rem 0; cursor: pointer; list-style: none; font-size: .98rem; color: var(--encre);
+}
+[data-page="compte"] .ligne-reglage summary::-webkit-details-marker { display: none; }
+[data-page="compte"] .ligne-reglage summary::marker { content: ""; }
+[data-page="compte"] .ligne-reglage .modifier { font-size: .9rem; color: var(--accent); font-weight: 500; }
+[data-page="compte"] .ligne-reglage[open] .modifier { color: var(--encre-tenue); }
+[data-page="compte"] .ligne-reglage[open] .modifier::before { content: "Fermer"; }
+[data-page="compte"] .ligne-reglage[open] .modifier { font-size: 0; }
+[data-page="compte"] .ligne-reglage[open] .modifier::before { font-size: .9rem; }
+[data-page="compte"] .ligne-reglage form { padding: 0 0 var(--t3); }
+[data-page="compte"] #compte-sortir { min-width: 12rem; }
+[data-page="compte"] .ligne-reglage .champ label { font-weight: 400; font-size: .9rem; color: var(--encre-douce); }
+[data-page="compte"] .ligne-reglage .champ input { border-radius: var(--r1); padding: .6rem .8rem; font-size: .98rem; min-height: 0; }
+[data-page="compte"] .ligne-reglage .bouton, [data-page="compte"] #invitation-lien .bouton { font-size: .92rem; padding: .55rem 1.1rem; }
+[data-page="compte"] #invitation-lien { border-radius: var(--r2); margin-top: var(--t3); }
