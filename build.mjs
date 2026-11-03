@@ -925,6 +925,14 @@ function categorieTexte(V, ids) {
   return Object.keys(CATEGORIES_TABLEAU).filter((cl) => parCat[cl]).map((cl) =>
     `<span class="categorie-texte" data-cat="${cl}" data-sujets="${esc(parCat[cl].join(" "))}">${esc(CATEGORIES_TABLEAU[cl])}</span>`).join("");
 }
+/* Les actions à déclencher d'un texte : celles de ses sujets (deux par sujet,
+   sans doublon), chacune marquée de son sujet pour suivre le plan. */
+function actionsDuSujet(V, ids) {
+  const vues = new Set();
+  const li = ids.flatMap((id) => ((V.domaines[id] || {}).actions || []).slice(0, 2)
+    .filter((a) => !vues.has(a) && vues.add(a)).map((a) => `<li data-sujets="${esc(id)}">${esc(a)}</li>`)).join("");
+  return li ? `<ul class="actions-sujet">${li}</ul>` : "Rien à faire : à connaître.";
+}
 function tableauTextesPlan(V, C, LIENS, plan, JO) {
   const categorie = (ids) => {
     const parCat = {};
@@ -959,7 +967,6 @@ function tableauTextesPlan(V, C, LIENS, plan, JO) {
         <a class="lien-officiel" href="${esc(L.url)}" target="_blank" rel="noopener">${esc(intituleDuLien(L))} ${sortant}</a></td>
       <td data-titre="Lu"><label class="case-lu"><input type="checkbox" class="lu" aria-label="Texte lu"><span>Lu</span></label></td>
       <td data-titre="Applicable"><select class="applicable" aria-label="Ce texte est-il applicable ?"><option value="">À décider</option><option value="applicable">Oui</option><option value="sans_objet">Non</option></select><span class="precision applicable-etat"></span></td>
-      <td data-titre="Actions à déclencher">${actionsDe(ids)}</td>
     </tr>` };
   });
 
@@ -975,7 +982,6 @@ function tableauTextesPlan(V, C, LIENS, plan, JO) {
         ${lien ? `<a class="lien-officiel" href="${esc(lien)}" target="_blank" rel="noopener">${/legifrance\.gouv\.fr/.test(lien) ? "Légifrance" : esc(t.sourceNom || "Voir chez la source")} ${sortant}</a>` : ""}</td>
       <td data-titre="Lu"><label class="case-lu"><input type="checkbox" class="lu" aria-label="Texte lu"><span>Lu</span></label></td>
       <td data-titre="Applicable"><select class="applicable" aria-label="Ce texte est-il applicable ?"><option value="">À décider</option><option value="applicable">Oui</option><option value="sans_objet">Non</option></select><span class="precision applicable-etat"></span></td>
-      <td data-titre="Actions à déclencher">${actionsDe(ids)}</td>
     </tr>` };
   });
 
@@ -996,7 +1002,7 @@ function tableauTextesPlan(V, C, LIENS, plan, JO) {
     </div>
     <div class="defile-tableau">
     <table class="tableau-plan tableau-textes-plan">
-      <thead><tr><th scope="col">Date</th><th scope="col">Catégorie</th><th scope="col">Référence et lien</th><th scope="col">Lu</th><th scope="col">Applicable</th><th scope="col">Actions à déclencher</th></tr></thead>
+      <thead><tr><th scope="col">Date</th><th scope="col">Catégorie</th><th scope="col">Référence et lien</th><th scope="col">Lu</th><th scope="col">Applicable</th></tr></thead>
       <tbody>${toutes.map((x) => x.html(touche(x.ids))).join("\n")}</tbody>
     </table>
     </div>
@@ -1166,6 +1172,7 @@ function appConformite(V, D, C, LIENS, JO = null) {
     return `<tr data-domaines="${esc(e.ids.join(" "))}" data-cle="${esc(e.cle)}" data-objet="${esc(e.objet)}"${dans ? "" : " hidden"}>
       <td data-titre="Texte">${e.texte}</td>
       <td data-titre="Catégorie">${categorieTexte(V, e.ids)}</td>
+      <td data-titre="Actions à déclencher">${actionsDuSujet(V, e.ids)}</td>
       <td data-titre="Évaluation">
         <span class="conf-marque" aria-hidden="true"></span>
         <select class="conf-statut" aria-label="Évaluation : ${esc(e.objet)}">${options.map(([v, l]) => `<option value="${v}">${l}</option>`).join("")}</select>
@@ -1205,7 +1212,7 @@ function appConformite(V, D, C, LIENS, JO = null) {
       <span class="precision" id="filtre-compte" role="status"></span>
     </div>
     <table class="tableau-plan tableau-conformite tableau-textes-plan">
-      <thead><tr><th scope="col">Texte</th><th scope="col">Catégorie</th><th scope="col">Évaluation</th><th scope="col">Preuve ou commentaire</th></tr></thead>
+      <thead><tr><th scope="col">Texte</th><th scope="col">Catégorie</th><th scope="col">Actions à déclencher</th><th scope="col">Évaluation</th><th scope="col">Preuve ou commentaire</th></tr></thead>
       <tbody>${lignes}</tbody>
     </table>
     <p class="note-source">L'évaluation est la vôtre : Vigie range les textes et garde la trace de vos décisions.
