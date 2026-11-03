@@ -2217,7 +2217,6 @@ function appReglages(V, D, NAF, METIERS) {
     <ul class="jalons">
       <li><span class="fort">Réglages</span></li>
       <li data-demo><span>Gardés dans ce navigateur</span></li>
-      <li data-compte hidden><span>Gardés dans votre compte</span></li>
     </ul>
     <h1>Mon entreprise et mes alertes</h1>
 
@@ -2231,14 +2230,10 @@ function appReglages(V, D, NAF, METIERS) {
 
 <section class="rubrique" id="volet-entreprise" role="tabpanel" aria-labelledby="onglet-entreprise">
   <div class="enveloppe">
-    <h2 class="cache-visuellement">Mon entreprise</h2>
+    <h2 class="titre-reglages">Informations sur votre entreprise</h2>
     <p class="reserve" data-demo>
       <strong>Démonstration : tout reste sur cet appareil.</strong> Rien n'est envoyé à personne ; si vous
       videz les données du navigateur, il faudra tout ressaisir.
-    </p>
-    <p class="reserve reserve-ok" data-compte hidden>
-      <strong>Gardé dans votre compte.</strong> Vous retrouvez ces réglages sur tous vos appareils, et vos
-      collègues aussi.
     </p>
 
     <div class="simulateur simulateur-reglages" style="margin-top:var(--t5)">
@@ -2251,14 +2246,14 @@ function appReglages(V, D, NAF, METIERS) {
           <label class="etiq" for="e-ville">Commune</label>
           <input type="text" id="e-ville" name="ville" placeholder="${esc(D.entreprise.ville)}" autocomplete="address-level2">
         </div>
-        ${NAF ? `<div class="reglage reglage-large">
-          <label class="etiq" for="e-activite">Ce que vous faites, en vos mots</label>
+        ${NAF ? `<div class="reglage reglage-large reglage-ligne">
+          <label class="etiq" for="e-activite">Votre activité</label>
           <input type="text" id="e-activite" name="activite" autocomplete="off" spellcheck="false"
                  placeholder="plomberie chauffage, boulangerie, transport de marchandises…">
           <p class="precision">Écrivez-le comme vous le diriez : on trouve votre code APE.</p>
           <div class="propositions" id="e-propositions" hidden></div>
         </div>` : ""}
-        <div class="reglage reglage-large">
+        <div class="reglage reglage-large reglage-ligne">
           <label class="etiq" for="e-naf">${NAF ? "Votre code APE" : "Activité principale (NAF)"}</label>
           <select id="e-naf" name="naf">
             ${NAF
@@ -2343,31 +2338,6 @@ function appReglages(V, D, NAF, METIERS) {
         </p>
         <p class="etiq reglage-large" id="e-etat" role="status"></p>
       </form>
-
-      <div class="resultat">
-        <h3 id="e-titre">${esc(D.entreprise.nom)}</h3>
-        <p>Ce qui vous concerne, d'après ces informations.</p>
-        <hr class="filet">
-        <ul class="coup-d-oeil">
-          <li>
-            <span class="pastille"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h14v16l-7-3-7 3Z"/></svg></span>
-            <span><span class="etiq">Sujets à suivre</span><span class="valeur" id="e-total">—</span></span>
-          </li>
-          <li>
-            <span class="pastille ambre"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span>
-            <span><span class="etiq">À revoir le plus souvent</span><span class="valeur" id="e-rythme">—</span></span>
-          </li>
-          <li>
-            <span class="pastille verte"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></span>
-            <span><span class="etiq">Ajoutés par vos réponses</span><span class="valeur" id="e-ajouts">—</span></span>
-          </li>
-        </ul>
-        <div class="jauge" id="e-jauge" aria-hidden="true"></div>
-        <ul class="rythmes" id="e-rythmes"></ul>
-        <p style="margin-top:var(--t4)">
-          <a class="lien-fleche" href="plan.html">Voir le plan complet ${fleche}</a>
-        </p>
-      </div>
     </div>
   </div>
 </section>
@@ -2442,7 +2412,7 @@ function appReglages(V, D, NAF, METIERS) {
     titre: `Réglages | ${SITE.nom}`,
     description: "Mon entreprise et mes alertes.",
     racine: "../", zone: "app", actif: "reglages", corps, verrou: true,
-    formule: "textes", donneesPlan: true
+    formule: "textes", donneesPlan: true, attrsBody: ' data-page="reglages"'
   });
 }
 

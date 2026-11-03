@@ -112,26 +112,25 @@
     var aJour = plan.length - aFaire.length;
     var suivantes = plan.filter(function (x) { return !x.aFaire; })
       .sort(function (a, b) { return a.prochaine < b.prochaine ? -1 : 1; }).slice(0, 6);
-    /* Le tableau de bord en tableau (3 novembre 2026, demandé par Axel) :
-       une ligne par indicateur, son nombre, et ce qu'il veut dire. */
+    /* Le tableau de bord en carrés, comme au début (3 novembre 2026), avec
+       les intitulés demandés : publiés, applicables, lus, actions. */
     if (plan.length) html += rubrique("Tableau de bord", (function () {
       var ouv = M.actions(), auj = new Date().toISOString().slice(0, 10);
       var retard = ouv.filter(function (a) { return a.echeance < auj; }).length;
-      var rangee = function (alerte, lien, nom, nombre, detail) {
-        return "<tr" + (alerte ? ' class="alerte"' : "") + '><th scope="row"><a href="' + lien + '">' + nom + "</a></th>" +
-          '<td class="nombre">' + nombre + "</td><td>" + detail + "</td></tr>";
+      var carre = function (alerte, lien, nom, nombre, detail, voir) {
+        return "<div" + (alerte ? ' class="alerte"' : "") + '><dt class="etiq">' + nom + '</dt><dd><span class="grand">' + nombre + "</span>" +
+          (detail ? '<span class="precision">' + detail + "</span>" : "") +
+          '<a class="lien-carte" href="' + lien + '"><span class="cache-visuellement">' + voir + "</span></a></dd></div>";
       };
       var c = window.PCO_AVIS ? window.PCO_AVIS.chiffres() : null;
       var nb = function (x) { return x == null ? "—" : x; };
-      return '<table class="tableau-bord"><thead><tr><th scope="col">Indicateur</th><th scope="col">Nombre</th>' +
-        '<th scope="col">Détail</th></tr></thead><tbody>' +
-        rangee(false, "releve.html", "Textes publiés", nb(c && c.publies), "relevés ces 14 derniers jours aux sources officielles") +
-        rangee(false, "releve.html", "Textes applicables", nb(c && c.applicables), "ceux qui touchent votre plan de veille") +
-        rangee(false, "releve.html", "Textes lus", nb(c && c.lus),
-          c ? "sur " + c.applicables + " applicables, ouverts depuis le début de votre suivi" : "") +
-        rangee(retard, "#bord-actions", "Actions à réaliser", ouv.length,
-          retard ? "dont " + retard + " en retard" : ouv.length ? "aucune en retard" : "aucune pour l'instant") +
-        "</tbody></table>";
+      return '<dl class="compteurs compteurs-liens tableau-bord">' +
+        carre(false, "releve.html", "Textes publiés", nb(c && c.publies), "ces 14 derniers jours", "Voir le relevé") +
+        carre(false, "releve.html", "Textes applicables", nb(c && c.applicables), "touchent votre plan", "Voir le relevé") +
+        carre(false, "releve.html", "Textes lus", nb(c && c.lus), c ? "sur " + c.applicables + " applicables" : "", "Voir le relevé") +
+        carre(retard, "#bord-actions", "Actions à réaliser", ouv.length,
+          retard ? "dont " + retard + " en retard" : "", "Voir les actions") +
+        "</dl>";
     })());
     /* « Textes en attente » (3 novembre 2026) : par sujet du plan, le nombre de
        textes applicables que personne n'a encore ouverts. Un texte rattaché à

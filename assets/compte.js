@@ -284,7 +284,8 @@
       var b = $("#entreprise-consultant");
       V.rpc("mon_consultant", { e: e.entreprise_id }).then(function (r) {
         var c = r.ok && r.donnees;
-        if (!c) { b.hidden = true; return; }
+        // Sans cabinet, la base ne rend rien (ou un objet vide) : pas de bloc.
+        if (!c || typeof c !== "object" || !c.nom) { b.hidden = true; return; }
         b.textContent = "";
         var p = document.createElement("p");
         p.textContent = c.acces

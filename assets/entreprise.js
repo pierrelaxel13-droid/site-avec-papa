@@ -486,7 +486,8 @@
 
     function rendre() {
       var vue = perimetre(champs.naf.value, contexteCoche());
-      if (!vue) return;
+      // Le panneau « Ce qui vous concerne » n'est plus sur la page (3 novembre 2026).
+      if (!vue || !$("#e-titre")) return;
       $("#e-titre").textContent = champs.nom.value.trim() || vue.div.l;
       $("#e-total").textContent = vue.liste.length;
       $("#e-rythme").textContent = vue.paquets.length ? vue.paquets[0].l : "—";

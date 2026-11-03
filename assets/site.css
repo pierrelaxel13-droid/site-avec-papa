@@ -3286,14 +3286,51 @@ a.puce-fixe { text-decoration: none; color: inherit; }
 .formule-donne li, .formule-donne li:first-child { font-weight: 700; color: var(--encre); }
 /* « Installer l'application » à la taille de « Une question avant de vous abonner ? ». */
 .installation h2 { font-size: clamp(.95rem, .55rem + 1.6vw, 1.9rem); }
-/* Le tableau de bord d'un compte, en tableau (3 novembre 2026). */
-.tableau-bord { width: 100%; border-collapse: collapse; font-size: .97rem; }
-.tableau-bord th, .tableau-bord td { padding: .8rem .9rem; text-align: left; vertical-align: middle; border-bottom: 1px solid var(--filet); }
-.tableau-bord thead th { font-size: .78rem; font-weight: 600; letter-spacing: .06em; text-transform: uppercase;
-  color: var(--encre-tenue); border-bottom-color: var(--filet-fort); }
-.tableau-bord tbody th { font-weight: 600; }
-.tableau-bord tbody th a { color: var(--encre); }
-.tableau-bord .nombre { font-size: 1.35rem; font-weight: 700; font-variant-numeric: tabular-nums; color: var(--encre); white-space: nowrap; }
-.tableau-bord td:last-child { color: var(--encre-douce); }
-.tableau-bord tr.alerte .nombre, .tableau-bord tr.alerte th a { color: var(--ambre); }
-@media (max-width: 30rem) { .tableau-bord th, .tableau-bord td { padding: .65rem .45rem; font-size: .9rem; } }
+
+/* --- Réglages, plus sobre (3 novembre 2026, à la demande d'Axel) ----------
+   Une ligne par champ (l'intitulé à gauche, la valeur à droite), texte plus
+   petit, pas de gras ni de capitales. Au téléphone, l'intitulé reste au-dessus :
+   il n'y a pas la place à côté. */
+[data-page="reglages"] .tete-app h1 { font-size: clamp(1.5rem, 1.1rem + 1.4vw, 2.1rem); }
+[data-page="reglages"] .titre-reglages { font-size: 1.15rem; font-weight: 600; margin: 0 0 var(--t3); }
+[data-page="reglages"] .reglage .etiq,
+[data-page="reglages"] .reglages .etiq { text-transform: none; letter-spacing: 0; font-weight: 400; font-size: .88rem; color: var(--encre-douce); }
+[data-page="reglages"] .reglage select,
+[data-page="reglages"] .reglage input { font-size: .98rem; font-weight: 400; letter-spacing: 0; }
+[data-page="reglages"] .reglage { padding: .55rem .9rem; box-shadow: none; }
+[data-page="reglages"] .reglages-entreprise { gap: .5rem; }
+[data-page="reglages"] .reglage .precision { font-size: .82rem; margin: .2rem 0 0; }
+[data-page="reglages"] .case { padding: .35rem 0; }
+[data-page="reglages"] .case .intitule { font-weight: 400; font-size: .92rem; }
+[data-page="reglages"] .case .aide { font-size: .8rem; }
+[data-page="reglages"] .certif span { font-weight: 400; font-size: .92rem; }
+[data-page="reglages"] .reserve strong { font-weight: 600; }
+[data-page="reglages"] .resultat h3 { font-size: 1.1rem; }
+[data-page="reglages"] .resultat .valeur { font-size: 1.05rem; font-weight: 600; }
+@media (min-width: 40rem) {
+  /* Une ligne par champ : intitulé, puis valeur. */
+  [data-page="reglages"] .reglages-entreprise { grid-template-columns: 1fr; }
+  [data-page="reglages"] .reglages-entreprise > .reglage:not(.reglage-large),
+  [data-page="reglages"] .reglages-entreprise > .reglage.reglage-ligne {
+    display: grid; grid-template-columns: 15rem minmax(0, 1fr); align-items: center; column-gap: var(--t3);
+  }
+  [data-page="reglages"] .reglages-entreprise > .reglage:not(.reglage-large) > label { margin: 0; }
+}
+@media (min-width: 40rem) {
+  [data-page="reglages"] .reglages-entreprise > .reglage-ligne > :not(label) { grid-column: 2; }
+  [data-page="reglages"] .reglages-entreprise > .reglage-ligne > label { margin: 0; align-self: start; padding-top: .15rem; }
+}
+/* Sans le panneau de droite, le formulaire prend la largeur, sans s'étirer. */
+[data-page="reglages"] .simulateur-reglages { grid-template-columns: minmax(0, 1fr); max-width: 52rem; }
+/* Réglages : la case reste à gauche de son texte, sur la même ligne. */
+[data-page="reglages"] .reglage label.case { display: grid; grid-template-columns: 1.1rem minmax(0, 1fr); margin: 0; }
+[data-page="reglages"] .reglage label.certif { display: flex; margin: 0; }
+[data-page="reglages"] .reglage .case input,
+[data-page="reglages"] .reglage .certif input { width: 1.1rem; height: 1.1rem; margin: .2rem 0 0; }
+[data-page="reglages"] .intertitre h3 { font-size: 1.05rem; font-weight: 500; }
+[data-page="reglages"] .intertitre .precision { font-size: .88rem; }
+@media (min-width: 40rem) {
+  [data-page="reglages"] .reglages-entreprise > .reglage:has(#e-siret) { display: grid; grid-template-columns: 15rem minmax(0, 1fr); column-gap: 1rem; align-items: center; }
+  [data-page="reglages"] .reglages-entreprise > .reglage:has(#e-siret) > label { margin: 0; }
+  [data-page="reglages"] .reglages-entreprise > .reglage:has(#e-siret) > :not(label) { grid-column: 2; }
+}
