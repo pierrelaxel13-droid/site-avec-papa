@@ -42,7 +42,6 @@ const CHROME = process.env.CHROMIUM || "/opt/pw-browsers/chromium-1194/chrome-li
 const ECRANS = [
   { nom: "bord.png", url: "/demo/index.html" },
   { nom: "plan.png", url: "/demo/plan.html" },
-  { nom: "releve.png", url: "/demo/releve.html" },
   { nom: "registre.png", url: "/demo/conformite.html" },
   { nom: "secteurs.png", url: "/demo/secteurs.html" },
   { nom: "reglages.png", url: "/demo/reglages.html" }
@@ -52,7 +51,7 @@ const ECRANS = [
 // capture au format d'un téléphone, pas un recadrage de l'écran large.
 const TELEPHONES = [
   { nom: "bord-tel.png", url: "/demo/index.html" },
-  { nom: "releve-tel.png", url: "/demo/releve.html" }
+  { nom: "plan-tel.png", url: "/demo/plan.html" }
 ];
 const FORMAT_TEL = { width: 390, height: 844 };
 

@@ -229,7 +229,7 @@ const MANIFESTE = JSON.stringify({
   ],
   shortcuts: [
     { name: "Tableau de bord", url: "./app/index.html" },
-    { name: "Relevé des textes", url: "./app/releve.html" },
+    { name: "Ma veille réglementaire", url: "./app/plan.html" },
     { name: "Registre et conformité", url: "./app/conformite.html" }
   ]
 }, null, 2);
@@ -373,8 +373,6 @@ function page({ titre, description, racine = "", zone = "public", actif = "", co
       ${lien("app/plan.html", "Ma veille réglementaire", "plan")}
       ${lien("app/actions.html", "Plan d'actions", "actions")}
       ${lien("app/conformite.html", "Registre et conformité réglementaire", "conformite")}
-      ${lien("app/releve.html", "Relevé", "releve")}
-      ${lien("app/textes.html", "Textes", "textes")}
       ${lien("app/reglages.html", "Réglages", "reglages")}
       ${selecteurTheme}`;
 
@@ -741,11 +739,11 @@ ${rubrique({ etiq: "À traiter", contenu: `
         ${lienCarte("plan.html", "Voir le plan de veille")}</dd>
     </div>
     <div><dt class="etiq">Textes à analyser</dt>
-      <dd><span class="grand">${aAnalyser.length}</span>${lienCarte("releve.html", "Voir le relevé des textes")}</dd></div>
+      <dd><span class="grand">${aAnalyser.length}</span>${lienCarte("plan.html", "Voir ma veille réglementaire")}</dd></div>
     <div><dt class="etiq">Actions ouvertes</dt>
       <dd><span class="grand">${ouvertes.length}</span>${lienCarte("conformite.html#registre", "Voir le registre")}</dd></div>
     <div><dt class="etiq">Textes relevés, 90 jours</dt>
-      <dd><span class="grand">${D.releve.length}</span>${lienCarte("releve.html", "Voir le relevé des textes")}</dd></div>
+      <dd><span class="grand">${D.releve.length}</span>${lienCarte("plan.html", "Voir ma veille réglementaire")}</dd></div>
   </dl>` })}
 
 ${aAnalyser.length ? rubrique({ etiq: "Ce qu'il faut faire maintenant", contenu: `
@@ -788,7 +786,7 @@ ${rubrique({ etiq: "En attente de vous", contenu: `
   <ul class="liste-releve" style="margin-top:var(--t4)">
     ${aAnalyser.map((t) => ligneReleve(V, C, LIENS, t)).join("")}
   </ul>
-  <p style="margin-top:var(--t4)"><a class="lien-fleche" href="releve.html">Voir tout le relevé ${fleche}</a></p>` })}
+  <p style="margin-top:var(--t4)"><a class="lien-fleche" href="plan.html">Voir ma veille réglementaire ${fleche}</a></p>` })}
 
 ${rubrique({ etiq: "Historiques", aplat: true, contenu: `
   <p class="lecture">Les ouvertures de textes, les validations, les actions et les revues, datées.</p>
@@ -1018,7 +1016,7 @@ function tableauTextesPlan(V, C, LIENS, plan, JO) {
     return { ids, date: quand, ordre: t.titre, src, html: (dans) => `<tr data-domaines="${esc(ids.join(" "))}" data-date="${esc(quand)}" data-source="${esc(src)}" data-cle="${esc(cleJO(t))}" data-objet="${esc(String(t.titre).slice(0, 480))}"${dans ? "" : " hidden"}>
       <td data-titre="Date"><time datetime="${esc(quand)}">${esc(dateFr(quand))}</time><span class="etat-date etat-recent">Parution récente</span></td>
       <td data-titre="Catégorie">${categorie(ids)}</td>
-      <td data-titre="Référence et lien"><span class="marque-neuf marque-nouveau" hidden>Nouveau texte</span><a href="releve.html#${ancreJO(t)}">${esc(t.titre)}</a>
+      <td data-titre="Référence et lien"><span class="marque-neuf marque-nouveau" hidden>Nouveau texte</span>${lien ? `<a href="${esc(lien)}" target="_blank" rel="noopener">${esc(t.titre)}</a>` : esc(t.titre)}
         ${lien ? `<a class="lien-officiel" href="${esc(lien)}" target="_blank" rel="noopener">${/legifrance\.gouv\.fr/.test(lien) ? "Légifrance" : esc(t.sourceNom || "Voir chez la source")} ${sortant}</a>` : ""}</td>
       <td data-titre="Lu"><label class="case-lu"><input type="checkbox" class="lu" aria-label="Texte lu"><span>Lu</span></label></td>
       <td data-titre="Applicable"><select class="applicable" aria-label="Ce texte est-il applicable ?"><option value="">À décider</option><option value="applicable">Oui</option><option value="sans_objet">Non</option></select><span class="precision applicable-etat"></span></td>
@@ -1051,7 +1049,7 @@ function tableauTextesPlan(V, C, LIENS, plan, JO) {
   return `<section class="rubrique" id="textes-du-plan">
   <div class="enveloppe">
     <h2>Les textes de votre plan de veille réglementaire</h2>
-    <p class="lecture textes-attente" id="textes-attente" role="status"></p>
+    <p class="textes-attente" id="textes-attente" role="status"></p>
     ${carresCategories()}
     ${rechercheTextes(toutes.filter((x) => touche(x.ids)).map((x) => x.src))}
     <div class="filtre-plan">
@@ -1108,7 +1106,7 @@ function appActions(V, D, C, LIENS, JO = null) {
     const l = /^https?:\/\//i.test(t.lien || "") ? t.lien : "";
     textes.push({ ids, cle: cleJO(t), titre: String(t.titre).slice(0, 300), date: quand,
       dateHtml: `<time datetime="${esc(quand)}">${esc(dateFr(quand))}</time><span class="etat-date etat-recent">Parution récente</span>`,
-      lien: `<a href="releve.html#${ancreJO(t)}">${esc(t.titre)}</a>${l ? `<a class="lien-officiel" href="${esc(l)}" target="_blank" rel="noopener">${/legifrance\.gouv\.fr/.test(l) ? "Légifrance" : esc(t.sourceNom || "Voir chez la source")} ${sortant}</a>` : ""}` });
+      lien: `${l ? `<a href="${esc(l)}" target="_blank" rel="noopener">${esc(t.titre)}</a>` : esc(t.titre)}${l ? `<a class="lien-officiel" href="${esc(l)}" target="_blank" rel="noopener">${/legifrance\.gouv\.fr/.test(l) ? "Légifrance" : esc(t.sourceNom || "Voir chez la source")} ${sortant}</a>` : ""}` });
   });
   textes.sort((x, y) => (x.date !== y.date ? (x.date < y.date ? 1 : -1) : x.titre.localeCompare(y.titre, "fr")));
 
@@ -1223,8 +1221,7 @@ function appConformite(V, D, C, LIENS, JO = null) {
     if (!ids.length) return;
     const lien = /^https?:\/\//i.test(t.lien || "") ? t.lien : "";
     entrees.push({ ids, cle: cleJO(t), objet: String(t.titre).slice(0, 480), ordre: 2, date: t.dateTexte || t.date, src: sourceDuReleve(t),
-      texte: `<a href="releve.html#${ancreJO(t)}">${esc(t.titre)}</a>
-        <span class="precision">Paru le ${esc(dateFr(t.dateTexte || t.date))}</span>
+      texte: `${lien ? `<a href="${esc(lien)}" target="_blank" rel="noopener">${esc(t.titre)}</a>` : esc(t.titre)}
         ${lien ? `<a class="lien-officiel" href="${esc(lien)}" target="_blank" rel="noopener">${/legifrance\.gouv\.fr/.test(lien) ? "Légifrance" : esc(t.sourceNom || "Voir chez la source")} ${sortant}</a>` : ""}` });
   });
   entrees.sort((x, y) => ordreCat.indexOf(catDe(x.ids)) - ordreCat.indexOf(catDe(y.ids)) || x.ordre - y.ordre || x.objet.localeCompare(y.objet, "fr"));
@@ -1232,6 +1229,8 @@ function appConformite(V, D, C, LIENS, JO = null) {
   const lignes = entrees.map((e, i) => {
     const dans = e.ids.some((id) => plan.liste.includes(id));
     return `<tr data-domaines="${esc(e.ids.join(" "))}" data-date="${esc(e.date || "")}" data-source="${esc(e.src || "")}" data-cle="${esc(e.cle)}" data-objet="${esc(e.objet)}"${dans ? "" : " hidden"}>
+      <td data-titre="Date de parution" class="conf-date">${!e.date ? '<span class="etat-date etat-fond">Texte de référence</span>'
+        : `<time datetime="${esc(e.date)}">${esc(dateFr(e.date))}</time>${e.ordre === 2 ? "" : '<span class="etat-date">Dernière mise à jour</span>'}`}</td>
       <td data-titre="Texte">${e.texte}</td>
       <td data-titre="Catégorie">${categorieTexte(V, e.ids)}</td>
       <td data-titre="Actions à déclencher">${actionsDuSujet(V, e.ids)}</td>
@@ -1276,7 +1275,7 @@ function appConformite(V, D, C, LIENS, JO = null) {
       <span class="precision" id="filtre-compte" role="status"></span>
     </div>
     <table class="tableau-plan tableau-conformite tableau-textes-plan">
-      <thead><tr><th scope="col">Texte</th><th scope="col">Catégorie</th><th scope="col">Actions à déclencher</th><th scope="col">Évaluation</th><th scope="col">Preuve ou commentaire</th></tr></thead>
+      <thead><tr><th scope="col">Date de parution</th><th scope="col">Texte</th><th scope="col">Catégorie</th><th scope="col">Actions à déclencher</th><th scope="col">Évaluation</th><th scope="col">Preuve ou commentaire</th></tr></thead>
       <tbody>${lignes}</tbody>
     </table>
     <p class="note-source">L'évaluation est la vôtre : Vigie range les textes et garde la trace de vos décisions.
@@ -1401,7 +1400,7 @@ ${plan.ecartes.map((id) => blocPlan(id)).join("\n")}
   return page({
     titre: `Ma veille réglementaire | ${SITE.nom}`,
     description: "Ce qui s'applique chez vous, et à quel rythme le revoir.",
-    racine: "../", zone: "app", actif: "plan", corps, verrou: true, formule: "suivi",
+    racine: "../", zone: "app", actif: "plan", corps, verrou: true, formule: "textes",
     donneesPlan: true, scripts: ["assets/applicable.js"]
   });
 }
@@ -1579,7 +1578,7 @@ function appMorceauDeCode(C, m, refs, precedent, suivant) {
   const corps = `<section class="tete-app">
   <div class="enveloppe">
     <ul class="jalons">
-      <li><a href="../textes.html">Tous les textes</a></li>
+      <li><a href="../plan.html">Ma veille réglementaire</a></li>
       <li><span class="fort">${esc(code.titre)}</span></li>
       <li><span>texte officiel</span></li>
     </ul>
@@ -2143,6 +2142,17 @@ ${C ? rubrique({ etiq: "Ce qui a changé dans les codes", id: "codes-changements
 }
 
 /* --- Registre ------------------------------------------------------------------ */
+/* Les pages Relevé et Textes sont retirées (3 novembre 2026) : tout se lit
+   dans « Ma veille réglementaire ». Les anciennes adresses y renvoient. */
+function renvoi(nom, url, libelle) {
+  return `<!doctype html>
+<html lang="fr"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="refresh" content="0; url=${url}">
+<title>${esc(nom)} | ${esc(SITE.nom)}</title><meta name="robots" content="noindex"></head>
+<body><p>Cette page est maintenant dans <a href="${url}">${esc(libelle)}</a>.</p></body></html>`;
+}
+
 function appRegistre() {
   /* Le registre est désormais en bas de « Registre et conformité réglementaire »
      (3 novembre 2026) : l'ancienne adresse y renvoie, pour les favoris. */
@@ -2275,7 +2285,7 @@ function appTexte(V, TEXTES, METIERS, C, LIENS, ref, fiche, domaines) {
   const corps = `<section class="tete-app">
   <div class="enveloppe">
     <ul class="jalons">
-      <li><a href="../textes.html">Tous les textes</a></li>
+      <li><a href="../plan.html">Ma veille réglementaire</a></li>
       <li><span class="fort">Fiche de texte</span></li>
       <li><span>${esc(fiche.nature)}</span></li>
     </ul>
@@ -3587,7 +3597,7 @@ function pageAccueil(V, D, METIERS, ECRANS, C = null, NAF = null, SOURCES = [], 
 
     <div class="heros-visuel">
       ${portable(ECRANS, "bord.png", "Le tableau de bord de l'application : revues en retard, textes à analyser, actions ouvertes.")}
-      ${mobile(ECRANS, "releve-tel.png", "Le relevé des textes sur téléphone.")}
+      ${mobile(ECRANS, "plan-tel.png", "Ma veille réglementaire sur téléphone.")}
     </div>
   </div>
 </section>
@@ -3990,7 +4000,6 @@ function pageDecouvrir(V, ECRANS, C, NAF, SOURCES) {
   const pieces = [
     { img: "bord.png", t: "Tableaux de bord", d: "" },
     { img: "plan.png", t: "Ma veille réglementaire", d: "" },
-    { img: "releve.png", t: "Relevé", d: "Les textes parus, par famille. Chacun avec ce qu'il faut faire et le texte officiel." },
     { img: "registre.png", t: "Registre de preuves", d: "Les revues faites et les décisions prises, datées. C'est ce que demande un auditeur." },
     { img: "secteurs.png", t: "Secteurs", d: `${nCodes ? `Les ${nCodes} codes APE, rangés en ${V.divisions.length} familles de métiers` : `Les ${V.divisions.length} familles de métiers`}, et ce qui s'applique à chacun.` },
     { img: "reglages.png", t: "Réglages", d: "Votre entreprise, ses chiffres, vos réponses, vos alertes. Le plan se refait dessus, aussitôt." }
@@ -4782,7 +4791,7 @@ function donneesAvis(V, D, C, JO) {
       k: cleJO(t), v: t.vuA || `${t.vuLe || t.date}T00:00:00Z`, d: t.dateTexte || t.date,
       t: String(t.titre).slice(0, 180), q: actions.length ? `En premier : ${actions[0]}` : "À connaître, rien à faire.",
       dom: t.domaines.slice(0, 2).map((x) => x.nom).join(" · "), ds: t.domaines.map((x) => x.id),
-      u: `releve.html#${ancreJO(t)}`
+      u: "plan.html"
     };
   });
   const avis = textes.concat(codes).sort((a, b) => (a.v < b.v ? 1 : a.v > b.v ? -1 : (a.d < b.d ? 1 : -1)));
@@ -5150,7 +5159,7 @@ async function main() {
   await writeFile(join(SORTIE, "app", "plan.html"), appPlan(V, D, C, LIENS, JO));
   await writeFile(join(SORTIE, "app", "conformite.html"), appConformite(V, D, C, LIENS, JO));
   await writeFile(join(SORTIE, "app", "actions.html"), appActions(V, D, C, LIENS, JO));
-  await writeFile(join(SORTIE, "app", "releve.html"), appReleve(V, D, JO, C, LIENS, SOURCES));
+  await writeFile(join(SORTIE, "app", "releve.html"), renvoi("Relevé", "plan.html", "Ma veille réglementaire"));
   await writeFile(join(SORTIE, "app", "registre.html"), appRegistre());
   await writeFile(join(SORTIE, "app", "secteurs.html"), appSecteurs(V, METIERS, NAF));
   await writeFile(join(SORTIE, "app", "reglages.html"), appReglages(V, D, NAF, METIERS));
@@ -5164,7 +5173,7 @@ async function main() {
       (parTexte[ref] = parTexte[ref] || []).push(id);
     });
   });
-  await writeFile(join(SORTIE, "app", "textes.html"), appTextes(V, TEXTES, parTexte, C, LIENS));
+  await writeFile(join(SORTIE, "app", "textes.html"), renvoi("Textes", "plan.html", "Ma veille réglementaire"));
   for (const ref of Object.keys(parTexte)) {
     await writeFile(join(SORTIE, "app", "texte", `${slug(ref)}.html`),
       appTexte(V, TEXTES, METIERS, C, LIENS, ref, TEXTES[ref], parTexte[ref]));

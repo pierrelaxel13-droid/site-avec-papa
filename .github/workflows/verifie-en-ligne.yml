@@ -67,7 +67,7 @@ jobs:
           for p in / /decouvrir.html /le-site.html /nous.html /metiers.html \
                    /mentions-legales.html /confidentialite.html /cgv.html /consultants.html \
                    /abonnement.html /connexion.html /contact.html /app/index.html \
-                   /app/releve.html /app/secteurs.html /assets/site.css \
+                   /app/plan.html /app/secteurs.html /assets/site.css \
                    /assets/amorce.js; do
             code=$(curl -sS -o /dev/null -w "%{http_code}" --max-time 30 "$SITE$p" || echo 000)
             # Pendant que GitHub Pages remplace le site, une page peut répondre

@@ -3383,13 +3383,18 @@ a.puce-fixe { text-decoration: none; color: inherit; }
 .tableau-conformite select[data-statut="partiel"] { border-color: var(--ambre); }
 .tableau-conformite select[data-statut="non_conforme"] { border-color: var(--rouge); }
 .tableau-conformite .conf-etat { margin-top: .3rem; }
-.conf-form { display: flex; gap: .4rem; align-items: center; }
+.tableau-conformite .conf-date { white-space: nowrap; font-variant-numeric: tabular-nums; color: var(--encre-douce); }
+.tableau-conformite .conf-date time { color: var(--encre); }
+.conf-form { display: flex; flex-wrap: wrap; gap: .4rem; align-items: center; }
+.conf-form .conf-note { flex: 1 1 8rem; min-width: 0; }
 .conf-form .bouton { padding: .4rem .8rem; font-size: .85rem; white-space: nowrap; }
 @media (min-width: 48rem) {
-  .tableau-conformite td:nth-child(1) { width: 25%; }
-  .tableau-conformite td:nth-child(2) { width: 9rem; }
-  .tableau-conformite td:nth-child(3) { width: 25%; }
-  .tableau-conformite td:nth-child(4) { width: 12rem; }
+  .tableau-conformite td:nth-child(1) { width: 9rem; }
+  .tableau-conformite td:nth-child(2) { width: 21%; }
+  .tableau-conformite td:nth-child(3) { width: 8.5rem; }
+  .tableau-conformite td:nth-child(4) { width: 20%; }
+  .tableau-conformite td:nth-child(5) { width: 11rem; }
+  .tableau-conformite td:nth-child(6) { min-width: 13rem; }
 }
 
 /* Relevé : le texte courant justifié (3 novembre 2026), même règle que les
@@ -3648,8 +3653,17 @@ a.puce-fixe { text-decoration: none; color: inherit; }
 .tableau-plan tr.texte-lu .case-lu { color: var(--vert); font-weight: 600; }
 .tableau-plan .marque-nouveau { display: inline-block; margin: 0 .4rem .3rem 0; vertical-align: middle; }
 .tableau-plan .marque-nouveau[hidden] { display: none; }
-.textes-attente { margin: 0 0 var(--t3); font-weight: 500; color: var(--encre); }
+.textes-attente {
+  display: inline-flex; flex-wrap: wrap; align-items: baseline; gap: .25rem .5rem;
+  margin: 0 0 var(--t3); padding: .45rem .85rem; border: 1px solid var(--filet);
+  border-left: 3px solid var(--accent); border-radius: 8px; background: var(--carte);
+  font-size: .9rem; line-height: 1.4; color: var(--encre);
+}
 .textes-attente:empty { display: none; }
+.textes-attente .ta-nombre { font-weight: 600; font-variant-numeric: tabular-nums; color: var(--accent-fonce); }
+.textes-attente .ta-aide { flex-basis: 100%; color: var(--encre-douce); font-size: .82rem; }
+.textes-attente.tout-lu { border-left-color: var(--vert); }
+.textes-attente.tout-lu .ta-libelle::before { content: "✓"; margin-right: .4rem; color: var(--vert); font-weight: 600; }
 
 /* --- Nous contacter, en deux colonnes (3 novembre 2026) ------------------
    Une seule échelle de texte : titre, texte, intitulés, champs et bouton

@@ -239,7 +239,7 @@
         var f = $("#entreprise-formule"), ouvrir = $("#entreprise-ouvrir"), tarifs = $("#entreprise-tarifs");
         if (e.rang > 0) {
           f.textContent = "Formule « " + nomDuRang(e.rang) + " ».";
-          ouvrir.href = vers(e.rang >= 1 ? "app/index.html" : "app/releve.html");
+          ouvrir.href = vers("app/index.html");
           ouvrir.onclick = function () { V.choisir(e.entreprise_id); };
           ouvrir.hidden = false; tarifs.hidden = true;
         } else {
@@ -1004,7 +1004,7 @@
       V.mesEntreprises().then(function (m) {
         var b = $("#admin-app"), e = m.ok && m.entreprises[0];
         if (!b || !e) return;
-        b.href = vers(e.rang >= 1 ? "app/index.html" : "app/releve.html");
+        b.href = vers("app/index.html");
         b.addEventListener("click", function () { V.choisir(e.entreprise_id); });
         b.hidden = false;
       });

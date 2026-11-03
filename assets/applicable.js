@@ -47,7 +47,7 @@
   function cherche(tr) {
     if (!rMot) return true;
     var mot = sansAccent(rMot.value.trim()), d = tr.getAttribute("data-date") || "";
-    if (mot && sansAccent(tr.querySelector("td:nth-child(" + (tr.querySelector('[data-titre="Texte"]') ? 1 : 3) + ")").textContent).indexOf(mot) === -1) return false;
+    if (mot && sansAccent((tr.querySelector('[data-titre="Texte"]') || tr.querySelector("td:nth-child(3)")).textContent).indexOf(mot) === -1) return false;
     if (rDu.value && (!d || d < rDu.value)) return false;
     if (rAu.value && (!d || d > rAu.value)) return false;
     if (rSrc.value && tr.getAttribute("data-source") !== rSrc.value) return false;
@@ -143,8 +143,12 @@
       if (c && !tr.hidden && !c.checked) n++;
     });
     var p = document.getElementById("textes-attente");
-    if (p) p.textContent = n ? "Vous avez " + n + " texte" + (n > 1 ? "s" : "") + " en attente de lecture : cochez « Lu » une fois pris connaissance."
-      : "Vous avez pris connaissance de tous les textes de votre plan.";
+    if (!p) return;
+    p.classList.toggle("tout-lu", !n);
+    p.innerHTML = n
+      ? '<span class="ta-nombre">' + n + '</span><span class="ta-libelle">texte' + (n > 1 ? "s" : "") + " à lire</span>" +
+        '<span class="ta-aide">Cochez « Lu » dans le tableau après lecture.</span>'
+      : '<span class="ta-libelle">Tous les textes de votre plan sont lus.</span>';
   }
   function peindreLu(tr) {
     var c = tr.querySelector(".lu"), k = tr.getAttribute("data-cle");

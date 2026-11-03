@@ -63,17 +63,11 @@ ok(new RegExp(`data-plan-total>${liste.length}<`).test(plan), `plan : l'en-tête
 ok(new RegExp(`${div.b.length} par son code APE`).test(plan), `plan : l'en-tête dit ${div.b.length} par le code APE`);
 ok(!/vous ne verrez que ses sujets/.test(plan), "plan : l'ancienne phrase ambiguë a disparu");
 
-/* --- Relevé --- */
-const releve = readFileSync(`${SITE}/demo/releve.html`, "utf8");
-const visibleReleve = lu(releve);
-const lignes = [...visibleReleve.matchAll(/<li class="ligne-releve[^"]*"[^>]*data-domaines="([^"]*)"/g)].map((m) => m[1].split(" "));
-const toutes = [...releve.matchAll(/<li class="ligne-releve[^"]*"[^>]*data-domaines="([^"]*)"/g)].length;
-ok(lignes.length > 0, `relevé : ${lignes.length} textes rangés, sur ${toutes} relevés`);
-ok(lignes.every((d) => d.some((id) => liste.includes(id))), "relevé : chaque texte rangé touche un sujet du plan");
-const sujets = [...visibleReleve.matchAll(/data-sujet-releve="([^"]+)"/g)].map((m) => m[1]).filter((id) => PLAN.d[id]);
-ok(sujets.every((id) => liste.includes(id)), "relevé : aucun sous-titre de sujet hors du plan");
-const ecartes = Number((releve.match(/data-ecartes-total>(\d+)</) || [])[1] || 0);
-ok(ecartes === toutes - lignes.length, `relevé : le volet annonce les ${ecartes} autres`);
+/* --- Les textes de votre plan (le relevé est retiré, 3 novembre 2026) --- */
+const lignesPlan = [...plan.matchAll(/<tr data-domaines="([^"]*)"[^>]*?( hidden)?>/g)];
+const visibles = lignesPlan.filter((m) => !m[2]).map((m) => m[1].split(" "));
+ok(visibles.length > 0, `plan : ${visibles.length} textes affichés dans le tableau, sur ${lignesPlan.length}`);
+ok(visibles.every((d) => d.some((id) => liste.includes(id))), "plan : chaque texte affiché touche un sujet du plan");
 
 /* --- Les autres pages : le filtre n'est pas débranché ailleurs --- */
 const secteur = readFileSync(`${SITE}/demo/secteur/43-travaux-de-construction-specialises.html`, "utf8");

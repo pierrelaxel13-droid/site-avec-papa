@@ -173,7 +173,7 @@
   /* --- Les trois endroits ----------------------------------------------------- */
   function ligneAvis(a, neuf) {
     return '<li class="avis' + (neuf ? " neuf" : "") + '">' +
-      '<a href="' + racine() + echappe(a.u || "releve.html") + '" data-ouvre="' + echappe(a.k) + '">' +
+      '<a href="' + racine() + echappe(a.u || "plan.html") + '" data-ouvre="' + echappe(a.k) + '">' +
         '<span class="avis-date mono">' + echappe(dateFr(a.d)) + "</span>" +
         '<span class="avis-titre">' + echappe(a.t) + "</span>" +
         '<span class="avis-quoi">' + echappe(a.q) + "</span>" +
@@ -244,7 +244,7 @@
     $("#bord-nouveaux-titre").textContent = neufs.length + " nouveau" + (neufs.length > 1 ? "x" : "") +
       " texte" + (neufs.length > 1 ? "s" : "") + " vous concerne" + (neufs.length > 1 ? "nt" : "");
     $("#bord-nouveaux-liste").innerHTML = neufs.slice(0, 5).map(function (a) {
-      return '<li><a href="' + echappe(a.u || "releve.html") + '" data-ouvre="' + echappe(a.k) + '">' +
+      return '<li><a href="' + echappe(a.u || "plan.html") + '" data-ouvre="' + echappe(a.k) + '">' +
         '<span class="avis-titre">' + echappe(a.t) + "</span>" +
         '<span class="avis-dom etiq">' + echappe(dateFr(a.d)) + " · " + echappe(a.dom) + "</span>" +
         '<span class="avis-quoi">' + echappe(a.q) + "</span></a></li>";

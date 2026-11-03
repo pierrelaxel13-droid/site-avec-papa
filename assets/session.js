@@ -111,7 +111,7 @@
        laisser cliquer vers un voile. */
     if (active) {
       var exige = {
-        "index.html": "textes", "plan.html": "suivi", "conformite.html": "complet", "actions.html": "suivi", "releve.html": "textes",
+        "index.html": "textes", "plan.html": "textes", "conformite.html": "complet", "actions.html": "suivi",
         "registre.html": "complet", "secteurs.html": "textes",
         "textes.html": "textes", "reglages.html": "textes"
       };

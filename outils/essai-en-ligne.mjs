@@ -163,25 +163,27 @@ async function essai() {
     ok((await p.locator(".tableau-bord > div").count()) === 5 && (await p.locator("#bord-traces .ligne-registre").count()) === 3,
       "tableau de bord : le tableau (publiés, applicables, lus, actions) et les 3 entrées du registre dans « Historiques »");
 
-    // 6 bis. Décider sur un texte du relevé, en tirer une action, la clore, télécharger le registre.
-    await p.goto(SITE + "app/releve.html"); await pret(p);
-    await p.locator("a.carte-categorie:not(.carte-vide)").first().click();
-    const ligne = p.locator(".ligne-releve:visible", { has: p.locator(".qualifier") }).first();
-    await ligne.locator("summary").click();
-    const q = ligne.locator(".qualifier");
-    const cleTexte = await q.getAttribute("data-cle");
-    await q.locator('[data-statut="applicable"]').click();
-    await q.locator(".qualifier-action:not([hidden])").waitFor({ timeout: 30000 });
-    await q.locator(".qa-objet").fill("Action d'essai automatique");
-    await q.locator(".qualifier-action button[type=submit]").click();
-    await q.locator(".qualifier-actions li").waitFor({ timeout: 30000 });
+    // 6 bis. Dire qu'un texte s'applique (Ma veille réglementaire), puis donner
+    // un délai à une action et la valider (Plan d'actions). Le relevé est retiré.
+    await p.goto(SITE + "app/plan.html"); await pret(p);
+    const ligne = p.locator(".tableau-textes-plan tbody tr:visible", { has: p.locator("select.applicable:enabled") }).first();
+    const cleTexte = await ligne.getAttribute("data-cle");
+    await ligne.locator("select.applicable").selectOption("applicable");
+    await p.waitForFunction((k) => /le /.test(document.querySelector(`tr[data-cle="${k}"] .applicable-etat`)?.textContent || ""), cleTexte, { timeout: 30000 });
     ok(sql(`select string_agg(genre || ':' || statut, ',' order by id) from public.registre where entreprise_id = ${litteral(e)} and cle = ${litteral(cleTexte)}`)
-       === "qualification:applicable,action:ouverte", "un texte qualifié « s'applique », et son action ouverte, sont au registre");
-    await p.goto(SITE + "app/index.html"); await pret(p);
-    await p.locator("#bord-actions [data-faite]").click();
-    await p.waitForFunction(() => !document.querySelector("#bord-actions"), null, { timeout: 30000 });
-    ok(sql(`select count(*) from public.registre where entreprise_id = ${litteral(e)} and genre = 'action' and statut = 'faite'`) === "1",
-      "tableau de bord : « C'est fait » clôt l'action au registre");
+       === "qualification:applicable", "un texte dit « applicable » est au registre");
+    await p.goto(SITE + "app/actions.html"); await pret(p);
+    const cleAction = await p.locator(".tableau-actions tbody tr:visible").first().getAttribute("data-cle");
+    const act = p.locator(`.tableau-actions tbody tr[data-cle="${cleAction}"]`);
+    await act.locator(".pa-delai").fill("2027-01-15");
+    await act.locator(".pa-resp").fill("Essai automatique");
+    await act.locator(".pa-enregistrer").click();
+    await act.locator(".pa-valider:not([hidden])").waitFor({ timeout: 30000 });
+    await act.locator(".pa-valider").click();
+    await act.locator(".pa-valider").click();   // le second clic confirme
+    await act.locator(".pa-valider").waitFor({ state: "hidden", timeout: 30000 });
+    ok(sql(`select count(*) from public.registre o join public.registre f on f.entreprise_id = o.entreprise_id and f.cle = 'action:' || o.id and f.genre = 'action' and f.statut = 'faite'
+            where o.entreprise_id = ${litteral(e)} and o.cle = ${litteral(cleAction)} and o.genre = 'action' and o.statut = 'ouverte'`) === "1", "plan d'actions : l'action reçoit un délai, puis elle est validée au registre");
     await p.goto(SITE + "app/conformite.html"); await pret(p);
     await p.waitForFunction(() => /Registre intact/.test(document.querySelector("#registre-chaine")?.textContent || ""), null, { timeout: 30000 });
     const [dl] = await Promise.all([p.waitForEvent("download"), p.click("#registre-csv")]);

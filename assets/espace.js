@@ -127,33 +127,14 @@
       var c = window.PCO_AVIS ? window.PCO_AVIS.chiffres() : null;
       var nb = function (x) { return x == null ? "—" : x; };
       return '<dl class="compteurs compteurs-liens tableau-bord">' +
-        carre(false, "releve.html", "Nouveaux textes", nb(c && c.nouveaux), "pas encore ouverts", "Voir le relevé") +
-        carre(false, "releve.html", "Textes publiés", nb(c && c.publies), "ces 14 derniers jours", "Voir le relevé") +
-        carre(false, "releve.html", "Textes applicables", nb(c && c.applicables), "touchent votre plan", "Voir le relevé") +
-        carre(false, "releve.html", "Textes lus", nb(c && c.lus), c ? "sur " + c.applicables + " applicables" : "", "Voir le relevé") +
+        carre(false, "plan.html", "Nouveaux textes", nb(c && c.nouveaux), "pas encore ouverts", "Voir ma veille réglementaire") +
+        carre(false, "plan.html", "Textes publiés", nb(c && c.publies), "ces 14 derniers jours", "Voir ma veille réglementaire") +
+        carre(false, "plan.html", "Textes applicables", nb(c && c.applicables), "touchent votre plan", "Voir ma veille réglementaire") +
+        carre(false, "plan.html", "Textes lus", nb(c && c.lus), c ? "sur " + c.applicables + " applicables" : "", "Voir ma veille réglementaire") +
         carre(retard, "actions.html", "Actions à réaliser", ouv.length,
           retard ? "dont " + retard + " en retard" : "", "Voir le plan d'actions") +
         "</dl>";
     })());
-    /* « Textes en attente » (3 novembre 2026) : par sujet du plan, le nombre de
-       textes applicables que personne n'a encore ouverts. Un texte rattaché à
-       deux sujets compte dans les deux. */
-    var attente = window.PCO_AVIS ? window.PCO_AVIS.enAttente() : [];
-    var sujetsPlan = {}, P = window.PLAN || { d: {} };
-    ((window.PCO_AVIS && window.PCO_AVIS.plan()) || Object.keys(P.d)).forEach(function (id) { sujetsPlan[id] = 1; });
-    var parSujet = {};
-    attente.forEach(function (x) {
-      (x.ds || []).forEach(function (id) { if (sujetsPlan[id]) parSujet[id] = (parSujet[id] || 0) + 1; });
-    });
-    var sujetsAttente = Object.keys(parSujet).sort(function (a, b) { return parSujet[b] - parSujet[a]; });
-    if (sujetsAttente.length) {
-      html += rubrique("Textes dont vous n'avez pas pris connaissance",
-        '<ul class="liste-echeances">' + sujetsAttente.map(function (id) {
-          var n = parSujet[id];
-          return '<li class="retard"><a href="releve.html"><span class="etiq">' + echappe((P.d[id] || {}).n || id) +
-            '</span><span class="mono">' + n + " texte" + (n > 1 ? "s" : "") + "</span></a></li>";
-        }).join("") + "</ul>");
-    }
     if (suivantes.length) {
       html += rubrique("Prochaines revues", '<ul class="liste-echeances">' + suivantes.map(function (x) {
         return '<li><a href="plan.html#domaine-' + echappe(x.id) + '"><span class="etiq">' + echappe(x.nom) +
@@ -192,7 +173,7 @@
       var ouv = window.PCO_AVIS && window.PCO_AVIS.ouvertures ? window.PCO_AVIS.ouvertures() : [];
       var tout = l.map(function (x) { return { le: x.enregistre_le || x.date_effet, html: ligne(x, annuleesDans(l)) }; })
         .concat(ouv.slice(0, 10).map(function (o) {
-          return { le: o.le, html: '<li class="ligne-historique"><a href="' + echappe(o.u || "releve.html") + '">' +
+          return { le: o.le, html: '<li class="ligne-historique"><a href="' + echappe(o.u || "plan.html") + '">' +
             '<span class="mono date">' + echappe(jour(o.le)) + '</span><span class="corps"><span class="titre">' + echappe(o.t.length >= 180 ? o.t + "…" : o.t) +
             '</span><span class="meta etiq">Texte ouvert · vous</span></span></a></li>' };
         }))

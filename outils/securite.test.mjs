@@ -22,8 +22,8 @@ ok(champ("+33 6 00") === "'+33 6 00" && champ("@SOMME(A1)") === "'@SOMME(A1)" &&
 ok(champ("Revue sécurité") === "Revue sécurité" && champ(42) === "42" && champ(-3) === "-3", "le texte ordinaire et les nombres ne changent pas");
 
 /* 2. Les liens « Voir chez la source » : http(s) seulement. */
-const pages = ["app/releve.html", "demo/releve.html"].map((f) => readFileSync(join(SITE, f), "utf8"));
-const liens = pages.flatMap((h) => [...h.matchAll(/<a href="([^"]*)"[^>]*>Voir chez la source/g)].map((x) => x[1]));
+const pages = ["app/plan.html", "demo/plan.html", "app/conformite.html"].map((f) => readFileSync(join(SITE, f), "utf8"));
+const liens = pages.flatMap((h) => [...h.matchAll(/<a class="lien-officiel" href="([^"]*)"/g)].map((x) => x[1]));
 ok(liens.length > 0 && liens.every((u) => /^https?:\/\//.test(u)), `les ${liens.length} liens vers les sources sont en http(s)`);
 const toutes = readdirSync(SITE, { recursive: true }).filter((f) => f.endsWith(".html"));
 const javascript = toutes.filter((f) => /href="\s*javascript:/i.test(readFileSync(join(SITE, f), "utf8")));
