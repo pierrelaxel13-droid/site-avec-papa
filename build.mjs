@@ -3578,7 +3578,7 @@ ${bandeAvis(AVIS)}
       </li>
       <li class="trait">
         <svg class="icone" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 12l2 2 4-5"/><circle cx="12" cy="12" r="9"/></svg>
-        <div><h3>Réalisation de votre conformité réglementaire</h3>
+        <div><h3>Réalisation de votre registre de conformité réglementaire</h3>
         <p>Une synthèse des textes qui vous sont applicables, et de ceux qui sont appliqués dans votre société.</p></div>
       </li>
       <li class="trait">
@@ -3605,7 +3605,7 @@ ${bandeAvis(AVIS)}
       </li>
       <li class="trait">
         <svg class="icone" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 12l2 2 4-5"/><circle cx="12" cy="12" r="9"/></svg>
-        <div><h3>Réalisation de votre conformité réglementaire</h3>
+        <div><h3>Réalisation de votre registre de conformité réglementaire</h3>
         <p>Une synthèse des textes qui vous sont applicables, et de ceux qui sont appliqués dans votre société.</p></div>
       </li>
       <li class="trait">
