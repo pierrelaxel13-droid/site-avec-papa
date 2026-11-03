@@ -933,6 +933,15 @@ function actionsDuSujet(V, ids) {
     .filter((a) => !vues.has(a) && vues.add(a)).map((a) => `<li data-sujets="${esc(id)}">${esc(a)}</li>`)).join("");
   return li ? `<ul class="actions-sujet">${li}</ul>` : "Rien à faire : à connaître.";
 }
+/* Les carrés par catégorie, au-dessus des tableaux de textes (3 novembre
+   2026) : le nombre de textes du plan dans chacune ; un clic filtre le
+   tableau (assets/applicable.js les compte et les relie au filtre). */
+function carresCategories() {
+  return `<div class="carres-categories" role="group" aria-label="Textes par catégorie">
+      ${Object.keys(CATEGORIES_TABLEAU).map((cl) => `<button type="button" class="carre-categorie" data-filtre-cat="${cl}" aria-pressed="false">
+        <span class="etiq">${esc(CATEGORIES_TABLEAU[cl])}</span><span class="grand" data-n-cat="${cl}">0</span><span class="precision">texte(s)</span></button>`).join("")}
+    </div>`;
+}
 function tableauTextesPlan(V, C, LIENS, plan, JO) {
   const categorie = (ids) => {
     const parCat = {};
@@ -1012,6 +1021,7 @@ function tableauTextesPlan(V, C, LIENS, plan, JO) {
   <div class="enveloppe">
     <h2>Les textes de votre plan de veille réglementaire</h2>
     <p class="lecture textes-attente" id="textes-attente" role="status"></p>
+    ${carresCategories()}
     <div class="filtre-plan">
       <label for="filtre-categorie">Catégorie</label>
       <select id="filtre-categorie">
@@ -1223,6 +1233,7 @@ function appConformite(V, D, C, LIENS, JO = null) {
   <div class="enveloppe">
     <h2>Les textes de votre plan de veille réglementaire</h2>
     <p class="note-source conf-lecture" hidden></p>
+    ${carresCategories()}
     <div class="filtre-plan">
       <label for="filtre-categorie">Catégorie</label>
       <select id="filtre-categorie">

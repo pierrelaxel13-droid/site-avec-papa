@@ -38,7 +38,32 @@
       if (garde && !tr.hidden) n++;
     });
     if (compte) compte.textContent = n + " texte" + (n > 1 ? "s" : "");
+    carres();
   }
+
+  /* Les carrés par catégorie : le nombre de textes du plan dans chacune (un
+     texte de deux catégories compte dans les deux) ; un clic filtre. */
+  function carres() {
+    var cat = filtre ? filtre.value : "";
+    [].forEach.call(document.querySelectorAll(".carre-categorie"), function (b) {
+      var c = b.getAttribute("data-filtre-cat"), n = 0;
+      lignes.forEach(function (tr) {
+        if (!tr.hidden && [].some.call(tr.querySelectorAll('.categorie-texte[data-cat="' + c + '"]'), function (s) { return !s.hidden; })) n++;
+      });
+      b.querySelector("[data-n-cat]").textContent = n;
+      b.querySelector(".precision").textContent = "texte" + (n > 1 ? "s" : "");
+      b.setAttribute("aria-pressed", cat === c ? "true" : "false");
+      b.disabled = !n;
+    });
+  }
+  [].forEach.call(document.querySelectorAll(".carre-categorie"), function (b) {
+    b.addEventListener("click", function () {
+      if (!filtre) return;
+      var c = b.getAttribute("data-filtre-cat");
+      filtre.value = filtre.value === c ? "" : c;   // un second clic remet toutes les catégories
+      filtrer();
+    });
+  });
   if (filtre) filtre.addEventListener("change", filtrer);
   // Le plan peut changer après coup (réglages lus depuis la base) : on recompte.
   window.addEventListener("pco-plan", filtrer);
