@@ -199,7 +199,17 @@ jobs:
           fi
           git add contenu/
           git commit -m "Relève du $(date -u +%d/%m/%Y\ à\ %H:%M) UTC"
-          git push
+          # Pendant les ~10 minutes du passage, d'autres changements ont pu
+          # arriver sur main (3 novembre 2026 : poussée refusée, passage noté
+          # « échoué »). On les reprend avant d'envoyer, jusqu'à trois fois ;
+          # sur un fichier du relevé, la version de la relève l'emporte.
+          for i in 1 2 3; do
+            if git pull --rebase -X theirs origin main && git push; then exit 0; fi
+            echo "Envoi refusé (essai $i) : on reprend main et on réessaie."
+            sleep $((i * 5))
+          done
+          echo "::error::Impossible d'envoyer la relève après trois essais."
+          exit 1
 
       # Le journal : une ligne par passage dans la base (table collectes), même
       # si le passage a échoué. Une alerte grave fait échouer l'action — donc

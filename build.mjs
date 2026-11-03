@@ -3652,17 +3652,33 @@ ${bandeAvis(AVIS)}
     <ul class="traits">
       <li class="trait">
         <svg class="icone" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18M9 20V10"/></svg>
-        <div><h3>Gérer vos clients sur un même et seul espace</h3></div>
+        <div><h3>Gérer vos clients sur un même et seul espace</h3>
+        <p>La veille de vos clients est optimisée.</p></div>
       </li>
       <li class="trait">
         <svg class="icone" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 3 7v5c0 5 3.8 8.3 9 9 5.2-.7 9-4 9-9V7Z"/><path d="M9 12l2 2 4-5"/></svg>
-        <div><h3>Chaque client garde la main</h3>
-        <p>C'est le client qui vous autorise à entrer dans son espace, et il peut retirer cet accès à tout moment.</p></div>
+        <div><h3>Vos clients ont accès aux mêmes informations</h3></div>
       </li>
       <li class="trait">
-        <svg class="icone" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 12l2 2 4-5"/><rect x="4" y="3" width="16" height="18" rx="2"/></svg>
-        <div><h3>Votre travail reste chez le client</h3>
-        <p>Les revues et décisions que vous faites pour lui s'inscrivent à son registre, à votre nom et datées.</p></div>
+        <svg class="icone" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 7v5l3 2"/><circle cx="12" cy="12" r="9"/></svg>
+        <div><h3>Une synthèse globale des textes qui vous sont applicables</h3>
+        <p>Seuls les textes qui vous concernent vous sont présentés. Les autres restent à part,
+        mais sont accessibles.</p></div>
+      </li>
+      <li class="trait">
+        <svg class="icone" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 12l2 2 4-5"/><circle cx="12" cy="12" r="9"/></svg>
+        <div><h3>Réalisation de votre registre de conformité réglementaire</h3>
+        <p>Une synthèse des textes qui vous sont applicables, et de ceux qui sont appliqués dans votre société.</p></div>
+      </li>
+      <li class="trait">
+        <svg class="icone" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h14v16l-7-3-7 3Z"/><path d="M9 9h6"/></svg>
+        <div><h3>Un plan d'actions préconisées</h3>
+        <p>Pour répondre aux textes passés, présents et futurs.</p></div>
+      </li>
+      <li class="trait">
+        <svg class="icone" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 6h12M8 12h12M8 18h12"/><path d="M4 6h.01M4 12h.01M4 18h.01"/></svg>
+        <div><h3>Un tableau des textes publiés chaque jour</h3>
+        <p>Avec l'ensemble des liens pour y accéder.</p></div>
       </li>
     </ul>
     <p class="rangee rangee-centre offre-profil"><a class="bouton bouton-accent" href="consultants.html">Découvrir l'offre</a></p>
