@@ -3658,7 +3658,8 @@ ${bandeAvis(AVIS)}
       </li>
       <li class="trait">
         <svg class="icone" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 3 7v5c0 5 3.8 8.3 9 9 5.2-.7 9-4 9-9V7Z"/><path d="M9 12l2 2 4-5"/></svg>
-        <div><h3>Vos clients ont accès aux mêmes informations</h3></div>
+        <div><h3>Vos clients ont accès aux mêmes informations</h3>
+        <p>Vous partagez le même espace avec vos clients, qui peuvent, sous vos conseils, mettre à jour leur plan d'actions et leur conformité.</p></div>
       </li>
       <li class="trait">
         <svg class="icone" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 7v5l3 2"/><circle cx="12" cy="12" r="9"/></svg>
