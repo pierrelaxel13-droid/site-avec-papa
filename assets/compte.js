@@ -649,18 +649,6 @@
         carte.appendChild(mk("p", "", "Ce client a coupé votre accès : vous ne voyez plus son espace. Lui seul peut le rouvrir, depuis son compte."));
         return carte;
       }
-      var etat = mk("p", "admin-formule");
-      if (c.actions_ouvertes) {
-        etat.appendChild(mk("strong", "", pluriel(c.actions_ouvertes, "action ouverte", "actions ouvertes")));
-        if (c.actions_en_retard) {
-          etat.appendChild(document.createTextNode(", dont "));
-          etat.appendChild(mk("span", "admin-alerte", c.actions_en_retard + " en retard"));
-        }
-        etat.appendChild(document.createTextNode("."));
-      } else {
-        etat.textContent = "Aucune action ouverte.";
-      }
-      carte.appendChild(etat);
       carte.appendChild(mk("p", "admin-details", c.derniere_trace
         ? "Dernière trace au registre le " + dateLongue(c.derniere_trace) + "."
         : "Rien au registre pour l'instant."));
@@ -683,6 +671,101 @@
       return carte;
     };
 
+    /* --- Le tableau de bord consultant (3 novembre 2026) ----------------------
+       Pour chaque société : ses textes non lus, sa conformité et l'avancement
+       de son plan d'actions. Le plan de veille se recalcule ici (code APE et
+       cases « vrai chez nous », comme assets/entreprise.js) ; la liste des
+       textes vient de assets/textes-plan.js. */
+    var P = window.PLAN, TP = window.TEXTES_PLAN || [];
+    var sujetsDu = function (naf, contexte) {
+      var div = P && P.div[String(naf || "").replace(/[^0-9A-Za-z]/g, "").slice(0, 2)];
+      if (!div) return null;
+      var vus = {};
+      div.b.forEach(function (id) { vus[id] = 1; });
+      (contexte || []).forEach(function (qid) {
+        P.q.forEach(function (q) { if (q.id === qid) q.dom.forEach(function (id) { if (P.d[id]) vus[id] = 1; }); });
+      });
+      return vus;
+    };
+    var chiffresClient = function (c) {
+      if (!c.acces) return null;
+      var faites = c.actions_faites || 0, engagees = faites + (c.actions_ouvertes || 0);
+      var x = { avancement: engagees ? Math.round(faites / engagees * 100) : null, faites: faites, engagees: engagees,
+                retard: c.actions_en_retard || 0, total: 0, nonLus: null, conformite: null };
+      var sujets = sujetsDu(c.naf, c.contexte);
+      if (!sujets) return x;
+      var lus = {}, conf = {};
+      (c.lus || []).forEach(function (k) { lus[k] = 1; });
+      (c.conformes || []).forEach(function (k) { conf[k] = 1; });
+      var nl = 0, nc = 0;
+      TP.forEach(function (t) {
+        if (!t[1].split(" ").some(function (id) { return sujets[id]; })) return;
+        x.total++;
+        if (!lus[t[0]]) nl++;
+        if (conf[t[0]]) nc++;
+      });
+      x.nonLus = nl;
+      x.conformite = x.total ? Math.round(nc / x.total * 100) : null;
+      return x;
+    };
+    var barre = function (pct, detail) {
+      var td = mk("td");
+      if (pct == null) { td.appendChild(mk("span", "cs-vide", "—")); }
+      else {
+        var b = mk("span", "cs-barre"); b.setAttribute("role", "img"); b.setAttribute("aria-label", pct + " %");
+        var r = mk("span"); r.style.width = pct + "%"; b.appendChild(r);
+        td.appendChild(b); td.appendChild(mk("span", "cs-pct", pct + " %"));
+      }
+      if (detail) td.appendChild(mk("span", "cs-detail", detail));
+      return td;
+    };
+    var tableauBord = function (cl) {
+      var corps = $("#cs-lignes"); corps.textContent = "";
+      var tNonLus = 0, confs = [], tFaites = 0, tEngagees = 0, n = 0;
+      cl.forEach(function (c) {
+        var x = chiffresClient(c), tr = mk("tr");
+        var th = mk("th"); th.scope = "row";
+        th.appendChild(mk("span", "cs-nom", c.denomination));
+        th.appendChild(mk("span", "cs-detail", c.naf ? "Code APE " + c.naf : "Code APE à régler"));
+        tr.appendChild(th);
+        if (!x) {
+          var td = mk("td", "cs-coupe", "Accès coupé par le client"); td.colSpan = 3; tr.appendChild(td);
+        } else {
+          n++;
+          var tdl = mk("td");
+          if (x.nonLus == null) tdl.appendChild(mk("span", "cs-vide", "—"));
+          else {
+            tNonLus += x.nonLus;
+            tdl.appendChild(mk("span", "cs-nombre" + (x.nonLus ? " cs-attention" : ""), String(x.nonLus)));
+            tdl.appendChild(mk("span", "cs-detail", "sur " + x.total + " texte" + (x.total > 1 ? "s" : "")));
+          }
+          tdl.setAttribute("data-titre", "Textes non lus");
+          tr.appendChild(tdl);
+          if (x.conformite != null) confs.push(x.conformite);
+          var tdc = barre(x.conformite, x.nonLus == null ? "Code APE à régler" : ""); tdc.setAttribute("data-titre", "Conformité réglementaire"); tr.appendChild(tdc);
+          tFaites += x.faites; tEngagees += x.engagees;
+          var tda = barre(x.avancement, x.engagees ? x.faites + " sur " + x.engagees + (x.retard ? " · " + x.retard + " en retard" : "") : "Aucune action engagée");
+          tda.setAttribute("data-titre", "Avancement du plan d'actions");
+          if (x.retard) tda.classList.add("cs-retard");
+          tr.appendChild(tda);
+        }
+        var tdo = mk("td", "cs-ouvrir");
+        if (c.acces && cabinet.actif) {
+          var o = mk("a", "bouton bouton-sobre", "Ouvrir");
+          o.href = vers("app/index.html");
+          o.setAttribute("aria-label", "Ouvrir l'espace de " + c.denomination);
+          o.addEventListener("click", function () { V.choisir(c.id); });
+          tdo.appendChild(o);
+        }
+        tr.appendChild(tdo);
+        corps.appendChild(tr);
+      });
+      $("#cs-clients").textContent = cl.length;
+      $("#cs-non-lus").textContent = n ? tNonLus : "—";
+      $("#cs-conformite").textContent = confs.length ? Math.round(confs.reduce(function (a, b) { return a + b; }, 0) / confs.length) + " %" : "—";
+      $("#cs-avancement").textContent = tEngagees ? Math.round(tFaites / tEngagees * 100) + " %" : "—";
+    };
+
     var chargerCabinet = function (message) {
       V.rpc("cabinet_vue", { c: cabinet.id }).then(function (r) {
         if (!r.ok) { etatCab.textContent = r.erreur; return; }
@@ -702,6 +785,7 @@
         }
         var liste = $("#cabinet-clients"); liste.textContent = "";
         cl.forEach(function (c) { liste.appendChild(carteClient(c)); });
+        tableauBord(cl);
         $("#cabinet-vos-clients").hidden = !cl.length;
         cabinetP.hidden = false;
       });

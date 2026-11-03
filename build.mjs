@@ -1178,6 +1178,7 @@ function appActions(V, D, C, LIENS, JO = null) {
   });
 }
 
+let TEXTES_CLES = [];
 function appConformite(V, D, C, LIENS, JO = null) {
   const plan = planDe(V, D.entreprise);
   const parRef = {};
@@ -1225,6 +1226,9 @@ function appConformite(V, D, C, LIENS, JO = null) {
         ${lien ? `<a class="lien-officiel" href="${esc(lien)}" target="_blank" rel="noopener">${/legifrance\.gouv\.fr/.test(lien) ? "Légifrance" : esc(t.sourceNom || "Voir chez la source")} ${sortant}</a>` : ""}` });
   });
   entrees.sort((x, y) => ordreCat.indexOf(catDe(x.ids)) - ordreCat.indexOf(catDe(y.ids)) || x.ordre - y.ordre || x.objet.localeCompare(y.objet, "fr"));
+  // Pour l'espace consultant : la liste des textes (clé et sujets), afin de
+  // compter chez chaque client ses textes non lus et sa part de conformes.
+  TEXTES_CLES = entrees.map((e) => [e.cle, e.ids.join(" ")]);
 
   const lignes = entrees.map((e, i) => {
     const dans = e.ids.some((id) => plan.liste.includes(id));
@@ -4525,16 +4529,44 @@ function pageInvitation() {
    où ils en sont, en ajouter un, inviter son responsable, entrer chez lui.
    La base ne lui donne que ses clients, et seulement ceux qui l'autorisent
    (supabase/migrations/…_consultants.sql). */
+/* L'espace consultant (3 novembre 2026) : un tableau de bord de tous ses
+   clients — par société, les textes non lus, le pourcentage de conformité
+   réglementaire et l'avancement du plan d'actions —, puis la gestion des
+   clients (invitations, nouveau client). Les chiffres sont calculés par
+   assets/compte.js à partir de cabinet_vue (migration 15). */
+function tableauConsultant(lignes = "") {
+  return `<dl class="compteurs cs-compteurs">
+      <div><dt class="etiq">Sociétés suivies</dt><dd><span class="grand" id="cs-clients">—</span></dd></div>
+      <div><dt class="etiq">Textes non lus</dt><dd><span class="grand" id="cs-non-lus">—</span><span class="precision">toutes sociétés</span></dd></div>
+      <div><dt class="etiq">Conformité moyenne</dt><dd><span class="grand" id="cs-conformite">—</span><span class="precision">des textes applicables</span></dd></div>
+      <div><dt class="etiq">Plan d'actions</dt><dd><span class="grand" id="cs-avancement">—</span><span class="precision">des actions réalisées</span></dd></div>
+    </dl>
+    <div class="cs-cadre">
+      <table class="cs-tableau">
+        <thead><tr><th scope="col">Société</th><th scope="col">Textes non lus</th><th scope="col">Conformité réglementaire</th><th scope="col">Avancement du plan d'actions</th><th scope="col"><span class="cache-visuellement">Ouvrir</span></th></tr></thead>
+        <tbody id="cs-lignes">${lignes}</tbody>
+      </table>
+    </div>`;
+}
+
+/* Une barre de pourcentage, avec le chiffre à côté. */
+function barreCs(pct, detail = "") {
+  if (pct == null) return `<span class="cs-vide">—</span>${detail ? `<span class="cs-detail">${detail}</span>` : ""}`;
+  return `<span class="cs-barre" role="img" aria-label="${pct} %"><span style="width:${pct}%"></span></span><span class="cs-pct">${pct} %</span>${detail ? `<span class="cs-detail">${detail}</span>` : ""}`;
+}
+
 function pageCabinet() {
   const corps = `
-<section class="heros heros-court">
+<section class="section compte-page cs-page">
   <div class="enveloppe">
-    <div class="heros-texte"><p class="etiq">Mon cabinet</p><h1 id="cabinet-titre">Mon cabinet</h1></div>
-    <p class="heros-sous etat-compte" id="cabinet-etat" role="status">Un instant…</p>
-  </div>
-</section>
-<section class="section">
-  <div class="enveloppe admin-enveloppe">
+    <div class="cs-tete">
+      <div>
+        <p class="cs-sur">Espace consultant</p>
+        <h1 id="cabinet-titre">Mon cabinet</h1>
+        <p class="etat-compte" id="cabinet-etat" role="status">Chargement…</p>
+      </div>
+      <a class="bouton bouton-sobre" href="./">Mon compte</a>
+    </div>
     ${comptesFermes()}
     <div class="connexion connexion-seule" id="cabinet-aucun" hidden>
       <div class="carte-connexion">
@@ -4545,42 +4577,44 @@ function pageCabinet() {
     </div>
     <div id="cabinet-principal" data-contact="${esc(SITE.courriel)}" hidden>
       <div class="reserve" id="cabinet-inactif" hidden>
-        <p><strong>Votre abonnement consultant n'est pas encore ouvert.</strong> Le paiement en ligne n'existe pas
-        encore : nous l'ouvrons nous-mêmes, sur simple demande. Vous pouvez déjà créer l'espace de vos clients ;
-        ils s'ouvrent avec l'abonnement.</p>
+        <p><strong>Votre abonnement consultant n'est pas encore ouvert.</strong> Vous pouvez déjà créer l'espace
+        de vos clients ; ils s'ouvrent avec l'abonnement.</p>
         <p class="rangee" style="margin-top:var(--t3)">
           <a class="bouton bouton-accent" id="cabinet-demander" href="mailto:${esc(SITE.courriel)}">Demander l'ouverture</a>
           <a class="bouton bouton-sobre" href="../consultants.html#grille">Voir les tarifs</a>
         </p>
       </div>
-      <div id="cabinet-vos-clients" hidden>
-        <h2 class="titre-section">Vos clients</h2>
-        <p class="aide-bas">Pour chacun : ses actions ouvertes, celles en retard, et la date de sa dernière trace au
-        registre. Vous ne voyez rien d'un client qui a coupé votre accès.</p>
+      <section id="cabinet-vos-clients" class="cs-bloc" aria-labelledby="cs-t-bord" hidden>
+        <h2 id="cs-t-bord" class="cs-titre">Tableau de bord de vos clients</h2>
+        ${tableauConsultant()}
+        <p class="cs-note">Textes non lus : les textes du plan de veille qu'aucune personne de la société n'a encore
+        ouverts. Conformité : la part des textes du plan évalués « conforme ». Plan d'actions : les actions
+        réalisées sur les actions engagées. Un client qui a coupé votre accès n'affiche aucun chiffre.</p>
+      </section>
+      <section class="cs-bloc" aria-labelledby="cs-t-gerer">
+        <h2 id="cs-t-gerer" class="cs-titre">Gérer vos clients</h2>
         <div class="admin-grille" id="cabinet-clients"></div>
-      </div>
-      <form class="carte-connexion" id="form-client" method="post" novalidate>
-        <h2>Ajouter un client</h2>
-        <ol class="etapes-cabinet">
-          <li>Créez son espace ici.</li>
-          <li>Ouvrez-le pour régler son plan de veille (code APE, situations).</li>
-          <li>Invitez son responsable : il crée son compte et voit tout. Il peut couper votre accès quand il veut.</li>
-        </ol>
-        <div class="champ">
-          <label for="cl-nom">Nom de l'entreprise cliente</label>
-          <input type="text" id="cl-nom" autocomplete="off" maxlength="200" required>
-        </div>
-        <p class="rangee"><button type="submit" class="bouton bouton-accent">Créer son espace</button></p>
-        <p class="etat-compte" id="etat-client" role="status"></p>
-      </form>
-      <p class="rangee rangee-centre" style="margin-top:var(--t5)">
-        <a class="bouton bouton-sobre" href="./">Mon compte</a>
-      </p>
+        <form class="carte-connexion cs-ajout" id="form-client" method="post" novalidate>
+          <h3>Ajouter un client</h3>
+          <ol class="etapes-cabinet">
+            <li>Créez son espace ici.</li>
+            <li>Ouvrez-le pour régler son plan de veille (code APE, situations).</li>
+            <li>Invitez son responsable : il crée son compte et voit tout. Il peut couper votre accès quand il veut.</li>
+          </ol>
+          <div class="champ">
+            <label for="cl-nom">Nom de l'entreprise cliente</label>
+            <input type="text" id="cl-nom" autocomplete="off" maxlength="200" required>
+          </div>
+          <p class="rangee"><button type="submit" class="bouton bouton-accent">Créer son espace</button></p>
+          <p class="etat-compte" id="etat-client" role="status"></p>
+        </form>
+      </section>
     </div>
   </div>
 </section>`;
-  return page({ titre: `Mon cabinet | ${SITE.nom}`, description: `Votre cabinet de conseil sur ${SITE.nom}.`,
-    racine: "../", zone: "public", corps, scripts: ["assets/compte.js"], installation: false, piedCourt: true });
+  return page({ titre: `Espace consultant | ${SITE.nom}`, description: `Votre cabinet de conseil sur ${SITE.nom} : le tableau de bord de vos clients.`,
+    racine: "../", zone: "public", corps, donneesPlan: true, scripts: ["assets/textes-plan.js", "assets/compte.js"], installation: false, piedCourt: true,
+    attrsBody: ' data-page="cabinet"' });
 }
 
 /* La démonstration consultant (demo/cabinet.html) : la page « Mon cabinet »
@@ -4588,16 +4622,19 @@ function pageCabinet() {
    Maçonnerie Vidal est l'entreprise du jeu d'essai : ses chiffres viennent de
    son registre, et « Ouvrir son espace » entre dans la démonstration avec le
    bandeau consultant (assets/session.js). Rien n'y est enregistré. */
-function pageCabinetDemo(D) {
-  const C = D.cabinet, E = D.entreprise;
+function pageCabinetDemo(V, D) {
+  const C = D.cabinet, E = D.entreprise, planVidal = planDe(V, E);
   const jour = new Date().toISOString().slice(0, 10);
   const ouvertes = D.registre.filter((r) => r.type === "action" && !r.clos);
   const vidal = {
     denomination: E.nom, naf: E.nafComplet, cree_le: "2026-03-02", membres: 1, vidal: true,
     actions_ouvertes: ouvertes.length,
     actions_en_retard: ouvertes.filter((r) => r.echeance && r.echeance < jour).length,
-    derniere_trace: D.registre.map((r) => r.date).sort().pop()
+    derniere_trace: D.registre.map((r) => r.date).sort().pop(),
+    textes: TEXTES_CLES.filter(([, ids]) => ids.split(" ").some((id) => planVidal.liste.includes(id))).length,
+    conformes: 0, actions_faites: D.registre.filter((r) => r.type === "action" && r.clos).length
   };
+  vidal.non_lus = vidal.textes;
   // Celui qui s'ouvre d'abord : c'est lui qu'on vient essayer.
   const clients = [vidal, ...C.clients];
   const pl = (n, un, plus) => `${n} ${n > 1 ? plus : un}`;
@@ -4619,31 +4656,56 @@ function pageCabinetDemo(D) {
       ? `<a class="bouton bouton-accent" href="index.html" data-demo-consultant="${esc(C.nom)}" data-demo-client="${esc(E.nom)}">Ouvrir son espace</a>`
       : `<span class="admin-details">Dans la démonstration, seul l'espace de ${esc(E.nom)} s'ouvre.</span>`;
     return `<article class="carte-connexion admin-entreprise">${tete}
-        <p class="admin-formule">${actions}</p>
         <p class="admin-details">${c.derniere_trace ? `Dernière trace au registre le ${dateFr(c.derniere_trace)}.` : "Rien au registre pour l'instant."}</p>
         ${compte}
         <p class="rangee" style="margin-top:var(--t3)">${ouvrir}</p>
       </article>`;
   };
   const retard = clients.filter((c) => c.actions_en_retard).length;
+  const pct = (a, b) => (b ? Math.round(a / b * 100) : null);
+  const vus = clients.filter((c) => c.acces !== false);
+  const lignes = clients.map((c) => {
+    const nom = `<th scope="row"><span class="cs-nom">${esc(c.denomination)}</span><span class="cs-detail">Code APE ${esc(c.naf)}</span></th>`;
+    if (c.acces === false) return `<tr>${nom}<td class="cs-coupe" colspan="3">Accès coupé par le client</td><td class="cs-ouvrir"></td></tr>`;
+    const eng = c.actions_faites + c.actions_ouvertes;
+    return `<tr>${nom}
+      <td data-titre="Textes non lus"><span class="cs-nombre${c.non_lus ? " cs-attention" : ""}">${c.non_lus}</span><span class="cs-detail">sur ${c.textes} textes</span></td>
+      <td data-titre="Conformité réglementaire">${barreCs(pct(c.conformes, c.textes))}</td>
+      <td data-titre="Avancement du plan d'actions"${c.actions_en_retard ? ' class="cs-retard"' : ""}>${barreCs(pct(c.actions_faites, eng), eng ? `${c.actions_faites} sur ${eng}${c.actions_en_retard ? ` · ${c.actions_en_retard} en retard` : ""}` : "Aucune action engagée")}</td>
+      <td class="cs-ouvrir">${c.vidal ? `<a class="bouton bouton-sobre" href="index.html" data-demo-consultant="${esc(C.nom)}" data-demo-client="${esc(E.nom)}">Ouvrir</a>` : ""}</td></tr>`;
+  }).join("");
+  const somme = (k) => vus.reduce((t, c) => t + (c[k] || 0), 0);
+  const moyConf = Math.round(vus.reduce((t, c) => t + pct(c.conformes, c.textes), 0) / vus.length);
+  const tableau = tableauConsultant(lignes)
+    .replace('id="cs-clients">—', `id="cs-clients">${clients.length}`)
+    .replace('id="cs-non-lus">—', `id="cs-non-lus">${somme("non_lus")}`)
+    .replace('id="cs-conformite">—', `id="cs-conformite">${moyConf} %`)
+    .replace('id="cs-avancement">—', `id="cs-avancement">${pct(somme("actions_faites"), somme("actions_faites") + somme("actions_ouvertes")) ?? "—"}${somme("actions_faites") + somme("actions_ouvertes") ? " %" : ""}`);
   const corps = `
 <p class="bandeau-demo"><strong>Démonstration consultant.</strong> Le cabinet et ses clients sont fictifs ;
   rien de ce que vous faites ici n'est enregistré. <a href="../compte/creer.html?type=cabinet">Créer mon compte consultant</a> ·
   <a href="../consultants.html">L'offre consultants</a></p>
-<section class="heros heros-court">
+<section class="section compte-page cs-page">
   <div class="enveloppe">
-    <div class="heros-texte"><p class="etiq">Mon cabinet</p><h1>${esc(C.nom)}</h1></div>
-    <p class="heros-sous">${pl(clients.length, "client", "clients")}${retard ? ` — ${pl(retard, "avec des actions en retard", "avec des actions en retard")}.` : ", aucun en retard."}</p>
-  </div>
-</section>
-<section class="section">
-  <div class="enveloppe admin-enveloppe">
-    <h2 class="titre-section">Vos clients</h2>
-    <p class="aide-bas">Pour chacun : ses actions ouvertes, celles en retard, et la date de sa dernière trace au
-    registre. Vous ne voyez rien d'un client qui a coupé votre accès.</p>
+    <div class="cs-tete">
+      <div>
+        <p class="cs-sur">Espace consultant</p>
+        <h1>${esc(C.nom)}</h1>
+        <p class="etat-compte">${pl(clients.length, "client", "clients")}${retard ? ` — ${pl(retard, "avec des actions en retard", "avec des actions en retard")}.` : ", aucun en retard."}</p>
+      </div>
+    </div>
+    <section class="cs-bloc" aria-labelledby="cs-t-bord">
+      <h2 id="cs-t-bord" class="cs-titre">Tableau de bord de vos clients</h2>
+      ${tableau}
+      <p class="cs-note">Démonstration : les chiffres des sociétés autres que ${esc(E.nom)} sont fictifs. Textes non lus : les textes
+      du plan de veille qu'aucune personne de la société n'a encore ouverts. Conformité : la part des textes du plan évalués
+      « conforme ». Plan d'actions : les actions réalisées sur les actions engagées.</p>
+    </section>
+    <section class="cs-bloc" aria-labelledby="cs-t-gerer">
+    <h2 id="cs-t-gerer" class="cs-titre">Gérer vos clients</h2>
     <div class="admin-grille">${clients.map(carte).join("")}</div>
-    <div class="carte-connexion">
-      <h2>Ajouter un client</h2>
+    <div class="carte-connexion cs-ajout">
+      <h3>Ajouter un client</h3>
       <ol class="etapes-cabinet">
         <li>Créez son espace ici.</li>
         <li>Ouvrez-le pour régler son plan de veille (code APE, situations).</li>
@@ -4654,11 +4716,13 @@ function pageCabinetDemo(D) {
         <a class="bouton bouton-accent" href="../compte/creer.html?type=cabinet">Créer mon compte consultant</a>
       </p>
     </div>
+    </section>
   </div>
 </section>`;
   return page({ titre: `Démonstration consultant | ${SITE.nom}`,
     description: "La page d'un cabinet de conseil sur Vigie : ses clients, où ils en sont, leur espace. Démonstration avec des données fictives.",
-    racine: "../", zone: "public", corps, scripts: ["assets/session.js"], installation: false, piedCourt: true });
+    racine: "../", zone: "public", corps, scripts: ["assets/session.js"], installation: false, piedCourt: true,
+    attrsBody: ' data-page="cabinet"' });
 }
 
 /* L'administration du service, pour l'administrateur seul : la base refuse
@@ -5124,6 +5188,7 @@ async function main() {
   await writeFile(join(SORTIE, "app", "index.html"), appTableauBord(V, D, C, LIENS));
   await writeFile(join(SORTIE, "app", "plan.html"), appPlan(V, D, C, LIENS, JO));
   await writeFile(join(SORTIE, "app", "conformite.html"), appConformite(V, D, C, LIENS, JO));
+  await writeFile(join(SORTIE, "assets", "textes-plan.js"), "/* Les textes du plan de veille : [clé, sujets]. Engendré par build.mjs. */\nwindow.TEXTES_PLAN = " + JSON.stringify(TEXTES_CLES) + ";\n");
   await writeFile(join(SORTIE, "app", "actions.html"), appActions(V, D, C, LIENS, JO));
   await writeFile(join(SORTIE, "app", "releve.html"), renvoi("Relevé", "plan.html", "Ma veille réglementaire"));
   await writeFile(join(SORTIE, "app", "registre.html"), appRegistre());
@@ -5164,7 +5229,7 @@ async function main() {
   }
 
   await copieDemo();
-  if (SITE.offreConsultant) await writeFile(join(SORTIE, "demo", "cabinet.html"), pageCabinetDemo(D));
+  if (SITE.offreConsultant) await writeFile(join(SORTIE, "demo", "cabinet.html"), pageCabinetDemo(V, D));
 
   const total = await poids(SORTIE);
   console.log(`  public              4 pages (accueil, comment ça marche, abonnement, connexion)`);

@@ -674,6 +674,21 @@ select tests.qui('00000000-0000-0000-0000-0000000000e3', 'neuf@test.fr');
 set local role authenticated;
 select public.accepter_invitation(current_setting('tests.jeton3'));
 select tests.ok((public.mon_consultant(current_setting('tests.cli')::uuid) ->> 'nom') = 'Cabinet S (essai)', 'le client invité voit qui est son consultant');
+-- Le tableau de bord consultant (3 novembre 2026) : le client lit un texte et l'évalue conforme.
+select public.espace_lus('{"depuis": "2026-11-01T00:00:00Z", "ids": ["ref:texte-essai"]}');
+select public.espace_conformite(current_setting('tests.cli')::uuid, 'ref:texte-essai', 'Texte (essai)', 'conforme', null);
+reset role;
+
+select tests.qui('00000000-0000-0000-0000-0000000000e4', 'seul@test.fr');
+set local role authenticated;
+select tests.ok((select (c -> 'lus')::jsonb ? 'ref:texte-essai' and (c -> 'conformes')::jsonb ? 'ref:texte-essai'
+                        and (c -> 'contexte')::jsonb ? 'salaries'
+                 from json_array_elements(public.cabinet_vue(current_setting('tests.cab')::uuid) -> 'clients') c),
+  'tableau consultant : textes lus par le client, textes conformes et contexte, pour calculer les chiffres');
+reset role;
+
+select tests.qui('00000000-0000-0000-0000-0000000000e3', 'neuf@test.fr');
+set local role authenticated;
 select public.espace_acces_consultant(current_setting('tests.cli')::uuid, false);
 reset role;
 
@@ -683,6 +698,7 @@ select tests.ok(tests.compte(format('select 1 from public.mes_acces() where entr
   'le client coupe l''accès : le consultant n''entre plus');
 select tests.refuse(format('select public.espace_lire(%L)', current_setting('tests.cli')), 'et ne lit plus rien');
 select tests.ok((select (c ->> 'acces')::boolean = false and json_typeof(c -> 'actions_ouvertes') = 'null'
+                        and json_typeof(c -> 'lus') = 'null' and json_typeof(c -> 'conformes') = 'null'
                  from json_array_elements(public.cabinet_vue(current_setting('tests.cab')::uuid) -> 'clients') c),
   'son tableau garde le client, sans aucun chiffre');
 reset role;

@@ -76,10 +76,14 @@ window.DEMO = {
   cabinet: {
     nom: "Cabinet Exemple QSE",
     clients: [
+      // Chiffres fictifs du tableau de bord consultant : textes du plan, non
+      // lus, évalués conformes, actions réalisées (3 novembre 2026).
       { denomination: "Boulangerie Martin", naf: "10.71C", cree_le: "2026-05-12", membres: 2,
-        actions_ouvertes: 3, actions_en_retard: 2, derniere_trace: "2026-09-02" },
+        actions_ouvertes: 3, actions_en_retard: 2, derniere_trace: "2026-09-02",
+        textes: 148, non_lus: 12, conformes: 101, actions_faites: 9 },
       { denomination: "Transports Rey", naf: "49.41A", cree_le: "2026-10-20", membres: 0,
-        actions_ouvertes: 0, actions_en_retard: 0, derniere_trace: null },
+        actions_ouvertes: 0, actions_en_retard: 0, derniere_trace: null,
+        textes: 131, non_lus: 131, conformes: 0, actions_faites: 0 },
       { denomination: "Garage Fabre", naf: "45.20A", cree_le: "2026-04-03", membres: 1, acces: false }
     ]
   },

@@ -3889,3 +3889,50 @@ a.puce-fixe { text-decoration: none; color: inherit; }
 .rt-champ input, .rt-champ select { width: 100%; min-width: 0; font: inherit; font-size: .9rem; color: var(--encre);
   background: var(--papier); border: 1px solid var(--filet-fort); border-radius: var(--r1); padding: .5rem .65rem; }
 .rt-effacer { justify-self: start; font-size: .85rem; padding-bottom: .55rem; text-decoration: underline; color: var(--accent); }
+
+/* --- Espace consultant (3 novembre 2026) ----------------------------------
+   Un tableau de bord de tous les clients : une ligne par société. Au
+   téléphone, chaque société devient une carte. */
+.cs-page { padding-top: clamp(2rem, 1.2rem + 3vw, 3rem); }
+.cs-tete { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 1rem; margin-bottom: var(--t5); }
+.cs-sur { margin: 0; font-size: .78rem; letter-spacing: .06em; text-transform: uppercase; color: var(--accent-fonce); }
+.cs-tete h1 { margin: .2rem 0 0; font-size: clamp(1.6rem, 1.25rem + 1.3vw, 2.2rem); letter-spacing: -.02em; }
+.cs-tete .etat-compte { margin: .35rem 0 0; color: var(--encre-douce); font-size: .92rem; }
+.cs-bloc { margin-bottom: var(--t6); }
+.cs-titre { margin: 0 0 var(--t3); font-size: 1.1rem; font-weight: 600; letter-spacing: 0; }
+.cs-compteurs { margin: 0 0 var(--t4); }
+.cs-cadre { border: 1px solid var(--filet); border-radius: 12px; background: var(--carte); overflow: hidden; }
+.cs-tableau { width: 100%; border-collapse: collapse; font-size: .9rem; }
+.cs-tableau thead th { padding: .7rem 1rem; text-align: left; font-size: .78rem; font-weight: 500; color: var(--encre-douce); background: var(--papier-pale, var(--papier)); border-bottom: 1px solid var(--filet); }
+.cs-tableau tbody th, .cs-tableau tbody td { padding: .85rem 1rem; text-align: left; vertical-align: middle; border-top: 1px solid var(--filet); }
+.cs-tableau tbody tr:first-child th, .cs-tableau tbody tr:first-child td { border-top: 0; }
+.cs-tableau tbody th { font-weight: 400; }
+.cs-nom { display: block; font-weight: 600; color: var(--encre); }
+.cs-detail { display: block; margin-top: .15rem; font-size: .78rem; color: var(--encre-douce); }
+.cs-nombre { font-size: 1.05rem; font-weight: 600; font-variant-numeric: tabular-nums; }
+.cs-nombre.cs-attention { color: var(--accent-fonce); }
+.cs-barre { display: inline-block; vertical-align: middle; width: 7rem; height: .45rem; border-radius: 999px; background: var(--filet); overflow: hidden; }
+.cs-barre > span { display: block; height: 100%; border-radius: inherit; background: var(--vert); }
+.cs-retard .cs-barre > span { background: var(--ambre); }
+.cs-retard .cs-detail { color: var(--ambre); }
+.cs-pct { margin-left: .6rem; font-weight: 600; font-variant-numeric: tabular-nums; vertical-align: middle; }
+.cs-vide { color: var(--encre-douce); }
+.cs-coupe { color: var(--encre-douce); font-style: italic; }
+.cs-ouvrir { text-align: right !important; white-space: nowrap; }
+.cs-ouvrir .bouton { padding: .4rem .9rem; font-size: .85rem; }
+.cs-note { margin: var(--t3) 0 0; max-width: 60rem; font-size: .8rem; color: var(--encre-douce); line-height: 1.5; }
+.cs-ajout h3 { margin: 0 0 var(--t2); font-size: 1.05rem; }
+@media (max-width: 47.99rem) {
+  .cs-tableau thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+  .cs-tableau, .cs-tableau tbody, .cs-tableau tr, .cs-tableau th, .cs-tableau td { display: block; }
+  .cs-tableau tbody tr { padding: .9rem 1rem; border-top: 1px solid var(--filet); }
+  .cs-tableau tbody tr:first-child { border-top: 0; }
+  .cs-tableau tbody th, .cs-tableau tbody td { padding: .35rem 0; border: 0; }
+  .cs-tableau td[data-titre]::before { content: attr(data-titre); display: block; font-size: .75rem; color: var(--encre-douce); margin-bottom: .2rem; }
+  .cs-ouvrir { text-align: left !important; padding-top: .6rem !important; }
+  .cs-barre { width: 9rem; }
+}
+@media (max-width: 47.99rem) {
+  .cs-compteurs { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .6rem; }
+  .cs-compteurs .grand { font-size: 1.6rem; }
+}
