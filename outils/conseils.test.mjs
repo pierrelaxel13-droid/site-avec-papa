@@ -66,6 +66,17 @@ const r = await demander(TEXTE, { cle: "k", fetch: fauxPerplexity(reponse) });
 ok(r.ok && r.cout === 0.0061 && r.sources.length === 5 && r.modele === "low@2026-10-01.0", "la réponse, ses sources (résultats et citations), son coût et le réglage utilisé sont lus");
 ok(r.forme.sorties.join() === "search_results,message" && !JSON.stringify(r.forme).includes("échafaudages"), "la forme de la réponse se dit sans son contenu");
 
+// L'essai du 3 novembre 2026 : l'agent a ouvert la page lui-même (fetch_url_results), sans recherche ni citation.
+const rFetch = await demander(TEXTE, { cle: "k", fetch: fauxPerplexity({
+  id: "resp_f", object: "response", status: "completed", effort: "low@2026-10-24.0",
+  output: [
+    { type: "fetch_url_results", contents: [{ url: "https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000099", title: "Arrêté", content: "…" },
+      { url: "https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000099", title: "doublon" }] },
+    { type: "message", role: "assistant", status: "completed", content: [{ type: "output_text", text: REPONSE_TEXTE }] }
+  ], usage: { cost: { total_cost: 0.001 } } }) });
+ok(rFetch.ok && rFetch.sources.length === 1 && rFetch.sources[0].url === "https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000099",
+  "les pages ouvertes par l'agent (fetch_url_results) comptent comme sources, sans doublon");
+
 appelsApi = 0; let attendu = 0;
 const r429 = await demander(TEXTE, { cle: "k", fetch: fauxPerplexity(reponse, (k) => (k === 1 ? 429 : 200), { "retry-after": "3" }), attendre: async (ms) => { attendu = ms; } });
 ok(r429.ok && appelsApi === 2 && attendu === 3000, "un 429 attend Retry-After (3 s), puis réessaie une fois");

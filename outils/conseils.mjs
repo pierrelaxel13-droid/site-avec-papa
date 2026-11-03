@@ -175,12 +175,23 @@ export async function demander(t, { cle, fetch: f = fetch, attendre = pause, V =
     .flatMap((o) => o.content || []).filter((c) => c.type === "output_text");
   const texte = morceaux.map((c) => c.text || "").join("\n\n");
   // Les sources : les résultats de recherche, et les liens cités dans le texte.
+  /* Les sources : les résultats de recherche, les pages que l'agent a ouvertes
+     lui-même (« fetch_url_results », vu à l'essai du 3 novembre 2026 : sans
+     elles, une réponse bien sourcée était écartée faute de source), et les
+     liens cités dans le texte. Leur forme varie : on prend tout objet qui
+     porte une adresse, à quelques niveaux de profondeur. */
+  const adresses = (o, prof = 0, acc = []) => {
+    if (!o || typeof o !== "object" || prof > 4) return acc;
+    if (Array.isArray(o)) { o.forEach((x) => adresses(x, prof + 1, acc)); return acc; }
+    if (typeof o.url === "string" && /^https?:\/\//i.test(o.url)) acc.push({ titre: String(o.title || o.titre || ""), url: o.url });
+    for (const [k, v] of Object.entries(o)) if (k !== "url" && v && typeof v === "object") adresses(v, prof + 1, acc);
+    return acc;
+  };
+  const vus = new Set();
   const sources = [
-    ...sorties.filter((o) => o.type === "search_results").flatMap((o) => o.results || [])
-      .map((s) => ({ titre: s.title || "", url: s.url || "" })),
-    ...morceaux.flatMap((c) => c.annotations || []).filter((a) => a && a.url)
-      .map((a) => ({ titre: a.title || "", url: a.url }))
-  ];
+    ...adresses(sorties.filter((o) => o.type === "search_results" || o.type === "fetch_url_results")),
+    ...adresses(morceaux.map((c) => c.annotations || []))
+  ].filter((x) => !vus.has(x.url) && vus.add(x.url));
   const cout = j.usage && j.usage.cost && typeof j.usage.cost.total_cost === "number" ? j.usage.cost.total_cost : null;
   return { ok: true, statut: r.status, forme: forme(j), texte, sources, cout, modele: j.effort || j.model || EFFORT };
 }
