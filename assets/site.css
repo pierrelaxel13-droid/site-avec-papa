@@ -3936,3 +3936,15 @@ a.puce-fixe { text-decoration: none; color: inherit; }
   .cs-compteurs { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .6rem; }
   .cs-compteurs .grand { font-size: 1.6rem; }
 }
+.cs-liens { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: .35rem; justify-content: flex-end; }
+.cs-liens a {
+  display: inline-block; padding: .25rem .65rem; border: 1px solid var(--filet-fort); border-radius: 6px;
+  font-size: .8rem; color: var(--encre); text-decoration: none; white-space: nowrap; background: var(--carte);
+}
+.cs-liens a:hover { border-color: var(--accent); color: var(--accent-fonce); }
+.cs-tableau thead th:last-child { text-align: right; }
+@media (max-width: 47.99rem) {
+  .cs-liens { justify-content: flex-start; }
+  .cs-liens a { white-space: normal; }
+}
+.bandeau-consultant .choix-client { margin: 0 .2rem; padding: .15rem .4rem; border: 1px solid var(--filet-fort); border-radius: 6px; background: var(--carte); color: var(--encre); font: inherit; font-size: .9em; }

@@ -3059,7 +3059,7 @@ function pageConsultants() {
         <p class="prix"><span class="grand">${esc(eur(p.mois))}</span> <span class="etiq">par client et par mois</span></p>
         <ul class="formule-donne">
           <li>La formule ${esc(direct.l)} pour chaque client</li>
-          <li>La vue consultant : tous vos clients, et leurs retards</li>
+          <li>L'espace consultant : le tableau de bord de tous vos clients (textes non lus, conformité, avancement du plan d'actions)</li>
           <li>${p.blanche ? "Votre marque : logo, nom, couleurs, exports PDF (en préparation)" : "Sans marque blanche (dès 6 clients)"}</li>
         </ul>
       </article>`).join("\n      ")}
@@ -4099,7 +4099,36 @@ function pageAbonnement(V) {
   </div>
 </section>
 
-<section class="section section-tein" id="essayer">
+${SITE.offreConsultant ? (() => {
+  // L'offre consultant (3 novembre 2026, demandé par Axel) : la même grille
+  // que consultants.html. Pas de paiement en ligne pour elle : l'abonnement
+  // s'ouvre sur demande, et la carte le dit.
+  const O = OFFRE_CONSULTANT, direct = FORMULES[O.equivalent];
+  return `<section class="section section-tein" id="consultants">
+  <div class="enveloppe">
+    <h2 class="titre-section">Offre consultant</h2>
+    <p class="intro titre-section">Pour les consultants QSE qui suivent plusieurs entreprises : un prix par client et par mois,
+    dégressif. Chaque client reçoit la formule « ${esc(direct.carte || direct.l)} ».</p>
+    <div class="formules">
+      ${O.paliers.map((p, k) => `<article class="formule${k === 1 ? " mise-en-avant" : ""}" data-paraitre>
+        <span class="etiq nom-offre">${p.a ? `De ${p.de} à ${p.a} clients` : `${p.de} clients et plus`}</span>
+        <p class="prix"><span class="grand">${esc(eur(p.mois))}</span> <span class="etiq">par client et par mois</span></p>
+        <ul class="formule-donne">
+          <li>La veille, le plan d'actions et le registre de conformité de chaque client</li>
+          <li>L'espace consultant : le tableau de bord de tous vos clients (textes non lus, conformité, avancement du plan d'actions)</li>
+          <li>${p.blanche ? "Votre marque : logo, nom, couleurs (en préparation)" : "Sans marque blanche (dès 6 clients)"}</li>
+        </ul>
+        <a class="bouton ${k === 1 ? "bouton-accent" : "bouton-sobre"}" href="compte/creer.html?type=cabinet">Créer mon compte consultant</a>
+        <a class="lien-mois" href="demo/cabinet.html">Voir la démonstration</a>
+      </article>`).join("\n      ")}
+    </div>
+    <p class="note-source" style="margin-top:var(--t4)">L'abonnement consultant s'ouvre sur demande, après la création de votre compte :
+    le paiement en ligne n'est pas encore disponible pour cette offre. <a href="consultants.html">Tout savoir sur l'offre consultant</a>.</p>
+  </div>
+</section>
+`;
+})() : ""}
+<section class="section" id="essayer">
   <div class="enveloppe">
     <h2 class="titre-section">Démarrer une démonstration gratuite</h2>
 
@@ -4543,7 +4572,7 @@ function tableauConsultant(lignes = "") {
     </dl>
     <div class="cs-cadre">
       <table class="cs-tableau">
-        <thead><tr><th scope="col">Société</th><th scope="col">Textes non lus</th><th scope="col">Conformité réglementaire</th><th scope="col">Avancement du plan d'actions</th><th scope="col"><span class="cache-visuellement">Ouvrir</span></th></tr></thead>
+        <thead><tr><th scope="col">Société</th><th scope="col">Textes non lus</th><th scope="col">Conformité réglementaire</th><th scope="col">Avancement du plan d'actions</th><th scope="col">Ouvrir le compte</th></tr></thead>
         <tbody id="cs-lignes">${lignes}</tbody>
       </table>
     </div>`;
@@ -4672,7 +4701,8 @@ function pageCabinetDemo(V, D) {
       <td data-titre="Textes non lus"><span class="cs-nombre${c.non_lus ? " cs-attention" : ""}">${c.non_lus}</span><span class="cs-detail">sur ${c.textes} textes</span></td>
       <td data-titre="Conformité réglementaire">${barreCs(pct(c.conformes, c.textes))}</td>
       <td data-titre="Avancement du plan d'actions"${c.actions_en_retard ? ' class="cs-retard"' : ""}>${barreCs(pct(c.actions_faites, eng), eng ? `${c.actions_faites} sur ${eng}${c.actions_en_retard ? ` · ${c.actions_en_retard} en retard` : ""}` : "Aucune action engagée")}</td>
-      <td class="cs-ouvrir">${c.vidal ? `<a class="bouton bouton-sobre" href="index.html" data-demo-consultant="${esc(C.nom)}" data-demo-client="${esc(E.nom)}">Ouvrir</a>` : ""}</td></tr>`;
+      <td class="cs-ouvrir">${c.vidal ? `<ul class="cs-liens">${[["plan.html", "Veille réglementaire"], ["actions.html", "Plan d'actions"], ["conformite.html", "Registre de conformité"]]
+        .map(([u, l]) => `<li><a href="${u}" data-demo-consultant="${esc(C.nom)}" data-demo-client="${esc(E.nom)}">${l}</a></li>`).join("")}</ul>` : '<span class="cs-detail">Démonstration : seul Maçonnerie Vidal s\'ouvre</span>'}</td></tr>`;
   }).join("");
   const somme = (k) => vus.reduce((t, c) => t + (c[k] || 0), 0);
   const moyConf = Math.round(vus.reduce((t, c) => t + pct(c.conformes, c.textes), 0) / vus.length);

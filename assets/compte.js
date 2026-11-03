@@ -751,11 +751,18 @@
         }
         var tdo = mk("td", "cs-ouvrir");
         if (c.acces && cabinet.actif) {
-          var o = mk("a", "bouton bouton-sobre", "Ouvrir");
-          o.href = vers("app/index.html");
-          o.setAttribute("aria-label", "Ouvrir l'espace de " + c.denomination);
-          o.addEventListener("click", function () { V.choisir(c.id); });
-          tdo.appendChild(o);
+          // Ouvrir le compte du client, directement sur l'écran voulu.
+          var ul = mk("ul", "cs-liens");
+          [["plan.html", "Veille réglementaire"], ["actions.html", "Plan d'actions"], ["conformite.html", "Registre de conformité"]].forEach(function (x) {
+            var li = mk("li"), o = mk("a", "", x[1]);
+            o.href = vers("app/" + x[0]);
+            o.setAttribute("aria-label", x[1] + " de " + c.denomination);
+            o.addEventListener("click", function () { V.choisir(c.id); });
+            li.appendChild(o); ul.appendChild(li);
+          });
+          tdo.appendChild(ul);
+        } else if (c.acces) {
+          tdo.appendChild(mk("span", "cs-detail", "S'ouvre avec votre abonnement"));
         }
         tr.appendChild(tdo);
         corps.appendChild(tr);

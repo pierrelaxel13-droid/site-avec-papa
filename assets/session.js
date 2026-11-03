@@ -194,7 +194,7 @@
             }
           });
         }
-        consultant(e);
+        consultant(e, r.acces);
         if (!e.rang && e.role === "consultant") {
           sansFormule("L'abonnement de votre cabinet n'est pas encore ouvert",
             "L'espace de « " + e.denomination + " » s'ouvre avec lui. Votre page cabinet dit comment l'ouvrir.",
@@ -246,18 +246,37 @@
 
   /* Chez un client, le consultant le voit en haut de chaque écran : de qui
      est cet espace, et le chemin du retour vers son cabinet. */
-  function consultant(e) {
+  /* 3 novembre 2026 : un sélecteur passe d'un client à l'autre sans repasser
+     par l'espace consultant ; on reste sur le même écran. */
+  function consultant(e, acces) {
     var vrai = document.querySelector('.bandeau-demo[data-mode="compte"]');
     if (!vrai || e.role !== "consultant") return;
     vrai.textContent = "";
+    var clients = (acces || []).filter(function (x) { return x.role === "consultant"; });
     var fort = document.createElement("strong");
-    fort.textContent = "Espace de « " + e.denomination + " ».";
+    fort.textContent = "Espace consultant" + (e.cabinet ? " — " + e.cabinet : "") + ".";
     vrai.appendChild(fort);
-    vrai.appendChild(document.createTextNode(" Vous y êtes en tant que consultant" +
-      (e.cabinet ? " (" + e.cabinet + ")" : "") + " : ce que vous cochez entre à son registre, à votre nom. "));
+    vrai.appendChild(document.createTextNode(" "));
+    if (clients.length > 1) {
+      var lab = document.createElement("label");
+      lab.htmlFor = "choix-client"; lab.textContent = "Client : ";
+      var sel = document.createElement("select");
+      sel.id = "choix-client"; sel.className = "choix-client";
+      clients.forEach(function (x) {
+        var o = document.createElement("option");
+        o.value = x.entreprise_id; o.textContent = x.denomination;
+        if (x.entreprise_id === e.entreprise_id) o.selected = true;
+        sel.appendChild(o);
+      });
+      sel.addEventListener("change", function () { window.VIGIE.choisir(sel.value); window.location.reload(); });
+      vrai.appendChild(lab); vrai.appendChild(sel);
+    } else {
+      vrai.appendChild(document.createTextNode("Client : « " + e.denomination + " »."));
+    }
+    vrai.appendChild(document.createTextNode(" Ce que vous enregistrez entre à son registre, à votre nom. "));
     var retour = document.createElement("a");
     retour.href = racine + "compte/cabinet.html";
-    retour.textContent = "Revenir à mon cabinet";
+    retour.textContent = "Revenir au tableau de bord des clients";
     vrai.appendChild(retour);
     vrai.classList.add("bandeau-consultant");
   }
