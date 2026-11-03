@@ -503,6 +503,37 @@ select tests.refuse($$select public.espace_action_faite('00000000-0000-0000-0000
   (select max(id) from public.registre))$$, 'ni de clôture chez une autre entreprise');
 reset role;
 
+-- 11 quater. Le plan d'actions : délai, responsable, replanifier, valider
+select tests.qui('00000000-0000-0000-0000-0000000000a1', 'a_admin@test.fr');
+set local role authenticated;
+select set_config('tests.pa', public.espace_action('00000000-0000-0000-0000-00000000a000', 'actions:ref:essai:x1',
+  'Mettre à jour le DUERP — Code du travail', current_date + 30, 'Responsable : Karim')::text, true);
+select set_config('tests.pa2', public.espace_action_modifier('00000000-0000-0000-0000-00000000a000', current_setting('tests.pa')::bigint,
+  current_date + 60, 'Responsable : Léa')::text, true);
+select tests.ok((select count(*) = 1 from json_array_elements(public.espace_lire('00000000-0000-0000-0000-00000000a000') -> 'actions') a
+                 where a ->> 'cle' = 'actions:ref:essai:x1' and a ->> 'echeance' = (current_date + 60)::text and a ->> 'note' = 'Responsable : Léa'),
+  'replanifier : une seule action ouverte, avec le nouveau délai et le nouveau responsable');
+select tests.ok(tests.compte($$select 1 from public.registre where cle = 'actions:ref:essai:x1' and genre = 'correction'$$) = 1,
+  'et la première reste au registre, corrigée');
+select tests.refuse($$select public.espace_action_modifier('00000000-0000-0000-0000-00000000a000', current_setting('tests.pa')::bigint, current_date, null)$$,
+  'on ne replanifie pas une action déjà replanifiée');
+select public.espace_action_faite('00000000-0000-0000-0000-00000000a000', current_setting('tests.pa2')::bigint);
+select tests.ok((select count(*) = 1 from json_array_elements(public.espace_lire('00000000-0000-0000-0000-00000000a000') -> 'actions_faites') a
+                 where a ->> 'cle' = 'actions:ref:essai:x1' and a ->> 'faite_le' = current_date::text and a ->> 'note' = 'Responsable : Léa'),
+  'valider : l''action est dans les actions faites, datée, avec son responsable');
+select tests.refuse($$select public.espace_action_modifier('00000000-0000-0000-0000-00000000a000', current_setting('tests.pa2')::bigint, current_date, null)$$,
+  'on ne replanifie pas une action faite');
+reset role;
+select tests.qui('00000000-0000-0000-0000-0000000000a2', 'a_lecteur@test.fr');
+set local role authenticated;
+select tests.refuse($$select public.espace_action_modifier('00000000-0000-0000-0000-00000000a000', 1, current_date, null)$$, 'un lecteur ne replanifie pas');
+reset role;
+select tests.qui('00000000-0000-0000-0000-0000000000b1', 'b_admin@test.fr');
+set local role authenticated;
+select tests.refuse($$select public.espace_action_modifier('00000000-0000-0000-0000-00000000a000', current_setting('tests.pa2')::bigint, current_date, null)$$,
+  'ni chez une autre entreprise');
+reset role;
+
 -- 11 bis. L'évaluation de conformité (formule Veille complète)
 select tests.qui('00000000-0000-0000-0000-0000000000a1', 'a_admin@test.fr');
 set local role authenticated;

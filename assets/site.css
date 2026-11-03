@@ -3615,3 +3615,28 @@ a.puce-fixe { text-decoration: none; color: inherit; }
   .zone-app .bandeau .menu { gap: .1rem; }
   .zone-app .bandeau .menu a { padding: .45rem .55rem; font-size: .86rem; }
 }
+
+/* --- Plan d'actions (3 novembre 2026) ------------------------------------- */
+.tableau-actions input { width: 100%; min-width: 0; font: inherit; font-size: .88rem; color: var(--encre);
+  background: var(--carte); border: 1px solid var(--filet-fort); border-radius: var(--r1); padding: .35rem .5rem; }
+.tableau-actions input:disabled { opacity: .75; background: transparent; }
+.tableau-actions .pa-etat { display: block; margin-bottom: .35rem; }
+.tableau-actions .pa-boutons { display: flex; flex-wrap: wrap; gap: .35rem; }
+.tableau-actions .bouton { font-size: .82rem; padding: .35rem .75rem; min-height: 0; }
+.tableau-actions tr[data-etat="faite"] td { background: var(--vert-fond); }
+.tableau-actions tr[data-etat="faite"] .pa-etat { color: var(--vert); font-weight: 600; }
+.tableau-actions tr[data-etat="retard"] .pa-etat { color: var(--ambre); font-weight: 600; }
+@media (min-width: 48rem) {
+  .tableau-actions td:nth-child(1) { width: 8.5rem; }
+  .tableau-actions td:nth-child(2) { width: 30%; }
+  .tableau-actions td:nth-child(3) { width: 20%; }
+  .tableau-actions td:nth-child(4) { width: 9.5rem; }
+  .tableau-actions td:nth-child(5) { width: 9rem; }
+  .tableau-actions td:nth-child(6) { width: 11rem; }
+}
+.pa-compteurs .conf-vert { border-color: var(--vert); background: var(--vert-fond); }
+.pa-compteurs .conf-vert .grand { color: var(--vert); }
+@media (max-width: 47.99rem) {
+  .tableau-actions tr[data-etat="faite"] { background: var(--vert-fond); border-color: var(--vert); }
+  .tableau-actions tr[data-etat="faite"] td { background: none; }
+}

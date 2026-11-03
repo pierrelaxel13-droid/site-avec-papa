@@ -122,6 +122,58 @@
     });
   };
 
+  /* Le plan d'actions (3 novembre 2026) : une action par clé « actions:… »,
+     avec son délai (échéance), son responsable et sa validation. Dans un
+     compte, ce sont des actions du registre ; dans la démonstration, le
+     navigateur. Rend { clé: { etat, id, echeance, responsable, faite_le, par } }. */
+  function responsableDe(note) { var m = /Responsable : (.*)/.exec(note || ""); return m ? m[1].trim() : ""; }
+  function noteDe(responsable) { return responsable ? "Responsable : " + responsable : null; }
+  M.planActions = function () {
+    if (!compte) return local("pco-plan-actions") || {};
+    var t = {};
+    (memoire.actionsFaites || []).forEach(function (a) {
+      t[a.cle] = { etat: "faite", id: a.id, echeance: a.echeance, responsable: responsableDe(a.note), faite_le: a.faite_le, par: a.par };
+    });
+    (memoire.actions || []).forEach(function (a) {
+      if (String(a.cle || "").indexOf("actions:") !== 0 || t[a.cle]) return;
+      t[a.cle] = { etat: "ouverte", id: a.id, echeance: a.echeance, responsable: responsableDe(a.note) };
+    });
+    return t;
+  };
+  M.planEnregistrer = function (cle, objet, echeance, responsable) {
+    if (!compte) {
+      var tout = local("pco-plan-actions") || {};
+      tout[cle] = { etat: "ouverte", echeance: echeance, responsable: responsable || "" };
+      return Promise.resolve(poserLocal("pco-plan-actions", tout) ? { ok: true } : { erreur: REFUS });
+    }
+    var deja = M.planActions()[cle];
+    if (deja && deja.etat === "ouverte") {
+      return V.rpc("espace_action_modifier", { e: M.espace.id, action: deja.id, echeance: echeance, note: noteDe(responsable) })
+        .then(function (r) {
+          if (!r.ok) return r;
+          memoire.actions = (memoire.actions || []).filter(function (a) { return a.id !== deja.id; });
+          memoire.actions.push({ id: r.donnees, cle: cle, objet: objet, echeance: echeance, note: noteDe(responsable) });
+          return { ok: true };
+        });
+    }
+    return M.ouvrirAction(cle, objet, echeance, noteDe(responsable));
+  };
+  M.planValider = function (cle) {
+    var a = M.planActions()[cle];
+    if (!a || a.etat !== "ouverte") return Promise.resolve({ erreur: "Donnez d'abord un délai à cette action." });
+    if (!compte) {
+      var tout = local("pco-plan-actions") || {};
+      tout[cle] = { etat: "faite", echeance: a.echeance, responsable: a.responsable, faite_le: aujourdhui(), par: "vous" };
+      return Promise.resolve(poserLocal("pco-plan-actions", tout) ? { ok: true } : { erreur: REFUS });
+    }
+    return M.actionFaite(a.id).then(function (r) {
+      if (!r.ok) return r;
+      (memoire.actionsFaites = memoire.actionsFaites || []).push({ id: a.id, cle: cle, echeance: a.echeance,
+        note: noteDe(a.responsable), faite_le: aujourdhui(), par: (V.utilisateur() || {}).courriel || "" });
+      return { ok: true };
+    });
+  };
+
   /* L'évaluation de conformité (formule Veille complète) : dans un compte, une
      entrée du registre par évaluation ; dans la démonstration, le navigateur. */
   M.conformites = function () { return compte ? (copie(memoire.conformites) || {}) : (local("pco-conformite") || {}); };
@@ -175,6 +227,7 @@
           memoire.qualifications = d.qualifications || {};
           memoire.actions = d.actions || [];
           memoire.conformites = d.conformites || {};
+          memoire.actionsFaites = d.actions_faites || [];
           document.body.classList.add("espace-compte");
           ouvrir();
         });

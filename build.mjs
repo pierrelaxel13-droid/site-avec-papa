@@ -1014,20 +1014,104 @@ function tableauTextesPlan(V, C, LIENS, plan, JO) {
    (assets/conformite.js, espace_conformite). Les lignes portent leurs sujets
    (data-domaines) : la page suit le plan des réglages, comme Mon plan. */
 /* --- Plan d'actions (3 novembre 2026, demandé par Axel) ----------------------
-   L'onglet existe ; son contenu viendra (Axel le précisera). Formule
-   « Textes et suivi » et au-dessus : c'est elle qui donne le plan d'actions. */
-function appActions(D) {
+   Une ligne par action : la date du texte, le texte de référence (avec son
+   lien), l'action qui en découle, le délai de réalisation, le responsable, et
+   la validation. Les textes sont ceux du plan (référentiel et relevé), les
+   actions celles de leurs sujets (« Ce que vous devez faire »). Chaque ligne
+   porte son sujet (data-domaines) : assets/plan-actions.js n'y garde que le
+   plan de l'entreprise, enregistre délai et responsable, et valide — au
+   registre dans un compte. Formule « Textes et suivi » et au-dessus. */
+const cleCourte = (t) => { let h = 5381; for (const c of t) h = ((h * 33) ^ c.charCodeAt(0)) >>> 0; return h.toString(36); };
+function appActions(V, D, C, LIENS, JO = null) {
+  const plan = planDe(V, D.entreprise);
+  const parRef = {};
+  Object.keys(V.domaines).forEach((id) => (V.domaines[id].textes || []).forEach((ref) => {
+    (parRef[ref] = parRef[ref] || []).push(id);
+  }));
+  const textes = [];
+  Object.keys(parRef).forEach((ref) => {
+    const q = dateDuTexte(C, ref), L = lienDuTexte(C, LIENS, ref);
+    textes.push({ ids: parRef[ref], cle: `ref:${slug(ref)}`, titre: ref, date: (q && q.depuis) || "",
+      dateHtml: q && q.depuis ? `<time datetime="${esc(q.depuis)}">${esc(dateFr(q.depuis))}</time><span class="precision">dernière évolution</span>`
+        : `<span class="tenu">texte de référence</span>`,
+      lien: `<a href="texte/${slug(ref)}.html">${esc(ref)}</a><a class="lien-officiel" href="${esc(L.url)}" target="_blank" rel="noopener">${esc(intituleDuLien(L))} ${sortant}</a>` });
+  });
+  ((JO && JO.textes) || []).forEach((t) => {
+    const ids = t.domaines.map((d) => d.id).filter((id) => V.domaines[id]);
+    if (!ids.length) return;
+    const quand = t.dateTexte || t.date;
+    const l = /^https?:\/\//i.test(t.lien || "") ? t.lien : "";
+    textes.push({ ids, cle: cleJO(t), titre: String(t.titre).slice(0, 300), date: quand,
+      dateHtml: `<time datetime="${esc(quand)}">${esc(dateFr(quand))}</time><span class="precision">paru récemment</span>`,
+      lien: `<a href="releve.html#${ancreJO(t)}">${esc(t.titre)}</a>${l ? `<a class="lien-officiel" href="${esc(l)}" target="_blank" rel="noopener">${/legifrance\.gouv\.fr/.test(l) ? "Légifrance" : esc(t.sourceNom || "Voir chez la source")} ${sortant}</a>` : ""}` });
+  });
+  textes.sort((x, y) => (x.date !== y.date ? (x.date < y.date ? 1 : -1) : x.titre.localeCompare(y.titre, "fr")));
+
+  const lignes = [];
+  for (const t of textes) {
+    const vues = new Set();
+    for (const id of t.ids) {
+      for (const action of (V.domaines[id].actions || []).slice(0, 2)) {
+        if (vues.has(action)) continue;
+        vues.add(action);
+        const dans = plan.liste.includes(id);
+        // La base n'accepte que « lettres:[A-Za-z0-9_.:-]{1,160} » (registre.cle).
+        const cle = `actions:${t.cle.replace(/[^A-Za-z0-9_.:-]/g, "-").slice(0, 140)}:${cleCourte(action)}`;
+        lignes.push(`<tr data-domaines="${esc(id)}" data-cle="${esc(cle)}" data-objet="${esc(`${action} — ${t.titre}`.slice(0, 480))}"${dans ? "" : " hidden"}>
+      <td data-titre="Date du texte">${t.dateHtml}</td>
+      <td data-titre="Texte de référence">${t.lien}</td>
+      <td data-titre="Action à mener">${esc(action)}</td>
+      <td data-titre="Délai de réalisation"><input type="date" class="pa-delai" aria-label="Délai : ${esc(action)}"></td>
+      <td data-titre="Responsable"><input type="text" class="pa-resp" maxlength="120" aria-label="Responsable : ${esc(action)}" placeholder="Nom"></td>
+      <td data-titre="Validation"><span class="pa-etat precision"></span>
+        <span class="pa-boutons"><button type="button" class="bouton bouton-sobre pa-enregistrer">Enregistrer</button>
+        <button type="button" class="bouton bouton-accent pa-valider" hidden>Valider l'action</button></span></td>
+    </tr>`);
+      }
+    }
+  }
+
   const corps = enTeteApp(D, "Plan d'actions",
-    "Les actions à mener pour répondre aux exigences réglementaires qui vous concernent.") + `
+    "Les actions qui découlent des textes qui vous concernent : fixez un délai et un responsable, puis validez chaque action une fois réalisée.") + `
 <section class="rubrique">
   <div class="enveloppe">
-    <p class="lecture">Cette page est en préparation.</p>
+    <dl class="compteurs pa-compteurs">
+      <div><dt class="etiq">À planifier</dt><dd><span class="grand" id="pa-n-libre">0</span><span class="precision">sans délai ni responsable</span></dd></div>
+      <div><dt class="etiq">En cours</dt><dd><span class="grand" id="pa-n-ouverte">0</span><span class="precision">avec un délai</span></dd></div>
+      <div><dt class="etiq">En retard</dt><dd><span class="grand" id="pa-n-retard">0</span><span class="precision">délai dépassé</span></dd></div>
+      <div><dt class="etiq">Réalisées</dt><dd><span class="grand" id="pa-n-faite">0</span><span class="precision">validées</span></dd></div>
+    </dl>
+  </div>
+</section>
+
+<section class="rubrique" id="plan-actions">
+  <div class="enveloppe">
+    <div class="filtre-plan">
+      <label for="pa-filtre">Afficher</label>
+      <select id="pa-filtre">
+        <option value="">Toutes les actions</option>
+        <option value="libre">À planifier</option>
+        <option value="ouverte">En cours</option>
+        <option value="retard">En retard</option>
+        <option value="faite">Réalisées</option>
+      </select>
+      <span class="precision" id="pa-compte" role="status"></span>
+    </div>
+    <p class="note-source pa-lecture" hidden></p>
+    <table class="tableau-plan tableau-actions">
+      <thead><tr><th scope="col">Date du texte</th><th scope="col">Texte de référence</th><th scope="col">Action à mener</th>
+        <th scope="col">Délai de réalisation</th><th scope="col">Responsable</th><th scope="col">Validation</th></tr></thead>
+      <tbody>${lignes.join("\n")}</tbody>
+    </table>
+    <p class="note-source">Chaque délai, chaque responsable et chaque validation s'inscrivent, datés, au registre. Les actions
+    proposées viennent des sujets de votre plan ; elles ne constituent pas un conseil juridique.</p>
   </div>
 </section>`;
   return page({
     titre: `Plan d'actions | ${SITE.nom}`,
     description: "Le plan d'actions de votre veille réglementaire.",
-    racine: "../", zone: "app", actif: "actions", corps, verrou: true, formule: "suivi"
+    racine: "../", zone: "app", actif: "actions", corps, verrou: true, formule: "suivi",
+    donneesPlan: true, scripts: ["assets/plan-actions.js"]
   });
 }
 
@@ -4973,7 +5057,7 @@ async function main() {
   await writeFile(join(SORTIE, "app", "index.html"), appTableauBord(V, D, C, LIENS));
   await writeFile(join(SORTIE, "app", "plan.html"), appPlan(V, D, C, LIENS, JO));
   await writeFile(join(SORTIE, "app", "conformite.html"), appConformite(V, D, C, LIENS, JO));
-  await writeFile(join(SORTIE, "app", "actions.html"), appActions(D));
+  await writeFile(join(SORTIE, "app", "actions.html"), appActions(V, D, C, LIENS, JO));
   await writeFile(join(SORTIE, "app", "releve.html"), appReleve(V, D, JO, C, LIENS, SOURCES));
   await writeFile(join(SORTIE, "app", "registre.html"), appRegistre());
   await writeFile(join(SORTIE, "app", "secteurs.html"), appSecteurs(V, METIERS, NAF));

@@ -131,8 +131,8 @@
         carre(false, "releve.html", "Textes publiés", nb(c && c.publies), "ces 14 derniers jours", "Voir le relevé") +
         carre(false, "releve.html", "Textes applicables", nb(c && c.applicables), "touchent votre plan", "Voir le relevé") +
         carre(false, "releve.html", "Textes lus", nb(c && c.lus), c ? "sur " + c.applicables + " applicables" : "", "Voir le relevé") +
-        carre(retard, "#bord-actions", "Actions à réaliser", ouv.length,
-          retard ? "dont " + retard + " en retard" : "", "Voir les actions") +
+        carre(retard, "actions.html", "Actions à réaliser", ouv.length,
+          retard ? "dont " + retard + " en retard" : "", "Voir le plan d'actions") +
         "</dl>";
     })());
     /* « Textes en attente » (3 novembre 2026) : par sujet du plan, le nombre de
