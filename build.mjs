@@ -732,19 +732,6 @@ function appTableauBord(V, D, C, LIENS) {
   const fiche = ficheDeLEntreprise(V, D);
   const corps = enTeteApp(D, "Tableau de bord",
     "Ce qui attend une décision, ce qui arrive, et ce qui est en retard.", fiche) + `
-<!-- Les nouveaux textes du plan, pas encore ouverts : rempli par assets/avis.js. -->
-<section class="rubrique bord-nouveaux" id="bord-nouveaux" hidden>
-  <div class="enveloppe">
-    <h2 id="bord-nouveaux-titre">Nouveaux textes</h2>
-    <p class="lecture">Parus depuis le début de votre suivi, dans les sujets de votre plan, et que vous n'avez pas
-    encore ouverts.</p>
-    <ul class="liste-nouveaux" id="bord-nouveaux-liste"></ul>
-    <p class="rangee" style="margin-top:var(--t4)">
-      <a class="bouton bouton-accent" href="releve.html">Voir le relevé</a>
-      <button type="button" class="bouton bouton-sobre" id="bord-tout-lu">Tout marquer comme lu</button>
-    </p>
-  </div>
-</section>
 <!-- Le jeu d'essai : caché dans un vrai compte (assets/espace.js montre le vrai). -->
 <div data-demo>
 
@@ -1902,7 +1889,8 @@ ${C ? rubrique({ etiq: "Ce qui a changé dans les codes", id: "codes-changements
   return page({
     titre: `Relevé des textes | ${SITE.nom}`,
     description: "Les textes parus qui vous concernent.",
-    racine: "../", zone: "app", actif: "releve", corps, verrou: true, formule: "textes", donneesPlan: true
+    racine: "../", zone: "app", actif: "releve", corps, verrou: true, formule: "textes", donneesPlan: true,
+    attrsBody: ' data-page="releve"'
   });
 }
 

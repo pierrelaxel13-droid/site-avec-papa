@@ -3382,3 +3382,14 @@ a.puce-fixe { text-decoration: none; color: inherit; }
   .tableau-conformite td:nth-child(2) { width: 10rem; }
   .tableau-conformite td:nth-child(3) { width: 14rem; }
 }
+
+/* Relevé : le texte courant justifié (3 novembre 2026), même règle que les
+   pages publiques — justifié dès 40 rem, aligné à gauche au téléphone. */
+@media (min-width: 40rem) {
+  [data-page="releve"] main .lecture, [data-page="releve"] main .note-source,
+  [data-page="releve"] .ligne-releve .quoi, [data-page="releve"] .texte-officiel,
+  [data-page="releve"] .encart p, [data-page="releve"] .encart li,
+  [data-page="releve"] .texte-ia p, [data-page="releve"] .texte-ia li {
+    text-align: justify; hyphens: auto;
+  }
+}
