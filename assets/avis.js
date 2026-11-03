@@ -71,7 +71,8 @@
     // « lus » au tableau de bord, même s'ils étaient là avant le début du suivi.
     var encore = {};
     tous.forEach(function (a) { encore[a.k] = 1; });
-    lus.ids = lus.ids.filter(function (k) { return encore[k]; });
+    // Les textes de référence (« ref:… », Mon plan) ne passent pas au relevé : on les garde.
+    lus.ids = lus.ids.filter(function (k) { return encore[k] || k.indexOf("ref:") === 0; });
     var quand = {};
     lus.ids.forEach(function (k) { if (lus.quand[k]) quand[k] = lus.quand[k]; });
     lus.quand = quand;
@@ -128,6 +129,22 @@
       return Object.keys(lus.quand).filter(function (k) { return parCle[k]; })
         .map(function (k) { return { k: k, t: parCle[k].t, u: parCle[k].u, le: lus.quand[k] }; })
         .sort(function (x, y) { return x.le < y.le ? 1 : -1; });
+    },
+    /* La colonne « Lu » de Mon plan (3 novembre 2026) : lu ou non, nouveau
+       ou non (même règle que la cloche : vu après le début du suivi, pas lu). */
+    estLu: function (k) { return lus.ids.indexOf(k) !== -1; },
+    estNouveau: function (k) {
+      if (lus.ids.indexOf(k) !== -1) return false;
+      for (var i = 0; i < tous.length; i++) if (tous[i].k === k) return tous[i].v > lus.depuis;
+      return false;
+    },
+    marquerLu: function (k, lu) {
+      var i = lus.ids.indexOf(k);
+      if (lu && i === -1) { lus.ids.push(k); lus.quand[k] = maintenant(); }
+      if (!lu && i !== -1) { lus.ids.splice(i, 1); delete lus.quand[k]; }
+      var r = garder();
+      rendre();
+      return r;
     },
     /* Les textes applicables pas encore ouverts, du plus récent au plus ancien. */
     enAttente: function () {
@@ -239,6 +256,8 @@
     rendreCloche(neufs);
     rendreReleve(neufs);
     rendreBord(neufs);
+    // Les autres écrans (la colonne « Lu » de Mon plan) se repeignent sur cet événement.
+    try { window.dispatchEvent(new Event("pco-lus")); } catch (e) { /* vieux navigateur */ }
   }
 
   /* Une ligne du relevé visée par l'adresse (#t-…) s'ouvre : c'est là que

@@ -3640,3 +3640,12 @@ a.puce-fixe { text-decoration: none; color: inherit; }
   .tableau-actions tr[data-etat="faite"] { background: var(--vert-fond); border-color: var(--vert); }
   .tableau-actions tr[data-etat="faite"] td { background: none; }
 }
+
+/* Mon plan : la colonne « Lu », la mention « Nouveau texte » (3 novembre 2026). */
+.case-lu { display: inline-flex; align-items: center; gap: .35rem; font-size: .85rem; color: var(--encre-douce); cursor: pointer; white-space: nowrap; }
+.case-lu input { width: 1.05rem; height: 1.05rem; accent-color: var(--vert); margin: 0; }
+.tableau-plan tr.texte-lu .case-lu { color: var(--vert); font-weight: 600; }
+.tableau-plan .marque-nouveau { display: inline-block; margin: 0 .4rem .3rem 0; vertical-align: middle; }
+.tableau-plan .marque-nouveau[hidden] { display: none; }
+.textes-attente { margin: 0 0 var(--t3); font-weight: 500; color: var(--encre); }
+.textes-attente:empty { display: none; }

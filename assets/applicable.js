@@ -71,6 +71,50 @@
         });
       });
     });
+    lus();
     filtrer();
   });
+
+  /* --- La colonne « Lu » et la mention « Nouveau texte » (3 novembre 2026) --
+     Même mémoire que la cloche (assets/avis.js) : cocher, c'est avoir lu ;
+     décocher, c'est le remettre en attente. Le nombre de textes du plan pas
+     encore lus est dit sous le titre. */
+  var A = window.PCO_AVIS;
+  function attente() {
+    var n = 0;
+    lignes.forEach(function (tr) {
+      var c = tr.querySelector(".lu");
+      if (c && !tr.hidden && !c.checked) n++;
+    });
+    var p = document.getElementById("textes-attente");
+    if (p) p.textContent = n ? "Vous avez " + n + " texte" + (n > 1 ? "s" : "") + " en attente de lecture : cochez « Lu » une fois pris connaissance."
+      : "Vous avez pris connaissance de tous les textes de votre plan.";
+  }
+  function peindreLu(tr) {
+    var c = tr.querySelector(".lu"), k = tr.getAttribute("data-cle");
+    if (!c || !A || !A.estLu) return;
+    c.checked = A.estLu(k);
+    tr.classList.toggle("texte-lu", c.checked);
+    var m = tr.querySelector(".marque-nouveau");
+    if (m) m.hidden = !A.estNouveau(k);
+  }
+  function lus() {
+    lignes.forEach(function (tr) {
+      var c = tr.querySelector(".lu");
+      if (!c) return;
+      peindreLu(tr);
+      if (c.hasAttribute("data-ecoute")) return;
+      c.setAttribute("data-ecoute", "");
+      c.addEventListener("change", function () {
+        A.marquerLu(tr.getAttribute("data-cle"), c.checked);
+        peindreLu(tr); attente();
+      });
+    });
+    attente();
+  }
+  window.addEventListener("pco-plan", function () { if (M.pret) attente(); });
+  // La cloche a chargé (ou changé) les textes lus : on repeint la colonne.
+  window.addEventListener("pco-lus", function () { if (M.pret) lus(); });
+  // Et une fois la page entièrement chargée, quel que soit l'ordre des scripts.
+  window.addEventListener("load", function () { M.quandPret(function () { window.setTimeout(lus, 0); }); });
 })();

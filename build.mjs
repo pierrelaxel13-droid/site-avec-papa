@@ -963,6 +963,7 @@ function tableauTextesPlan(V, C, LIENS, plan, JO) {
       <td data-titre="Catégorie">${categorie(ids)}</td>
       <td data-titre="Référence et lien"><a href="texte/${slug(ref)}.html">${esc(ref)}</a>
         <a class="lien-officiel" href="${esc(L.url)}" target="_blank" rel="noopener">${esc(intituleDuLien(L))} ${sortant}</a></td>
+      <td data-titre="Lu"><label class="case-lu"><input type="checkbox" class="lu" aria-label="Texte lu"><span>Lu</span></label></td>
       <td data-titre="Applicable"><select class="applicable" aria-label="Ce texte est-il applicable ?"><option value="">À décider</option><option value="applicable">Oui</option><option value="sans_objet">Non</option></select><span class="precision applicable-etat"></span></td>
       <td data-titre="Actions à déclencher">${actionsDe(ids)}</td>
     </tr>` };
@@ -976,8 +977,9 @@ function tableauTextesPlan(V, C, LIENS, plan, JO) {
     return { ids, date: quand, ordre: t.titre, html: (dans) => `<tr data-domaines="${esc(ids.join(" "))}" data-cle="${esc(cleJO(t))}" data-objet="${esc(String(t.titre).slice(0, 480))}"${dans ? "" : " hidden"}>
       <td data-titre="Date"><time datetime="${esc(quand)}">${esc(dateFr(quand))}</time><span class="precision">paru récemment</span></td>
       <td data-titre="Catégorie">${categorie(ids)}</td>
-      <td data-titre="Référence et lien"><a href="releve.html#${ancreJO(t)}">${esc(t.titre)}</a>
+      <td data-titre="Référence et lien"><span class="marque-neuf marque-nouveau" hidden>Nouveau texte</span><a href="releve.html#${ancreJO(t)}">${esc(t.titre)}</a>
         ${lien ? `<a class="lien-officiel" href="${esc(lien)}" target="_blank" rel="noopener">${/legifrance\.gouv\.fr/.test(lien) ? "Légifrance" : esc(t.sourceNom || "Voir chez la source")} ${sortant}</a>` : ""}</td>
+      <td data-titre="Lu"><label class="case-lu"><input type="checkbox" class="lu" aria-label="Texte lu"><span>Lu</span></label></td>
       <td data-titre="Applicable"><select class="applicable" aria-label="Ce texte est-il applicable ?"><option value="">À décider</option><option value="applicable">Oui</option><option value="sans_objet">Non</option></select><span class="precision applicable-etat"></span></td>
       <td data-titre="Actions à déclencher">${actionsDe(ids)}</td>
     </tr>` };
@@ -988,7 +990,8 @@ function tableauTextesPlan(V, C, LIENS, plan, JO) {
   if (!toutes.length) return "";
   return `<section class="rubrique" id="textes-du-plan">
   <div class="enveloppe">
-    <h2>Les textes de votre plan</h2>
+    <h2>Les textes de votre plan de veille réglementaire</h2>
+    <p class="lecture textes-attente" id="textes-attente" role="status"></p>
     <div class="filtre-plan">
       <label for="filtre-categorie">Catégorie</label>
       <select id="filtre-categorie">
@@ -999,7 +1002,7 @@ function tableauTextesPlan(V, C, LIENS, plan, JO) {
     </div>
     <div class="defile-tableau">
     <table class="tableau-plan tableau-textes-plan">
-      <thead><tr><th scope="col">Date</th><th scope="col">Catégorie</th><th scope="col">Référence et lien</th><th scope="col">Applicable</th><th scope="col">Actions à déclencher</th></tr></thead>
+      <thead><tr><th scope="col">Date</th><th scope="col">Catégorie</th><th scope="col">Référence et lien</th><th scope="col">Lu</th><th scope="col">Applicable</th><th scope="col">Actions à déclencher</th></tr></thead>
       <tbody>${toutes.map((x) => x.html(touche(x.ids))).join("\n")}</tbody>
     </table>
     </div>
@@ -1197,7 +1200,7 @@ function appConformite(V, D, C, LIENS, JO = null) {
 
 <section class="rubrique" id="conformite">
   <div class="enveloppe">
-    <h2>Les textes de votre plan</h2>
+    <h2>Les textes de votre plan de veille réglementaire</h2>
     <p class="note-source conf-lecture" hidden></p>
     <div class="filtre-plan">
       <label for="filtre-categorie">Catégorie</label>
@@ -3542,7 +3545,7 @@ ${bandeAvis(AVIS)}
       </div>
       <div class="rail-item" data-paraitre data-compte="${V.declencheurs.length}">
         <span class="chiffre">${V.declencheurs.length}</span>
-        <p class="legende">questions qui permettent de préciser les spécificités de votre structure et d'individualiser la veille</p>
+        <p class="legende">questions qui permettent de préciser les spécificités de votre structure et d'individualiser la veille réglementaire</p>
       </div>
       <div class="rail-item" data-paraitre>
         <span class="chiffre">ISO</span>
