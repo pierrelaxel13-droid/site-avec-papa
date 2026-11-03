@@ -153,7 +153,7 @@ async function essai() {
       "décocher ajoute une correction ; rien n'est effacé");
 
     // 6. Le registre, et le tableau de bord.
-    await p.goto(SITE + "app/registre.html"); await pret(p);
+    await p.goto(SITE + "app/conformite.html"); await pret(p);
     await p.waitForFunction(() => /Registre intact/.test(document.querySelector("#registre-chaine")?.textContent || ""), null, { timeout: 30000 });
     ok(await p.locator("#registre-compte .ligne-registre").count() === 3, "registre : 3 entrées (plan, revue, correction), chaîne intacte");
     ok(sql(`select intact from public.verifier_registre(${litteral(e)})`) === "t", "la base confirme : chaîne d'empreintes intacte");
@@ -182,7 +182,7 @@ async function essai() {
     await p.waitForFunction(() => !document.querySelector("#bord-actions"), null, { timeout: 30000 });
     ok(sql(`select count(*) from public.registre where entreprise_id = ${litteral(e)} and genre = 'action' and statut = 'faite'`) === "1",
       "tableau de bord : « C'est fait » clôt l'action au registre");
-    await p.goto(SITE + "app/registre.html"); await pret(p);
+    await p.goto(SITE + "app/conformite.html"); await pret(p);
     await p.waitForFunction(() => /Registre intact/.test(document.querySelector("#registre-chaine")?.textContent || ""), null, { timeout: 30000 });
     const [dl] = await Promise.all([p.waitForEvent("download"), p.click("#registre-csv")]);
     const csv = (await import("node:fs")).readFileSync(await dl.path(), "utf8");

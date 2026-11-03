@@ -43,7 +43,7 @@ const ECRANS = [
   { nom: "bord.png", url: "/demo/index.html" },
   { nom: "plan.png", url: "/demo/plan.html" },
   { nom: "releve.png", url: "/demo/releve.html" },
-  { nom: "registre.png", url: "/demo/registre.html" },
+  { nom: "registre.png", url: "/demo/conformite.html" },
   { nom: "secteurs.png", url: "/demo/secteurs.html" },
   { nom: "reglages.png", url: "/demo/reglages.html" }
 ];

@@ -228,7 +228,7 @@ const MANIFESTE = JSON.stringify({
   shortcuts: [
     { name: "Tableau de bord", url: "./app/index.html" },
     { name: "Relevé des textes", url: "./app/releve.html" },
-    { name: "Registre de preuves", url: "./app/registre.html" }
+    { name: "Registre et conformité", url: "./app/conformite.html" }
   ]
 }, null, 2);
 
@@ -506,7 +506,7 @@ ${piedCourt ? "" : `
           <li><a href="${a("app/index.html")}">Tableau de bord</a></li>
           <li><a href="${a("app/plan.html")}">Ma veille réglementaire</a></li>
           <li><a href="${a("app/releve.html")}">Relevé des textes</a></li>
-          <li><a href="${a("app/registre.html")}">Registre de preuves</a></li>
+          <li><a href="${a("app/conformite.html")}">Registre et conformité réglementaire</a></li>
           <li><a href="${a("app/secteurs.html")}">Fiches par secteur</a></li>
           <li><a href="${a("app/reglages.html")}">Mon entreprise et mes alertes</a></li>
         </ul>
@@ -712,7 +712,7 @@ function enTeteApp(D, titre, chapeau, lienNaf = "") {
       <li><a href="${lienNaf || "secteurs.html"}">NAF <span id="tete-naf">${esc(D.entreprise.nafComplet)}</span></a></li>
       <li><a href="reglages.html" title="Modifier dans Réglages"><span id="tete-ville">${esc(D.entreprise.ville)}</span></a></li>
       <li><a href="reglages.html" title="Modifier dans Réglages"><span id="tete-effectif">${esc(D.entreprise.effectif)}</span> salariés</a></li>
-      <li><a href="registre.html" title="Voir le registre de preuves">Suivi depuis <span id="tete-depuis">${esc(D.entreprise.depuis)}</span></a></li>
+      <li><a href="conformite.html#registre" title="Voir le registre">Suivi depuis <span id="tete-depuis">${esc(D.entreprise.depuis)}</span></a></li>
     </ul>
     <h1>${esc(titre)}</h1>
     ${chapeau ? `<p class="chapeau">${chapeau}</p>` : ""}
@@ -749,7 +749,7 @@ ${rubrique({ etiq: "À traiter", contenu: `
     <div><dt class="etiq">Textes à analyser</dt>
       <dd><span class="grand">${aAnalyser.length}</span>${lienCarte("releve.html", "Voir le relevé des textes")}</dd></div>
     <div><dt class="etiq">Actions ouvertes</dt>
-      <dd><span class="grand">${ouvertes.length}</span>${lienCarte("registre.html", "Voir le registre de preuves")}</dd></div>
+      <dd><span class="grand">${ouvertes.length}</span>${lienCarte("conformite.html#registre", "Voir le registre")}</dd></div>
     <div><dt class="etiq">Textes relevés, 90 jours</dt>
       <dd><span class="grand">${D.releve.length}</span>${lienCarte("releve.html", "Voir le relevé des textes")}</dd></div>
   </dl>` })}
@@ -801,7 +801,7 @@ ${rubrique({ etiq: "Historiques", aplat: true, contenu: `
   <ul class="liste-registre" style="margin-top:var(--t4)">
     ${D.registre.slice(0, 4).map((r) => ligneRegistre(r)).join("")}
   </ul>
-  <p style="margin-top:var(--t4)"><a class="lien-fleche" href="registre.html">Voir tout le registre ${fleche}</a></p>` })}
+  <p style="margin-top:var(--t4)"><a class="lien-fleche" href="conformite.html#registre">Voir tout le registre ${fleche}</a></p>` })}
 </div>
 <div id="bord-compte" data-compte hidden></div>`;
 
@@ -1130,7 +1130,26 @@ function appConformite(V, D, C, LIENS, JO = null) {
     <p class="note-source">L'évaluation est la vôtre : Vigie range les textes et garde la trace de vos décisions.
     Ne constitue pas un conseil juridique : en cas de doute, c'est le texte officiel qui fait foi.</p>
   </div>
-</section>`;
+</section>
+
+<div id="registre">
+<section class="rubrique" data-demo>
+  <div class="enveloppe">
+    <div>
+      <h2>Le registre</h2>
+      <p class="lecture">Les revues faites, les décisions prises, les actions menées et les évaluations de conformité,
+      avec leurs dates. Chronologique, sans trou : une ligne ne se modifie pas après coup, une correction s'ajoute.</p>
+      <ul class="liste-registre" style="margin-top:var(--t4)">
+        ${D.registre.map((r) => ligneRegistre(r)).join("")}
+      </ul>
+      <p class="rangee" style="margin-top:var(--t5)">
+        <button type="button" class="bouton bouton-sobre" data-imprimer>Imprimer le registre</button>
+      </p>
+    </div>
+      </div>
+</section>
+<div id="registre-compte" data-compte hidden></div>
+</div>`;
 
   return page({
     titre: `Registre et conformité réglementaire | ${SITE.nom}`,
@@ -1972,33 +1991,16 @@ ${C ? rubrique({ etiq: "Ce qui a changé dans les codes", id: "codes-changements
 }
 
 /* --- Registre ------------------------------------------------------------------ */
-function appRegistre(V, D) {
-  const ouvertes = D.registre.filter((r) => r.echeance && !r.clos);
-  const corps = enTeteApp(D, "Registre de preuves",
-    "Les revues faites, les décisions prises, les actions menées — avec leurs dates. C'est ce qu'un auditeur demande, et ce qui manque le plus souvent.",
-    ficheDeLEntreprise(V, D)) + `
-<div data-demo>
-${rubrique({ etiq: "Actions ouvertes", contenu: ouvertes.length ? `
-  <ul class="liste-registre">${ouvertes.map((r) => ligneRegistre(r)).join("")}</ul>` :
-  "<p>Aucune action ouverte.</p>" })}
-
-${rubrique({ etiq: "Tout le registre", aplat: true, contenu: `
-  <p class="lecture">Chronologique, sans trou. Une ligne ne se modifie pas après coup :
-  une correction s'ajoute, elle ne remplace pas.</p>
-  <ul class="liste-registre" style="margin-top:var(--t4)">
-    ${D.registre.map((r) => ligneRegistre(r)).join("")}
-  </ul>
-  <p class="rangee" style="margin-top:var(--t5)">
-    <button type="button" class="bouton bouton-sobre" data-imprimer>Imprimer le registre</button>
-  </p>` })}
-</div>
-<div id="registre-compte" data-compte hidden></div>`;
-
-  return page({
-    titre: `Registre de preuves | ${SITE.nom}`,
-    description: "Les traces datées de la veille.",
-    racine: "../", zone: "app", actif: "registre", corps, verrou: true, formule: "complet"
-  });
+function appRegistre() {
+  /* Le registre est désormais en bas de « Registre et conformité réglementaire »
+     (3 novembre 2026) : l'ancienne adresse y renvoie, pour les favoris. */
+  return `<!doctype html>
+<html lang="fr"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="refresh" content="0; url=conformite.html#registre">
+<title>Registre | ${esc(SITE.nom)}</title><meta name="robots" content="noindex"></head>
+<body><p>Le registre est maintenant dans <a href="conformite.html#registre">Registre et conformité réglementaire</a>.</p></body></html>
+`;
 }
 
 /* --- Les 88 fiches ----------------------------------------------------------- */
@@ -4973,7 +4975,7 @@ async function main() {
   await writeFile(join(SORTIE, "app", "conformite.html"), appConformite(V, D, C, LIENS, JO));
   await writeFile(join(SORTIE, "app", "actions.html"), appActions(D));
   await writeFile(join(SORTIE, "app", "releve.html"), appReleve(V, D, JO, C, LIENS, SOURCES));
-  await writeFile(join(SORTIE, "app", "registre.html"), appRegistre(V, D));
+  await writeFile(join(SORTIE, "app", "registre.html"), appRegistre());
   await writeFile(join(SORTIE, "app", "secteurs.html"), appSecteurs(V, METIERS, NAF));
   await writeFile(join(SORTIE, "app", "reglages.html"), appReglages(V, D, NAF, METIERS));
 
