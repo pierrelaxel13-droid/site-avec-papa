@@ -70,6 +70,21 @@ window.SOURCES = [
     url: "https://www.oppbtp.com/actualites/feed/",
     vu: "25 octobre 2026 : trouvé par la recherche de flux, répond avec des entrées datées — 10 entrées, la plus récente du 8 octobre ; l'OPPBTP a quitté preventionbtp.fr pour oppbtp.com" },
 
+  /* --- Intérim : la profession ---------------------------------------------- */
+  /* Ajoutée le 3 novembre 2026, à la demande d'Axel. Prism'emploi est
+     l'organisation professionnelle des entreprises de travail temporaire :
+     ce n'est PAS une source officielle. Ce qu'elle publie est un commentaire
+     de la profession (genre « actualite »), utile pour l'intérim, jamais le
+     droit lui-même. Son flux n'a pas encore été vu depuis une machine qui
+     joint le site : « confirme: false » jusqu'à la recherche de flux
+     (Actions → Relève → Run workflow), qui dira l'adresse exacte. */
+  { id: "prismemploi", nom: "Prism'emploi — organisation professionnelle de l'intérim",
+    type: "rss", genre: "actualite", confirme: false, officielle: false,
+    url: "https://www.prismemploi.eu/feed/",
+    vu: "3 novembre 2026 : ajoutée ; adresse du flux à confirmer par la recherche de flux",
+    pourquoi: "flux à confirmer",
+    note: "Organisation professionnelle, pas une source officielle : ses publications commentent le droit, elles ne le font pas." },
+
   /* --- Social, paie, fiscal ------------------------------------------------ */
   { id: "boss", nom: "BOSS — Bulletin officiel de la Sécurité sociale",
     type: "rss", genre: "actualite", confirme: false,

@@ -140,6 +140,9 @@ const dateFr = (iso) => new Date(iso + "T12:00:00Z")
 /* Les liens de paiement Stripe, lus dans contenu/paiement.js par main(). Vide :
    le bouton ouvre un courriel. */
 let PAIEMENT = {};
+/* Les sources relevées qui ne sont pas officielles (« officielle: false » dans
+   contenu/sources.js, ex. Prism'emploi) : leurs publications le disent. */
+let NON_OFFICIELLES = new Set();
 const lienPaiement = (id, periode) =>
   (id === "portail" ? PAIEMENT.portail : PAIEMENT[id] && PAIEMENT[id][periode]) || "";
 const paiementComplet = () => Object.keys(FORMULES).every((id) => lienPaiement(id, "an") && lienPaiement(id, "mois"));
@@ -1531,7 +1534,7 @@ function ligneJO(V, t, i, releveLe = "") {
         <span class="meta etiq">${esc(t.sourceNom)} · ${esc(noms.join(" · "))}${
           quand !== vu ? ` · relevé le ${esc(dateFr(vu))}` : ""}</span>
       </span>
-      <span class="statut etiq">${droit ? "Texte" : "Publication"}</span>
+      <span class="statut etiq">${droit ? "Texte" : NON_OFFICIELLES.has(t.source) ? "Profession" : "Publication"}</span>
       ${chevron}
     </summary>
     <div class="detail">
@@ -1559,7 +1562,9 @@ function ligneJO(V, t, i, releveLe = "") {
           <p>
             ${esc(t.sourceNom)} — ${droit
               ? "texte officiel de la République française, sous Licence Ouverte."
-              : "publication officielle, reproduite avec sa source et sa date. Ce n'est pas du droit, c'est un commentaire officiel."}
+              : NON_OFFICIELLES.has(t.source)
+                ? "publication d'une organisation professionnelle, non officielle, reproduite avec sa source et sa date. Ce n'est pas du droit : c'est le commentaire de la profession."
+                : "publication officielle, reproduite avec sa source et sa date. Ce n'est pas du droit, c'est un commentaire officiel."}
             ${quand !== vu ? `Texte du ${esc(dateFr(quand))}, relevé le ${esc(dateFr(vu))}`
                            : `Publié le ${esc(dateFr(quand))}`}${
               t.id && !/^http/.test(t.id) ? ` — identifiant ${esc(t.id)}` : ""}.
@@ -1772,7 +1777,7 @@ function aSavoir(titre, contenu) {
 
 /* --- Relevé ------------------------------------------------------------------ */
 function appReleve(V, D, JO, C, LIENS, SOURCES = []) {
-  const confirmees = SOURCES.filter((x) => x.confirme);
+  const confirmees = SOURCES.filter((x) => x.confirme && x.officielle !== false);   // les officielles seulement
   const parStatut = Object.keys(STATUTS).map((s) => ({
     s, l: STATUTS[s].l, n: D.releve.filter((t) => t.statut === s).length
   }));
@@ -2678,7 +2683,7 @@ function vitrine(ECRANS, { image, alt, titre, texte, bouton = "", lien = "" }) {
 /* Les encarts des deux pages « En savoir plus ». Chaque chiffre vient des
    données du dépôt. */
 function encartsDuSite(V, C, NAF, SOURCES) {
-  const confirmees = SOURCES.filter((x) => x.confirme);
+  const confirmees = SOURCES.filter((x) => x.confirme && x.officielle !== false);   // les officielles seulement
   const nArticles = C ? C.morceaux.reduce((n, m) => n + m.articles.length, 0) : 0;
   return [
     { titre: "D'où viennent les textes", lignes: [
@@ -3231,7 +3236,7 @@ function pageAccueil(V, D, METIERS, ECRANS, C = null, NAF = null, SOURCES = [], 
     s, divisions: V.divisions.filter((d) => d.s === s.c)
   })).filter((g) => g.divisions.length);
 
-  const confirmees = SOURCES.filter((x) => x.confirme);
+  const confirmees = SOURCES.filter((x) => x.confirme && x.officielle !== false);   // les officielles seulement
   const muettes = SOURCES.filter((x) => !x.confirme);
   const nomCourt = (x) => x.nom.split(" — ")[0];
   const exemples = ["salaries", "chantier", "chimique", "alimentaire"]
@@ -3638,7 +3643,7 @@ ${SITE.offreConsultant ? `<section class="section">
    elle ne mène pas dans l'application : on y entre par « Connexion » ou
    « Démarrer un abonnement ». */
 function pageDecouvrir(V, ECRANS, C, NAF, SOURCES) {
-  const confirmees = SOURCES.filter((x) => x.confirme);
+  const confirmees = SOURCES.filter((x) => x.confirme && x.officielle !== false);   // les officielles seulement
   const manquantes = SOURCES.filter((x) => !x.confirme);
   const nomCourt = (x) => x.nom.split(" — ")[0];
   const nDomaines = Object.keys(V.domaines).length;
@@ -4799,6 +4804,7 @@ async function main() {
   const LIENS = await chargeFichier("contenu/liens.js", "LIENS");
 
   const SOURCES = await chargeFichier("contenu/sources.js", "SOURCES");
+  NON_OFFICIELLES = new Set(SOURCES.filter((x) => x.officielle === false).map((x) => x.id));
 
   // Les liens de paiement : publics par nature, mais jamais une clé Stripe.
   if (existsSync(resolve(RACINE, "contenu/paiement.js"))) {
