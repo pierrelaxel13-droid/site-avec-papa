@@ -369,7 +369,6 @@ function page({ titre, description, racine = "", zone = "public", actif = "", co
       ${lien("app/releve.html", "Relevé", "releve")}
       ${lien("app/registre.html", "Registre", "registre")}
       ${lien("app/textes.html", "Textes", "textes")}
-      ${lien("app/secteurs.html", "Secteurs", "secteurs")}
       ${lien("app/reglages.html", "Réglages", "reglages")}
       ${selecteurTheme}`;
 
