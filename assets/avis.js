@@ -102,14 +102,16 @@
 
   /* Les chiffres du tableau de bord (assets/espace.js) : les textes du relevé
      (pas les changements d'articles de code), ceux qui touchent le plan, et,
-     parmi eux, ceux que la personne a ouverts depuis le début de son suivi. */
+     parmi eux, ceux que la personne a ouverts depuis le début de son suivi ;
+     et les nouveaux (comme la cloche, mais les textes seulement, pas les
+     articles de code modifiés : pour rester sous « Textes applicables »). */
   window.PCO_AVIS = {
     chiffres: function () {
       var textes = function (l) { return l.filter(function (a) { return a.k.indexOf("jo:") === 0; }); };
       var ouverts = {};
       lus.ids.forEach(function (k) { ouverts[k] = 1; });
       var applicables = textes(dansPlan());
-      return { publies: textes(tous).length, applicables: applicables.length,
+      return { nouveaux: textes(nouveaux()).length, publies: textes(tous).length, applicables: applicables.length,
                lus: applicables.filter(function (a) { return ouverts[a.k]; }).length };
     },
     plan: function () { return plan(); },

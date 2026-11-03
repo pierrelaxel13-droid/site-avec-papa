@@ -113,7 +113,7 @@
     var suivantes = plan.filter(function (x) { return !x.aFaire; })
       .sort(function (a, b) { return a.prochaine < b.prochaine ? -1 : 1; }).slice(0, 6);
     /* Le tableau de bord en carrés, comme au début (3 novembre 2026), avec
-       les intitulés demandés : publiés, applicables, lus, actions. */
+       les intitulés demandés : nouveaux, publiés, applicables, lus, actions. */
     if (plan.length) html += rubrique("Tableau de bord", (function () {
       var ouv = M.actions(), auj = new Date().toISOString().slice(0, 10);
       var retard = ouv.filter(function (a) { return a.echeance < auj; }).length;
@@ -125,6 +125,7 @@
       var c = window.PCO_AVIS ? window.PCO_AVIS.chiffres() : null;
       var nb = function (x) { return x == null ? "—" : x; };
       return '<dl class="compteurs compteurs-liens tableau-bord">' +
+        carre(false, "releve.html", "Nouveaux textes", nb(c && c.nouveaux), "pas encore ouverts", "Voir le relevé") +
         carre(false, "releve.html", "Textes publiés", nb(c && c.publies), "ces 14 derniers jours", "Voir le relevé") +
         carre(false, "releve.html", "Textes applicables", nb(c && c.applicables), "touchent votre plan", "Voir le relevé") +
         carre(false, "releve.html", "Textes lus", nb(c && c.lus), c ? "sur " + c.applicables + " applicables" : "", "Voir le relevé") +

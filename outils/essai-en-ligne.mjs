@@ -160,7 +160,7 @@ async function essai() {
     await p.goto(SITE + "app/index.html"); await pret(p);
     // Le tableau de bord (3 novembre 2026) : le tableau des textes, et les dernières traces du registre.
     await p.waitForFunction(() => document.querySelectorAll("#bord-traces .ligne-registre").length > 0, null, { timeout: 30000 });
-    ok((await p.locator(".tableau-bord > div").count()) === 4 && (await p.locator("#bord-traces .ligne-registre").count()) === 3,
+    ok((await p.locator(".tableau-bord > div").count()) === 5 && (await p.locator("#bord-traces .ligne-registre").count()) === 3,
       "tableau de bord : le tableau (publiés, applicables, lus, actions) et les 3 dernières traces du registre");
 
     // 6 bis. Décider sur un texte du relevé, en tirer une action, la clore, télécharger le registre.
