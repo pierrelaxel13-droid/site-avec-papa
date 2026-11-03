@@ -4128,16 +4128,43 @@ const comptesFermes = () => `<p class="reserve" data-comptes-fermes hidden>
    en « post ». Si le script ne tournait pas, le navigateur enverrait le
    formulaire lui-même : ainsi, rien — surtout pas un mot de passe — ne peut
    finir dans l'adresse de la page ni dans l'historique. */
-function pageConnexion() {
-  const corps = `
-<section class="section auth-page">
-  <div class="enveloppe">
+/* Les écrans d'accès (connexion, création de compte, mot de passe oublié),
+   3 novembre 2026 : deux colonnes au bureau, le formulaire à droite et, à
+   gauche, ce que l'on retrouve une fois connecté (rien qui ne soit pas déjà
+   dans l'application). Au téléphone, le formulaire seul. */
+function ecranAuth({ titre, sous, carte, pied = "" }) {
+  return `
+<section class="auth-ecran">
+  <aside class="auth-marque" aria-hidden="true">
+    <div class="auth-marque-corps">
+      <p class="auth-marque-sur">Veille réglementaire</p>
+      <p class="auth-marque-titre">Les textes qui s'appliquent à votre entreprise, au même endroit.</p>
+      <ul class="auth-points">
+        <li>Les textes relevés sur les sources officielles : Journal officiel, Légifrance, ministères</li>
+        <li>Votre veille classée par catégorie : santé et sécurité, environnement, ressources humaines</li>
+        <li>Plan d'actions, registre de conformité et historique datés</li>
+      </ul>
+      <p class="auth-marque-note">Ne constitue pas un conseil juridique.</p>
+    </div>
+  </aside>
+  <div class="auth-zone">
     <div class="auth-boite">
       <div class="auth-tete">
-        <h1>Connexion</h1>
-        <p>Accédez à votre espace de veille réglementaire.</p>
+        <h1>${titre}</h1>
+        ${sous ? `<p>${sous}</p>` : ""}
       </div>
-      <form class="carte-connexion auth-carte" id="form-connexion" method="post" novalidate>
+      ${carte}
+      ${pied}
+    </div>
+  </div>
+</section>`;
+}
+
+function pageConnexion() {
+  const corps = ecranAuth({
+    titre: "Connexion",
+    sous: "Accédez à votre espace de veille réglementaire.",
+    carte: `<form class="carte-connexion auth-carte" id="form-connexion" method="post" novalidate>
         ${comptesFermes()}
         <div class="reserve" id="connexion-deja" hidden></div>
 
@@ -4157,12 +4184,10 @@ function pageConnexion() {
           <button type="submit" class="bouton bouton-accent auth-bouton">Se connecter</button>
           <p class="etat-compte" id="etat-connexion" role="status"></p>
         </div>
-      </form>
-      <p class="auth-pied">Pas encore de compte ? <a href="compte/creer.html">Créer un compte</a></p>
-      <p class="auth-pied auth-demo"><a href="abonnement.html#essayer">Essayer la démonstration, sans compte</a></p>
-    </div>
-  </div>
-</section>`;
+      </form>`,
+    pied: `<p class="auth-pied">Pas encore de compte ? <a href="compte/creer.html">Créer un compte</a></p>
+      <p class="auth-pied auth-demo"><a href="abonnement.html#essayer">Essayer la démonstration, sans compte</a></p>`
+  });
 
   return page({
     titre: `Connexion | ${SITE.nom}`,
@@ -4175,19 +4200,10 @@ function pageConnexion() {
 /* Créer son compte : l'adresse et un mot de passe. Supabase envoie un lien de
    confirmation ; l'abonnement vient ensuite, et c'est lui qui ouvre l'espace. */
 function pageCreer() {
-  const corps = `
-<section class="heros heros-court">
-  <div class="enveloppe">
-    <div class="heros-texte"><h1>Créer votre compte</h1></div>
-    <p class="heros-sous">Votre adresse électronique et un mot de passe. Le compte est gratuit ;
-    votre espace de veille ouvre avec l'abonnement.</p>
-  </div>
-</section>
-<section class="section">
-  <div class="enveloppe">
-    <div class="connexion connexion-seule">
-      <form class="carte-connexion" id="form-creer" method="post" novalidate>
-        <h2>Vos identifiants</h2>
+  const corps = ecranAuth({
+    titre: "Créer votre compte",
+    sous: `Le compte est gratuit ; votre espace de veille s'ouvre avec l'abonnement.`,
+    carte: `<form class="carte-connexion auth-carte" id="form-creer" method="post" novalidate>
         <p class="reserve reserve-ok" id="creer-pour" hidden><strong>Compte consultant.</strong> Après la confirmation
         de votre adresse, vous nommerez votre cabinet ; vous y créerez ensuite l'espace de chacun de vos clients.</p>
         ${comptesFermes()}
@@ -4202,12 +4218,10 @@ function pageCreer() {
             <input type="password" id="c-motdepasse" autocomplete="new-password" minlength="10" required>
           </div>
           <div class="champ">
-            <label for="c-confirme">Le même, une seconde fois</label>
+            <label for="c-confirme">Confirmer le mot de passe</label>
             <input type="password" id="c-confirme" autocomplete="new-password" minlength="10" required>
           </div>
-          <p class="rangee" style="margin-top:var(--t4)">
-            <button type="submit" class="bouton bouton-accent bouton-large">Créer mon compte</button>
-          </p>
+          <button type="submit" class="bouton bouton-accent auth-bouton">Créer mon compte</button>
           <p class="aide-bas">Votre adresse sert à vous connecter et à recevoir les liens de votre compte,
           rien d'autre. Voir la <a href="../confidentialite.html">politique de confidentialité</a>.</p>
         </div>
@@ -4220,43 +4234,31 @@ function pageCreer() {
           <p>Cette adresse a déjà un compte ? <a href="../connexion.html">Connectez-vous</a>.</p>
         </div>
         <p class="etat-compte" id="etat-creer" role="status"></p>
-        <p style="margin-top:var(--t3)">Déjà un compte ? <a href="../connexion.html">Se connecter</a></p>
-      </form>
-    </div>
-  </div>
-</section>`;
+      </form>`,
+    pied: `<p class="auth-pied">Déjà un compte ? <a href="../connexion.html">Se connecter</a></p>`
+  });
+
   return page({ titre: `Créer un compte | ${SITE.nom}`, description: `Créer votre compte ${SITE.nom}.`,
     racine: "../", zone: "public", corps, scripts: ["assets/compte.js"], installation: false, piedCourt: true });
 }
 
 /* Mot de passe oublié : on reçoit un lien par courriel. */
 function pageOubli() {
-  const corps = `
-<section class="heros heros-court">
-  <div class="enveloppe">
-    <div class="heros-texte"><h1>Mot de passe oublié</h1></div>
-    <p class="heros-sous">Entrez votre adresse : vous recevez un lien pour en choisir un nouveau, valable une heure.</p>
-  </div>
-</section>
-<section class="section">
-  <div class="enveloppe">
-    <div class="connexion connexion-seule">
-      <form class="carte-connexion" id="form-oubli" method="post" novalidate>
-        <h2>Recevoir un lien</h2>
+  const corps = ecranAuth({
+    titre: "Mot de passe oublié",
+    sous: `Saisissez votre adresse : vous recevrez un lien, valable une heure, pour choisir un nouveau mot de passe.`,
+    carte: `<form class="carte-connexion auth-carte" id="form-oubli" method="post" novalidate>
         ${comptesFermes()}
         <div class="champ">
           <label for="o-courriel">Adresse électronique</label>
           <input type="email" id="o-courriel" autocomplete="username" inputmode="email" spellcheck="false" required>
         </div>
-        <p class="rangee" style="margin-top:var(--t4)">
-          <button type="submit" class="bouton bouton-accent bouton-large">Envoyer le lien</button>
-        </p>
+        <button type="submit" class="bouton bouton-accent auth-bouton">Envoyer le lien</button>
         <p class="etat-compte" id="etat-oubli" role="status"></p>
-        <p style="margin-top:var(--t3)"><a href="../connexion.html">Revenir à la connexion</a></p>
-      </form>
-    </div>
-  </div>
-</section>`;
+      </form>`,
+    pied: `<p class="auth-pied"><a href="../connexion.html">Revenir à la connexion</a></p>`
+  });
+
   return page({ titre: `Mot de passe oublié | ${SITE.nom}`, description: "Recevoir un lien pour choisir un nouveau mot de passe.",
     racine: "../", zone: "public", corps, scripts: ["assets/compte.js"], installation: false, piedCourt: true });
 }

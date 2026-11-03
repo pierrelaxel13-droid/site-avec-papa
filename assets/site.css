@@ -3794,28 +3794,58 @@ a.puce-fixe { text-decoration: none; color: inherit; }
 .pied .marque svg { filter: brightness(1.7) saturate(1.1); }
 
 /* --- Connexion, en écran de connexion classique (3 novembre 2026) -------- */
-.auth-page { background: var(--degrade-heros); min-height: calc(100vh - 9rem); display: flex; align-items: center;
-  padding-block: clamp(2.5rem, 1.5rem + 4vw, 5rem); }
-.auth-page .enveloppe { width: 100%; }
-.auth-boite { max-width: 25rem; margin: 0 auto; }
-.auth-tete { text-align: center; margin-bottom: 1.5rem; }
-.auth-tete h1 { margin: 0; font-size: clamp(1.6rem, 1.3rem + 1vw, 2rem); letter-spacing: -.02em; }
-.auth-tete p { margin: .5rem 0 0; font-size: .95rem; color: var(--encre-douce); }
-.auth-carte { padding: 1.75rem; border-radius: var(--r3); box-shadow: var(--ombre-1); }
-.auth-carte .champ { margin-bottom: 1rem; }
-.auth-carte .champ label { margin: 0 0 .35rem; font-size: .875rem; font-weight: 500; color: var(--encre); }
-.auth-carte .champ input { font-size: .95rem; padding: .7rem .85rem; border-radius: var(--r1); }
+/* Écrans d'accès (3 novembre 2026) : deux colonnes au bureau. */
+.auth-ecran { display: grid; min-height: calc(100vh - 8.5rem); background: var(--papier); }
+.auth-marque { display: none; }
+.auth-zone { display: flex; align-items: center; justify-content: center; padding: 3rem 1rem; }
+.auth-boite { width: 100%; max-width: 24rem; margin: 0 auto; }
+.auth-tete { margin-bottom: 1.5rem; }
+.auth-tete h1 { margin: 0; font-size: 1.6rem; font-weight: 600; letter-spacing: -.015em; line-height: 1.2; }
+.auth-tete p { margin: .45rem 0 0; font-size: .92rem; color: var(--encre-douce); line-height: 1.5; }
+.auth-carte { padding: 0; border: 0; background: none; box-shadow: none; border-radius: 0; max-width: none; }
+.auth-carte .champ { margin: 0 0 1rem; }
+.auth-carte .champ label { display: block; margin: 0 0 .35rem; font-size: .85rem; font-weight: 500; color: var(--encre); }
+.auth-carte .champ label .aide { font-weight: 400; color: var(--encre-douce); font-size: .8rem; }
+.auth-carte .champ input {
+  width: 100%; box-sizing: border-box; height: 2.6rem; padding: 0 .8rem; font-size: .93rem;
+  border: 1px solid var(--filet-fort); border-radius: 8px; background: var(--carte); color: var(--encre);
+}
+.auth-carte .champ input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-clair); }
 .auth-libelle { display: flex; justify-content: space-between; align-items: baseline; gap: 1rem; }
-.auth-libelle a { font-size: .82rem; color: var(--accent); text-decoration: none; margin-bottom: .35rem; }
+.auth-libelle a { font-size: .8rem; color: var(--accent); text-decoration: none; margin-bottom: .35rem; }
 .auth-libelle a:hover { text-decoration: underline; }
-.auth-bouton { width: 100%; justify-content: center; margin-top: .5rem; font-size: .95rem; font-weight: 600; padding: .8rem 1.2rem; }
-.auth-carte .etat-compte { margin: .75rem 0 0; font-size: .875rem; }
+.auth-bouton {
+  display: flex; width: 100%; justify-content: center; margin-top: .4rem; height: 2.6rem; padding: 0 1rem;
+  border-radius: 8px; font-size: .93rem; font-weight: 500;
+}
+.auth-carte .etat-compte { margin: .75rem 0 0; font-size: .85rem; }
 .auth-carte .etat-compte:empty { display: none; }
-.auth-pied { margin: 1.25rem 0 0; text-align: center; font-size: .9rem; color: var(--encre-douce); }
+.auth-carte .aide-bas { margin: 1rem 0 0; font-size: .78rem; color: var(--encre-douce); line-height: 1.5; }
+.auth-carte .reserve { font-size: .85rem; }
+.auth-pied { margin: 1.5rem 0 0; padding-top: 1.25rem; border-top: 1px solid var(--filet); font-size: .88rem; color: var(--encre-douce); }
+.auth-pied + .auth-pied { margin-top: .5rem; padding-top: 0; border-top: 0; }
 .auth-pied a { color: var(--accent); font-weight: 500; text-decoration: none; }
 .auth-pied a:hover { text-decoration: underline; }
-.auth-demo { margin-top: .5rem; font-size: .85rem; }
+.auth-demo { font-size: .82rem; }
 .auth-demo a { color: var(--encre-douce); font-weight: 400; }
+@media (min-width: 60rem) {
+  .auth-ecran { grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); }
+  .auth-marque {
+    display: flex; align-items: center; padding: 3rem clamp(2rem, 4vw, 4rem);
+    background: #14122B; color: #E8E6F5;
+    background-image: radial-gradient(60rem 30rem at 0% 0%, rgba(110, 86, 255, .35), transparent 60%);
+  }
+  .auth-marque-corps { max-width: 26rem; }
+  .auth-marque-sur { margin: 0; font-size: .78rem; letter-spacing: .08em; text-transform: uppercase; color: #A99BFF; }
+  .auth-marque-titre { margin: .75rem 0 0; font-size: 1.6rem; line-height: 1.3; font-weight: 600; letter-spacing: -.015em; color: #FFFFFF; }
+  .auth-points { margin: 1.75rem 0 0; padding: 0; list-style: none; display: grid; gap: .85rem; }
+  .auth-points li { position: relative; padding-left: 1.6rem; font-size: .92rem; line-height: 1.5; color: #CFCBE6; }
+  .auth-points li::before {
+    content: ""; position: absolute; left: 0; top: .3rem; width: .95rem; height: .95rem; border-radius: 50%;
+    background: rgba(169, 155, 255, .18) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M4 8.5l2.5 2.5L12 5.5' fill='none' stroke='%23A99BFF' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / .7rem no-repeat;
+  }
+  .auth-marque-note { margin: 2rem 0 0; font-size: .78rem; color: #8F8AAE; }
+}
 .normes-sujet { margin: .3rem 0 .4rem; padding-left: 1.1rem; font-size: .9rem; }
 .normes-sujet li + li { margin-top: .25rem; }
 .normes-sujet strong { font-weight: 600; }
