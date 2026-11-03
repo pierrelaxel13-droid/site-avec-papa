@@ -2589,50 +2589,40 @@ function appReglages(V, D, NAF, METIERS) {
     s, divisions: V.divisions.filter((d) => d.s === s.c)
   })).filter((g) => g.divisions.length);
 
-  const corps = `<section class="tete-app">
+  /* Réglages (3 novembre 2026, « plus professionnelle ») : des cartes par
+     thème, une ligne par champ (intitulé à gauche, champ à droite), des
+     onglets discrets et une barre d'enregistrement en bas. Les identifiants
+     des champs ne changent pas : assets/entreprise.js les lit. */
+  const ligne = (id, libelle, champ, aide = "", large = false) => `<div class="rg-ligne${large ? " rg-ligne-large" : ""}">
+          <label class="rg-libelle" for="${id}">${libelle}</label>
+          <div class="rg-champ">${champ}${aide}</div>
+        </div>`;
+  const corps = `<section class="tete-app tete-reglages">
   <div class="enveloppe">
-    <ul class="jalons">
-      <li><span class="fort">Réglages</span></li>
-      <li data-demo><span>Gardés dans ce navigateur</span></li>
-    </ul>
-    <h1>Mon entreprise et mes alertes</h1>
-
-    <div class="bascule" role="tablist" aria-label="Réglages" data-bascule style="margin-inline:0">
-      <span class="bascule-curseur" aria-hidden="true"></span>
+    <h1>Réglages</h1>
+    <p class="rg-chapeau">Les informations de votre entreprise et vos alertes.<span data-demo> En démonstration, elles restent dans ce navigateur.</span></p>
+    <div class="rg-onglets" role="tablist" aria-label="Réglages" data-bascule>
       <button type="button" role="tab" id="onglet-entreprise" aria-selected="true" aria-controls="volet-entreprise">Mon entreprise</button>
       <button type="button" role="tab" id="onglet-alertes" aria-selected="false" aria-controls="volet-alertes" data-exige="suivi">Mes alertes</button>
     </div>
   </div>
 </section>
 
-<section class="rubrique" id="volet-entreprise" role="tabpanel" aria-labelledby="onglet-entreprise">
+<section class="rubrique rg-volet" id="volet-entreprise" role="tabpanel" aria-labelledby="onglet-entreprise">
   <div class="enveloppe">
-    <h2 class="titre-reglages">Informations sur votre entreprise</h2>
-    <p class="reserve" data-demo>
-      <strong>Démonstration : tout reste sur cet appareil.</strong> Rien n'est envoyé à personne ; si vous
-      videz les données du navigateur, il faudra tout ressaisir.
-    </p>
-
-    <div class="simulateur simulateur-reglages" style="margin-top:var(--t5)">
-      <form class="reglages reglages-entreprise" id="form-entreprise" novalidate>
-        <div class="reglage">
-          <label class="etiq" for="e-nom">Nom de l'entreprise</label>
-          <input type="text" id="e-nom" name="nom" placeholder="${esc(D.entreprise.nom)}" autocomplete="organization">
-        </div>
-        <div class="reglage">
-          <label class="etiq" for="e-ville">Commune</label>
-          <input type="text" id="e-ville" name="ville" placeholder="${esc(D.entreprise.ville)}" autocomplete="address-level2">
-        </div>
-        ${NAF ? `<div class="reglage reglage-large reglage-ligne">
-          <label class="etiq" for="e-activite">Votre activité</label>
-          <input type="text" id="e-activite" name="activite" autocomplete="off" spellcheck="false"
-                 placeholder="plomberie chauffage, boulangerie, transport de marchandises…">
-          <p class="precision">Écrivez-le comme vous le diriez : on trouve votre code APE.</p>
-          <div class="propositions" id="e-propositions" hidden></div>
-        </div>` : ""}
-        <div class="reglage reglage-large reglage-ligne">
-          <label class="etiq" for="e-naf">${NAF ? "Votre code APE" : "Activité principale (NAF)"}</label>
-          <select id="e-naf" name="naf">
+    <form class="rg-form" id="form-entreprise" novalidate>
+      <section class="rg-carte" aria-labelledby="rg-t-identite">
+        <header class="rg-tete">
+          <h2 id="rg-t-identite">Informations sur votre entreprise</h2>
+          <p>Votre code APE détermine les sujets de votre veille réglementaire.</p>
+        </header>
+        ${ligne("e-nom", "Nom de l'entreprise", `<input type="text" id="e-nom" name="nom" placeholder="${esc(D.entreprise.nom)}" autocomplete="organization">`)}
+        ${ligne("e-ville", "Commune", `<input type="text" id="e-ville" name="ville" placeholder="${esc(D.entreprise.ville)}" autocomplete="address-level2">`)}
+        ${NAF ? ligne("e-activite", "Votre activité", `<input type="text" id="e-activite" name="activite" autocomplete="off" spellcheck="false"
+                 placeholder="plomberie chauffage, boulangerie, transport de marchandises…">`,
+          `<p class="rg-aide">Décrivez-la avec vos mots : nous retrouvons votre code APE.</p>
+          <div class="propositions" id="e-propositions" hidden></div>`) : ""}
+        ${ligne("e-naf", NAF ? "Code APE" : "Activité principale (NAF)", `<select id="e-naf" name="naf">
             ${NAF
               ? V.divisions.map((d) => {
                   const codes = NAF.codes.filter((c) => c.d === d.c);
@@ -2644,143 +2634,117 @@ function appReglages(V, D, NAF, METIERS) {
               : parSection.map((g) => `<optgroup label="${esc(g.s.c)} — ${esc(g.s.l)}">
               ${g.divisions.map((d) => `<option value="${esc(d.c)}"${d.c === D.entreprise.naf ? " selected" : ""}>${esc(d.c)} — ${esc(d.l)}</option>`).join("")}
             </optgroup>`).join("")}
-          </select>
-          ${NAF ? `<p class="precision" id="e-division">Il est sur votre avis de situation INSEE
-          et sur vos bulletins de paie.</p>` : ""}
-        </div>
-        <div class="reglage">
-          <label class="etiq" for="e-effectif">Effectif</label>
-          <input type="number" id="e-effectif" name="effectif" min="0" max="100000"
-                 placeholder="${esc(D.entreprise.effectif)}" inputmode="numeric">
-        </div>
-        <div class="reglage">
-          <label class="etiq" for="e-responsable">Dirigeant</label>
-          <input type="text" id="e-responsable" name="responsable" placeholder="${esc(D.entreprise.responsable)}" autocomplete="name">
-        </div>
-        <!-- Votre entreprise en chiffres. Ces informations la décrivent sur le
-             plan ; elles ne changent pas la liste des sujets : ce sont les
-             cases « vrai chez vous », dessous, qui la font. On le dit. -->
-        <div class="reglage-large intertitre">
-          <h3>Votre entreprise en chiffres <span class="precision">— facultatif</span></h3>
-          <p class="precision">Ces informations s'affichent sur votre plan, pour qu'il soit complet le jour
-          d'un audit. Elles ne changent pas les sujets suivis : ce sont les cases plus bas qui le font.</p>
-        </div>
-        <div class="reglage">
-          <label class="etiq" for="e-ca">Chiffre d'affaires de l'an dernier</label>
-          <select id="e-ca" data-champ="ca">
-            <option value="">Je ne veux pas le dire</option>
+          </select>`,
+          NAF ? `<p class="rg-aide" id="e-division">Il figure sur votre avis de situation INSEE et sur vos bulletins de paie.</p>` : "")}
+        ${ligne("e-effectif", "Effectif", `<input type="number" id="e-effectif" name="effectif" min="0" max="100000"
+                 placeholder="${esc(D.entreprise.effectif)}" inputmode="numeric">`)}
+        ${ligne("e-responsable", "Dirigeant", `<input type="text" id="e-responsable" name="responsable" placeholder="${esc(D.entreprise.responsable)}" autocomplete="name">`)}
+      </section>
+
+      <!-- Ces informations décrivent l'entreprise sur le plan ; elles ne
+           changent pas la liste des sujets : ce sont les cases « vrai chez
+           vous », plus bas, qui la font. On le dit. -->
+      <section class="rg-carte" aria-labelledby="rg-t-chiffres">
+        <header class="rg-tete">
+          <h2 id="rg-t-chiffres">Votre entreprise en chiffres <span class="rg-facultatif">Facultatif</span></h2>
+          <p>Ces informations complètent votre plan pour un audit. Elles ne changent pas les sujets suivis.</p>
+        </header>
+        ${ligne("e-ca", "Chiffre d'affaires de l'an dernier", `<select id="e-ca" data-champ="ca">
+            <option value="">Non communiqué</option>
             ${["Moins de 100 000 €", "100 000 à 500 000 €", "500 000 € à 2 M€",
                "2 à 10 M€", "10 à 50 M€", "Plus de 50 M€"]
               .map((t) => `<option>${esc(t)}</option>`).join("")}
-          </select>
-        </div>
-        <div class="reglage">
-          <label class="etiq" for="e-forme">Forme juridique</label>
-          <select id="e-forme" data-champ="forme">
-            <option value="">—</option>
+          </select>`)}
+        ${ligne("e-forme", "Forme juridique", `<select id="e-forme" data-champ="forme">
+            <option value="">Non renseignée</option>
             ${["Entreprise individuelle ou micro-entreprise", "EURL", "SARL", "SASU", "SAS", "SA",
                "SCOP", "Association", "Autre"].map((t) => `<option>${esc(t)}</option>`).join("")}
-          </select>
-        </div>
-        <div class="reglage">
-          <label class="etiq" for="e-creation">Année de création</label>
-          <input type="number" id="e-creation" data-champ="creation" min="1800" max="2100"
-                 placeholder="2008" inputmode="numeric">
-        </div>
-        <div class="reglage">
-          <label class="etiq" for="e-sites">Nombre de sites ou d'établissements</label>
-          <input type="number" id="e-sites" data-champ="sites" min="1" max="10000"
-                 placeholder="1" inputmode="numeric">
-        </div>
-        <div class="reglage reglage-large">
-          <label class="etiq" for="e-siret">Numéro SIRET</label>
-          <input type="text" id="e-siret" data-champ="siret" inputmode="numeric" autocomplete="off"
-                 placeholder="14 chiffres, sur votre avis de situation INSEE" maxlength="20">
-          <p class="precision" id="e-siret-aide"></p>
-        </div>
-        <div class="reglage reglage-large">
-          <span class="etiq">Certifications que vous avez, ou que vous visez</span>
-          <div class="certifs">
+          </select>`)}
+        ${ligne("e-creation", "Année de création", `<input type="number" id="e-creation" data-champ="creation" min="1800" max="2100"
+                 placeholder="2008" inputmode="numeric">`)}
+        ${ligne("e-sites", "Nombre d'établissements", `<input type="number" id="e-sites" data-champ="sites" min="1" max="10000"
+                 placeholder="1" inputmode="numeric">`)}
+        ${ligne("e-siret", "Numéro SIRET", `<input type="text" id="e-siret" data-champ="siret" inputmode="numeric" autocomplete="off"
+                 placeholder="14 chiffres" maxlength="20">`, `<p class="rg-aide" id="e-siret-aide"></p>`)}
+        <div class="rg-ligne">
+          <span class="rg-libelle">Certifications obtenues ou visées</span>
+          <div class="rg-champ certifs">
             ${["ISO 9001", "ISO 14001", "ISO 45001", "MASE", "Qualiopi"].map((c) => `<label class="certif">
               <input type="checkbox" data-certif="${esc(c)}"><span>${esc(c)}</span></label>`).join("")}
           </div>
         </div>
-        <div class="reglage reglage-large">
-          <span class="etiq">Cochez ce qui est vrai chez vous</span>
-          <div class="cases cases-ouvertes" id="e-contexte"></div>
-        </div>
-        <p class="rangee reglage-large">
-          <button type="submit" class="bouton bouton-accent">Enregistrer</button>
-          <button type="button" class="bouton bouton-sobre" id="e-reinit" data-demo>Tout effacer et revenir à l'exemple</button>
-        </p>
-        <p class="etiq reglage-large" id="e-etat" role="status"></p>
-      </form>
-    </div>
+      </section>
+
+      <section class="rg-carte" aria-labelledby="rg-t-situations">
+        <header class="rg-tete">
+          <h2 id="rg-t-situations">Vos activités particulières</h2>
+          <p>Cochez ce qui s'applique à votre entreprise : chaque case ajoute les sujets correspondants à votre veille.</p>
+        </header>
+        <div class="rg-cases cases cases-ouvertes" id="e-contexte"></div>
+      </section>
+
+      <div class="rg-barre">
+        <p class="rg-etat" id="e-etat" role="status"></p>
+        <button type="button" class="bouton bouton-sobre" id="e-reinit" data-demo>Revenir à l'exemple</button>
+        <button type="submit" class="bouton bouton-accent">Enregistrer</button>
+      </div>
+    </form>
   </div>
 </section>
 
-<section class="rubrique section-tein" id="volet-alertes" role="tabpanel" aria-labelledby="onglet-alertes" hidden>
+<section class="rubrique rg-volet" id="volet-alertes" role="tabpanel" aria-labelledby="onglet-alertes" hidden>
   <div class="enveloppe">
-    <h2 class="cache-visuellement">Mes alertes</h2>
-    <p class="reserve">
-      <strong>Aucun courriel ne part encore.</strong> Vos réglages sont gardés pour le jour
-      où l'envoi sera branché ; l'aperçu montre ce que vous recevrez.
-    </p>
-
-    <div class="simulateur simulateur-reglages" style="margin-top:var(--t5)">
-      <form class="reglages" id="form-alertes" novalidate>
-        <div class="reglage">
-          <label class="etiq" for="a-courriel">Votre adresse électronique</label>
-          <input type="email" id="a-courriel" name="courriel" placeholder="prenom@entreprise.fr"
-                 inputmode="email" spellcheck="false" autocomplete="email">
-        </div>
-        <div class="reglage">
-          <label class="etiq" for="a-rythme">Quand recevoir</label>
-          <select id="a-rythme" name="rythme">
-            <option value="immediat">À chaque texte relevé</option>
+    <p class="rg-note"><strong>Les courriels ne sont pas encore envoyés.</strong> Vos préférences sont enregistrées
+      pour la mise en service de l'envoi ; l'aperçu montre ce que vous recevrez.</p>
+    <div class="rg-alertes">
+      <form class="rg-form" id="form-alertes" novalidate>
+        <section class="rg-carte" aria-labelledby="rg-t-alertes">
+          <header class="rg-tete">
+            <h2 id="rg-t-alertes">Alertes par courriel</h2>
+            <p>Choisissez l'adresse, le rythme et les textes qui vous sont signalés.</p>
+          </header>
+          ${ligne("a-courriel", "Adresse électronique", `<input type="email" id="a-courriel" name="courriel" placeholder="prenom@entreprise.fr"
+                 inputmode="email" spellcheck="false" autocomplete="email">`)}
+          ${ligne("a-rythme", "Fréquence", `<select id="a-rythme" name="rythme">
+            <option value="immediat">À chaque nouveau texte</option>
             <option value="quotidien">Un résumé par jour</option>
             <option value="hebdomadaire" selected>Un résumé par semaine</option>
             <option value="mensuel">Un résumé par mois</option>
-          </select>
-        </div>
-        <div class="reglage">
-          <label class="etiq" for="a-seuil">Quels textes</label>
-          <select id="a-seuil" name="seuil">
+          </select>`)}
+          ${ligne("a-seuil", "Textes signalés", `<select id="a-seuil" name="seuil">
             <option value="tout" selected>Tous ceux qui me concernent</option>
             <option value="prioritaire">Seulement les plus importants</option>
             <option value="action">Seulement ceux qui demandent une action</option>
-          </select>
-        </div>
-        <div class="reglage">
-          <span class="etiq">En plus</span>
-          <div class="cases cases-ouvertes">
-            <label class="case">
-              <input type="checkbox" id="a-revues" checked>
-              <span><span class="intitule">Me rappeler les revues à faire</span>
-              <span class="aide">Un rappel avant chaque échéance de revue, et un autre si elle passe.</span></span>
-            </label>
-            <label class="case">
-              <input type="checkbox" id="a-pdf" checked>
-              <span><span class="intitule">Joindre la fiche de chaque texte</span>
-              <span class="aide">En PDF, prête à ranger dans votre dossier.</span></span>
-            </label>
+          </select>`)}
+          <div class="rg-ligne">
+            <span class="rg-libelle">Options</span>
+            <div class="rg-champ cases cases-ouvertes">
+              <label class="case">
+                <input type="checkbox" id="a-revues" checked>
+                <span><span class="intitule">Rappel des revues à faire</span>
+                <span class="aide">Avant chaque échéance de revue, et une seconde fois si elle est dépassée.</span></span>
+              </label>
+              <label class="case">
+                <input type="checkbox" id="a-pdf" checked>
+                <span><span class="intitule">Fiche de chaque texte en pièce jointe</span>
+                <span class="aide">Au format PDF, prête à classer.</span></span>
+              </label>
+            </div>
           </div>
-        </div>
-        <p class="rangee">
+        </section>
+        <div class="rg-barre">
+          <p class="rg-etat" id="a-etat" role="status"></p>
           <button type="submit" class="bouton bouton-accent">Enregistrer</button>
-        </p>
-        <p class="etiq" id="a-etat" role="status"></p>
+        </div>
       </form>
 
-      <div class="resultat">
-        <h3>Aperçu du courriel</h3>
-        <p>Ce que vous recevrez, avec ces réglages.</p>
-        <hr class="filet">
+      <aside class="rg-carte rg-apercu" aria-labelledby="rg-t-apercu">
+        <header class="rg-tete">
+          <h2 id="rg-t-apercu">Aperçu du courriel</h2>
+          <p>Avec les réglages choisis.</p>
+        </header>
         <div class="apercu-courriel" id="a-apercu"></div>
-        <p class="note-source">
-          Un aperçu : rien n'est envoyé pour l'instant.
-        </p>
-      </div>
+      </aside>
     </div>
   </div>
 </section>`;
@@ -3021,8 +2985,8 @@ function pageConsultants() {
 <section class="section">
   <div class="enveloppe deux-temps">
     <div>
-      <h2>Tous vos clients, d'un coup d'œil</h2>
-      <p class="lecture">Une seule vue pour vos clients : qui est à jour, qui a des revues en retard, qui a des
+      <h2>Tous vos clients en un coup d'œil</h2>
+      <p class="lecture">Vous pilotez l'ensemble de vos clients. Une seule vue pour vos clients : qui est à jour, qui a des revues en retard, qui a des
         textes à analyser. Vous savez où intervenir avant que votre client ne vous appelle.</p>
       <p class="lecture" style="margin-top:var(--t3)">Et bientôt, pour eux, ce sera votre outil : votre logo, votre
         nom, vos couleurs, jusque sur les exports PDF qu'ils montrent à l'auditeur (la marque blanche est en préparation).</p>
