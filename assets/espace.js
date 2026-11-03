@@ -145,10 +145,8 @@
     });
     var sujetsAttente = Object.keys(parSujet).sort(function (a, b) { return parSujet[b] - parSujet[a]; });
     if (sujetsAttente.length) {
-      html += rubrique("Textes en attente",
-        '<p class="lecture">Par sujet de votre plan, les textes que vous n\'avez pas encore ouverts. ' +
-        "Ouvrez-les dans le relevé : ils passeront dans les textes lus.</p>" +
-        '<ul class="liste-echeances" style="margin-top:var(--t4)">' + sujetsAttente.map(function (id) {
+      html += rubrique("Textes dont vous n'avez pas pris connaissance",
+        '<ul class="liste-echeances">' + sujetsAttente.map(function (id) {
           var n = parSujet[id];
           return '<li class="retard"><a href="releve.html"><span class="etiq">' + echappe((P.d[id] || {}).n || id) +
             '</span><span class="mono">' + n + " texte" + (n > 1 ? "s" : "") + "</span></a></li>";
