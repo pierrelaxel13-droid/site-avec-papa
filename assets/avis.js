@@ -49,10 +49,13 @@
   }
 
   /* --- L'état : depuis quand, et ce qui est déjà ouvert --------------------- */
-  var lus = { depuis: "", ids: [] };
+  /* quand : { clé: date et heure d'ouverture }, pour l'historique du tableau
+     de bord (3 novembre 2026). Les textes ouverts avant n'ont pas de date. */
+  var lus = { depuis: "", ids: [], quand: {} };
   function charger() {
     var e = M.lire(CLE) || {};
-    lus = { depuis: e.depuis || "", ids: Array.isArray(e.ids) ? e.ids.slice() : [] };
+    lus = { depuis: e.depuis || "", ids: Array.isArray(e.ids) ? e.ids.slice() : [],
+            quand: e.quand && typeof e.quand === "object" ? e.quand : {} };
     if (!lus.depuis) {
       if (M.mode === "compte") {
         // Le suivi commence à la première visite : ce qui était déjà là n'est pas « nouveau ».
@@ -69,7 +72,10 @@
     var encore = {};
     tous.forEach(function (a) { encore[a.k] = 1; });
     lus.ids = lus.ids.filter(function (k) { return encore[k]; });
-    return M.ecrire(CLE, { depuis: lus.depuis, ids: lus.ids });
+    var quand = {};
+    lus.ids.forEach(function (k) { if (lus.quand[k]) quand[k] = lus.quand[k]; });
+    lus.quand = quand;
+    return M.ecrire(CLE, { depuis: lus.depuis, ids: lus.ids, quand: lus.quand });
   }
 
   /* Le plan de l'entreprise : celui de ses réglages ; dans un compte sans
@@ -115,6 +121,14 @@
                lus: applicables.filter(function (a) { return ouverts[a.k]; }).length };
     },
     plan: function () { return plan(); },
+    /* Les textes ouverts, avec leur date, du plus récent au plus ancien. */
+    ouvertures: function () {
+      var parCle = {};
+      tous.forEach(function (a) { parCle[a.k] = a; });
+      return Object.keys(lus.quand).filter(function (k) { return parCle[k]; })
+        .map(function (k) { return { k: k, t: parCle[k].t, u: parCle[k].u, le: lus.quand[k] }; })
+        .sort(function (x, y) { return x.le < y.le ? 1 : -1; });
+    },
     /* Les textes applicables pas encore ouverts, du plus récent au plus ancien. */
     enAttente: function () {
       var ouverts = {};
@@ -127,6 +141,7 @@
   function ouvrirTexte(k) {
     if (lus.ids.indexOf(k) !== -1) return;
     lus.ids.push(k);
+    lus.quand[k] = maintenant();
     garder();
     rendre();
   }

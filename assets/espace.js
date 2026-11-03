@@ -183,14 +183,24 @@
       });
     });
 
-    registre(6).then(function (r) {
+    registre(10).then(function (r) {
       var n = $("#bord-n-registre");
       if (!r.ok) { if (n) n.textContent = "—"; return; }
       var l = r.donnees || [];
-      $("#bord-traces").innerHTML = rubrique("Dernières traces", l.length
-        ? '<ul class="liste-registre">' + l.map(function (x) { return ligne(x, annuleesDans(l)); }).join("") + "</ul>" +
+      /* « Historiques » (3 novembre 2026) : le registre (validations, actions,
+         revues, évaluations) et les textes ouverts, mêlés par date. */
+      var ouv = window.PCO_AVIS && window.PCO_AVIS.ouvertures ? window.PCO_AVIS.ouvertures() : [];
+      var tout = l.map(function (x) { return { le: x.enregistre_le || x.date_effet, html: ligne(x, annuleesDans(l)) }; })
+        .concat(ouv.slice(0, 10).map(function (o) {
+          return { le: o.le, html: '<li class="ligne-historique"><a href="' + echappe(o.u || "releve.html") + '">' +
+            '<span class="mono date">' + echappe(jour(o.le)) + '</span><span class="corps"><span class="titre">' + echappe(o.t.length >= 180 ? o.t + "…" : o.t) +
+            '</span><span class="meta etiq">Texte ouvert · vous</span></span></a></li>' };
+        }))
+        .sort(function (a, b) { return a.le < b.le ? 1 : -1; }).slice(0, 10);
+      $("#bord-traces").innerHTML = rubrique("Historiques", tout.length
+        ? '<ul class="liste-registre">' + tout.map(function (x) { return x.html; }).join("") + "</ul>" +
           '<p style="margin-top:var(--t4)"><a class="lien-fleche" href="registre.html">Voir tout le registre</a></p>'
-        : '<p class="lecture">Rien encore. Chaque revue cochée « Faite » dans votre plan s\'inscrira ici, datée, avec votre nom.</p>');
+        : '<p class="lecture">Rien encore. Les textes que vous ouvrez, vos décisions, vos actions et vos revues s\'inscriront ici, datés.</p>');
       V.lire("registre", "select=id&entreprise_id=eq." + M.espace.id).then(function (t) {
         if (n) n.textContent = t.ok ? String((t.donnees || []).length) : "—";
       });

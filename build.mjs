@@ -793,8 +793,8 @@ ${rubrique({ etiq: "En attente de vous", contenu: `
   </ul>
   <p style="margin-top:var(--t4)"><a class="lien-fleche" href="releve.html">Voir tout le relevé ${fleche}</a></p>` })}
 
-${rubrique({ etiq: "Dernières traces", aplat: true, contenu: `
-  <p class="lecture">Ce qu'un auditeur regarderait en premier.</p>
+${rubrique({ etiq: "Historiques", aplat: true, contenu: `
+  <p class="lecture">Les ouvertures de textes, les validations, les actions et les revues, datées.</p>
   <ul class="liste-registre" style="margin-top:var(--t4)">
     ${D.registre.slice(0, 4).map((r) => ligneRegistre(r)).join("")}
   </ul>
