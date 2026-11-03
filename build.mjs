@@ -926,7 +926,7 @@ function categorieTexte(V, ids) {
     (parCat[cl] = parCat[cl] || []).push(id);
   });
   return Object.keys(CATEGORIES_TABLEAU).filter((cl) => parCat[cl]).map((cl) =>
-    `<span class="categorie-texte" data-sujets="${esc(parCat[cl].join(" "))}">${esc(CATEGORIES_TABLEAU[cl])}</span>`).join("");
+    `<span class="categorie-texte" data-cat="${cl}" data-sujets="${esc(parCat[cl].join(" "))}">${esc(CATEGORIES_TABLEAU[cl])}</span>`).join("");
 }
 function tableauTextesPlan(V, C, LIENS, plan, JO) {
   const categorie = (ids) => {
@@ -936,7 +936,7 @@ function tableauTextesPlan(V, C, LIENS, plan, JO) {
       (parCat[cl] = parCat[cl] || []).push(id);
     });
     return Object.keys(CATEGORIES_TABLEAU).filter((cl) => parCat[cl]).map((cl) =>
-      `<span class="categorie-texte" data-sujets="${esc(parCat[cl].join(" "))}">${esc(CATEGORIES_TABLEAU[cl])}</span>`).join("");
+      `<span class="categorie-texte" data-cat="${cl}" data-sujets="${esc(parCat[cl].join(" "))}">${esc(CATEGORIES_TABLEAU[cl])}</span>`).join("");
   };
   const actionsDe = (ids) => {
     const vues = new Set();
@@ -955,11 +955,12 @@ function tableauTextesPlan(V, C, LIENS, plan, JO) {
   }));
   const fond = Object.keys(parRef).map((ref) => {
     const ids = parRef[ref], q = dateDuTexte(C, ref), L = lienDuTexte(C, LIENS, ref);
-    return { ids, date: (q && q.depuis) || "", ordre: ref, html: (dans) => `<tr data-domaines="${esc(ids.join(" "))}"${dans ? "" : " hidden"}>
+    return { ids, date: (q && q.depuis) || "", ordre: ref, html: (dans) => `<tr data-domaines="${esc(ids.join(" "))}" data-cle="ref:${esc(slug(ref))}" data-objet="${esc(ref)}"${dans ? "" : " hidden"}>
       <td data-titre="Date">${q && q.depuis ? `<time datetime="${esc(q.depuis)}">${esc(dateFr(q.depuis))}</time><span class="precision">dernière évolution</span>` : `<span class="tenu">texte de référence</span>`}</td>
       <td data-titre="Catégorie">${categorie(ids)}</td>
       <td data-titre="Référence et lien"><a href="texte/${slug(ref)}.html">${esc(ref)}</a>
         <a class="lien-officiel" href="${esc(L.url)}" target="_blank" rel="noopener">${esc(intituleDuLien(L))} ${sortant}</a></td>
+      <td data-titre="Applicable"><select class="applicable" aria-label="Ce texte est-il applicable ?"><option value="">À décider</option><option value="applicable">Oui</option><option value="sans_objet">Non</option></select><span class="precision applicable-etat"></span></td>
       <td data-titre="Actions à déclencher">${actionsDe(ids)}</td>
     </tr>` };
   });
@@ -969,11 +970,12 @@ function tableauTextesPlan(V, C, LIENS, plan, JO) {
     const ids = t.domaines.map((d) => d.id).filter((id) => V.domaines[id]);
     const quand = t.dateTexte || t.date;
     const lien = /^https?:\/\//i.test(t.lien || "") ? t.lien : "";
-    return { ids, date: quand, ordre: t.titre, html: (dans) => `<tr data-domaines="${esc(ids.join(" "))}"${dans ? "" : " hidden"}>
+    return { ids, date: quand, ordre: t.titre, html: (dans) => `<tr data-domaines="${esc(ids.join(" "))}" data-cle="${esc(cleJO(t))}" data-objet="${esc(String(t.titre).slice(0, 480))}"${dans ? "" : " hidden"}>
       <td data-titre="Date"><time datetime="${esc(quand)}">${esc(dateFr(quand))}</time><span class="precision">paru récemment</span></td>
       <td data-titre="Catégorie">${categorie(ids)}</td>
       <td data-titre="Référence et lien"><a href="releve.html#${ancreJO(t)}">${esc(t.titre)}</a>
         ${lien ? `<a class="lien-officiel" href="${esc(lien)}" target="_blank" rel="noopener">${/legifrance\.gouv\.fr/.test(lien) ? "Légifrance" : esc(t.sourceNom || "Voir chez la source")} ${sortant}</a>` : ""}</td>
+      <td data-titre="Applicable"><select class="applicable" aria-label="Ce texte est-il applicable ?"><option value="">À décider</option><option value="applicable">Oui</option><option value="sans_objet">Non</option></select><span class="precision applicable-etat"></span></td>
       <td data-titre="Actions à déclencher">${actionsDe(ids)}</td>
     </tr>` };
   });
@@ -984,9 +986,17 @@ function tableauTextesPlan(V, C, LIENS, plan, JO) {
   return `<section class="rubrique" id="textes-du-plan">
   <div class="enveloppe">
     <h2>Les textes de votre plan</h2>
+    <div class="filtre-plan">
+      <label for="filtre-categorie">Catégorie</label>
+      <select id="filtre-categorie">
+        <option value="">Toutes les catégories</option>
+        ${Object.keys(CATEGORIES_TABLEAU).map((cl) => `<option value="${cl}">${esc(CATEGORIES_TABLEAU[cl])}</option>`).join("")}
+      </select>
+      <span class="precision" id="filtre-compte" role="status"></span>
+    </div>
     <div class="defile-tableau">
-    <table class="tableau-plan">
-      <thead><tr><th scope="col">Date</th><th scope="col">Catégorie</th><th scope="col">Référence et lien</th><th scope="col">Actions à déclencher</th></tr></thead>
+    <table class="tableau-plan tableau-textes-plan">
+      <thead><tr><th scope="col">Date</th><th scope="col">Catégorie</th><th scope="col">Référence et lien</th><th scope="col">Applicable</th><th scope="col">Actions à déclencher</th></tr></thead>
       <tbody>${toutes.map((x) => x.html(touche(x.ids))).join("\n")}</tbody>
     </table>
     </div>
@@ -1156,7 +1166,7 @@ ${plan.ecartes.map((id) => blocPlan(id)).join("\n")}
     titre: `Mon plan de veille | ${SITE.nom}`,
     description: "Ce qui s'applique chez vous, et à quel rythme le revoir.",
     racine: "../", zone: "app", actif: "plan", corps, verrou: true, formule: "suivi",
-    donneesPlan: true
+    donneesPlan: true, scripts: ["assets/applicable.js"]
   });
 }
 

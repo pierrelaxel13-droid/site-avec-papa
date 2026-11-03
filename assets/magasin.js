@@ -90,9 +90,14 @@
 
   /* Qualifier un texte, ouvrir une action, la dire faite (un compte seulement :
      la démonstration n'a pas de registre). Rendent { ok } ou { erreur }. */
-  M.qualifications = function () { return copie(memoire.qualifications) || {}; };
+  M.qualifications = function () { return compte ? (copie(memoire.qualifications) || {}) : (local("pco-qualifications") || {}); };
   M.actions = function () { return copie(memoire.actions) || []; };
   M.qualifier = function (cle, intitule, statut, note) {
+    if (!compte) {           // la démonstration : dans le navigateur
+      var tout = local("pco-qualifications") || {};
+      tout[cle] = { statut: statut, le: aujourdhui(), note: note || null, par: "vous" };
+      return Promise.resolve(poserLocal("pco-qualifications", tout) ? { ok: true } : { erreur: REFUS });
+    }
     return V.rpc("espace_qualifier", { e: M.espace.id, quoi: cle, intitule: intitule, statut: statut, note: note || null })
       .then(function (r) {
         if (!r.ok) return r;
