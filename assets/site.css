@@ -3806,3 +3806,16 @@ a.puce-fixe { text-decoration: none; color: inherit; }
 .carre-categorie .etiq { font-size: .78rem; }
 .carre-categorie .grand { font-size: clamp(1.4rem, 1.2rem + .8vw, 1.8rem); font-weight: 700; letter-spacing: -.03em; line-height: 1.15; color: var(--encre); }
 .carre-categorie .precision { font-size: .8rem; color: var(--encre-tenue); }
+.categorie-texte.cat-secondaire { display: none; }
+
+/* La recherche dans les tableaux de textes (3 novembre 2026). */
+.recherche-textes { display: grid; gap: .75rem 1rem; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: end;
+  margin: 0 0 var(--t3); padding: 1rem; background: var(--carte); border: 1px solid var(--filet); border-radius: var(--r3); }
+@media (min-width: 56rem) { .recherche-textes { grid-template-columns: minmax(0, 2.2fr) minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1.4fr) auto; } }
+.rt-champ { display: grid; gap: .3rem; min-width: 0; }
+.rt-mot { grid-column: 1 / -1; }
+@media (min-width: 56rem) { .rt-mot { grid-column: auto; } }
+.rt-champ label { font-size: .8rem; font-weight: 500; color: var(--encre-douce); }
+.rt-champ input, .rt-champ select { width: 100%; min-width: 0; font: inherit; font-size: .9rem; color: var(--encre);
+  background: var(--papier); border: 1px solid var(--filet-fort); border-radius: var(--r1); padding: .5rem .65rem; }
+.rt-effacer { justify-self: start; font-size: .85rem; padding-bottom: .55rem; text-decoration: underline; color: var(--accent); }

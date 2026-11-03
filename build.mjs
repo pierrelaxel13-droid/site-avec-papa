@@ -933,6 +933,35 @@ function actionsDuSujet(V, ids) {
     .filter((a) => !vues.has(a) && vues.add(a)).map((a) => `<li data-sujets="${esc(id)}">${esc(a)}</li>`)).join("");
   return li ? `<ul class="actions-sujet">${li}</ul>` : "Rien à faire : à connaître.";
 }
+/* La recherche dans les tableaux de textes (3 novembre 2026) : par mot, par
+   période et par source. Chaque ligne porte sa date (data-date) et sa source
+   (data-source) ; assets/applicable.js filtre. */
+const NOMS_SOURCES = [[/legifrance\.gouv\.fr/, "Légifrance"], [/eur-lex\.europa\.eu/, "EUR-Lex"], [/service-public\.fr/, "Service-public"],
+  [/inrs\.fr/, "INRS"], [/cnil\.fr/, "CNIL"], [/travail-emploi\.gouv\.fr/, "Ministère du Travail"], [/boss\.gouv\.fr/, "BOSS"],
+  [/afnor\.org/, "AFNOR"], [/cyber\.gouv\.fr/, "ANSSI"], [/securite-sociale\.fr/, "Sécurité sociale"], [/unece\.org/, "Nations unies (CEE-ONU)"],
+  [/preventionbtp\.fr|oppbtp/, "OPPBTP"], [/developpement-durable\.gouv\.fr|ecologie\.gouv\.fr/, "Ministère de la Transition écologique"],
+  [/budget\.gouv\.fr|economie\.gouv\.fr|impots\.gouv\.fr/, "Ministère de l'Économie"], [/anc\.gouv\.fr/, "Autorité des normes comptables"],
+  [/ademe\.fr/, "ADEME"], [/anses\.fr/, "ANSES"], [/has-sante\.fr/, "HAS"], [/urssaf\.fr/, "URSSAF"]];
+function sourceDeLien(url) {
+  for (const [re, nom] of NOMS_SOURCES) if (re.test(url || "")) return nom;
+  try { return new URL(url).hostname.replace(/^www\./, ""); } catch { return "Autre"; }
+}
+const sourceDuReleve = (t) => {
+  const n = String(t.sourceNom || "").split(" — ")[0];
+  return /République française/.test(n) ? "Journal officiel" : /Union européenne/.test(n) ? "Journal officiel de l'UE" : n || "Relevé";
+};
+function rechercheTextes(sources) {
+  const l = [...new Set(sources)].sort((a, b) => a.localeCompare(b, "fr"));
+  return `<div class="recherche-textes" role="search" aria-label="Rechercher un texte">
+      <div class="rt-champ rt-mot"><label for="rt-mot">Texte</label>
+        <input type="search" id="rt-mot" placeholder="Un mot, une référence : amiante, R4412, décret…" autocomplete="off" spellcheck="false"></div>
+      <div class="rt-champ"><label for="rt-du">Du</label><input type="date" id="rt-du"></div>
+      <div class="rt-champ"><label for="rt-au">Au</label><input type="date" id="rt-au"></div>
+      <div class="rt-champ"><label for="rt-source">Source</label>
+        <select id="rt-source"><option value="">Toutes les sources</option>${l.map((x) => `<option>${esc(x)}</option>`).join("")}</select></div>
+      <button type="button" class="lien-nu rt-effacer" id="rt-effacer" hidden>Effacer la recherche</button>
+    </div>`;
+}
 /* Les carrés par catégorie, au-dessus des tableaux de textes (3 novembre
    2026) : le nombre de textes du plan dans chacune ; un clic filtre le
    tableau (assets/applicable.js les compte et les relie au filtre). */
@@ -969,7 +998,8 @@ function tableauTextesPlan(V, C, LIENS, plan, JO) {
   }));
   const fond = Object.keys(parRef).map((ref) => {
     const ids = parRef[ref], q = dateDuTexte(C, ref), L = lienDuTexte(C, LIENS, ref);
-    return { ids, date: (q && q.depuis) || "", ordre: ref, html: (dans) => `<tr data-domaines="${esc(ids.join(" "))}" data-cle="ref:${esc(slug(ref))}" data-objet="${esc(ref)}"${dans ? "" : " hidden"}>
+    const src = sourceDeLien(L.url);
+    return { ids, date: (q && q.depuis) || "", ordre: ref, src, html: (dans) => `<tr data-domaines="${esc(ids.join(" "))}" data-date="${esc((q && q.depuis) || "")}" data-source="${esc(src)}" data-cle="ref:${esc(slug(ref))}" data-objet="${esc(ref)}"${dans ? "" : " hidden"}>
       <td data-titre="Date">${q && q.depuis ? `<time datetime="${esc(q.depuis)}">${esc(dateFr(q.depuis))}</time><span class="etat-date">Dernière mise à jour</span>` : `<span class="etat-date etat-fond">Texte de référence</span>`}</td>
       <td data-titre="Catégorie">${categorie(ids)}</td>
       <td data-titre="Référence et lien"><a href="texte/${slug(ref)}.html">${esc(ref)}</a>
@@ -984,7 +1014,8 @@ function tableauTextesPlan(V, C, LIENS, plan, JO) {
     const ids = t.domaines.map((d) => d.id).filter((id) => V.domaines[id]);
     const quand = t.dateTexte || t.date;
     const lien = /^https?:\/\//i.test(t.lien || "") ? t.lien : "";
-    return { ids, date: quand, ordre: t.titre, html: (dans) => `<tr data-domaines="${esc(ids.join(" "))}" data-cle="${esc(cleJO(t))}" data-objet="${esc(String(t.titre).slice(0, 480))}"${dans ? "" : " hidden"}>
+    const src = sourceDuReleve(t);
+    return { ids, date: quand, ordre: t.titre, src, html: (dans) => `<tr data-domaines="${esc(ids.join(" "))}" data-date="${esc(quand)}" data-source="${esc(src)}" data-cle="${esc(cleJO(t))}" data-objet="${esc(String(t.titre).slice(0, 480))}"${dans ? "" : " hidden"}>
       <td data-titre="Date"><time datetime="${esc(quand)}">${esc(dateFr(quand))}</time><span class="etat-date etat-recent">Parution récente</span></td>
       <td data-titre="Catégorie">${categorie(ids)}</td>
       <td data-titre="Référence et lien"><span class="marque-neuf marque-nouveau" hidden>Nouveau texte</span><a href="releve.html#${ancreJO(t)}">${esc(t.titre)}</a>
@@ -1004,7 +1035,7 @@ function tableauTextesPlan(V, C, LIENS, plan, JO) {
     if (!ids.length || !vig.length) return null;
     const tard = vig.reduce((t, x) => (x.depuis && x.depuis > t ? x.depuis : t), "");
     const nom = `${m.codeTitre}, articles ${vig[0].num} à ${vig[vig.length - 1].num}`;
-    return { ids, date: tard, ordre: nom, html: (dans) => `<tr data-domaines="${esc(ids.join(" "))}" data-cle="code:${esc(m.id)}" data-objet="${esc(nom)}"${dans ? "" : " hidden"}>
+    return { ids, date: tard, ordre: nom, src: "Légifrance", html: (dans) => `<tr data-domaines="${esc(ids.join(" "))}" data-date="${esc(tard)}" data-source="Légifrance" data-cle="code:${esc(m.id)}" data-objet="${esc(nom)}"${dans ? "" : " hidden"}>
       <td data-titre="Date">${tard ? `<time datetime="${esc(tard)}">${esc(dateFr(tard))}</time><span class="etat-date">Dernière mise à jour</span>` : `<span class="etat-date etat-fond">Texte de référence</span>`}</td>
       <td data-titre="Catégorie">${categorie(ids)}</td>
       <td data-titre="Référence et lien"><a href="code/${esc(m.id)}.html">${esc(nom)}</a>
@@ -1022,6 +1053,7 @@ function tableauTextesPlan(V, C, LIENS, plan, JO) {
     <h2>Les textes de votre plan de veille réglementaire</h2>
     <p class="lecture textes-attente" id="textes-attente" role="status"></p>
     ${carresCategories()}
+    ${rechercheTextes(toutes.filter((x) => touche(x.ids)).map((x) => x.src))}
     <div class="filtre-plan">
       <label for="filtre-categorie">Catégorie</label>
       <select id="filtre-categorie">
@@ -1170,7 +1202,7 @@ function appConformite(V, D, C, LIENS, JO = null) {
   const entrees = [];
   Object.keys(parRef).forEach((ref) => {
     const L = lienDuTexte(C, LIENS, ref);
-    entrees.push({ ids: parRef[ref], cle: `ref:${slug(ref)}`, objet: ref, ordre: 0,
+    entrees.push({ ids: parRef[ref], cle: `ref:${slug(ref)}`, objet: ref, ordre: 0, date: (dateDuTexte(C, ref) || {}).depuis || "", src: sourceDeLien(L.url),
       texte: `<a href="texte/${slug(ref)}.html">${esc(ref)}</a>
         <span class="precision">Texte de référence</span>
         <a class="lien-officiel" href="${esc(L.url)}" target="_blank" rel="noopener">${esc(intituleDuLien(L))} ${sortant}</a>` });
@@ -1182,7 +1214,7 @@ function appConformite(V, D, C, LIENS, JO = null) {
     if (!ids.length || !vig.length) return;
     const tard = vig.reduce((t, x) => (x.depuis && x.depuis > t ? x.depuis : t), "");
     const nom = `${m.codeTitre}, articles ${vig[0].num} à ${vig[vig.length - 1].num}`;
-    entrees.push({ ids, cle: `code:${m.id}`, objet: nom, ordre: 1,
+    entrees.push({ ids, cle: `code:${m.id}`, objet: nom, ordre: 1, date: tard, src: "Légifrance",
       texte: `<a href="code/${esc(m.id)}.html">${esc(nom)}</a>
         <span class="precision">${esc(m.chemin[m.chemin.length - 1] || "")} · ${vig.length} article${vig.length > 1 ? "s" : ""} en vigueur${tard ? `, dernière évolution le ${esc(dateFr(tard))}` : ""}</span>` });
   });
@@ -1190,7 +1222,7 @@ function appConformite(V, D, C, LIENS, JO = null) {
     const ids = uniques(t.domaines.map((d) => d.id));
     if (!ids.length) return;
     const lien = /^https?:\/\//i.test(t.lien || "") ? t.lien : "";
-    entrees.push({ ids, cle: cleJO(t), objet: String(t.titre).slice(0, 480), ordre: 2,
+    entrees.push({ ids, cle: cleJO(t), objet: String(t.titre).slice(0, 480), ordre: 2, date: t.dateTexte || t.date, src: sourceDuReleve(t),
       texte: `<a href="releve.html#${ancreJO(t)}">${esc(t.titre)}</a>
         <span class="precision">Paru le ${esc(dateFr(t.dateTexte || t.date))}</span>
         ${lien ? `<a class="lien-officiel" href="${esc(lien)}" target="_blank" rel="noopener">${/legifrance\.gouv\.fr/.test(lien) ? "Légifrance" : esc(t.sourceNom || "Voir chez la source")} ${sortant}</a>` : ""}` });
@@ -1199,7 +1231,7 @@ function appConformite(V, D, C, LIENS, JO = null) {
 
   const lignes = entrees.map((e, i) => {
     const dans = e.ids.some((id) => plan.liste.includes(id));
-    return `<tr data-domaines="${esc(e.ids.join(" "))}" data-cle="${esc(e.cle)}" data-objet="${esc(e.objet)}"${dans ? "" : " hidden"}>
+    return `<tr data-domaines="${esc(e.ids.join(" "))}" data-date="${esc(e.date || "")}" data-source="${esc(e.src || "")}" data-cle="${esc(e.cle)}" data-objet="${esc(e.objet)}"${dans ? "" : " hidden"}>
       <td data-titre="Texte">${e.texte}</td>
       <td data-titre="Catégorie">${categorieTexte(V, e.ids)}</td>
       <td data-titre="Actions à déclencher">${actionsDuSujet(V, e.ids)}</td>
@@ -1234,6 +1266,7 @@ function appConformite(V, D, C, LIENS, JO = null) {
     <h2>Les textes de votre plan de veille réglementaire</h2>
     <p class="note-source conf-lecture" hidden></p>
     ${carresCategories()}
+    ${rechercheTextes(entrees.filter((e) => e.ids.some((id) => plan.liste.includes(id))).map((e) => e.src))}
     <div class="filtre-plan">
       <label for="filtre-categorie">Catégorie</label>
       <select id="filtre-categorie">

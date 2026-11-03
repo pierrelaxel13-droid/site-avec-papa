@@ -24,6 +24,38 @@
     return isNaN(t) ? d : new Date(t).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" });
   }
 
+  /* La catégorie principale d'un texte (3 novembre 2026, « qu'il ne compte
+     qu'une fois ») : celle de son premier sujet qui est dans le plan. Les
+     autres pastilles de catégorie se cachent : une ligne, une catégorie. */
+  function principale(tr) {
+    var spans = [].slice.call(tr.querySelectorAll(".categorie-texte[data-cat]"));
+    var ids = (tr.getAttribute("data-domaines") || "").split(" "), cat = "";
+    for (var i = 0; i < ids.length && !cat; i++) {
+      for (var j = 0; j < spans.length; j++) {
+        if (!spans[j].hidden && (" " + spans[j].getAttribute("data-sujets") + " ").indexOf(" " + ids[i] + " ") !== -1) { cat = spans[j].getAttribute("data-cat"); break; }
+      }
+    }
+    if (!cat && spans[0]) cat = spans[0].getAttribute("data-cat");
+    spans.forEach(function (x) { x.classList.toggle("cat-secondaire", x.getAttribute("data-cat") !== cat); });
+    return cat;
+  }
+
+  /* --- La recherche : un mot, une période, une source ------------------------ */
+  var rMot = document.getElementById("rt-mot"), rDu = document.getElementById("rt-du"),
+      rAu = document.getElementById("rt-au"), rSrc = document.getElementById("rt-source"), rEff = document.getElementById("rt-effacer");
+  function sansAccent(x) { return String(x || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase(); }
+  function cherche(tr) {
+    if (!rMot) return true;
+    var mot = sansAccent(rMot.value.trim()), d = tr.getAttribute("data-date") || "";
+    if (mot && sansAccent(tr.querySelector("td:nth-child(" + (tr.querySelector('[data-titre="Texte"]') ? 1 : 3) + ")").textContent).indexOf(mot) === -1) return false;
+    if (rDu.value && (!d || d < rDu.value)) return false;
+    if (rAu.value && (!d || d > rAu.value)) return false;
+    if (rSrc.value && tr.getAttribute("data-source") !== rSrc.value) return false;
+    return true;
+  }
+  [rMot, rDu, rAu, rSrc].forEach(function (x) { if (x) x.addEventListener(x === rMot ? "input" : "change", function () { filtrer(); }); });
+  if (rEff) rEff.addEventListener("click", function () { rMot.value = rDu.value = rAu.value = rSrc.value = ""; filtrer(); rMot.focus(); });
+
   /* --- Le filtre par catégorie ---------------------------------------------- */
   var filtre = document.getElementById("filtre-categorie");
   var compte = document.getElementById("filtre-compte");
@@ -31,24 +63,23 @@
     var cat = filtre ? filtre.value : "";
     var n = 0;
     lignes.forEach(function (tr) {
-      var garde = !cat || [].some.call(tr.querySelectorAll(".categorie-texte[data-cat]"), function (s) {
-        return !s.hidden && s.getAttribute("data-cat") === cat;
-      });
+      var garde = (!cat || principale(tr) === cat) && cherche(tr);
       tr.classList.toggle("hors-filtre", !garde);
       if (garde && !tr.hidden) n++;
     });
     if (compte) compte.textContent = n + " texte" + (n > 1 ? "s" : "");
+    if (rEff) rEff.hidden = !(rMot.value || rDu.value || rAu.value || rSrc.value);
     carres();
   }
 
-  /* Les carrés par catégorie : le nombre de textes du plan dans chacune (un
-     texte de deux catégories compte dans les deux) ; un clic filtre. */
+  /* Les carrés par catégorie : le nombre de textes du plan dans chacune,
+     chaque texte compté une fois, dans sa catégorie principale ; un clic filtre. */
   function carres() {
     var cat = filtre ? filtre.value : "";
     [].forEach.call(document.querySelectorAll(".carre-categorie"), function (b) {
       var c = b.getAttribute("data-filtre-cat"), n = 0;
       lignes.forEach(function (tr) {
-        if (!tr.hidden && [].some.call(tr.querySelectorAll('.categorie-texte[data-cat="' + c + '"]'), function (s) { return !s.hidden; })) n++;
+        if (!tr.hidden && principale(tr) === c) n++;
       });
       b.querySelector("[data-n-cat]").textContent = n;
       b.querySelector(".precision").textContent = "texte" + (n > 1 ? "s" : "");
