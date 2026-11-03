@@ -75,10 +75,10 @@
     var nav = $(".bandeau .menu");
     if (!bouton || !nav) return;
 
-    /* Le seuil est celui de la feuille de style : 76 rem dans l'application,
-       dont le menu a sept liens ; 62 rem sur les pages publiques. */
+    /* Le seuil est celui de la feuille de style : 86 rem dans l'application,
+       dont le menu a huit liens ; 62 rem sur les pages publiques. */
     var etroit = window.matchMedia(document.body.classList.contains("zone-app")
-      ? "(max-width: 76rem)" : "(max-width: 62rem)");
+      ? "(max-width: 86rem)" : "(max-width: 62rem)");
     var ouvrir = function (v) {
       nav.hidden = !v;
       bouton.setAttribute("aria-expanded", v ? "true" : "false");

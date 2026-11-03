@@ -369,6 +369,7 @@ function page({ titre, description, racine = "", zone = "public", actif = "", co
   const menuApp = `
       ${lien("app/index.html", "Tableau de bord", "bord")}
       ${lien("app/plan.html", "Ma veille réglementaire", "plan")}
+      ${lien("app/actions.html", "Plan d'actions", "actions")}
       ${lien("app/conformite.html", "Conformité réglementaire", "conformite")}
       ${lien("app/releve.html", "Relevé", "releve")}
       ${lien("app/registre.html", "Registre", "registre")}
@@ -1013,6 +1014,24 @@ function tableauTextesPlan(V, C, LIENS, plan, JO) {
    preuve ou son commentaire. Chaque évaluation s'inscrit, datée, au registre
    (assets/conformite.js, espace_conformite). Les lignes portent leurs sujets
    (data-domaines) : la page suit le plan des réglages, comme Mon plan. */
+/* --- Plan d'actions (3 novembre 2026, demandé par Axel) ----------------------
+   L'onglet existe ; son contenu viendra (Axel le précisera). Formule
+   « Textes et suivi » et au-dessus : c'est elle qui donne le plan d'actions. */
+function appActions(D) {
+  const corps = enTeteApp(D, "Plan d'actions",
+    "Les actions à mener pour répondre aux exigences réglementaires qui vous concernent.") + `
+<section class="rubrique">
+  <div class="enveloppe">
+    <p class="lecture">Cette page est en préparation.</p>
+  </div>
+</section>`;
+  return page({
+    titre: `Plan d'actions | ${SITE.nom}`,
+    description: "Le plan d'actions de votre veille réglementaire.",
+    racine: "../", zone: "app", actif: "actions", corps, verrou: true, formule: "suivi"
+  });
+}
+
 function appConformite(V, D, C, LIENS, JO = null) {
   const plan = planDe(V, D.entreprise);
   const parRef = {};
@@ -4953,6 +4972,7 @@ async function main() {
   await writeFile(join(SORTIE, "app", "index.html"), appTableauBord(V, D, C, LIENS));
   await writeFile(join(SORTIE, "app", "plan.html"), appPlan(V, D, C, LIENS, JO));
   await writeFile(join(SORTIE, "app", "conformite.html"), appConformite(V, D, C, LIENS, JO));
+  await writeFile(join(SORTIE, "app", "actions.html"), appActions(D));
   await writeFile(join(SORTIE, "app", "releve.html"), appReleve(V, D, JO, C, LIENS, SOURCES));
   await writeFile(join(SORTIE, "app", "registre.html"), appRegistre(V, D));
   await writeFile(join(SORTIE, "app", "secteurs.html"), appSecteurs(V, METIERS, NAF));

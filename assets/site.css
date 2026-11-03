@@ -519,7 +519,7 @@ html, body, * { scrollbar-width: none; }
    ou trois lignes entre 1 000 et 1 200 px. Il se replie donc plus tôt, sous
    76 rem — mesuré : il tient d'une ligne à partir de 1 200 px. Le même seuil
    est dans assets/app.js. */
-@media (max-width: 76rem) {
+@media (max-width: 86rem) {   /* 76 rem avant le huitième onglet (3 novembre 2026) */
   .zone-app .menu-bascule { display: inline-flex; }
   .zone-app .bandeau .menu {
     position: absolute; left: 0; right: 0; top: 100%;
@@ -3607,3 +3607,11 @@ a.puce-fixe { text-decoration: none; color: inherit; }
 .admin-message .message-texte { margin: .4rem 0 .2rem; white-space: pre-wrap; overflow-wrap: anywhere; font-size: .9rem; color: var(--encre); }
 .admin-message.message-lu { opacity: .7; }
 .admin-message .equipe-outils { display: flex; gap: 1rem; flex-wrap: wrap; align-items: center; }
+
+/* Huit onglets dans l'espace (3 novembre 2026) : chacun sur une ligne, et plus
+   serrés sur les écrans moyens, avant le repli en menu (76 rem). */
+.zone-app .bandeau .menu a { white-space: nowrap; }
+@media (min-width: 86.001rem) and (max-width: 96rem) {
+  .zone-app .bandeau .menu { gap: .1rem; }
+  .zone-app .bandeau .menu a { padding: .45rem .55rem; font-size: .86rem; }
+}
