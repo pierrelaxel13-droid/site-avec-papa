@@ -3727,13 +3727,21 @@ ${SITE.offreConsultant ? `<section class="section">
   </div>
 </section>
 
-` : ""}<section class="bande-finale bande-accueil" id="contact">
-  <div class="enveloppe">
-    <span class="marque">${motMarque()}</span>
-    <h2>${SITE.premierEchange ? "Un premier échange d'une heure, sans engagement" : "Une question avant de vous abonner ?"}</h2>
-    <p class="mentions">
-      Contactez-nous, et notre équipe vous répondra dans les meilleurs délais.
-    </p>
+` : ""}<section class="section section-contact" id="contact">
+  <div class="enveloppe contact-page">
+    <div class="contact-intro">
+      <p class="contact-surtitre">Nous contacter</p>
+      <h2>${SITE.premierEchange ? "Un premier échange d'une heure, sans engagement" : "Une question avant de vous abonner ?"}</h2>
+      <p class="contact-texte">Contactez-nous, et notre équipe vous répondra dans les meilleurs délais.</p>
+      <ul class="contact-infos">
+        <li><span class="contact-icone" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3.5 6.5 8.5 6 8.5-6"/></svg></span>
+          <span><span class="contact-etiquette">Par courriel</span><a href="mailto:${esc(SITE.courriel)}">${esc(SITE.courriel)}</a></span></li>
+        ${SITE.telephone ? `<li><span class="contact-icone" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"/></svg></span>
+          <span><span class="contact-etiquette">Par téléphone</span>${lienTel("")}</span></li>` : ""}
+        <li><span class="contact-icone" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="13" rx="2"/><path d="M8 21h8M12 17v4"/></svg></span>
+          <span><span class="contact-etiquette">Voir le site en action</span><a href="abonnement.html#essayer">Démarrer une démonstration gratuite</a></span></li>
+      </ul>
+    </div>
     ${formulaireContact()}
   </div>
 </section>`;
@@ -3777,7 +3785,7 @@ function formulaireContact() {
         <span>J'accepte que ces informations servent à me répondre (voir la <a href="confidentialite.html">politique de confidentialité</a>).</span></label>
       <p class="rangee"><button type="submit" class="bouton bouton-accent">Envoyer le message</button></p>
       <p class="etat-contact" id="etat-contact" role="status"></p>
-      <p class="contact-autre">Ou écrivez-nous à <a href="mailto:${esc(SITE.courriel)}">${esc(SITE.courriel)}</a>${SITE.telephone ? ` · ${lienTel("")}` : ""}.</p>
+      <p class="contact-autre"><span class="requis">*</span> champs obligatoires</p>
     </form>
     <div class="form-contact contact-merci" id="contact-merci" hidden tabindex="-1">
       <p><strong>Merci, votre message est bien envoyé.</strong></p>
