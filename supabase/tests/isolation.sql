@@ -745,12 +745,23 @@ select tests.ok(not exists (select 1 from prive.clients_conseils() where divisio
 -- Le coût de chaque conseil : le total du mois pour l'administration.
 update public.conseils set cout = 0.0123 where texte_id = 'T_C1' and metier = '';
 update public.conseils set cout = 0.5, le = now() - interval '40 days' where texte_id = 'T_C1' and metier = '10';
+-- Sur la vraie base, le robot a déjà rangé de vrais conseils : on ne compte
+-- que ceux de l'essai (T_C…), en retirant ce qui était là avant.
+select set_config('tests.gardes', (select count(*) from public.conseils where texte is not null and texte_id not like 'T\_C%')::text, true),
+       set_config('tests.ecartes', (select count(*) from public.conseils where texte is null and texte_id not like 'T\_C%')::text, true),
+       set_config('tests.depense', (select coalesce(sum(cout), 0) from public.conseils
+                                    where le >= date_trunc('month', now()) and texte_id not like 'T\_C%')::text, true);
 select tests.qui('00000000-0000-0000-0000-0000000000f1', 'axel@test.fr');
 set local role authenticated;
-select tests.ok((select (c ->> 'gardes')::int = 4 and (c ->> 'ecartes')::int = 2 and json_array_length(c -> 'a_revoir') = 1
-                    and c -> 'a_revoir' -> 0 ->> 'titre' = 'Arrêté C3 (essai)' from public.admin_conseils() c),
+select tests.ok((select (c ->> 'gardes')::int - current_setting('tests.gardes')::int = 4
+                    and (c ->> 'ecartes')::int - current_setting('tests.ecartes')::int = 2
+                    and exists (select 1 from json_array_elements(c -> 'a_revoir') x
+                                where x ->> 'texte_id' = 'T_C3' and x ->> 'titre' = 'Arrêté C3 (essai)')
+                    and not exists (select 1 from json_array_elements(c -> 'a_revoir') x
+                                    where x ->> 'texte_id' like 'T\_C%' and x ->> 'texte_id' <> 'T_C3')
+                  from public.admin_conseils() c),
   'l''administrateur voit ce que l''IA dit « à revoir », avec le titre du texte');
-select tests.ok((select (public.admin_conseils() ->> 'depense_mois')::numeric = 0.0123),
+select tests.ok((select round((public.admin_conseils() ->> 'depense_mois')::numeric - current_setting('tests.depense')::numeric, 4) = 0.0123),
   'et ce que les conseils ont coûté ce mois-ci (pas le mois dernier)');
 reset role;
 
