@@ -920,8 +920,86 @@ function ligneRegistre(r) {
 </li>`;
 }
 
+/* --- Mon plan : le tableau des textes (3 novembre 2026, demandé par Axel) ---
+   Une ligne par texte relevé qui touche le plan : sa date, sa catégorie, sa
+   référence avec le lien officiel, et les actions à déclencher (celles des
+   sujets du plan auxquels il est rattaché, comme « Ce que vous devez faire »
+   dans le relevé). La catégorie vient du classement du référentiel ; le
+   social y est appelé « Ressources humaines ». Chaque ligne porte ses sujets
+   (data-domaines) : assets/entreprise.js la montre ou la cache selon le plan
+   de l'entreprise, et n'y garde que la catégorie et les actions de ses sujets. */
+const CATEGORIES_TABLEAU = {
+  "sante-securite": "Santé et sécurité", hygiene: "Hygiène", environnement: "Environnement",
+  social: "Ressources humaines", metier: "Métier et gestion"
+};
+function tableauTextesPlan(V, C, LIENS, plan, JO) {
+  const categorie = (ids) => {
+    const parCat = {};
+    ids.forEach((id) => {
+      const cl = CATEGORIES_TABLEAU[V.domaines[id].classement] ? V.domaines[id].classement : "metier";
+      (parCat[cl] = parCat[cl] || []).push(id);
+    });
+    return Object.keys(CATEGORIES_TABLEAU).filter((cl) => parCat[cl]).map((cl) =>
+      `<span class="categorie-texte" data-sujets="${esc(parCat[cl].join(" "))}">${esc(CATEGORIES_TABLEAU[cl])}</span>`).join("");
+  };
+  const actionsDe = (ids) => {
+    const vues = new Set();
+    const li = ids.flatMap((id) => (V.domaines[id].actions || []).slice(0, 2)
+      .filter((a) => !vues.has(a) && vues.add(a)).map((a) => `<li data-sujets="${esc(id)}">${esc(a)}</li>`)).join("");
+    return li ? `<ul>${li}</ul>` : "Rien à faire : à connaître.";
+  };
+  const touche = (ids) => ids.some((id) => plan.liste.includes(id));
+
+  /* Les textes de référence des sujets (codes, décrets, règlements, tout le
+     référentiel) : la date est leur dernière évolution quand nous relevons
+     leur contenu consolidé, sinon nous ne l'inventons pas. */
+  const parRef = {};
+  Object.keys(V.domaines).forEach((id) => (V.domaines[id].textes || []).forEach((ref) => {
+    (parRef[ref] = parRef[ref] || []).push(id);
+  }));
+  const fond = Object.keys(parRef).map((ref) => {
+    const ids = parRef[ref], q = dateDuTexte(C, ref), L = lienDuTexte(C, LIENS, ref);
+    return { ids, date: (q && q.depuis) || "", ordre: ref, html: (dans) => `<tr data-domaines="${esc(ids.join(" "))}"${dans ? "" : " hidden"}>
+      <td data-titre="Date">${q && q.depuis ? `<time datetime="${esc(q.depuis)}">${esc(dateFr(q.depuis))}</time><span class="precision">dernière évolution</span>` : `<span class="tenu">texte de référence</span>`}</td>
+      <td data-titre="Catégorie">${categorie(ids)}</td>
+      <td data-titre="Référence et lien"><a href="texte/${slug(ref)}.html">${esc(ref)}</a>
+        <a class="lien-officiel" href="${esc(L.url)}" target="_blank" rel="noopener">${esc(intituleDuLien(L))} ${sortant}</a></td>
+      <td data-titre="Actions à déclencher">${actionsDe(ids)}</td>
+    </tr>` };
+  });
+
+  /* Les textes parus au Journal officiel et relevés ces derniers jours. */
+  const recents = !(JO && JO.textes) ? [] : JO.textes.map((t) => {
+    const ids = t.domaines.map((d) => d.id).filter((id) => V.domaines[id]);
+    const quand = t.dateTexte || t.date;
+    const lien = /^https?:\/\//i.test(t.lien || "") ? t.lien : "";
+    return { ids, date: quand, ordre: t.titre, html: (dans) => `<tr data-domaines="${esc(ids.join(" "))}"${dans ? "" : " hidden"}>
+      <td data-titre="Date"><time datetime="${esc(quand)}">${esc(dateFr(quand))}</time><span class="precision">paru récemment</span></td>
+      <td data-titre="Catégorie">${categorie(ids)}</td>
+      <td data-titre="Référence et lien"><a href="releve.html#${ancreJO(t)}">${esc(t.titre)}</a>
+        ${lien ? `<a class="lien-officiel" href="${esc(lien)}" target="_blank" rel="noopener">${/legifrance\.gouv\.fr/.test(lien) ? "Légifrance" : esc(t.sourceNom || "Voir chez la source")} ${sortant}</a>` : ""}</td>
+      <td data-titre="Actions à déclencher">${actionsDe(ids)}</td>
+    </tr>` };
+  });
+
+  const toutes = recents.concat(fond).sort((a, b) =>
+    a.date !== b.date ? (a.date < b.date ? 1 : -1) : a.ordre.localeCompare(b.ordre, "fr"));
+  if (!toutes.length) return "";
+  return `<section class="rubrique" id="textes-du-plan">
+  <div class="enveloppe">
+    <h2>Les textes de votre plan</h2>
+    <div class="defile-tableau">
+    <table class="tableau-plan">
+      <thead><tr><th scope="col">Date</th><th scope="col">Catégorie</th><th scope="col">Référence et lien</th><th scope="col">Actions à déclencher</th></tr></thead>
+      <tbody>${toutes.map((x) => x.html(touche(x.ids))).join("\n")}</tbody>
+    </table>
+    </div>
+  </div>
+</section>`;
+}
+
 /* --- Mon plan --------------------------------------------------------------- */
-function appPlan(V, D, C, LIENS) {
+function appPlan(V, D, C, LIENS, JO = null) {
   const plan = planDe(V, D.entreprise);
   const { base } = plan;
   const ajoutes = new Set(plan.ajoutes);
@@ -973,6 +1051,8 @@ function appPlan(V, D, C, LIENS) {
   }))}
   </div>
 </section>
+
+${tableauTextesPlan(V, C, LIENS, plan, JO)}
 
 ${parFrequence.map((g) => {
     const ech = D.echeances.filter((e) => e.frequence === g.id)[0];
@@ -4642,7 +4722,7 @@ async function main() {
   await writeFile(join(SORTIE, "compte", "invitation.html"), pageInvitation());
 
   await writeFile(join(SORTIE, "app", "index.html"), appTableauBord(V, D, C, LIENS));
-  await writeFile(join(SORTIE, "app", "plan.html"), appPlan(V, D, C, LIENS));
+  await writeFile(join(SORTIE, "app", "plan.html"), appPlan(V, D, C, LIENS, JO));
   await writeFile(join(SORTIE, "app", "releve.html"), appReleve(V, D, JO, C, LIENS, SOURCES));
   await writeFile(join(SORTIE, "app", "registre.html"), appRegistre(V, D));
   await writeFile(join(SORTIE, "app", "secteurs.html"), appSecteurs(V, METIERS, NAF));

@@ -178,6 +178,17 @@
       var e = document.getElementById(id);
       if (e) e.textContent = texte;
     };
+    /* Le tableau des textes du plan : une ligne par texte qui touche le plan,
+       avec seulement la catégorie et les actions de ses sujets du plan. */
+    var touche = function (el) {
+      return (el.getAttribute("data-sujets") || el.getAttribute("data-domaines") || "").split(" ")
+        .some(function (id) { return dedans[id]; });
+    };
+    [].forEach.call(document.querySelectorAll(".tableau-plan tbody tr"), function (tr) {
+      var garder = touche(tr);
+      tr.hidden = !garder;
+      if (garder) [].forEach.call(tr.querySelectorAll("[data-sujets]"), function (x) { x.hidden = !touche(x); });
+    });
     pose("plan-total", vue.liste.length);
     pose("plan-naf", garde.naf);
     if (garde.responsable) pose("plan-responsable", garde.responsable);

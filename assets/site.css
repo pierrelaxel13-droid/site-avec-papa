@@ -3334,3 +3334,34 @@ a.puce-fixe { text-decoration: none; color: inherit; }
   [data-page="reglages"] .reglages-entreprise > .reglage:has(#e-siret) > label { margin: 0; }
   [data-page="reglages"] .reglages-entreprise > .reglage:has(#e-siret) > :not(label) { grid-column: 2; }
 }
+
+/* --- Mon plan : le tableau des textes (3 novembre 2026) --------------------
+   Au bureau, un vrai tableau ; au téléphone, chaque texte devient une carte
+   où chaque case porte son intitulé (data-titre). */
+.tableau-plan { width: 100%; border-collapse: collapse; font-size: .92rem; }
+.tableau-plan th, .tableau-plan td { padding: .7rem .8rem; text-align: left; vertical-align: top; border-bottom: 1px solid var(--filet); }
+.tableau-plan thead th { font-size: .85rem; font-weight: 500; color: var(--encre-tenue); border-bottom-color: var(--filet-fort); white-space: nowrap; }
+.tableau-plan td:first-child { white-space: nowrap; color: var(--encre-douce); font-variant-numeric: tabular-nums; }
+.tableau-plan td a { color: var(--encre); }
+.tableau-plan .vers-releve { display: block; margin-top: .25rem; font-size: .82rem; color: var(--accent); }
+.tableau-plan ul { margin: 0; padding-left: 1.1rem; }
+.tableau-plan li + li { margin-top: .2rem; }
+.tableau-plan [hidden] { display: none; }
+.categorie-texte { display: inline-block; margin: 0 .3rem .3rem 0; padding: .1rem .55rem; border-radius: 999px;
+  background: var(--accent-clair); color: var(--encre); font-size: .8rem; white-space: nowrap; }
+@media (min-width: 48rem) {
+  .tableau-plan td:nth-child(2) { width: 11rem; }
+  .tableau-plan td:nth-child(3) { width: 38%; }
+}
+@media (max-width: 47.99rem) {
+  .tableau-plan thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+  .tableau-plan, .tableau-plan tbody, .tableau-plan tr, .tableau-plan td { display: block; width: 100%; }
+  .tableau-plan tr { padding: .8rem .9rem; margin-bottom: .7rem; background: var(--carte); border: 1px solid var(--filet); border-radius: var(--r3); }
+  .tableau-plan tr[hidden] { display: none; }
+  .tableau-plan td { padding: .3rem 0; border: 0; white-space: normal !important; }
+  .tableau-plan td::before { content: attr(data-titre); display: block; font-size: .78rem; color: var(--encre-tenue); }
+}
+.tableau-plan .precision { display: block; font-size: .8rem; color: var(--encre-tenue); }
+.tableau-plan .lien-officiel { display: block; margin-top: .25rem; font-size: .82rem; color: var(--accent); }
+.tableau-plan .lien-officiel svg { width: .8em; height: .8em; }
+.tableau-plan td:first-child time { color: var(--encre); }
