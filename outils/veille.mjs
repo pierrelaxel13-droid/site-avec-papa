@@ -44,7 +44,7 @@ import { fileURLToPath } from "node:url";
 import { execFile } from "node:child_process";
 import { promisify } from "node:util";
 import { controle } from "./controles.mjs";
-import { rattache, dateDuTitre, ficheAncienne, texteBrut } from "./tri.mjs";
+import { rattache, rattacheTexte, dateDuTitre, ficheAncienne, texteBrut } from "./tri.mjs";
 
 const execFileP = promisify(execFile);
 const RACINE = resolve(dirname(fileURLToPath(import.meta.url)), "..");
@@ -323,7 +323,7 @@ async function relevéDila(V, s, depuis) {
         if (!t || !t.corps) continue;
         entrees++;
         if (ficheAncienne(t.titre, t.date, a.date)) { anciennes++; continue; }
-        const domaines = rattache(V, t.titre, s.id);
+        const domaines = rattacheTexte(V, t.titre, t.corps, s.id);
         if (!domaines.length) continue;
         retenus.push({
           source: s.id, sourceNom: s.nom, genre: "texte",
@@ -583,7 +583,7 @@ async function main() {
   const avantBrut = AVANT.length;
   AVANT = AVANT
     .filter((t) => !(t.source === "jorf" && ficheAncienne(t.titre, t.date, t.vuLe || t.date)))
-    .map((t) => ({ ...t, domaines: rattache(V, t.titre, t.source) }))
+    .map((t) => ({ ...t, domaines: rattacheTexte(V, t.titre, t.corps, t.source) }))
     .filter((t) => t.domaines.length);
   if (AVANT.length < avantBrut) console.log(`Relevé précédent : ${avantBrut - AVANT.length} textes écartés par le tri actuel.\n`);
   await rm(TRAVAIL, { recursive: true, force: true });

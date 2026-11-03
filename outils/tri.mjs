@@ -96,6 +96,52 @@ export function rattache(V, titre, source = "") {
   return touches;
 }
 
+/* --- Les normes homologuées (3 novembre 2026) ----------------------------
+   Chaque mois, le Journal officiel publie un « Avis relatif à l'homologation
+   et à l'annulation de normes » : la liste des normes NF, EN, ISO homologuées
+   ou annulées. Son titre ne dit rien du sujet : on lit donc, pour lui seul,
+   chacune de ses lignes de normes, et on la rattache aux sujets par leurs
+   mots-clés, plus quelques mots propres aux normes (MOTS_NORMES). Le texte
+   des normes est payant chez l'AFNOR ; l'avis, lui, est public. */
+export const AVIS_NORMES = /homologation.*normes|normes.*homologation|annulation de normes/;
+const MOTS_NORMES = {
+  chantier_sps: ["echafaudage", "equipements temporaires de chantier", "coffrage"],
+  levage: ["levage", "grue", "palan", "nacelle", "plate-forme elevatrice", "plates-formes elevatrices", "chariot", "elingue"],
+  sst: ["equipement de protection individuelle", "equipements de protection individuelle", "protection respiratoire",
+        "protection auditive", "protection des yeux", "gants de protection", "chaussures de securite", "vetements de protection",
+        "harnais", "antichute", "ergonomie", "management de la sante et de la securite"],
+  produits_ce: ["securite des machines", "machines", "marquage ce"],
+  chimie: ["agents chimiques", "atmospheres des lieux de travail", "exposition sur les lieux de travail"],
+  amiante: ["amiante"],
+  atex: ["atmospheres explosives", "atmosphere explosive"],
+  erp: ["detection incendie", "securite incendie", "extincteur", "desenfumage", "systeme de securite incendie"],
+  construction: ["maconnerie", "beton", "charpente", "couverture", "eurocode", "ouvrages en", "travaux de batiment", "dtu"],
+  env_general: ["management environnemental"],
+  energie_tertiaire: ["management de l'energie", "performance energetique"],
+  alimentaire: ["securite des denrees", "hygiene alimentaire", "microbiologie des aliments", "aliments"],
+  cyber: ["securite de l'information", "cybersecurite"],
+  rgpd: ["vie privee", "donnees personnelles"],
+  accessibilite_num: ["accessibilite des produits et services tic", "accessibilite numerique"],
+  pharma: ["dispositifs medicaux"]
+};
+export function rattacheNormes(V, corps) {
+  const lignes = String(corps || "").split(/\n|(?=\b(?:NF|FD|XP|GA|BP)\s?(?:EN|ISO|IEC|[A-Z])?\s?[0-9A-Z])/)
+    .map((l) => normalise(l)).filter((l) => /\b(nf|fd|xp|ga|bp|en|iso)\b/.test(l));
+  const touches = [];
+  for (const [id, d] of Object.entries(V.domaines)) {
+    const mots = (d.motsCles || []).map(normalise)
+      .filter((m) => m.length > 4 && !MOT_FAIBLE.test(m) && !MOTS_TROMPEURS.has(m))
+      .concat((MOTS_NORMES[id] || []).map(normalise));
+    const trouves = [...new Set(mots.filter((m) => lignes.some((l) => l.includes(m))))];
+    if (trouves.length) touches.push({ id, nom: d.nom, mots: trouves.slice(0, 3) });
+  }
+  return touches;
+}
+/* Le rattachement d'un texte : par son titre, sauf l'avis des normes, lu ligne à ligne. */
+export function rattacheTexte(V, titre, corps, source = "") {
+  return AVIS_NORMES.test(normalise(titre)) ? rattacheNormes(V, corps) : rattache(V, titre, source);
+}
+
 /* Une fiche du Journal officiel datée (par son titre, sinon par sa date) de
    plus de six mois avant l'archive qui l'apporte : un ancien texte renvoyé,
    pas une parution. Une délibération publiée deux mois après son vote reste. */

@@ -7,7 +7,7 @@
    ========================================================================== */
 import { readFileSync } from "node:fs";
 import vm from "node:vm";
-import { rattache, ficheAncienne, dateDuTitre } from "./tri.mjs";
+import { rattache, rattacheTexte, ficheAncienne, dateDuTitre } from "./tri.mjs";
 
 const c = { window: {} };
 vm.runInNewContext(readFileSync(new URL("../assets/referentiel.js", import.meta.url), "utf8"), c);
@@ -54,6 +54,19 @@ ok(!ficheAncienne("Délibération n° 2026-091 du 3 septembre 2026 portant avis 
 ok(!ficheAncienne("Décret n° 2026-1006 du 28 octobre 2026 modifiant la liste des classes thérapeutiques", "2026-10-28", "2026-10-28"), "un décret du jour : gardé");
 ok(!ficheAncienne("Biodéchets : comprendre et agir", "", "2026-10-28"), "sans date dans le titre ni ailleurs : on ne juge pas");
 ok(dateDuTitre("Arrêté du 1er juin 2023 relatif au traitement") === "2023-06-01", "la date du titre se lit (1er juin 2023)");
+
+/* --- Les normes homologuées (3 novembre 2026) --- */
+const AVIS = "Avis relatif à l'homologation et à l'annulation de normes";
+const CORPS = "Normes homologuées\nNF EN 12811-1 (P93-354-1) : Équipements temporaires de chantiers — Partie 1 : échafaudages\n" +
+  "NF EN ISO 12100 : Sécurité des machines — Principes généraux de conception\n" +
+  "NF EN 280 : Plates-formes élévatrices mobiles de personnel\nNormes annulées\nNF X 00-000 : Méthode d'essai des peintures";
+const dn = rattacheTexte(V, AVIS, CORPS, "jorf").map((d) => d.id);
+ok(rattache(V, AVIS, "jorf").length === 0, "par son titre seul, l'avis des normes ne se rattache à rien (c'était le cas avant)");
+ok(dn.includes("chantier_sps") && dn.includes("produits_ce") && dn.includes("levage"), "lu ligne à ligne : échafaudages, machines et nacelles vont à leurs sujets");
+ok(!dn.includes("alimentaire") && !dn.includes("rgpd"), "et rien d'autre que ce que disent ses lignes");
+ok(rattacheTexte(V, AVIS, "Normes homologuées\nNF X 00-000 : Méthode d'essai des peintures", "jorf").length === 0, "un avis sans norme de nos sujets n'est pas retenu");
+ok(JSON.stringify(rattacheTexte(V, "Arrêté du 20 octobre 2026 relatif aux échafaudages", "", "jorf")) === JSON.stringify(rattache(V, "Arrêté du 20 octobre 2026 relatif aux échafaudages", "jorf")),
+  "les autres textes se trient comme avant, par le titre");
 
 console.log(`\n${n - echecs}/${n} vérifications passées`);
 process.exit(echecs ? 1 : 0);
