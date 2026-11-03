@@ -24,7 +24,8 @@
      formule — le tableau de bord n'est pas dans « Textes ». On ne revient que
      dans le site : jamais vers une adresse extérieure. */
   function retourSur(valeur) {
-    return valeur && /^(app|compte)\/[\w\-./]*$/.test(valeur) && valeur.indexOf("..") === -1 ? valeur : null;
+    // Une adresse du site, avec au plus des paramètres simples (compte/paiement.html?formule=…&periode=…).
+    return valeur && /^(app|compte)\/[\w\-./]*(\?[\w=&-]*)?$/.test(valeur) && valeur.indexOf("..") === -1 ? valeur : null;
   }
   function entree(retour) {
     if (retour) return Promise.resolve(retour);
@@ -244,6 +245,14 @@
         } else {
           f.textContent = "Pas encore d'abonnement : votre espace ouvrira avec lui.";
           ouvrir.hidden = true; tarifs.hidden = false;
+          // Une offre choisie avant de créer le compte : on y revient directement.
+          try {
+            var voulu = JSON.parse(window.localStorage.getItem("pco-souscrire") || "null");
+            if (voulu && /^(textes|suivi|complet)$/.test(voulu.formule) && /^(an|mois)$/.test(voulu.periode)) {
+              tarifs.href = vers("compte/paiement.html?formule=" + voulu.formule + "&periode=" + voulu.periode);
+              tarifs.textContent = "Finaliser mon abonnement";
+            }
+          } catch (x) { /* sans effet */ }
         }
         boite.hidden = false;
         equipe(e);

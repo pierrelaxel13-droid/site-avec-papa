@@ -3874,16 +3874,14 @@ function pageAbonnement(V) {
         <p class="offre-an"><span class="pastille-offre">2 mois offerts</span> ou <strong>${esc(f.prix)}</strong></p>
         ${f.surCarte === false ? "" : `<p class="pour">${esc(f.pour)}</p>`}
         <ul class="formule-donne">${f.donne.map((d) => `<li>${esc(d)}</li>`).join("")}</ul>
-        <a class="bouton ${id === "complet" ? "bouton-accent" : "bouton-sobre"}" href="${esc(lienPaiement(id, "an") ||
-          `mailto:${SITE.courriel}?subject=${encodeURIComponent(`Démarrer un abonnement — ${f.l}, à l'année`)}`)}">Abonnement annuel</a>
-        <a class="lien-mois" href="${esc(lienPaiement(id, "mois") ||
-          `mailto:${SITE.courriel}?subject=${encodeURIComponent(`Démarrer un abonnement — ${f.l}, au mois`)}`)}">Abonnement mensuel</a>
+        <a class="bouton ${id === "complet" ? "bouton-accent" : "bouton-sobre"}" href="compte/paiement.html?formule=${id}&amp;periode=an">Abonnement annuel</a>
+        <a class="lien-mois" href="compte/paiement.html?formule=${id}&amp;periode=mois">Abonnement mensuel</a>
       </article>`).join("\n      ")}
     </div>
 
     ${paiementComplet() ? `<p class="reserve reserve-ok" style="margin-top:var(--t5)">
       <strong>Paiement en ligne, sécurisé par Stripe.</strong>
-      Les boutons ouvrent la page de paiement de Stripe : par carte, prélevé chaque année ou chaque mois.
+      Par carte bancaire ou par prélèvement SEPA, chaque année ou chaque mois.
       Vos coordonnées bancaires ne passent jamais par ce site.
       ${lienPaiement("portail") ? `Vous pouvez <a href="${esc(lienPaiement("portail"))}">gérer ou résilier votre abonnement</a> à tout moment.` : ""}
     </p>` : ""}
@@ -4224,6 +4222,87 @@ function pageMonCompte() {
 </section>`;
   return page({ titre: `Mon compte | ${SITE.nom}`, description: `Votre compte ${SITE.nom}.`,
     racine: "../", zone: "public", corps, attrsBody: ' data-page="compte"', scripts: ["assets/compte.js"], installation: false, piedCourt: true });
+}
+
+/* --- Le paiement (3 novembre 2026, demandé par Axel) -------------------------
+   Derrière chaque bouton « S'abonner » : le récapitulatif de l'offre, les deux
+   moyens de paiement (carte bancaire, prélèvement SEPA), le compte et
+   l'entreprise auxquels l'abonnement se rattache, l'acceptation des CGV.
+   Puis la page de paiement de Stripe, où le client choisit carte ou
+   prélèvement : ses coordonnées bancaires ne passent jamais par ce site.
+   L'identifiant de l'entreprise part avec (client_reference_id) : le robot
+   outils/stripe.mjs s'en sert pour ouvrir la formule dans la base. */
+function pageSouscrire() {
+  const donnees = {
+    formules: Object.fromEntries(Object.entries(FORMULES).map(([id, f]) => [id, {
+      l: f.carte || f.l, court: f.l, an: eur(f.an), mois: eur(f.mois), montantAn: f.an, montantMois: f.mois }])),
+    liens: Object.fromEntries(Object.keys(FORMULES).map((id) => [id, { an: lienPaiement(id, "an"), mois: lienPaiement(id, "mois") }])),
+    tva: SITE.tva, mention: TVA.mention, courriel: SITE.courriel, portail: lienPaiement("portail")
+  };
+  const corps = `
+<section class="section compte-page">
+  <div class="enveloppe">
+    <div class="compte-tete">
+      <p class="fil"><a href="../abonnement.html">← Nos offres</a></p>
+      <h1>Votre abonnement</h1>
+      <p class="etat-compte" id="paie-etat" role="status"></p>
+    </div>
+    <div class="connexion connexion-seule" id="paiement" data-paiement="${esc(JSON.stringify(donnees))}">
+      ${comptesFermes()}
+
+      <div class="carte-connexion" id="paie-merci" hidden>
+        <h2>Merci, votre paiement est enregistré</h2>
+        <p>Votre formule s'ouvre dans les minutes qui suivent, dès que Stripe nous confirme le paiement.
+        Par prélèvement SEPA, la confirmation peut prendre quelques jours ouvrés. Vous recevez la facture par courriel.</p>
+        <p class="rangee" style="margin-top:var(--t4)"><a class="bouton bouton-accent" href="./">Mon compte</a></p>
+      </div>
+
+      <div id="paie-formulaire">
+      <div class="carte-connexion">
+        <h2>Récapitulatif</h2>
+        <p class="paie-offre" id="paie-offre"></p>
+        <div class="paie-periodes" role="radiogroup" aria-label="Durée">
+          <label class="paie-periode"><input type="radio" name="paie-periode" value="an">
+            <span><strong>Annuel</strong><span class="precision" id="paie-prix-an"></span><span class="pastille-offre">2 mois offerts</span></span></label>
+          <label class="paie-periode"><input type="radio" name="paie-periode" value="mois">
+            <span><strong>Mensuel</strong><span class="precision" id="paie-prix-mois"></span></span></label>
+        </div>
+        <dl class="paie-total" id="paie-total"></dl>
+        <p class="precision">Renouvelé automatiquement à chaque échéance ; résiliable à tout moment pour l'échéance suivante.</p>
+      </div>
+
+      <div class="carte-connexion">
+        <h2>Moyen de paiement</h2>
+        <ul class="paie-moyens">
+          <li><span class="paie-icone" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5.5" width="18" height="13" rx="2"/><path d="M3 10h18M7 15h3"/></svg></span>
+            <span><strong>Carte bancaire</strong><span class="precision">CB, Visa, Mastercard. Débitée à chaque échéance.</span></span></li>
+          <li><span class="paie-icone" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10 12 4l9 6M5 10v8M9.5 10v8M14.5 10v8M19 10v8M3 20h18"/></svg></span>
+            <span><strong>Prélèvement SEPA</strong><span class="precision">Avec l'IBAN de l'entreprise ; le mandat se signe en ligne.</span></span></li>
+        </ul>
+        <p class="precision">Vous choisissez l'un ou l'autre à l'étape suivante, sur la page sécurisée de notre prestataire de paiement, Stripe.
+        Vos coordonnées bancaires ne passent jamais par ce site.</p>
+      </div>
+
+      <div class="carte-connexion">
+        <h2>Entreprise abonnée</h2>
+        <div id="paie-compte"><p class="precision">Un instant…</p></div>
+      </div>
+
+      <div class="carte-connexion">
+        <label class="paie-cgv"><input type="checkbox" id="paie-cgv">
+          <span>J'ai lu et j'accepte les <a href="../cgv.html" target="_blank" rel="noopener">conditions générales de vente</a>.</span></label>
+        <p class="rangee" style="margin-top:var(--t4)">
+          <a class="bouton bouton-accent bouton-large" id="paie-payer" href="#" aria-disabled="true">Continuer vers le paiement sécurisé</a>
+        </p>
+        <p class="etat-compte" id="paie-dit" role="status"></p>
+      </div>
+      </div>
+    </div>
+  </div>
+</section>`;
+  return page({ titre: `Votre abonnement | ${SITE.nom}`, description: "Paiement de l'abonnement, par carte ou par prélèvement.",
+    racine: "../", zone: "public", corps, attrsBody: ' data-page="compte"', scripts: ["assets/compte.js", "assets/souscrire.js"],
+    installation: false, piedCourt: true });
 }
 
 /* Le lien d'invitation mène ici (compte/invitation.html#jeton=…). Le jeton
@@ -4832,6 +4911,7 @@ async function main() {
   await writeFile(join(SORTIE, "compte", "creer.html"), pageCreer());
   await writeFile(join(SORTIE, "compte", "oubli.html"), pageOubli());
   await writeFile(join(SORTIE, "compte", "admin.html"), pageAdmin());
+  await writeFile(join(SORTIE, "compte", "paiement.html"), pageSouscrire());
   await writeFile(join(SORTIE, "compte", "cabinet.html"), pageCabinet());
   await writeFile(join(SORTIE, "compte", "invitation.html"), pageInvitation());
 

@@ -1,0 +1,43 @@
+# ==========================================================================
+# Vigie — les paiements Stripe, recopiés dans la base toutes les 15 minutes
+# --------------------------------------------------------------------------
+# outils/stripe.mjs : les paiements terminés (carte ou prélèvement SEPA) et
+# les abonnements Stripe → public.abonnements. C'est ce qui ouvre la formule
+# du client après son paiement, et la ferme s'il résilie ou ne paie plus.
+#
+# Secrets (Settings → Secrets and variables → Actions) :
+#   STRIPE_SECRET_KEY  une clé RESTREINTE de Stripe (rk_live_…), en lecture
+#                      seule sur Checkout Sessions, Subscriptions, Products
+#                      et Prices. Jamais une clé « sk_ » complète.
+#   SUPABASE_DB_URL    déjà là (les robots du relevé s'en servent).
+# Tant que STRIPE_SECRET_KEY n'existe pas, le robot le dit et s'arrête sans
+# échouer : aucun courriel « failed ».
+# ==========================================================================
+name: Paiements
+
+on:
+  schedule:
+    - cron: "*/15 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: paiements
+  cancel-in-progress: false
+
+jobs:
+  synchroniser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: 22
+      - name: Stripe → la base
+        env:
+          STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
+          SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+        run: node outils/stripe.mjs

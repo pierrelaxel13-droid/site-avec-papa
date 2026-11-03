@@ -95,7 +95,7 @@ export function pagesLegales({ page, SITE, FORMULES, TVA, esc, eur }) {
 
   /* --- Politique de confidentialité ----------------------------------------- */
   const confidentialite = gabarit({
-    fichier: "confidentialite.html", titre: "Politique de confidentialité", maj: "30 octobre 2026",
+    fichier: "confidentialite.html", titre: "Politique de confidentialité", maj: "3 novembre 2026",
     sous: "Quelles données nous traitons, pourquoi, combien de temps, et comment exercer vos droits.",
     sections: [
       { t: "En bref", c: `
@@ -139,8 +139,9 @@ export function pagesLegales({ page, SITE, FORMULES, TVA, esc, eur }) {
           <li><strong>Conformité :</strong> votre plan de veille, vos réponses aux questions de situation, la
             qualification de chaque texte, et votre registre de preuves — revues, décisions, actions, avec
             leur date et leur auteur.</li>
-          <li><strong>Facturation :</strong> formule, montants, factures. Le paiement en ligne n'est pas encore
-            en place ; il sera traité par notre prestataire de paiement, et nous ne verrons jamais votre numéro de carte.</li>
+          <li><strong>Facturation :</strong> formule, montants, factures, et l'identifiant de votre abonnement chez
+            notre prestataire de paiement. Le paiement, par carte bancaire ou par prélèvement SEPA, est traité par ce
+            prestataire : nous ne voyons jamais votre numéro de carte ni votre IBAN.</li>
           <li><strong>Lecture :</strong> les textes du relevé que vous avez déjà ouverts, pour ne vous signaler
             que les nouveaux.</li>
           <li><strong>Sécurité :</strong> journaux de connexion, pour détecter et prévenir les accès frauduleux
@@ -205,7 +206,7 @@ export function pagesLegales({ page, SITE, FORMULES, TVA, esc, eur }) {
   const lignesFormules = Object.values(FORMULES).map((f) => `<li><strong>${esc(f.l)}</strong> —
     ${esc(eur(f.an))} par an, ou ${esc(eur(f.mois))} par mois : ${esc(f.donne.join(" ; "))}.</li>`).join("");
   const cgv = gabarit({
-    fichier: "cgv.html", titre: "Conditions générales de vente", maj: "28 octobre 2026", vente: true,
+    fichier: "cgv.html", titre: "Conditions générales de vente", maj: "3 novembre 2026", vente: true,
     sous: `Les règles de l'abonnement à ${SITE.nom}, réservé aux professionnels.`,
     sections: [
       { t: "Objet et champ d'application", c: `
@@ -257,8 +258,9 @@ export function pagesLegales({ page, SITE, FORMULES, TVA, esc, eur }) {
         en avoir informé le Client ${decider} <em>proposition : au moins 30 jours à l'avance</em>.</p>` },
       { t: "Paiement et facturation", c: `
         <p>L'abonnement annuel est payable d'avance pour douze mois ; l'abonnement mensuel, d'avance chaque mois.
-        Le paiement est traité par le prestataire de paiement de l'éditeur. Une facture est émise à chaque
-        échéance.</p>
+        Le paiement se fait en ligne, par carte bancaire ou par prélèvement SEPA (le Client signe alors un mandat
+        de prélèvement en ligne), et il est traité par le prestataire de paiement de l'éditeur, Stripe. L'éditeur
+        n'a jamais connaissance du numéro de carte ni de l'IBAN. Une facture est émise à chaque échéance.</p>
         <p>Tout retard de paiement entraîne de plein droit, sans rappel préalable, des pénalités de retard au taux
         de trois fois le taux d'intérêt légal, et une indemnité forfaitaire pour frais de recouvrement de 40 €
         (article L. 441-10 du Code de commerce). Après une mise en demeure restée sans effet pendant

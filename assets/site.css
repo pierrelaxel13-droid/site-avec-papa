@@ -3535,3 +3535,39 @@ a.puce-fixe { text-decoration: none; color: inherit; }
 [data-page="compte"] .admin-comptes li { padding: .6rem 0; }
 [data-page="compte"] #compte-admin { font-size: .92rem; }
 [data-page="admin"] #admin-app { font-size: .95rem; padding: .6rem 1.3rem; }
+
+/* --- La page de paiement (3 novembre 2026) ------------------------------- */
+[data-page="compte"] .fil { margin: 0 0 .6rem; font-size: .9rem; }
+[data-page="compte"] .fil a { color: var(--encre-douce); text-decoration: none; }
+[data-page="compte"] .fil a:hover { color: var(--accent); }
+.paie-offre { margin: 0 0 var(--t3); font-size: 1.05rem; font-weight: 600; color: var(--encre); }
+.paie-periodes { display: grid; gap: .5rem; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.paie-periode { display: flex; gap: .6rem; align-items: flex-start; padding: .75rem .9rem; border: 1px solid var(--filet-fort); border-radius: var(--r1); cursor: pointer; }
+.paie-periode:has(input:checked) { border-color: var(--accent); background: var(--accent-clair); }
+.paie-periode input { margin: .25rem 0 0; accent-color: var(--accent); }
+.paie-periode strong { display: block; font-weight: 600; font-size: .95rem; }
+.paie-periode .precision { display: block; font-size: .85rem; }
+.paie-periode .pastille-offre { display: inline-block; margin-top: .3rem; font-size: .72rem; }
+.paie-total { margin: var(--t3) 0 .5rem; padding-top: var(--t3); border-top: 1px solid var(--filet); }
+.paie-total > div { display: flex; justify-content: space-between; gap: 1rem; padding: .2rem 0; font-size: .95rem; }
+.paie-total dt { color: var(--encre-douce); }
+.paie-total dd { margin: 0; color: var(--encre); }
+.paie-total .paie-ttc dt, .paie-total .paie-ttc dd { font-weight: 600; color: var(--encre); font-size: 1.02rem; }
+.paie-total .paie-mention dd { font-size: .82rem; color: var(--encre-tenue); }
+.paie-moyens { list-style: none; margin: 0 0 var(--t3); padding: 0; display: grid; gap: .5rem; }
+.paie-moyens li { display: flex; gap: .75rem; align-items: center; padding: .7rem .9rem; border: 1px solid var(--filet); border-radius: var(--r1); }
+.paie-moyens strong { display: block; font-weight: 600; font-size: .95rem; }
+.paie-moyens .precision { display: block; font-size: .85rem; }
+.paie-icone { flex: none; width: 2.2rem; height: 2.2rem; border-radius: var(--r1); display: grid; place-items: center; background: var(--accent-clair); color: var(--accent); }
+.paie-icone svg { width: 1.2rem; height: 1.2rem; }
+.paie-cgv { display: flex; gap: .6rem; align-items: flex-start; font-size: .95rem; cursor: pointer; }
+.paie-cgv input { margin: .2rem 0 0; width: 1.05rem; height: 1.05rem; accent-color: var(--accent); flex: none; }
+#paie-payer { width: 100%; justify-content: center; }
+#paie-payer.bouton-inactif { opacity: .45; cursor: not-allowed; }
+#paie-compte p { margin: 0 0 .2rem; }
+#paie-compte .rangee { display: flex; flex-wrap: wrap; gap: .5rem; }
+#paie-dit:empty { display: none; }
+@media (max-width: 26rem) { .paie-periodes { grid-template-columns: 1fr; } }
+#paie-formulaire > * + * { margin-top: var(--t3); }
+#paiement .carte-connexion p.precision, #paiement #paie-compte p { font-size: .88rem; color: var(--encre-tenue); }
+#paiement #paie-compte p:first-child { font-size: 1rem; color: var(--encre); }

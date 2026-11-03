@@ -16,6 +16,26 @@
    S'il est rempli, un lien « Gérer ou résilier mon abonnement » apparaît sur
    la page des tarifs et en bas de chaque page.
 
+   CE QU'IL FAUT RÉGLER DANS STRIPE (une fois)
+   1. Paramètres → Moyens de paiement : activer « Carte » et « Prélèvement
+      SEPA » (SEPA Direct Debit). La page de paiement Stripe proposera les
+      deux ; le client choisit.
+   2. Catalogue de produits : un produit par formule, avec deux prix
+      récurrents (par an, par mois). Sur chaque produit, une métadonnée
+      « formule » = textes, suivi ou complet (sinon le robot lit le nom).
+   3. Pour chaque lien de paiement, « Après le paiement » → « Rediriger vers
+      votre site » : https://pierrelaxel13-droid.github.io/site-avec-papa/compte/paiement.html?merci=1
+   4. Développeurs → Clés API → « Créer une clé restreinte », en LECTURE sur
+      Checkout Sessions, Subscriptions, Products et Prices. La copier dans les
+      secrets du dépôt GitHub sous le nom STRIPE_SECRET_KEY — jamais ici, jamais
+      dans une conversation. Le robot .github/workflows/paiements.yml ouvre
+      alors la formule du client dans les 15 minutes qui suivent son paiement.
+
+   Les boutons « S'abonner » mènent à compte/paiement.html (récapitulatif,
+   entreprise, CGV), qui ouvre ensuite ces liens avec l'identifiant de
+   l'entreprise (client_reference_id) : c'est ainsi que le paiement retrouve
+   son entreprise.
+
    Ce fichier ne contient aucun secret : ces liens sont faits pour être
    publics. Ne JAMAIS y mettre une clé Stripe (sk_..., pk_..., rk_...).
    ========================================================================== */

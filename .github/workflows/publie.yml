@@ -78,6 +78,10 @@ jobs:
       - name: Les tests de sécurité du site
         run: node outils/securite.test.mjs
 
+      # Le robot des paiements (outils/stripe.mjs), sans Stripe ni base.
+      - name: Les tests du robot des paiements
+        run: node outils/stripe.test.mjs
+
       - uses: actions/upload-pages-artifact@v3
         with:
           path: _site
