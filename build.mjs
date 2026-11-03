@@ -4068,21 +4068,6 @@ function pageAbonnement(V) {
       </p>
     </div>
   </div>
-</section>
-
-<section class="bande-finale" id="contact">
-  <div class="enveloppe">
-    <span class="marque">${motMarque()}</span>
-    <h2>${SITE.premierEchange ? "Un premier échange d'une heure, sans engagement" : "Une question avant de vous abonner ?"}</h2>
-    <p class="mentions">
-      Décrivez votre activité en trois lignes et ce qui vous inquiète : on vous dira
-      franchement quelle formule vous sert, ou si votre sujet est ailleurs.
-    </p>
-    <p class="rangee">
-      <a class="bouton bouton-accent" href="mailto:${esc(SITE.courriel)}">${esc(SITE.courriel)}</a>
-      ${lienTel("bouton bouton-sobre")}
-    </p>
-  </div>
 </section>`;
 
   return page({
