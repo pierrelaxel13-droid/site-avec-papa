@@ -370,7 +370,7 @@ function page({ titre, description, racine = "", zone = "public", actif = "", co
       ${lien("app/index.html", "Tableau de bord", "bord")}
       ${lien("app/plan.html", "Ma veille réglementaire", "plan")}
       ${lien("app/actions.html", "Plan d'actions", "actions")}
-      ${lien("app/conformite.html", "Conformité réglementaire", "conformite")}
+      ${lien("app/conformite.html", "Registre et conformité réglementaire", "conformite")}
       ${lien("app/releve.html", "Relevé", "releve")}
       ${lien("app/textes.html", "Textes", "textes")}
       ${lien("app/reglages.html", "Réglages", "reglages")}
@@ -1097,7 +1097,7 @@ function appConformite(V, D, C, LIENS, JO = null) {
     </tr>`;
   }).join("\n");
 
-  const corps = enTeteApp(D, "Conformité réglementaire",
+  const corps = enTeteApp(D, "Registre et conformité réglementaire",
     "Établissez votre veille réglementaire.") + `
 
 <section class="rubrique">
@@ -1133,7 +1133,7 @@ function appConformite(V, D, C, LIENS, JO = null) {
 </section>`;
 
   return page({
-    titre: `Conformité réglementaire | ${SITE.nom}`,
+    titre: `Registre et conformité réglementaire | ${SITE.nom}`,
     description: "L'évaluation de conformité de l'entreprise, texte par texte, inscrite au registre.",
     racine: "../", zone: "app", actif: "conformite", corps, verrou: true, formule: "complet",
     donneesPlan: true, scripts: ["assets/conformite.js", "assets/applicable.js"]
