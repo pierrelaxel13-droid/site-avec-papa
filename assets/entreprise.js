@@ -166,7 +166,11 @@
          mène nulle part et le dit. */
       var compte = document.querySelector('[data-compte-frequence="' + g.getAttribute("data-groupe-frequence") + '"]');
       if (!compte) return;
-      compte.textContent = n ? n + " sujet" + (n > 1 ? "s" : "") : "Aucun sujet à ce rythme";
+      var unite = document.querySelector('[data-unite-frequence="' + g.getAttribute("data-groupe-frequence") + '"]');
+      if (unite) {             // Mon plan, en carrés : le nombre, puis l'unité
+        compte.textContent = n;
+        unite.textContent = n ? "sujet" + (n > 1 ? "s" : "") : "aucun sujet";
+      } else compte.textContent = n ? n + " sujet" + (n > 1 ? "s" : "") : "Aucun sujet à ce rythme";
       var carte = compte.closest(".carte-categorie");
       if (!carte) return;
       carte.classList.toggle("carte-vide", !n);

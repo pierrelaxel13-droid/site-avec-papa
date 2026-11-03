@@ -3493,3 +3493,20 @@ a.puce-fixe { text-decoration: none; color: inherit; }
 [data-page="compte"] .ligne-reglage .champ input { border-radius: var(--r1); padding: .6rem .8rem; font-size: .98rem; min-height: 0; }
 [data-page="compte"] .ligne-reglage .bouton, [data-page="compte"] #invitation-lien .bouton { font-size: .92rem; padding: .55rem 1.1rem; }
 [data-page="compte"] #invitation-lien { border-radius: var(--r2); margin-top: var(--t3); }
+
+/* Ma veille réglementaire : les rythmes en carrés compacts, comme les
+   indicateurs du tableau de bord (3 novembre 2026). */
+.carres-rythmes { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--t3); grid-template-columns: repeat(2, minmax(0, 1fr)); }
+@media (min-width: 64rem) { .carres-rythmes { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+.carres-rythmes > li { min-width: 0; }
+.carte-rythme {
+  display: flex; flex-direction: column; gap: .15rem; height: 100%;
+  padding: var(--t3) var(--t4); background: var(--carte); color: inherit; text-decoration: none;
+  border: 1px solid var(--filet); border-radius: var(--r3); box-shadow: var(--ombre-1);
+  transition: border-color .18s ease, background-color .18s ease;
+}
+.carte-rythme:hover { border-color: var(--accent); }
+.carte-rythme .etiq { display: flex; flex-wrap: wrap; gap: .4rem; align-items: center; }
+.carte-rythme .grand { font-size: clamp(1.5rem, 1.2rem + 1vw, 1.9rem); font-weight: 700; letter-spacing: -.03em; line-height: 1.15; color: var(--encre); }
+.carte-rythme .precision { display: block; font-size: .85rem; color: var(--encre-tenue); }
+.carte-rythme.carte-vide { opacity: .6; pointer-events: none; box-shadow: none; }

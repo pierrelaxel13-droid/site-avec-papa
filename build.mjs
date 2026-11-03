@@ -365,7 +365,7 @@ function page({ titre, description, racine = "", zone = "public", actif = "", co
 
   const menuApp = `
       ${lien("app/index.html", "Tableau de bord", "bord")}
-      ${lien("app/plan.html", "Mon plan", "plan")}
+      ${lien("app/plan.html", "Ma veille réglementaire", "plan")}
       ${lien("app/conformite.html", "Conformité réglementaire", "conformite")}
       ${lien("app/releve.html", "Relevé", "releve")}
       ${lien("app/registre.html", "Registre", "registre")}
@@ -501,7 +501,7 @@ ${piedCourt ? "" : `
         <h2>L'application</h2>
         <ul>
           <li><a href="${a("app/index.html")}">Tableau de bord</a></li>
-          <li><a href="${a("app/plan.html")}">Mon plan de veille</a></li>
+          <li><a href="${a("app/plan.html")}">Ma veille réglementaire</a></li>
           <li><a href="${a("app/releve.html")}">Relevé des textes</a></li>
           <li><a href="${a("app/registre.html")}">Registre de preuves</a></li>
           <li><a href="${a("app/secteurs.html")}">Fiches par secteur</a></li>
@@ -1077,7 +1077,7 @@ function appConformite(V, D, C, LIENS, JO = null) {
   }).join("\n");
 
   const corps = enTeteApp(D, "Conformité réglementaire",
-    "Pour chaque texte de votre plan, dites où vous en êtes. Chaque évaluation est datée et inscrite au registre.") + `
+    "Établissez votre veille réglementaire.") + `
 
 <section class="rubrique">
   <div class="enveloppe">
@@ -1149,27 +1149,29 @@ function appPlan(V, D, C, LIENS, JO = null) {
       division ? `secteur/${division}.html` : "", "", true, rangs.indexOf(id));
   };
 
-  const corps = enTeteApp(D, "Mon plan de veille",
+  const corps = enTeteApp(D, "Ma veille réglementaire",
     phrasePlan(V, D.entreprise, plan),
     ficheDeLEntreprise(V, D)) + `
 
 <section class="rubrique">
   <div class="enveloppe">
-  ${cartesCategories(parFrequence.map((g) => {
-    const ech = D.echeances.filter((e) => e.frequence === g.id)[0];
-    const n = g.ids.filter((id) => base.includes(id) || ajoutes.has(id)).length;
-    return {
-      id: `frequence-${g.id}`, nom: g.f.l,
-      compte: n ? `${n} sujet${n > 1 ? "s" : ""}` : "Aucun sujet à ce rythme",
-      compteAttr: ` data-compte-frequence="${esc(g.id)}"`,
-      classe: n ? "" : "carte-vide",
-      attrs: n ? "" : ' aria-disabled="true" tabindex="-1"',
-      marque: ech && ech.retard ? "En retard" : "", marqueAttr: " data-demo",
-      lignes: [esc(g.f.d),
-               ech ? `<span data-demo>Prochaine revue : ${esc(dateFr(ech.prochaine))}</span>` : "",
-               `<span data-compte hidden data-prochaine="${esc(g.id)}"></span>`].filter(Boolean)
-    };
-  }))}
+  ${/* Les rythmes en carrés, comme les indicateurs du tableau de bord
+       (3 novembre 2026) : le nom, le nombre de sujets, la prochaine revue. */ ""}
+  <nav class="choix-categories" data-choix aria-label="Rythmes de revue">
+  <ul class="carres-rythmes">
+    ${parFrequence.map((g) => {
+      const ech = D.echeances.filter((e) => e.frequence === g.id)[0];
+      const n = g.ids.filter((id) => base.includes(id) || ajoutes.has(id)).length;
+      return `<li><a class="carte-categorie carte-rythme${n ? "" : " carte-vide"}" href="#frequence-${esc(g.id)}"${n ? "" : ' aria-disabled="true" tabindex="-1"'}>
+        <span class="etiq">${esc(g.f.l)}${ech && ech.retard ? ' <span class="marque-neuf" data-demo>En retard</span>' : ""}</span>
+        <span class="grand" data-compte-frequence="${esc(g.id)}">${n}</span>
+        <span class="precision" data-unite-frequence="${esc(g.id)}">${n ? `sujet${n > 1 ? "s" : ""}` : "aucun sujet"}</span>
+        ${ech ? `<span class="precision" data-demo>Prochaine revue : ${esc(dateFr(ech.prochaine))}</span>` : ""}
+        <span class="precision" data-compte hidden data-prochaine="${esc(g.id)}"></span>
+      </a></li>`;
+    }).join("")}
+  </ul>
+  </nav>
   </div>
 </section>
 
@@ -1205,7 +1207,7 @@ ${plan.ecartes.map((id) => blocPlan(id)).join("\n")}
 </section>`;
 
   return page({
-    titre: `Mon plan de veille | ${SITE.nom}`,
+    titre: `Ma veille réglementaire | ${SITE.nom}`,
     description: "Ce qui s'applique chez vous, et à quel rythme le revoir.",
     racine: "../", zone: "app", actif: "plan", corps, verrou: true, formule: "suivi",
     donneesPlan: true, scripts: ["assets/applicable.js"]
