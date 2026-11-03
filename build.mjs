@@ -481,46 +481,40 @@ ${zone === "public" && installation ? bandeInstallation(a) : ""}
   <div class="enveloppe">
 ${piedCourt ? "" : `
     <div class="pied-grille">
-      <div>
+      <div class="pied-marque">
         <span class="marque">${motMarque()}</span>
-        <p>${esc(SITE.bareme)}, pour les PME.</p>
-        <p style="margin-top:var(--t3)">
-          <a href="mailto:${esc(SITE.courriel)}">${esc(SITE.courriel)}</a>${aTel() ? `<br>
-          ${lienTel()}` : ""}
-        </p>
+        <p>${esc(SITE.bareme)}, pour les PME : les textes qui vous concernent, et ce qu'il faut faire.</p>
+        <p class="pied-contact"><a href="mailto:${esc(SITE.courriel)}">${esc(SITE.courriel)}</a>${aTel() ? ` · ${lienTel()}` : ""}</p>
       </div>
-      <div>
-        <h2>Le site</h2>
+      <nav aria-label="Le produit">
+        <h2>Le produit</h2>
         <ul>
-          <li><a href="${a("index.html")}">Accueil</a></li>
           <li><a href="${a("decouvrir.html")}">Présentation</a></li>
           <li><a href="${a("abonnement.html")}">Abonnement et tarifs</a></li>
           ${SITE.offreConsultant ? `<li><a href="${a("consultants.html")}">Offre consultants QSE</a></li>` : ""}
-          ${lienPaiement("portail") ? `<li><a href="${esc(lienPaiement("portail"))}">Gérer ou résilier mon abonnement</a></li>` : ""}
-          <li><a href="${a("contact.html")}">Nous contacter</a></li>
-          <li><a href="${a("connexion.html")}">Connexion</a></li>
+          <li><a href="${a("abonnement.html")}#essayer">Démonstration gratuite</a></li>
+          ${lienPaiement("portail") ? `<li><a href="${esc(lienPaiement("portail"))}">Gérer mon abonnement</a></li>` : ""}
         </ul>
-      </div>
-      ${zone === "app" ? `<div>
+      </nav>
+      ${zone === "app" ? `<nav aria-label="L'application">
         <h2>L'application</h2>
         <ul>
           <li><a href="${a("app/index.html")}">Tableau de bord</a></li>
           <li><a href="${a("app/plan.html")}">Ma veille réglementaire</a></li>
-          <li><a href="${a("app/releve.html")}">Relevé des textes</a></li>
-          <li><a href="${a("app/conformite.html")}">Registre et conformité réglementaire</a></li>
-          <li><a href="${a("app/secteurs.html")}">Fiches par secteur</a></li>
-          <li><a href="${a("app/reglages.html")}">Mon entreprise et mes alertes</a></li>
+          <li><a href="${a("app/actions.html")}">Plan d'actions</a></li>
+          <li><a href="${a("app/conformite.html")}">Registre et conformité</a></li>
+          <li><a href="${a("app/reglages.html")}">Réglages</a></li>
         </ul>
-      </div>` : `<div>
-        <h2>Qui sommes-nous</h2>
-        <!-- Le produit, pas un cabinet : la caution métier est la personne qui
-             l'a conçu. Quatre lignes, pour garder le pied symétrique. -->
+      </nav>` : `<nav aria-label="Vigie">
+        <h2>${esc(SITE.nom)}</h2>
         <ul>
+          <li><a href="${a("nous.html")}">Qui sommes-nous</a></li>
           <li><a href="${a("le-site.html")}">Sources officielles uniquement</a></li>
-          <li><a href="${a("nous.html")}">Un interlocuteur unique</a></li>
+          <li><a href="${a("contact.html")}">Nous contacter</a></li>
+          <li><a href="${a("connexion.html")}">Connexion</a></li>
         </ul>
-      </div>`}
-      <div>
+      </nav>`}
+      <nav aria-label="Sources officielles">
         <h2>Sources officielles</h2>
         <ul>
           <li><a href="https://www.legifrance.gouv.fr" target="_blank" rel="noopener">Légifrance</a></li>
@@ -529,23 +523,17 @@ ${piedCourt ? "" : `
           <li><a href="https://entreprendre.service-public.fr" target="_blank" rel="noopener">Entreprendre</a></li>
           <li><a href="https://www.inrs.fr" target="_blank" rel="noopener">INRS</a></li>
         </ul>
-      </div>
+      </nav>
     </div>
 `}
     <div class="pied-bas">
+      <p class="pied-droits">© ${new Date().getFullYear()} ${esc(SITE.nom)}, édité par ${esc(SITE.societe)}. Ne constitue pas un conseil juridique.</p>
       <p class="pied-legal">
-        <span>© ${new Date().getFullYear()} ${esc(SITE.nom)} — tous droits réservés</span>
         <a href="${a("mentions-legales.html")}">Mentions légales</a>
         <a href="${a("confidentialite.html")}">Confidentialité</a>
         <a href="${a("cgv.html")}">CGV</a>
         <a href="${a("contact.html")}">Contact</a>
       </p>
-      ${piedCourt ? "" : `<p>
-        ${esc(SITE.nom)} est édité par ${esc(SITE.societe)}.
-        Aucun cookie, aucune mesure d'audience. Seuls les comptes et l'espace abonné parlent à notre base
-        de données (Supabase).
-        Le service fournit un cadre méthodologique, pas un conseil juridique.
-      </p>`}
     </div>
   </div>
 </footer>
@@ -2794,7 +2782,7 @@ function encartsDuSite(V, C, NAF, SOURCES) {
   const confirmees = SOURCES.filter((x) => x.confirme && x.officielle !== false);   // les officielles seulement
   const nArticles = C ? C.morceaux.reduce((n, m) => n + m.articles.length, 0) : 0;
   return [
-    { titre: "D'où viennent les textes", lignes: [
+    { titre: "Nos sources", lignes: [
       `Relevés <strong>toutes les heures</strong>, automatiquement, sans que vous ayez rien à faire`,
       `Sur <strong>${confirmees.length} sources officielles</strong> vérifiées, Journal officiel en tête : ${esc(
         [...new Set(confirmees.map((x) => x.nom.split(" — ")[0]))].slice(1, 7).join(", "))}…`,
@@ -3314,9 +3302,7 @@ function sectionSources(V) {
   return `
 <section class="section">
   <div class="enveloppe">
-    <h2 class="titre-section">D'où viennent les textes</h2>
-    <p class="intro titre-section">Toutes publiques, toutes citées : vous pouvez vérifier
-    chaque ligne vous-même.</p>
+    <h2 class="titre-section">Nos sources</h2>
     <ul class="sources-bande">
       ${V.sourcesGenerales.map((s) => `<li><a href="${esc(s.url)}" target="_blank" rel="noopener">${esc(s.nom)} ${sortant}</a></li>`).join("\n")}
     </ul>
@@ -4095,14 +4081,14 @@ const comptesFermes = () => `<p class="reserve" data-comptes-fermes hidden>
    finir dans l'adresse de la page ni dans l'historique. */
 function pageConnexion() {
   const corps = `
-<section class="heros">
+<section class="section auth-page">
   <div class="enveloppe">
-    <div class="heros-texte"><h1>Connexion</h1></div>
-    <p class="heros-sous">Pas encore de compte ? <a href="compte/creer.html">Créez-le</a> en une minute.</p>
-
-    <div class="connexion connexion-seule">
-      <form class="carte-connexion" id="form-connexion" method="post" novalidate>
-        <h2>Se connecter à votre espace</h2>
+    <div class="auth-boite">
+      <div class="auth-tete">
+        <h1>Connexion</h1>
+        <p>Accédez à votre espace de veille réglementaire.</p>
+      </div>
+      <form class="carte-connexion auth-carte" id="form-connexion" method="post" novalidate>
         ${comptesFermes()}
         <div class="reserve" id="connexion-deja" hidden></div>
 
@@ -4114,24 +4100,18 @@ function pageConnexion() {
           </div>
 
           <div class="champ">
-            <label for="motdepasse">Mot de passe</label>
+            <div class="auth-libelle"><label for="motdepasse">Mot de passe</label>
+              <a href="compte/oubli.html">Mot de passe oublié ?</a></div>
             <input type="password" id="motdepasse" autocomplete="current-password" required>
           </div>
 
-          <p class="rangee" style="margin-top:var(--t4)">
-            <button type="submit" class="bouton bouton-accent bouton-large">Se connecter</button>
-          </p>
+          <button type="submit" class="bouton bouton-accent auth-bouton">Se connecter</button>
           <p class="etat-compte" id="etat-connexion" role="status"></p>
-          <p style="margin-top:var(--t3)">
-            <a href="compte/oubli.html">Mot de passe oublié ?</a>
-          </p>
         </div>
       </form>
+      <p class="auth-pied">Pas encore de compte ? <a href="compte/creer.html">Créer un compte</a></p>
+      <p class="auth-pied auth-demo"><a href="abonnement.html#essayer">Essayer la démonstration, sans compte</a></p>
     </div>
-
-    <p class="rangee rangee-centre" style="margin-top:var(--t5)">
-      <a class="bouton bouton-sobre" href="abonnement.html#essayer">Ou essayer la démonstration, sans compte</a>
-    </p>
   </div>
 </section>`;
 
@@ -4139,7 +4119,7 @@ function pageConnexion() {
     titre: `Connexion | ${SITE.nom}`,
     description: `Connexion à ${SITE.nom}, la veille réglementaire des PME.`,
     zone: "public", actif: "connexion", corps, scripts: ["assets/compte.js"], installation: false,
-    piedCourt: true   // la connexion, et rien d'autre : seuls les liens légaux restent en bas
+    attrsBody: ' data-page="connexion"', piedCourt: true   // la connexion, et rien d'autre : seuls les liens légaux restent en bas
   });
 }
 

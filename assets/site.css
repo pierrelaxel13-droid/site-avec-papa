@@ -3714,3 +3714,64 @@ a.puce-fixe { text-decoration: none; color: inherit; }
 @media (max-width: 47.99rem) {
   .pied-grille { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.5rem 1rem; }
 }
+
+/* --- Bas de page, version 2 (3 novembre 2026) ----------------------------
+   Un pied sombre, comme sur la plupart des sites de logiciels : la marque et
+   une phrase à gauche, trois colonnes de liens, une barre légale fine. Le
+   même dans les deux thèmes (un cran plus sombre que la page en thème sombre). */
+:root { --pied-fond: #15132b; --pied-texte: rgba(255, 255, 255, .66); --pied-titre: #fff; --pied-filet: rgba(255, 255, 255, .12); }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --pied-fond: #0c0b18; } }
+:root[data-theme="dark"] { --pied-fond: #0c0b18; }
+.pied { background: var(--pied-fond); color: var(--pied-texte); border-top: 0;
+  padding-block: clamp(2.5rem, 2rem + 2vw, 3.5rem) 1.25rem; font-size: .85rem; }
+.pied a { color: var(--pied-texte); }
+.pied a:hover { color: #fff; text-decoration: none; }
+.pied .marque { color: var(--pied-titre); font-size: 1.1rem; margin-bottom: .75rem; }
+.pied-grille { gap: 2rem; }
+@media (min-width: 48rem) { .pied-grille { grid-template-columns: minmax(0, 1.7fr) repeat(3, minmax(0, 1fr)); gap: 2.5rem; } }
+.pied-marque p { margin: 0; font-size: .85rem; line-height: 1.6; color: var(--pied-texte); max-width: 34ch; }
+.pied-marque .pied-contact { margin-top: .9rem !important; }
+.pied-marque .pied-contact a { color: var(--pied-titre); }
+.pied h2 { font-size: .8rem; font-weight: 600; color: var(--pied-titre); margin: 0 0 .9rem; letter-spacing: .01em; }
+.pied li { margin-bottom: .55rem; font-size: .85rem; }
+.pied-bas { margin-top: 2.25rem; padding-top: 1.1rem; border-top: 1px solid var(--pied-filet);
+  display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: .6rem 1.5rem;
+  font-size: .78rem; color: var(--pied-texte); }
+.pied-bas p { margin: 0; }
+.pied-legal { display: flex; flex-wrap: wrap; gap: .3rem 1.25rem; }
+.pied-legal a { text-decoration: none; }
+.pied-legal a:hover { text-decoration: underline; color: #fff; }
+.pied-court { padding-block: 1.1rem; }
+.pied-court .pied-bas { margin-top: 0; padding-top: 0; border-top: 0; }
+@media (max-width: 47.99rem) {
+  .pied-grille { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.75rem 1rem; }
+  .pied-grille > .pied-marque { grid-column: 1 / -1; }
+  .pied-grille > :last-child { grid-column: auto; }
+  .pied-grille > :last-child ul { columns: 1; }
+  .pied-bas { flex-direction: column; align-items: flex-start; }
+}
+.pied .marque svg { filter: brightness(1.7) saturate(1.1); }
+
+/* --- Connexion, en écran de connexion classique (3 novembre 2026) -------- */
+.auth-page { background: var(--degrade-heros); min-height: calc(100vh - 9rem); display: flex; align-items: center;
+  padding-block: clamp(2.5rem, 1.5rem + 4vw, 5rem); }
+.auth-page .enveloppe { width: 100%; }
+.auth-boite { max-width: 25rem; margin: 0 auto; }
+.auth-tete { text-align: center; margin-bottom: 1.5rem; }
+.auth-tete h1 { margin: 0; font-size: clamp(1.6rem, 1.3rem + 1vw, 2rem); letter-spacing: -.02em; }
+.auth-tete p { margin: .5rem 0 0; font-size: .95rem; color: var(--encre-douce); }
+.auth-carte { padding: 1.75rem; border-radius: var(--r3); box-shadow: var(--ombre-1); }
+.auth-carte .champ { margin-bottom: 1rem; }
+.auth-carte .champ label { margin: 0 0 .35rem; font-size: .875rem; font-weight: 500; color: var(--encre); }
+.auth-carte .champ input { font-size: .95rem; padding: .7rem .85rem; border-radius: var(--r1); }
+.auth-libelle { display: flex; justify-content: space-between; align-items: baseline; gap: 1rem; }
+.auth-libelle a { font-size: .82rem; color: var(--accent); text-decoration: none; margin-bottom: .35rem; }
+.auth-libelle a:hover { text-decoration: underline; }
+.auth-bouton { width: 100%; justify-content: center; margin-top: .5rem; font-size: .95rem; font-weight: 600; padding: .8rem 1.2rem; }
+.auth-carte .etat-compte { margin: .75rem 0 0; font-size: .875rem; }
+.auth-carte .etat-compte:empty { display: none; }
+.auth-pied { margin: 1.25rem 0 0; text-align: center; font-size: .9rem; color: var(--encre-douce); }
+.auth-pied a { color: var(--accent); font-weight: 500; text-decoration: none; }
+.auth-pied a:hover { text-decoration: underline; }
+.auth-demo { margin-top: .5rem; font-size: .85rem; }
+.auth-demo a { color: var(--encre-douce); font-weight: 400; }
