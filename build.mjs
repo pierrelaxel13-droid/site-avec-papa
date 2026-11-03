@@ -360,7 +360,7 @@ function page({ titre, description, racine = "", zone = "public", actif = "", co
         <path d="M5.5 9v10.5h4.5v-6h4v6h4.5V9"/></svg>`;
   const menuPublic = `
       ${lien("index.html", `${maison}Accueil`, "produit")}
-      <a href="${a("index.html")}#contact">Nous contacter</a>
+      ${lien("contact.html", "Nous contacter", "contact")}
       ${lien("decouvrir.html", "Présentation", "decouvrir")}
       ${lien("abonnement.html", "S'abonner", "abonnement")}
       <a class="bouton bouton-bandeau connexion-bureau" href="${a("connexion.html")}">Connexion</a>
@@ -537,7 +537,7 @@ ${piedCourt ? "" : `
         <a href="${a("mentions-legales.html")}">Mentions légales</a>
         <a href="${a("confidentialite.html")}">Confidentialité</a>
         <a href="${a("cgv.html")}">CGV</a>
-        <a href="mailto:${esc(SITE.courriel)}">Contact</a>
+        <a href="${a("contact.html")}">Contact</a>
       </p>
       ${piedCourt ? "" : `<p>
         ${esc(SITE.nom)} est édité par ${esc(SITE.societe)}.
@@ -3727,11 +3727,24 @@ ${SITE.offreConsultant ? `<section class="section">
   </div>
 </section>
 
-` : ""}<section class="section section-contact" id="contact">
+` : ""}`;
+
+  return page({
+    titre: `${SITE.nom} — ${SITE.bareme}`,
+    description: "Votre veille réglementaire tenue et prouvable : plan de veille, relevé des textes de votre métier, registre de preuves prêt pour l'audit.",
+    zone: "public", actif: "produit", corps, donneesPlan: true
+  });
+}
+
+/* --- Nous contacter (3 novembre 2026) -----------------------------------------
+   La page du formulaire de contact, sortie de l'accueil à la demande d'Axel.
+   Le menu « Nous contacter » et le lien « Contact » du bas de page y mènent. */
+function pageContact() {
+  const corps = `
+<section class="section section-contact" id="contact">
   <div class="enveloppe contact-page">
     <div class="contact-intro">
-      <p class="contact-surtitre">Nous contacter</p>
-      <h2>${SITE.premierEchange ? "Un premier échange d'une heure, sans engagement" : "Une question avant de vous abonner ?"}</h2>
+      <h1>Nous contacter</h1>
       <p class="contact-texte">Contactez-nous, et notre équipe vous répondra dans les meilleurs délais.</p>
       <ul class="contact-infos">
         <li><span class="contact-icone" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3.5 6.5 8.5 6 8.5-6"/></svg></span>
@@ -3745,12 +3758,8 @@ ${SITE.offreConsultant ? `<section class="section">
     ${formulaireContact()}
   </div>
 </section>`;
-
-  return page({
-    titre: `${SITE.nom} — ${SITE.bareme}`,
-    description: "Votre veille réglementaire tenue et prouvable : plan de veille, relevé des textes de votre métier, registre de preuves prêt pour l'audit.",
-    zone: "public", actif: "produit", corps, donneesPlan: true, scripts: ["assets/contact.js"]
-  });
+  return page({ titre: `Nous contacter | ${SITE.nom}`, description: "Une question sur Vigie ? Écrivez-nous : notre équipe vous répond dans les meilleurs délais.",
+    zone: "public", actif: "contact", corps, scripts: ["assets/contact.js"] });
 }
 
 /* --- Le formulaire de contact (3 novembre 2026) ------------------------------
@@ -5071,6 +5080,7 @@ async function main() {
   await writeFile(join(SORTIE, "abonnement.html"), pageAbonnement(V));
   await writeFile(join(SORTIE, "decouvrir.html"), pageDecouvrir(V, ECRANS, C, NAF, SOURCES));
   await writeFile(join(SORTIE, "connexion.html"), pageConnexion());
+  await writeFile(join(SORTIE, "contact.html"), pageContact());
   await mkdir(join(SORTIE, "compte"), { recursive: true });
   await writeFile(join(SORTIE, "compte", "index.html"), pageMonCompte());
   await writeFile(join(SORTIE, "compte", "creer.html"), pageCreer());

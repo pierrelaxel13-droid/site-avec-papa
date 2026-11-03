@@ -1,5 +1,5 @@
 /* ==========================================================================
-   Vigie — le formulaire de contact (accueil, #contact)
+   Vigie — le formulaire de contact (contact.html)
    --------------------------------------------------------------------------
    Envoie le message à la base par public.contacter() (sans compte). Rien ne
    part par courriel d'ici : les messages se lisent dans l'espace

@@ -3659,7 +3659,7 @@ a.puce-fixe { text-decoration: none; color: inherit; }
 @media (min-width: 60rem) { .contact-page { grid-template-columns: minmax(0, 1fr) minmax(0, 1.35fr); } }
 .contact-intro { padding-top: .25rem; }
 .contact-surtitre { margin: 0 0 .6rem; font-size: .875rem; font-weight: 600; color: var(--accent); letter-spacing: 0; text-transform: none; }
-.section-contact h2 { margin: 0; font-size: clamp(1.6rem, 1.2rem + 1.5vw, 2.2rem); line-height: 1.2; letter-spacing: -.02em;
+.section-contact h1, .section-contact h2 { margin: 0; font-size: clamp(1.7rem, 1.25rem + 1.6vw, 2.4rem); line-height: 1.2; letter-spacing: -.02em;
   white-space: normal; max-width: 20ch; text-align: left; }
 .contact-texte { margin: var(--t3) 0 0; font-size: 1rem; line-height: 1.6; color: var(--encre-douce); max-width: 40ch; text-align: left; }
 .contact-infos { list-style: none; margin: var(--t5) 0 0; padding: 0; display: grid; gap: var(--t3); }
