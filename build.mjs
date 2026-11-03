@@ -985,7 +985,27 @@ function tableauTextesPlan(V, C, LIENS, plan, JO) {
     </tr>` };
   });
 
-  const toutes = recents.concat(fond).sort((a, b) =>
+  /* Les sections des codes relevés article par article (Code du travail, de
+     la sécurité sociale, rural) : les mêmes lignes que « Registre et
+     conformité réglementaire », pour une seule liste partout (3 novembre 2026). */
+  const sections = ((C && C.morceaux) || []).map((m) => {
+    const refs = Object.keys(C.perimetres).filter((r) => (C.perimetres[r] || []).includes(m.id));
+    const ids = [...new Set(refs.flatMap((r) => parRef[r] || []))].filter((id) => V.domaines[id]);
+    const vig = m.articles.filter((x) => !x.etat || x.etat === "VIGUEUR");
+    if (!ids.length || !vig.length) return null;
+    const tard = vig.reduce((t, x) => (x.depuis && x.depuis > t ? x.depuis : t), "");
+    const nom = `${m.codeTitre}, articles ${vig[0].num} à ${vig[vig.length - 1].num}`;
+    return { ids, date: tard, ordre: nom, html: (dans) => `<tr data-domaines="${esc(ids.join(" "))}" data-cle="code:${esc(m.id)}" data-objet="${esc(nom)}"${dans ? "" : " hidden"}>
+      <td data-titre="Date">${tard ? `<time datetime="${esc(tard)}">${esc(dateFr(tard))}</time><span class="etat-date">Dernière mise à jour</span>` : `<span class="etat-date etat-fond">Texte de référence</span>`}</td>
+      <td data-titre="Catégorie">${categorie(ids)}</td>
+      <td data-titre="Référence et lien"><a href="code/${esc(m.id)}.html">${esc(nom)}</a>
+        <span class="precision">${esc(m.chemin[m.chemin.length - 1] || "")} · ${vig.length} article${vig.length > 1 ? "s" : ""} en vigueur</span></td>
+      <td data-titre="Lu"><label class="case-lu"><input type="checkbox" class="lu" aria-label="Texte lu"><span>Lu</span></label></td>
+      <td data-titre="Applicable"><select class="applicable" aria-label="Ce texte est-il applicable ?"><option value="">À décider</option><option value="applicable">Oui</option><option value="sans_objet">Non</option></select><span class="precision applicable-etat"></span></td>
+    </tr>` };
+  }).filter(Boolean);
+
+  const toutes = recents.concat(fond, sections).sort((a, b) =>
     a.date !== b.date ? (a.date < b.date ? 1 : -1) : a.ordre.localeCompare(b.ordre, "fr"));
   if (!toutes.length) return "";
   return `<section class="rubrique" id="textes-du-plan">

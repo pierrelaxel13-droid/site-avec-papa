@@ -71,8 +71,9 @@
     // « lus » au tableau de bord, même s'ils étaient là avant le début du suivi.
     var encore = {};
     tous.forEach(function (a) { encore[a.k] = 1; });
-    // Les textes de référence (« ref:… », Mon plan) ne passent pas au relevé : on les garde.
-    lus.ids = lus.ids.filter(function (k) { return encore[k] || k.indexOf("ref:") === 0; });
+    // Les textes de référence (« ref:… ») et les sections de codes (« code:<section> ») de Mon plan
+    // ne passent pas au relevé : on les garde.
+    lus.ids = lus.ids.filter(function (k) { return encore[k] || k.indexOf("ref:") === 0 || /^code:[^:]+$/.test(k); });
     var quand = {};
     lus.ids.forEach(function (k) { if (lus.quand[k]) quand[k] = lus.quand[k]; });
     lus.quand = quand;
