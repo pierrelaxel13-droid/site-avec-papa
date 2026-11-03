@@ -90,6 +90,8 @@
   function invitationEnAttente() { try { return window.localStorage.getItem(CLE_INVITATION) || ""; } catch (e) { return ""; } }
   function oublierInvitation() { try { window.localStorage.removeItem(CLE_INVITATION); } catch (e) { /* rien */ } }
   var ROLES = { admin: "administrateur", membre: "membre", lecteur: "lecteur" };
+  // À l'écran, l'intitulé commence par une capitale (« Administrateur · depuis… »).
+  function role(k) { var r = ROLES[k] || k; return r.charAt(0).toUpperCase() + r.slice(1); }
   var CLE_TYPE = "vigie-type";
 
   /* Sans adresse de projet Supabase, rien ne peut marcher : on le dit. */
@@ -328,13 +330,13 @@
           t.textContent = m.courriel + (m.moi ? " (vous)" : "");
           li.appendChild(t);
           var det = document.createElement("span"); det.className = "admin-details";
-          det.textContent = ROLES[m.role] + " · depuis le " + new Date(m.depuis).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" });
+          det.textContent = role(m.role) + " · depuis le " + new Date(m.depuis).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" });
           li.appendChild(det);
           if (admin && !m.moi) {
             var outils = document.createElement("span"); outils.className = "equipe-outils";
             var choix = document.createElement("select");
             choix.setAttribute("aria-label", "Rôle de " + m.courriel);
-            ["membre", "lecteur", "admin"].forEach(function (k) { choix.appendChild(new Option(ROLES[k], k)); });
+            ["membre", "lecteur", "admin"].forEach(function (k) { choix.appendChild(new Option(role(k), k)); });
             choix.value = m.role;
             choix.addEventListener("change", function () {
               det.textContent = "Enregistrement…";
@@ -366,7 +368,7 @@
           li.className = "admin-compte";
           var t = document.createElement("span"); t.className = "admin-courriel"; t.textContent = i.courriel; li.appendChild(t);
           var det = document.createElement("span"); det.className = "admin-details";
-          det.textContent = ROLES[i.role] + " · invitation valable jusqu'au " + new Date(i.expire_le).toLocaleDateString("fr-FR", { day: "numeric", month: "long" });
+          det.textContent = role(i.role) + " · invitation valable jusqu'au " + new Date(i.expire_le).toLocaleDateString("fr-FR", { day: "numeric", month: "long" });
           li.appendChild(det);
           li.appendChild(bouton("Annuler l'invitation", function () {
             V.rpc("annuler_invitation", { invitation: i.id }).then(function () { equipe(e); });
@@ -815,7 +817,7 @@
 
       var ul = el("ul", "admin-comptes");
       (e.membres || []).forEach(function (m) {
-        var role = m.role === "admin" ? "administrateur" : m.role === "lecteur" ? "lecteur" : "membre";
+        var role = m.role === "admin" ? "Administrateur" : m.role === "lecteur" ? "Lecteur" : "Membre";
         ul.appendChild(ligneCompte(m.courriel, role + " · depuis le " + date(m.depuis) +
           (m.derniere_connexion ? " · dernière connexion le " + date(m.derniere_connexion) : ""), m.confirme));
       });

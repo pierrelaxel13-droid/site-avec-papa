@@ -3510,3 +3510,28 @@ a.puce-fixe { text-decoration: none; color: inherit; }
 .carte-rythme .grand { font-size: clamp(1.5rem, 1.2rem + 1vw, 1.9rem); font-weight: 700; letter-spacing: -.03em; line-height: 1.15; color: var(--encre); }
 .carte-rythme .precision { display: block; font-size: .85rem; color: var(--encre-tenue); }
 .carte-rythme.carte-vide { opacity: .6; pointer-events: none; box-shadow: none; }
+
+/* Espace administrateur : même sobriété que « Mon compte » (3 novembre 2026). */
+[data-page="admin"] .compte-page { padding-top: clamp(2rem, 1.2rem + 3vw, 3.5rem); }
+[data-page="admin"] .admin-tete { max-width: none; display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: var(--t3); margin: 0 0 var(--t4); }
+[data-page="admin"] .compte-tete h1 { font-size: clamp(1.7rem, 1.3rem + 1.6vw, 2.3rem); letter-spacing: -.02em; margin: 0; }
+[data-page="admin"] .compte-tete .etat-compte { margin: .4rem 0 0; color: var(--encre-tenue); font-size: .95rem; font-weight: 400; }
+[data-page="admin"] .titre-section { font-size: 1.15rem; font-weight: 600; letter-spacing: 0; text-align: left; margin: var(--t5) 0 var(--t2); }
+[data-page="admin"] .aide-bas { font-size: .88rem; text-align: left; margin: 0 0 var(--t3); }
+[data-page="admin"] .carte-connexion { border-radius: var(--r2); box-shadow: none; padding: var(--t3) var(--t4); }
+[data-page="admin"] .carte-connexion h2, [data-page="admin"] .carte-connexion h3 { font-size: 1rem; font-weight: 600; margin: 0 0 .15rem; }
+[data-page="admin"] .carte-connexion, [data-page="admin"] .carte-connexion p { font-size: .9rem; }
+[data-page="admin"] .carte-connexion strong { font-weight: 600; }
+[data-page="admin"] .admin-comptes li { padding: .55rem 0; }
+[data-page="admin"] .admin-courriel { font-size: .92rem; }
+[data-page="admin"] .admin-details { font-size: .82rem; }
+[data-page="admin"] .carte-connexion select { font-size: .9rem; padding: .4rem .6rem; min-height: 0; border-radius: var(--r1); }
+[data-page="admin"] .carte-connexion .bouton { font-size: .88rem; padding: .45rem 1rem; min-height: 0; }
+[data-page="admin"] .carte-connexion .etiq, [data-page="admin"] .carte-connexion label { font-size: .82rem; font-weight: 500; }
+[data-page="admin"] .admin-grille { gap: var(--t3); }
+/* Mon compte : les intitulés de l'équipe plus petits aussi. */
+[data-page="compte"] .admin-courriel { font-size: .95rem; }
+[data-page="compte"] .admin-details { font-size: .84rem; }
+[data-page="compte"] .admin-comptes li { padding: .6rem 0; }
+[data-page="compte"] #compte-admin { font-size: .92rem; }
+[data-page="admin"] #admin-app { font-size: .95rem; padding: .6rem 1.3rem; }

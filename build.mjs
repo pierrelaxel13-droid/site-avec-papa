@@ -4215,7 +4215,7 @@ function pageMonCompte() {
         </div>
 
         <p class="rangee rangee-centre" style="margin-top:var(--t5)">
-          <a class="bouton bouton-sobre" id="compte-admin" href="admin.html" hidden>Administration</a>
+          <a class="bouton bouton-sobre" id="compte-admin" href="admin.html" hidden>Espace administrateur</a>
           <button type="button" class="bouton bouton-sobre" id="compte-sortir">Se déconnecter</button>
         </p>
       </div>
@@ -4400,15 +4400,15 @@ function pageCabinetDemo(D) {
 function pageAdmin() {
   const formules = Object.fromEntries(Object.entries(FORMULES).map(([id, f]) => [id, { l: f.l, rang: f.rang }]));
   const corps = `
-<section class="heros heros-court">
-  <div class="enveloppe">
-    <div class="heros-texte"><h1>Administration</h1></div>
-    <p class="heros-sous etat-compte" id="admin-etat" role="status">Chargement…</p>
-    <p class="rangee rangee-centre"><a class="bouton bouton-accent" id="admin-app" href="../app/" hidden>Ouvrir l'application</a></p>
-  </div>
-</section>
-<section class="section">
+<section class="section compte-page">
   <div class="enveloppe admin-enveloppe">
+    <div class="compte-tete admin-tete">
+      <div>
+        <h1>Espace administrateur</h1>
+        <p class="etat-compte" id="admin-etat" role="status">Chargement…</p>
+      </div>
+      <a class="bouton bouton-accent" id="admin-app" href="../app/" hidden>Ouvrir l'application</a>
+    </div>
     ${comptesFermes()}
     <div id="admin-liste" data-formules="${esc(JSON.stringify(formules))}" hidden>
       <p class="aide-bas admin-rappel">Les registres, plans et réponses des clients n'apparaissent jamais ici :
@@ -4437,8 +4437,8 @@ function pageAdmin() {
     </div>
   </div>
 </section>`;
-  return page({ titre: `Administration | ${SITE.nom}`, description: "Administration du service.",
-    racine: "../", zone: "public", corps, scripts: ["assets/compte.js"], installation: false, piedCourt: true });
+  return page({ titre: `Espace administrateur | ${SITE.nom}`, description: "Espace administrateur du service.",
+    racine: "../", zone: "public", corps, attrsBody: ' data-page="admin"', scripts: ["assets/compte.js"], installation: false, piedCourt: true });
 }
 
 /* --- Les avis : de quoi alimenter la cloche ------------------------------- */
