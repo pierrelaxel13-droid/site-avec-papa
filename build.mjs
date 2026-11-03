@@ -961,7 +961,7 @@ function tableauTextesPlan(V, C, LIENS, plan, JO) {
   const fond = Object.keys(parRef).map((ref) => {
     const ids = parRef[ref], q = dateDuTexte(C, ref), L = lienDuTexte(C, LIENS, ref);
     return { ids, date: (q && q.depuis) || "", ordre: ref, html: (dans) => `<tr data-domaines="${esc(ids.join(" "))}" data-cle="ref:${esc(slug(ref))}" data-objet="${esc(ref)}"${dans ? "" : " hidden"}>
-      <td data-titre="Date">${q && q.depuis ? `<time datetime="${esc(q.depuis)}">${esc(dateFr(q.depuis))}</time><span class="precision">dernière évolution</span>` : `<span class="tenu">texte de référence</span>`}</td>
+      <td data-titre="Date">${q && q.depuis ? `<time datetime="${esc(q.depuis)}">${esc(dateFr(q.depuis))}</time><span class="etat-date">Dernière mise à jour</span>` : `<span class="etat-date etat-fond">Texte de référence</span>`}</td>
       <td data-titre="Catégorie">${categorie(ids)}</td>
       <td data-titre="Référence et lien"><a href="texte/${slug(ref)}.html">${esc(ref)}</a>
         <a class="lien-officiel" href="${esc(L.url)}" target="_blank" rel="noopener">${esc(intituleDuLien(L))} ${sortant}</a></td>
@@ -976,7 +976,7 @@ function tableauTextesPlan(V, C, LIENS, plan, JO) {
     const quand = t.dateTexte || t.date;
     const lien = /^https?:\/\//i.test(t.lien || "") ? t.lien : "";
     return { ids, date: quand, ordre: t.titre, html: (dans) => `<tr data-domaines="${esc(ids.join(" "))}" data-cle="${esc(cleJO(t))}" data-objet="${esc(String(t.titre).slice(0, 480))}"${dans ? "" : " hidden"}>
-      <td data-titre="Date"><time datetime="${esc(quand)}">${esc(dateFr(quand))}</time><span class="precision">paru récemment</span></td>
+      <td data-titre="Date"><time datetime="${esc(quand)}">${esc(dateFr(quand))}</time><span class="etat-date etat-recent">Parution récente</span></td>
       <td data-titre="Catégorie">${categorie(ids)}</td>
       <td data-titre="Référence et lien"><span class="marque-neuf marque-nouveau" hidden>Nouveau texte</span><a href="releve.html#${ancreJO(t)}">${esc(t.titre)}</a>
         ${lien ? `<a class="lien-officiel" href="${esc(lien)}" target="_blank" rel="noopener">${/legifrance\.gouv\.fr/.test(lien) ? "Légifrance" : esc(t.sourceNom || "Voir chez la source")} ${sortant}</a>` : ""}</td>
@@ -1035,8 +1035,8 @@ function appActions(V, D, C, LIENS, JO = null) {
   Object.keys(parRef).forEach((ref) => {
     const q = dateDuTexte(C, ref), L = lienDuTexte(C, LIENS, ref);
     textes.push({ ids: parRef[ref], cle: `ref:${slug(ref)}`, titre: ref, date: (q && q.depuis) || "",
-      dateHtml: q && q.depuis ? `<time datetime="${esc(q.depuis)}">${esc(dateFr(q.depuis))}</time><span class="precision">dernière évolution</span>`
-        : `<span class="tenu">texte de référence</span>`,
+      dateHtml: q && q.depuis ? `<time datetime="${esc(q.depuis)}">${esc(dateFr(q.depuis))}</time><span class="etat-date">Dernière mise à jour</span>`
+        : `<span class="etat-date etat-fond">Texte de référence</span>`,
       lien: `<a href="texte/${slug(ref)}.html">${esc(ref)}</a><a class="lien-officiel" href="${esc(L.url)}" target="_blank" rel="noopener">${esc(intituleDuLien(L))} ${sortant}</a>` });
   });
   ((JO && JO.textes) || []).forEach((t) => {
@@ -1045,7 +1045,7 @@ function appActions(V, D, C, LIENS, JO = null) {
     const quand = t.dateTexte || t.date;
     const l = /^https?:\/\//i.test(t.lien || "") ? t.lien : "";
     textes.push({ ids, cle: cleJO(t), titre: String(t.titre).slice(0, 300), date: quand,
-      dateHtml: `<time datetime="${esc(quand)}">${esc(dateFr(quand))}</time><span class="precision">paru récemment</span>`,
+      dateHtml: `<time datetime="${esc(quand)}">${esc(dateFr(quand))}</time><span class="etat-date etat-recent">Parution récente</span>`,
       lien: `<a href="releve.html#${ancreJO(t)}">${esc(t.titre)}</a>${l ? `<a class="lien-officiel" href="${esc(l)}" target="_blank" rel="noopener">${/legifrance\.gouv\.fr/.test(l) ? "Légifrance" : esc(t.sourceNom || "Voir chez la source")} ${sortant}</a>` : ""}` });
   });
   textes.sort((x, y) => (x.date !== y.date ? (x.date < y.date ? 1 : -1) : x.titre.localeCompare(y.titre, "fr")));

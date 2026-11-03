@@ -3782,3 +3782,13 @@ a.puce-fixe { text-decoration: none; color: inherit; }
 .actions-sujet { margin: 0; padding-left: 1.05rem; font-size: .88rem; color: var(--encre-douce); }
 .actions-sujet li + li { margin-top: .25rem; }
 .actions-sujet [hidden] { display: none; }
+
+/* L'état d'une date dans les tableaux (3 novembre 2026) : une petite pastille
+   lisible plutôt qu'une mention grise. */
+.tableau-plan time { display: block; font-weight: 500; color: var(--encre); }
+.etat-date { display: inline-flex; align-items: center; gap: .35rem; margin-top: .3rem; padding: .12rem .55rem;
+  border-radius: 999px; font-size: .75rem; font-weight: 500; line-height: 1.5; white-space: nowrap;
+  background: var(--carte-pale, rgba(0,0,0,.04)); color: var(--encre-douce); border: 1px solid var(--filet); }
+.etat-date.etat-recent { background: var(--vert-fond); color: var(--vert); border-color: transparent; }
+.etat-date.etat-recent::before { content: ""; width: .45rem; height: .45rem; border-radius: 50%; background: currentColor; }
+.etat-date.etat-fond { margin-top: 0; }
