@@ -3652,8 +3652,7 @@ ${bandeAvis(AVIS)}
     <ul class="traits">
       <li class="trait">
         <svg class="icone" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18M9 20V10"/></svg>
-        <div><h3>Tous vos clients dans un tableau</h3>
-        <p>Un espace liste les entreprises que vous accompagnez, avec pour chacune d'entre elles un suivi.</p></div>
+        <div><h3>Gérer vos clients sur un même et seul espace</h3></div>
       </li>
       <li class="trait">
         <svg class="icone" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 3 7v5c0 5 3.8 8.3 9 9 5.2-.7 9-4 9-9V7Z"/><path d="M9 12l2 2 4-5"/></svg>
