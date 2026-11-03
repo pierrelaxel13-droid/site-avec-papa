@@ -42,6 +42,8 @@
   --vert-fond:     #DCF3E6;
   --ambre:         #9A4B0B;
   --ambre-fond:    #FBEBDB;
+  --rouge:         #B42318;
+  --rouge-fond:    #FDE7E5;
 
   --bouton-fond:   #15152B;
   --bouton-texte:  #FFFFFF;
@@ -94,6 +96,10 @@
     --vert-fond:     #0D3326;
     --ambre:         #FFB36B;
     --ambre-fond:    #3A2614;
+  --rouge:         #F87171;
+  --rouge-fond:    #3B1618;
+    --rouge:         #F87171;
+    --rouge-fond:    #3B1618;
     --bouton-fond:   #EDEFF8;
     --bouton-texte:  #0F121C;
     /* Deux halos et un fond plat, plutôt qu'un dégradé à cinq arrêts : le
@@ -137,6 +143,8 @@
   --vert-fond:     #0D3326;
   --ambre:         #FFB36B;
   --ambre-fond:    #3A2614;
+  --rouge:         #F87171;
+  --rouge-fond:    #3B1618;
   --bouton-fond:   #EDEFF8;
   --bouton-texte:  #0F121C;
   /* Deux halos et un fond plat, plutôt qu'un dégradé à cinq arrêts : le
@@ -3341,7 +3349,7 @@ a.puce-fixe { text-decoration: none; color: inherit; }
 .tableau-plan { width: 100%; border-collapse: collapse; font-size: .92rem; }
 .tableau-plan th, .tableau-plan td { padding: .7rem .8rem; text-align: left; vertical-align: top; border-bottom: 1px solid var(--filet); }
 .tableau-plan thead th { font-size: .85rem; font-weight: 500; color: var(--encre-tenue); border-bottom-color: var(--filet-fort); white-space: nowrap; }
-.tableau-plan td:first-child { white-space: nowrap; color: var(--encre-douce); font-variant-numeric: tabular-nums; }
+.tableau-plan:not(.tableau-conformite) td:first-child { white-space: nowrap; color: var(--encre-douce); font-variant-numeric: tabular-nums; }
 .tableau-plan td a { color: var(--encre); }
 .tableau-plan .vers-releve { display: block; margin-top: .25rem; font-size: .82rem; color: var(--accent); }
 .tableau-plan ul { margin: 0; padding-left: 1.1rem; }
@@ -3364,7 +3372,7 @@ a.puce-fixe { text-decoration: none; color: inherit; }
 .tableau-plan .precision { display: block; font-size: .8rem; color: var(--encre-tenue); }
 .tableau-plan .lien-officiel { display: block; margin-top: .25rem; font-size: .82rem; color: var(--accent); }
 .tableau-plan .lien-officiel svg { width: .8em; height: .8em; }
-.tableau-plan td:first-child time { color: var(--encre); }
+.tableau-plan:not(.tableau-conformite) td:first-child time { color: var(--encre); }
 
 /* --- Conformité réglementaire (3 novembre 2026) ------------------------- */
 .tableau-conformite select, .tableau-conformite input {
@@ -3373,7 +3381,7 @@ a.puce-fixe { text-decoration: none; color: inherit; }
 }
 .tableau-conformite select[data-statut="conforme"] { border-color: var(--vert, #1f8a4c); }
 .tableau-conformite select[data-statut="partiel"] { border-color: var(--ambre); }
-.tableau-conformite select[data-statut="non_conforme"] { border-color: var(--rouge, #c0392b); }
+.tableau-conformite select[data-statut="non_conforme"] { border-color: var(--rouge); }
 .tableau-conformite .conf-etat { margin-top: .3rem; }
 .conf-form { display: flex; gap: .4rem; align-items: center; }
 .conf-form .bouton { padding: .4rem .8rem; font-size: .85rem; white-space: nowrap; }
@@ -3417,3 +3425,22 @@ a.puce-fixe { text-decoration: none; color: inherit; }
 .tableau-plan select.applicable[data-statut="applicable"] { border-color: var(--vert); }
 .tableau-plan select.applicable[data-statut="sans_objet"] { border-color: var(--encre-tenue); }
 .tableau-plan .applicable-etat { margin-top: .25rem; }
+
+/* Conformité : l'état se voit d'un coup d'œil (3 novembre 2026). Conforme :
+   coche verte et ligne teintée de vert ; partiel : ambre ; non conforme : rouge. */
+.tableau-conformite tr[data-conformite] td:first-child { box-shadow: inset 4px 0 0 var(--teinte-conf); }
+.tableau-conformite tr[data-conformite="conforme"] { --teinte-conf: var(--vert); --fond-conf: var(--vert-fond); }
+.tableau-conformite tr[data-conformite="partiel"] { --teinte-conf: var(--ambre); --fond-conf: var(--ambre-fond); }
+.tableau-conformite tr[data-conformite="non_conforme"] { --teinte-conf: var(--rouge); --fond-conf: var(--rouge-fond); }
+.tableau-conformite tr[data-conformite] td { background: var(--fond-conf); }
+.conf-marque { display: none; align-items: center; gap: .35rem; margin-bottom: .35rem; font-size: .85rem; font-weight: 600; color: var(--teinte-conf); }
+.conf-marque svg { width: 1.15rem; height: 1.15rem; flex: none; }
+.tableau-conformite tr[data-conformite] .conf-marque { display: flex; }
+@media (max-width: 47.99rem) {
+  .tableau-conformite tr[data-conformite] { background: var(--fond-conf); border-color: var(--teinte-conf); box-shadow: inset 4px 0 0 var(--teinte-conf); }
+  .tableau-conformite tr[data-conformite] td, .tableau-conformite tr[data-conformite] td:first-child { background: none; box-shadow: none; }
+}
+.conf-compteurs .conf-vert { border-color: var(--vert); background: var(--vert-fond); }
+.conf-compteurs .conf-vert .grand { color: var(--vert); }
+.conf-compteurs .conf-rouge { border-color: var(--rouge); background: var(--rouge-fond); }
+.conf-compteurs .conf-rouge .grand { color: var(--rouge); }

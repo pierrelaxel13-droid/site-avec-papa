@@ -1010,7 +1010,7 @@ function tableauTextesPlan(V, C, LIENS, plan, JO) {
    preuve ou son commentaire. Chaque évaluation s'inscrit, datée, au registre
    (assets/conformite.js, espace_conformite). Les lignes portent leurs sujets
    (data-domaines) : la page suit le plan des réglages, comme Mon plan. */
-function appConformite(V, D, C, LIENS) {
+function appConformite(V, D, C, LIENS, JO = null) {
   const plan = planDe(V, D.entreprise);
   const parRef = {};
   Object.keys(V.domaines).forEach((id) => (V.domaines[id].textes || []).forEach((ref) => {
@@ -1018,25 +1018,59 @@ function appConformite(V, D, C, LIENS) {
   }));
   const ordreCat = Object.keys(CATEGORIES_TABLEAU);
   const catDe = (ids) => {
-    const cl = V.domaines[ids[0]].classement;
+    const cl = (V.domaines[ids[0]] || {}).classement;
     return CATEGORIES_TABLEAU[cl] ? cl : "metier";
   };
-  const refs = Object.keys(parRef).sort((a, b) =>
-    ordreCat.indexOf(catDe(parRef[a])) - ordreCat.indexOf(catDe(parRef[b])) || a.localeCompare(b, "fr"));
   const options = [["a_evaluer", "À évaluer"], ["conforme", "Conforme"], ["partiel", "Partiellement conforme"], ["non_conforme", "Non conforme"]];
-  const lignes = refs.map((ref, i) => {
-    const ids = parRef[ref], L = lienDuTexte(C, LIENS, ref);
-    const dans = ids.some((id) => plan.liste.includes(id));
-    return `<tr data-domaines="${esc(ids.join(" "))}" data-cle="ref:${esc(slug(ref))}" data-objet="${esc(ref)}"${dans ? "" : " hidden"}>
-      <td data-titre="Texte"><a href="texte/${slug(ref)}.html">${esc(ref)}</a>
-        <a class="lien-officiel" href="${esc(L.url)}" target="_blank" rel="noopener">${esc(intituleDuLien(L))} ${sortant}</a></td>
-      <td data-titre="Catégorie">${categorieTexte(V, ids)}</td>
+  const uniques = (l) => [...new Set(l)].filter((id) => V.domaines[id]);
+
+  /* Trois sources, toutes en vigueur, que l'entreprise les ait vues passer ou
+     non : (1) les textes de référence de ses sujets ; (2) les sections des
+     codes que nous relevons article par article (Code du travail, de la
+     sécurité sociale, rural), avec leurs articles en vigueur ; (3) les textes
+     parus au Journal officiel depuis le début du relevé. */
+  const entrees = [];
+  Object.keys(parRef).forEach((ref) => {
+    const L = lienDuTexte(C, LIENS, ref);
+    entrees.push({ ids: parRef[ref], cle: `ref:${slug(ref)}`, objet: ref, ordre: 0,
+      texte: `<a href="texte/${slug(ref)}.html">${esc(ref)}</a>
+        <span class="precision">Texte de référence</span>
+        <a class="lien-officiel" href="${esc(L.url)}" target="_blank" rel="noopener">${esc(intituleDuLien(L))} ${sortant}</a>` });
+  });
+  ((C && C.morceaux) || []).forEach((m) => {
+    const refs = Object.keys(C.perimetres).filter((r) => (C.perimetres[r] || []).includes(m.id));
+    const ids = uniques(refs.flatMap((r) => parRef[r] || []));
+    const vig = m.articles.filter((x) => !x.etat || x.etat === "VIGUEUR");
+    if (!ids.length || !vig.length) return;
+    const tard = vig.reduce((t, x) => (x.depuis && x.depuis > t ? x.depuis : t), "");
+    const nom = `${m.codeTitre}, articles ${vig[0].num} à ${vig[vig.length - 1].num}`;
+    entrees.push({ ids, cle: `code:${m.id}`, objet: nom, ordre: 1,
+      texte: `<a href="code/${esc(m.id)}.html">${esc(nom)}</a>
+        <span class="precision">${esc(m.chemin[m.chemin.length - 1] || "")} · ${vig.length} article${vig.length > 1 ? "s" : ""} en vigueur${tard ? `, dernière évolution le ${esc(dateFr(tard))}` : ""}</span>` });
+  });
+  ((JO && JO.textes) || []).forEach((t) => {
+    const ids = uniques(t.domaines.map((d) => d.id));
+    if (!ids.length) return;
+    const lien = /^https?:\/\//i.test(t.lien || "") ? t.lien : "";
+    entrees.push({ ids, cle: cleJO(t), objet: String(t.titre).slice(0, 480), ordre: 2,
+      texte: `<a href="releve.html#${ancreJO(t)}">${esc(t.titre)}</a>
+        <span class="precision">Paru le ${esc(dateFr(t.dateTexte || t.date))}</span>
+        ${lien ? `<a class="lien-officiel" href="${esc(lien)}" target="_blank" rel="noopener">${/legifrance\.gouv\.fr/.test(lien) ? "Légifrance" : esc(t.sourceNom || "Voir chez la source")} ${sortant}</a>` : ""}` });
+  });
+  entrees.sort((x, y) => ordreCat.indexOf(catDe(x.ids)) - ordreCat.indexOf(catDe(y.ids)) || x.ordre - y.ordre || x.objet.localeCompare(y.objet, "fr"));
+
+  const lignes = entrees.map((e, i) => {
+    const dans = e.ids.some((id) => plan.liste.includes(id));
+    return `<tr data-domaines="${esc(e.ids.join(" "))}" data-cle="${esc(e.cle)}" data-objet="${esc(e.objet)}"${dans ? "" : " hidden"}>
+      <td data-titre="Texte">${e.texte}</td>
+      <td data-titre="Catégorie">${categorieTexte(V, e.ids)}</td>
       <td data-titre="Évaluation">
-        <select class="conf-statut" id="conf-s-${i}" aria-label="Évaluation : ${esc(ref)}">${options.map(([v, l]) => `<option value="${v}">${l}</option>`).join("")}</select>
+        <span class="conf-marque" aria-hidden="true"></span>
+        <select class="conf-statut" aria-label="Évaluation : ${esc(e.objet)}">${options.map(([v, l]) => `<option value="${v}">${l}</option>`).join("")}</select>
         <span class="precision conf-etat"></span></td>
       <td data-titre="Preuve ou commentaire">
         <form class="conf-form" novalidate>
-          <input type="text" class="conf-note" maxlength="500" aria-label="Preuve ou commentaire : ${esc(ref)}" placeholder="Document, date, commentaire…">
+          <input type="text" class="conf-note" maxlength="500" aria-label="Preuve ou commentaire : ${esc(e.objet)}" placeholder="Document, date, commentaire…">
           <button type="submit" class="bouton bouton-sobre conf-ok">Enregistrer</button>
         </form></td>
     </tr>`;
@@ -1050,7 +1084,7 @@ function appConformite(V, D, C, LIENS) {
     <dl class="compteurs conf-compteurs">
       <div><dt class="etiq">Conformes</dt><dd><span class="grand" id="conf-n-conforme">0</span></dd></div>
       <div><dt class="etiq">Partiellement</dt><dd><span class="grand" id="conf-n-partiel">0</span></dd></div>
-      <div class="alerte-si"><dt class="etiq">Non conformes</dt><dd><span class="grand" id="conf-n-non_conforme">0</span></dd></div>
+      <div><dt class="etiq">Non conformes</dt><dd><span class="grand" id="conf-n-non_conforme">0</span></dd></div>
       <div><dt class="etiq">À évaluer</dt><dd><span class="grand" id="conf-n-a_evaluer">0</span><span class="precision" id="conf-taux"></span></dd></div>
     </dl>
   </div>
@@ -1060,7 +1094,15 @@ function appConformite(V, D, C, LIENS) {
   <div class="enveloppe">
     <h2>Les textes de votre plan</h2>
     <p class="note-source conf-lecture" hidden></p>
-    <table class="tableau-plan tableau-conformite">
+    <div class="filtre-plan">
+      <label for="filtre-categorie">Catégorie</label>
+      <select id="filtre-categorie">
+        <option value="">Toutes les catégories</option>
+        ${Object.keys(CATEGORIES_TABLEAU).map((cl) => `<option value="${cl}">${esc(CATEGORIES_TABLEAU[cl])}</option>`).join("")}
+      </select>
+      <span class="precision" id="filtre-compte" role="status"></span>
+    </div>
+    <table class="tableau-plan tableau-conformite tableau-textes-plan">
       <thead><tr><th scope="col">Texte</th><th scope="col">Catégorie</th><th scope="col">Évaluation</th><th scope="col">Preuve ou commentaire</th></tr></thead>
       <tbody>${lignes}</tbody>
     </table>
@@ -1073,7 +1115,7 @@ function appConformite(V, D, C, LIENS) {
     titre: `Conformité réglementaire | ${SITE.nom}`,
     description: "L'évaluation de conformité de l'entreprise, texte par texte, inscrite au registre.",
     racine: "../", zone: "app", actif: "conformite", corps, verrou: true, formule: "complet",
-    donneesPlan: true, scripts: ["assets/conformite.js"]
+    donneesPlan: true, scripts: ["assets/conformite.js", "assets/applicable.js"]
   });
 }
 
@@ -4803,7 +4845,7 @@ async function main() {
 
   await writeFile(join(SORTIE, "app", "index.html"), appTableauBord(V, D, C, LIENS));
   await writeFile(join(SORTIE, "app", "plan.html"), appPlan(V, D, C, LIENS, JO));
-  await writeFile(join(SORTIE, "app", "conformite.html"), appConformite(V, D, C, LIENS));
+  await writeFile(join(SORTIE, "app", "conformite.html"), appConformite(V, D, C, LIENS, JO));
   await writeFile(join(SORTIE, "app", "releve.html"), appReleve(V, D, JO, C, LIENS, SOURCES));
   await writeFile(join(SORTIE, "app", "registre.html"), appRegistre(V, D));
   await writeFile(join(SORTIE, "app", "secteurs.html"), appSecteurs(V, METIERS, NAF));

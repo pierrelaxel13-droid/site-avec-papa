@@ -53,7 +53,9 @@
       if (el) el.textContent = n[k];
     });
     var nc = document.getElementById("conf-n-non_conforme");
-    if (nc) nc.closest("div").classList.toggle("alerte", n.non_conforme > 0);
+    if (nc) nc.closest("div").classList.toggle("conf-rouge", n.non_conforme > 0);
+    var co = document.getElementById("conf-n-conforme");
+    if (co) co.closest("div").classList.toggle("conf-vert", n.conforme > 0);
     var evalues = vis.length - n.a_evaluer, taux = document.getElementById("conf-taux");
     if (taux) taux.textContent = vis.length ? "sur " + vis.length + " textes" + (evalues
       ? " · " + Math.round(100 * n.conforme / evalues) + " % des textes évalués sont conformes" : "") : "";
@@ -64,6 +66,20 @@
     var sel = tr.querySelector(".conf-statut"), note = tr.querySelector(".conf-note");
     sel.value = e && STATUTS[e.statut] ? e.statut : "a_evaluer";
     sel.setAttribute("data-statut", sel.value);
+    // L'état se voit sur toute la ligne : coche verte, ambre ou rouge.
+    var ICONES = {
+      conforme: '<path d="M5 12.5l4.5 4.5L19 7.5"/>',
+      partiel: '<path d="M12 7v6M12 16.5v.5"/>',
+      non_conforme: '<path d="M7 7l10 10M17 7L7 17"/>'
+    };
+    if (ICONES[sel.value]) {
+      tr.setAttribute("data-conformite", sel.value);
+      tr.querySelector(".conf-marque").innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" ' +
+        'stroke-linecap="round" stroke-linejoin="round">' + ICONES[sel.value] + "</svg>" + STATUTS[sel.value];
+    } else {
+      tr.removeAttribute("data-conformite");
+      tr.querySelector(".conf-marque").textContent = "";
+    }
     if (e && document.activeElement !== note) note.value = e.note || "";
     tr.querySelector(".conf-etat").textContent = e
       ? "Évalué le " + jour(e.le) + (e.par && e.par !== "vous" ? " par " + e.par : "")
