@@ -4596,3 +4596,24 @@ details.analyse.analyse-deportee > .analyse-corps { display: none; }
   background: var(--accent); color: var(--papier); font-size: .85rem; line-height: 1.4; }
 .suivi-par strong { color: inherit; font-weight: 700; }
 @media (max-width: 47.99rem) { .suivi-par { display: table; margin: 0 0 .5rem; border-radius: 10px; } }
+
+/* --- Page consultants : trois carrés, texte centré (4 novembre 2026) ------- */
+ol.etapes-carres { display: grid !important; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--ecart-cartes, 1rem);
+  list-style: none; margin: 0; padding: 0; counter-reset: none; }
+ol.etapes-carres > li.etape { display: flex !important; flex-direction: column; align-items: center; justify-content: center; text-align: center;
+  aspect-ratio: 1 / 1; min-height: 0; padding: clamp(1.25rem, 3vw, 2rem); margin: 0; background: var(--carte);
+  border: 1px solid var(--filet); border-radius: var(--rayon-carte, 16px); box-shadow: var(--ombre-carte, none); position: relative; }
+ol.etapes-carres > li.etape::before, ol.etapes-carres > li.etape::after { content: none !important; display: none !important; }
+ol.etapes-carres .etape-num { position: static !important; display: inline-flex; align-items: center; justify-content: center;
+  width: 2.75rem; height: 2.75rem; margin: 0 0 1rem; border-radius: 50%; background: var(--accent); color: var(--papier);
+  font-weight: 700; font-size: 1.1rem; }
+ol.etapes-carres h3 { margin: 0 0 .6rem; font-size: 1.15rem; line-height: 1.3; text-align: center; width: 100%; }
+ol.etapes-carres p { margin: 0; color: var(--encre-douce); text-align: center; max-width: 28ch; }
+@media (max-width: 63.99rem) { ol.etapes-carres { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 47.99rem) {
+  ol.etapes-carres { grid-template-columns: 1fr; }
+  ol.etapes-carres > li.etape { aspect-ratio: auto; min-height: 12rem; }
+}
+.zone-public ol.etapes-carres > li.etape, .zone-public ol.etapes-carres > li.etape :is(h3, p) { text-align: center !important; }
+.zone-public ol.etapes-carres > li.etape :is(h3, p) { margin-left: auto !important; margin-right: auto !important; padding-right: 0 !important; }
+@media (min-width: 64rem) { ol.etapes-carres > li.etape { aspect-ratio: 5 / 4; } }

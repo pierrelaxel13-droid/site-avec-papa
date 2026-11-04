@@ -3094,7 +3094,7 @@ function pageConsultants() {
 
 <section class="section section-tein">
   <div class="enveloppe">
-    <ol class="etapes etapes-trois">
+    <ol class="etapes etapes-trois etapes-carres">
       ${[
         ["Tous vos clients sur un même espace", "Chaque client dispose de son espace."],
         ["Accès aux mêmes informations", "Vous disposez de la même interface que vos clients et le pilotage en est facilité."],
@@ -3131,25 +3131,17 @@ function pageConsultants() {
   </div>
 </section>
 
-<section class="section section-tein">
+<section class="section section-appel">
   <div class="enveloppe">
-    <h2 class="titre-section">Vos clients restent les vôtres</h2>
-    <div class="deux-colonnes">
-      <p class="reserve"><strong>Nous ne démarchons pas vos clients.</strong> Ils vous appartiennent : nous ne les
-        contactons pas et ne leur vendons rien en direct. Nous nous y engageons par écrit, dans le contrat consultant.</p>
-      <p class="reserve"><strong>Leurs données ne sont qu'à eux et à vous.</strong> Chaque entreprise est isolée dans la
-        base : elle ne verra que ses données et vous, que celles de vos clients.</p>
-    </div>
-    <p class="note-source" style="text-align:center;margin-top:var(--t4)">L'espace consultant est ouvert : votre cabinet,
-      la liste de vos clients, leur espace. La marque blanche (votre logo, vos couleurs) arrive ensuite. Le paiement en
-      ligne aussi : d'ici là, nous ouvrons votre abonnement sur simple demande.</p>
-    <p class="rangee rangee-centre" style="margin-top:var(--t4)">
+    <p class="rangee rangee-centre">
       <a class="bouton bouton-accent" href="compte/creer.html?type=cabinet">Créer mon compte consultant</a>
       <a class="bouton bouton-sobre" href="demo/cabinet.html">Voir la démonstration</a>
       <a class="bouton bouton-sobre" href="mailto:${esc(SITE.courriel)}?subject=${encodeURIComponent("Offre consultant")}">En parler</a>
     </p>
   </div>
-</section>`;
+</section>
+
+`;
   return page({
     titre: `Offre consultant QSE | ${SITE.nom}`,
     description: "Livrez la veille réglementaire à vos clients sous votre marque : prix par client, dégressif, marque blanche dès 6 clients.",
