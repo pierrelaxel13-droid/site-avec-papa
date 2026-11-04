@@ -3159,7 +3159,7 @@ function pageConsultants() {
 
 <section class="section">
   <div class="enveloppe">
-    <h2 class="titre-section">Ce que vous y gagnez</h2>
+    <h2 class="titre-section">Les avantages de Vigie réglementaire</h2>
     <ul class="raisons raisons-trois">
       <li class="raison" data-paraitre>
         <span class="numero" aria-hidden="true">1</span>
