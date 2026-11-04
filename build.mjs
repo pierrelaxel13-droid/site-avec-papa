@@ -4943,12 +4943,10 @@ function pageNouveauClient(V, NAF, demo = null) {
           ${NAF ? `<div class="nc-champ">
             <label for="nc-naf">Code APE <span class="nc-facultatif">facultatif</span></label>
             <select id="nc-naf"><option value="">À régler plus tard</option>${options}</select>
-            <p class="nc-aide-champ">Il décide des textes suivis pour ce client.</p>
           </div>` : ""}
           <div class="nc-champ">
             <label for="nc-courriel">E-mail de son responsable <span class="nc-facultatif">facultatif</span></label>
             <input type="email" id="nc-courriel" autocomplete="off" inputmode="email" spellcheck="false" placeholder="prenom.nom@entreprise.fr">
-            <p class="nc-aide-champ">Il reçoit un lien pour créer son compte et devient l'administrateur de son espace.</p>
           </div>
           <p class="etat-compte" id="nc-etat" role="status"></p>
           <button type="submit" class="bouton bouton-accent nc-envoyer">Créer l'accès</button>
