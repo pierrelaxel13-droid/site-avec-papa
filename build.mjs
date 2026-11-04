@@ -3643,8 +3643,8 @@ ${bandeAvis(AVIS)}
       </li>
       <li class="trait">
         <svg class="icone" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 12l2 2 4-5"/><circle cx="12" cy="12" r="9"/></svg>
-        <div><h3>Réalisation de votre registre de conformité réglementaire</h3>
-        <p>Une synthèse des textes qui vous sont applicables et de ceux qui sont appliqués dans votre société.</p></div>
+        <div><h3>Réalisation des registres de conformité réglementaire de vos clients</h3>
+        <p>Une synthèse des textes qui sont applicables à vos clients.</p></div>
       </li>
       <li class="trait">
         <svg class="icone" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h14v16l-7-3-7 3Z"/><path d="M9 9h6"/></svg>
