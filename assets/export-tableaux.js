@@ -63,7 +63,7 @@
   }
   function visibles(table) {
     return [].slice.call(table.querySelectorAll("tbody tr")).filter(function (tr) {
-      return !tr.hidden && !tr.classList.contains("hors-filtre") && tr.offsetParent !== null;
+      return !tr.hidden && !tr.classList.contains("hors-filtre") && !tr.classList.contains("ligne-analyse") && tr.offsetParent !== null;
     });
   }
   function donnees(table) {

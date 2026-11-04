@@ -997,7 +997,7 @@ function analyseJO(V, t, ids) {
   const objetTitre = !objet && mt ? majuscule(coupe(mt[0], 300)) : "";
   // Ce qu'il modifie : « L'arrêté du … susvisé est ainsi modifié ».
   const mm = /((?:l'|le |la )(?:article [^.:;]{1,40}? d[eu]s? |annexe [^.:;]{0,30}? d[eu]s? )?(?:arrêté|décret|ordonnance|loi|code|règlement)[^.:;]{0,120}?)\s+(?:susvisée?\s+)?(?:est|sont) ainsi modifiée?s?/i.exec(c);
-  const modifie = mm ? majuscule(mm[1].replace(/\s+susvisée?$/i, "").trim()) : "";
+  const modifie = mm ? majuscule(mm[1].replace(/\s+susvisée?$/i, "").replace(/(\d) er\b/g, "$1er").trim()) : "";
   // Un texte qui ne fait que réécrire un autre (« … est ainsi modifié : les mots … ») : sa
   // lettre n'apprend rien ; l'objet et le texte modifié suffisent.
   const dit = /est ainsi modifiée?\s*:/i.test(c.slice(0, 400)) && (objet || objetTitre) ? { resume: "", puces: [] } : cequeDit(c);
@@ -1253,7 +1253,7 @@ function appActions(V, D, C, LIENS, JO = null) {
     titre: `Plan d'actions | ${SITE.nom}`,
     description: "Le plan d'actions de votre veille réglementaire.",
     racine: "../", zone: "app", actif: "actions", corps, verrou: true, formule: "suivi",
-    donneesPlan: true, scripts: ["assets/plan-actions.js", "assets/export-tableaux.js"]
+    donneesPlan: true, scripts: ["assets/plan-actions.js", "assets/export-tableaux.js", "assets/analyse.js"]
   });
 }
 
@@ -1393,7 +1393,7 @@ function appConformite(V, D, C, LIENS, JO = null) {
     titre: `Registre et conformité réglementaire | ${SITE.nom}`,
     description: "L'évaluation de conformité de l'entreprise, texte par texte, inscrite au registre.",
     racine: "../", zone: "app", actif: "conformite", corps, verrou: true, formule: "complet",
-    donneesPlan: true, scripts: ["assets/conformite.js", "assets/applicable.js", "assets/export-tableaux.js"]
+    donneesPlan: true, scripts: ["assets/conformite.js", "assets/applicable.js", "assets/export-tableaux.js", "assets/analyse.js"]
   });
 }
 
@@ -1488,7 +1488,7 @@ ${plan.ecartes.map((id) => blocPlan(id)).join("\n")}
     titre: `Ma veille réglementaire | ${SITE.nom}`,
     description: "Ce qui s'applique chez vous et à quel rythme le revoir.",
     racine: "../", zone: "app", actif: "plan", corps, verrou: true, formule: "textes",
-    donneesPlan: true, scripts: ["assets/applicable.js", "assets/export-tableaux.js"]
+    donneesPlan: true, scripts: ["assets/applicable.js", "assets/export-tableaux.js", "assets/analyse.js"]
   });
 }
 
