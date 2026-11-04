@@ -3521,7 +3521,7 @@ ${bandeAvis(AVIS)}
       <span class="rail-fil" data-fil></span>
       <div class="rail-item" data-paraitre data-compte="${NAF ? NAF.codes.length : V.divisions.length}">
         <span class="chiffre">${NAF ? NAF.codes.length : V.divisions.length}</span>
-        <p class="legende">${NAF ? "codes APE couverts" : "familles de métiers couvertes"}, de la boulangerie au transport routier</p>
+        <p class="legende">${NAF ? "codes APE" : "familles de métiers"}</p>
       </div>
       <div class="rail-item" data-paraitre data-compte="${nbDomaines}">
         <span class="chiffre">${nbDomaines}</span>
