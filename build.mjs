@@ -727,80 +727,45 @@ function appTableauBord(V, D, C, LIENS) {
   const fiche = ficheDeLEntreprise(V, D);
   const corps = enTeteApp(D, "Tableau de bord",
     "Ce qui attend une décision, ce qui arrive, et ce qui est en retard.", fiche) + `
-<!-- Le jeu d'essai : caché dans un vrai compte (assets/espace.js montre le vrai). -->
+<!-- Le jeu d'essai : caché dans un vrai compte (assets/espace.js montre le vrai).
+     4 novembre 2026 : la démonstration montre le MÊME tableau de bord qu'un
+     compte — cinq carrés, prochaines revues, historiques. Les chiffres des
+     carrés sont calculés dans le navigateur (assets/bord-demo.js), comme
+     dans un compte. -->
 <div data-demo>
 
-${rubrique({ etiq: "À traiter", contenu: `
-  <dl class="compteurs compteurs-liens">
-    <div${enRetard.length ? ' class="alerte"' : ""}>
-      <dt class="etiq">Revues en retard</dt>
-      <dd><span class="grand">${enRetard.length}</span>
-        ${enRetard.length ? `<span class="precision">${esc(enRetard.map((e) => e.frequence).join(", "))}</span>` : ""}
-        ${lienCarte("plan.html", "Voir le plan de veille")}</dd>
-    </div>
-    <div><dt class="etiq">Textes à analyser</dt>
-      <dd><span class="grand">${aAnalyser.length}</span>${lienCarte("plan.html", "Voir ma veille réglementaire")}</dd></div>
-    <div><dt class="etiq">Actions ouvertes</dt>
-      <dd><span class="grand">${ouvertes.length}</span>${lienCarte("conformite.html#registre", "Voir le registre")}</dd></div>
-    <div><dt class="etiq">Textes relevés, 90 jours</dt>
-      <dd><span class="grand">${D.releve.length}</span>${lienCarte("plan.html", "Voir ma veille réglementaire")}</dd></div>
+${rubrique({ etiq: "Tableau de bord", contenu: `
+  <dl class="compteurs compteurs-liens tableau-bord" id="bord-demo">
+    <div><dt class="etiq">Nouveaux textes</dt><dd><span class="grand" data-bord="nouveaux">—</span><span class="precision">pas encore ouverts</span>${lienCarte("plan.html", "Voir ma veille réglementaire")}</dd></div>
+    <div><dt class="etiq">Textes publiés</dt><dd><span class="grand" data-bord="publies">—</span><span class="precision">ces 14 derniers jours</span>${lienCarte("plan.html", "Voir ma veille réglementaire")}</dd></div>
+    <div><dt class="etiq">Textes applicables</dt><dd><span class="grand" data-bord="applicables">—</span><span class="precision">touchent votre plan</span>${lienCarte("plan.html", "Voir ma veille réglementaire")}</dd></div>
+    <div><dt class="etiq">Textes lus</dt><dd><span class="grand" data-bord="lus">—</span><span class="precision" data-bord="lus-sur"></span>${lienCarte("plan.html", "Voir ma veille réglementaire")}</dd></div>
+    <div data-bord-carre="actions"><dt class="etiq">Actions à réaliser</dt><dd><span class="grand" data-bord="actions">0</span><span class="precision" data-bord="retard"></span>${lienCarte("actions.html", "Voir le plan d'actions")}</dd></div>
   </dl>` })}
-
-${aAnalyser.length ? rubrique({ etiq: "Ce qu'il faut faire maintenant", contenu: `
-  <p class="lecture">Les textes qui attendent une décision, et le geste à faire pour
-  chacun. Le texte officiel est au bout du lien : rien à chercher.</p>
-  <ul class="conseils">
-    ${aAnalyser.map((t) => {
-      const d = V.domaines[t.domaine];
-      if (!d) return "";
-      const ref = d.textes[0];
-      const L = lienDuTexte(C, LIENS, ref);
-      return `<li>
-      ${lienCarte(`texte/${slug(ref)}.html`, `Ouvrir la fiche : ${ref}`)}
-      <p class="titre">${marqueFait(`essai:${slug(t.titre)}`)}${esc(t.titre)}</p>
-      <p class="meta etiq">${esc(d.nom)}${t.priorite === "haute" ? " · prioritaire" : ""}</p>
-      <ul class="a-faire">${(d.actions || []).slice(0, 3).map((a) => `<li>${esc(a)}</li>`).join("")}</ul>
-      ${boutonFait(`essai:${slug(t.titre)}`, { objet: t.titre })}
-      <p class="note-source">
-        <a href="texte/${slug(ref)}.html">${esc(ref)}</a> ·
-        <a class="lien-officiel" href="${esc(L.url)}" target="_blank" rel="noopener"
-           title="${esc(L.quoi)}">${esc(intituleDuLien(L))} ${sortant}</a>
-      </p>
-    </li>`; }).join("")}
-  </ul>` }) : ""}
 
 ${rubrique({ etiq: "Prochaines revues", aplat: true, contenu: `
   <ul class="liste-echeances">
-    ${D.echeances.map((e) => `<li${e.retard ? ' class="retard"' : ""}>
+    ${D.echeances.filter((e) => !e.retard).map((e) => `<li>
       <a href="plan.html">
         <span class="etiq">${esc(V.frequences[e.frequence] ? V.frequences[e.frequence].l : e.frequence)}</span>
         <span class="mono">${esc(dateFr(e.prochaine))}</span>
-        ${e.retard ? '<span class="marque-ajout">en retard</span>' : ""}
-        ${fleche}
       </a>
     </li>`).join("")}
   </ul>` })}
 
-${rubrique({ etiq: "En attente de vous", contenu: `
-  <p class="lecture">Les textes relevés qui n'ont pas encore été tranchés.</p>
-  <ul class="liste-releve" style="margin-top:var(--t4)">
-    ${aAnalyser.map((t) => ligneReleve(V, C, LIENS, t)).join("")}
+${rubrique({ etiq: "Historiques", contenu: `
+  <ul class="liste-registre">
+    ${D.registre.slice(0, 10).map((r) => ligneRegistre(r)).join("")}
   </ul>
-  <p style="margin-top:var(--t4)"><a class="lien-fleche" href="plan.html">Voir ma veille réglementaire ${fleche}</a></p>` })}
-
-${rubrique({ etiq: "Historiques", aplat: true, contenu: `
-  <p class="lecture">Les ouvertures de textes, les validations, les actions et les revues, datées.</p>
-  <ul class="liste-registre" style="margin-top:var(--t4)">
-    ${D.registre.slice(0, 4).map((r) => ligneRegistre(r)).join("")}
-  </ul>
-  <p style="margin-top:var(--t4)"><a class="lien-fleche" href="conformite.html#registre">Voir tout le registre ${fleche}</a></p>` })}
+  <p style="margin-top:var(--t4)"><a class="lien-fleche" href="conformite.html#registre">Voir tout le registre</a></p>` })}
 </div>
 <div id="bord-compte" data-compte hidden></div>`;
 
   return page({
     titre: `Tableau de bord | ${SITE.nom}`,
     description: "Tableau de bord de la veille réglementaire.",
-    racine: "../", zone: "app", actif: "bord", corps, verrou: true, formule: "textes", donneesPlan: true
+    racine: "../", zone: "app", actif: "bord", corps, verrou: true, formule: "textes", donneesPlan: true,
+    scripts: ["assets/bord-demo.js"]
   });
 }
 
@@ -1689,7 +1654,18 @@ function placeConseil(t) {
 
 /* La clé d'un texte relevé : la même pour la case « Fait », le registre, la
    cloche et ce que l'abonné a déjà ouvert (assets/avis.js). */
-const cleJO = (t) => `jo:${t.id && !/^http/.test(t.id) ? t.id : slug(t.titre).slice(0, 80)}`;
+/* La clé d'un texte du relevé. Sans identifiant, elle vient du titre ; un
+   titre long tronqué à 70 caractères pouvait donner la même clé à plusieurs
+   textes (4 novembre 2026 : trois « Décision relative à une modification
+   administrative d'autorisation de… » partageaient leur « Lu », leur
+   « Applicable » et leurs actions). On ajoute alors une empreinte du titre
+   complet ; les titres courts gardent leur clé, et ce qui y est enregistré. */
+const cleJO = (t) => {
+  if (t.id && !/^http/.test(t.id)) return `jo:${t.id}`;
+  const s = slug(t.titre);   // slug() coupe à 70 caractères
+  const entier = sansAccent(t.titre).toLowerCase().replace(/['’]/g, " ").replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+  return entier.length > s.length ? `jo:${s.replace(/-+$/, "")}-${cleCourte(`${t.titre}|${t.lien || ""}`)}` : `jo:${s}`;
+};
 const ancreJO = (t) => `t-${slug(cleJO(t)).slice(0, 90)}`;
 
 function ligneJO(V, t, i, releveLe = "") {
@@ -2989,11 +2965,8 @@ function pageConsultants() {
 <section class="section">
   <div class="enveloppe deux-temps">
     <div>
-      <h2>Tous vos clients en un coup d'œil</h2>
-      <p class="lecture">Vous pilotez l'ensemble de vos clients. Une seule vue pour vos clients : qui est à jour, qui a des revues en retard, qui a des
-        textes à analyser. Vous savez où intervenir avant que votre client ne vous appelle.</p>
-      <p class="lecture" style="margin-top:var(--t3)">Et bientôt, pour eux, ce sera votre outil : votre logo, votre
-        nom, vos couleurs, jusque sur les exports PDF qu'ils montrent à l'auditeur (la marque blanche est en préparation).</p>
+      <h2>La veille réglementaire de tous vos clients centralisée</h2>
+      <p class="lecture">Vous pilotez vos clients et disposez de l'avancement de leurs actions.</p>
     </div>
     ${dessinVueConsultant()}
   </div>
@@ -3067,31 +3040,7 @@ function pageConsultants() {
   </div>
 </section>
 
-<section class="section">
-  <div class="enveloppe">
-    <h2 class="titre-section">Votre marge, en clair</h2>
-    <p class="intro titre-section">Déplacez le curseur : votre nombre de clients, ce que vous nous payez, et ce qui
-    vous reste si vous refacturez au prix public. Vous restez libre de votre prix.</p>
-    ${(() => {
-      const n = 10, c = calculMarge(O, direct, n);
-      return `<div class="calcul" data-paliers="${esc(JSON.stringify(O.paliers))}" data-direct="${direct.mois}" data-suffixe="${esc(TVA.suffixe)}">
-      <label class="calcul-choix" for="nb-clients">
-        <span>Nombre de clients équipés</span>
-        <output id="nb-sortie" for="nb-clients">${n}</output>
-      </label>
-      <input type="range" id="nb-clients" min="${O.paliers[0].de}" max="40" step="1" value="${n}">
-      <dl class="calcul-res">
-        <div><dt>Votre prix par client</dt><dd data-calcul="prix">${esc(eur(c.p.mois))} par mois</dd></div>
-        <div><dt>Vous nous payez</dt><dd data-calcul="paye">${esc(eur(c.paye))} par mois</dd></div>
-        <div><dt>Au prix public (${esc(eur(direct.mois))}), vos clients paieraient</dt><dd data-calcul="public">${esc(eur(c.public))} par mois</dd></div>
-        <div class="calcul-marge"><dt>Ce qui vous reste</dt><dd data-calcul="marge">${esc(eur(c.marge))} par mois, soit ${esc(eur(c.marge * 12))} par an</dd></div>
-      </dl>
-      <p class="calcul-blanche" data-calcul="blanche">${c.p.blanche ? "Marque blanche incluse : votre logo, votre nom, vos couleurs." : `Marque blanche à partir de ${O.paliers.find((p) => p.blanche).de} clients.`}</p>
-    </div>`;
-    })()}
-    <p class="mention-tva">Exemple de calcul : votre propre prix de revente est libre.</p>
-  </div>
-</section>
+
 
 <section class="section section-tein">
   <div class="enveloppe">
@@ -4075,7 +4024,7 @@ function pageAbonnement(V) {
 
 <section class="section">
   <div class="enveloppe">
-    <h2 class="titre-section">Nos offres</h2>
+    <h2 class="titre-section">Nos offres entreprise</h2>
 
     <div class="formules">
       ${Object.entries(FORMULES).map(([id, f], k) => `<article class="formule${id === "complet" ? " mise-en-avant" : ""}" data-paraitre>
@@ -4106,7 +4055,7 @@ ${SITE.offreConsultant ? (() => {
   const O = OFFRE_CONSULTANT, direct = FORMULES[O.equivalent];
   return `<section class="section section-tein" id="consultants">
   <div class="enveloppe">
-    <h2 class="titre-section">Offre consultant</h2>
+    <h2 class="titre-section">Nos offres consultant</h2>
     <p class="intro titre-section">Pour les consultants QSE qui suivent plusieurs entreprises : un prix par client et par mois,
     dégressif. Chaque client reçoit la formule « ${esc(direct.carte || direct.l)} ».</p>
     <div class="formules">

@@ -836,6 +836,38 @@ select tests.ok((select round((public.admin_conseils() ->> 'depense_mois')::nume
   'et ce que les conseils ont coûté ce mois-ci (pas le mois dernier)');
 reset role;
 
+-- ---------------------------------------------------------------------------
+-- 16. Sécurité des données (4 novembre 2026) : un appel direct à la base ne
+--     fait pas plus que l'application.
+-- ---------------------------------------------------------------------------
+update public.abonnements set formule = 'textes', statut = 'active' where entreprise_id = '00000000-0000-0000-0000-00000000b000';
+select tests.qui('00000000-0000-0000-0000-0000000000b1', 'b_admin@test.fr');
+set local role authenticated;
+select tests.refuse($$insert into public.registre (entreprise_id, genre, objet, statut, cle)
+  values ('00000000-0000-0000-0000-00000000b000', 'conformite', 'Texte (essai)', 'conforme', 'ref:essai')$$,
+  'sans la formule complète, pas d''évaluation de conformité, même en écrivant directement dans la base');
+reset role;
+
+select tests.qui('00000000-0000-0000-0000-0000000000a1', 'a_admin@test.fr');
+set local role authenticated;
+select tests.refuse($$insert into public.registre (entreprise_id, genre, objet, date_effet)
+  values ('00000000-0000-0000-0000-00000000a000', 'revue', 'Revue (essai)', current_date + 30)$$,
+  'le registre refuse une date d''effet dans le futur');
+select tests.refuse($$insert into public.registre (entreprise_id, genre, objet, statut, cle)
+  values ('00000000-0000-0000-0000-00000000a000', 'conformite', 'Texte (essai)', 'parfait', 'ref:essai')$$,
+  'et une évaluation qui n''existe pas dans l''application');
+insert into public.reponses (entreprise_id, declencheur, valeur, maj_par)
+  values ('00000000-0000-0000-0000-00000000a000', 'essai_auteur', true, '00000000-0000-0000-0000-0000000000b1');
+select tests.ok((select maj_par from public.reponses where entreprise_id = '00000000-0000-0000-0000-00000000a000'
+                 and declencheur = 'essai_auteur') = '00000000-0000-0000-0000-0000000000a1',
+  'l''auteur d''une réponse est celui qui est connecté, pas celui qu''il prétend être');
+select public.espace_lus(jsonb_build_object('depuis', '2026-11-01T00:00:00Z',
+  'ids', (select jsonb_agg('ref:code-du-travail-article-l4121-' || g) from generate_series(1, 400) g)));
+select tests.ok((select jsonb_array_length(reglages -> 'lus' -> 'ids') from public.profils
+                 where id = '00000000-0000-0000-0000-0000000000a1') = 400,
+  'la mémoire des textes lus tient 400 textes (elle s''arrêtait vers 100)');
+reset role;
+
 do $$ begin raise notice 'TOUS LES TESTS D''ISOLATION SONT PASSÉS'; end $$;
 
 rollback;
