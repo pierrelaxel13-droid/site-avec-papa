@@ -538,7 +538,14 @@ async function main() {
 
   const depuis = DEPUIS || new Date(Date.now() - JOURS * 86400000).toISOString().slice(0, 10);
 
-  if (DECOUVRIR) return decouvre(SOURCES);
+  /* La découverte essaie aussi les sources candidates (contenu/sources-
+     candidates.js), qui ne sont pas relevées tant qu'on ne les a pas
+     confirmées à la main dans contenu/sources.js. */
+  if (DECOUVRIR) {
+    const candidates = (await charge("contenu/sources-candidates.js", "SOURCES_CANDIDATES").catch(() => null)) || [];
+    const connues = new Set(SOURCES.map((s) => s.id));
+    return decouvre(SOURCES.concat(candidates.filter((c) => !connues.has(c.id))));
+  }
 
   if (VERIFIER) {
     console.log(`Vérification de ${SOURCES.length} sources.\n`);
