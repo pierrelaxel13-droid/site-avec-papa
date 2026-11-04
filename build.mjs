@@ -3097,7 +3097,7 @@ function pageConsultants() {
     <ol class="etapes etapes-trois">
       ${[
         ["Tous vos clients sur un même espace", "Chaque client dispose de son espace."],
-        ["Ils voient votre marque", `Dès ${O.paliers.find((p) => p.blanche).de} clients, l'interface et les exports porteront votre logo et votre nom (en préparation). Vous facturez vos clients à votre prix.`],
+        ["Accès aux mêmes informations", "Vous disposez de la même interface que vos clients et le pilotage en est facilité."],
         ["Vous suivez tout", "Votre vue liste vos clients et ce qui est en retard chez chacun. Le registre de chaque client est prêt pour son audit."]
       ].map(([t, d], k) => `<li class="etape">
         <span class="etape-num">${k + 1}</span>
