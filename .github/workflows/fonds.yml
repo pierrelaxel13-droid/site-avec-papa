@@ -43,6 +43,8 @@ jobs:
           ls -lh "$RUNNER_TEMP/legi.tar.gz"
 
       - name: Les textes en vigueur depuis 50 ans
+        env:
+          FONDS_EXEMPLES: "1"
         run: node outils/fonds-legi.mjs "$RUNNER_TEMP/legi.tar.gz" | tee "$RUNNER_TEMP/fonds.log"
 
       - name: Le site se construit avec
@@ -51,12 +53,13 @@ jobs:
       - name: Commiter
         run: |
           if [ -z "$(git status --porcelain contenu/fonds-legi.json)" ]; then echo "Rien n'a changé."; exit 0; fi
+          if grep -q '"textes":\[\]' contenu/fonds-legi.json; then echo "::error::Aucun texte retenu : on ne remplace pas le fonds."; exit 1; fi
           taille=$(du -m contenu/fonds-legi.json | cut -f1)
           if [ "$taille" -gt 90 ]; then echo "::error::contenu/fonds-legi.json pèse ${taille} Mo : trop pour le dépôt."; exit 1; fi
           git config user.name  "Relève Pierrel & Co"
           git config user.email "releve@users.noreply.github.com"
           git add contenu/fonds-legi.json
-          git commit -m "Fonds des textes en vigueur : $(head -1 "$RUNNER_TEMP/fonds.log" | cut -c1-120)"
+          git commit -m "Fonds des textes en vigueur : $(grep -m1 '^Fiches de textes lues' "$RUNNER_TEMP/fonds.log" | cut -c1-140)"
           for i in 1 2 3; do
             if git pull --rebase -X theirs origin main && git push; then exit 0; fi
             sleep $((i * 5))

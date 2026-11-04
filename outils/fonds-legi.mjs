@@ -96,6 +96,8 @@ const nu = (xml, b) => texteBrut(entre(xml, b)).trim();
 const enVigueur = (etat, fin, auj) => !/^ABROGE$|^PERIME|^ANNULE|^TRANSFERE|^DISJOINT/.test(etat || "") && (!fin || fin.slice(0, 10) > auj);
 
 /* Une fiche de texte (texte/version) : ce qu'on en garde, ou null. */
+export const RAISONS = {};
+const raison = (r) => { RAISONS[r] = (RAISONS[r] || 0) + 1; return null; };
 export function lisVersion(xml, auj, limite) {
   const id = nu(xml, "ID");
   const natureBrute = nu(xml, "NATURE").toUpperCase();
@@ -104,8 +106,12 @@ export function lisVersion(xml, auj, limite) {
   const etat = nu(version, "ETAT"), fin = nu(version, "DATE_FIN");
   const date = (nu(xml, "DATE_PUBLI") || nu(xml, "DATE_TEXTE")).slice(0, 10);
   const titre = nu(version, "TITREFULL") || nu(version, "TITRE");
-  if (!id || !nature || !titre || !date || date.startsWith("2999")) return null;
-  if (date < limite || !enVigueur(etat, fin, auj)) return null;
+  if (!id) return raison("sans identifiant");
+  if (!nature) return raison(`nature ${natureBrute || "vide"}`);
+  if (!titre) return raison("sans titre");
+  if (!date || date.startsWith("2999")) return raison("sans date");
+  if (date < limite) return raison("plus de 50 ans");
+  if (!enVigueur(etat, fin, auj)) return raison(`pas en vigueur (${etat || "?"})`);
   return { id, cid: nu(xml, "CID"), nature, titre, date, nota: nu(entre(xml, "NOTA"), "CONTENU") };
 }
 
@@ -129,16 +135,20 @@ export async function fonds(fichier, V, { auj = new Date().toISOString().slice(0
   // 1. Les fiches des textes.
   await parcourir(fichier, (n) => dansTnc(n) && /\/texte\/version\/[^/]+\.xml$/.test(n), async (n, xml) => {
     fiches++;
+    if (fiches <= 2 && process.env.FONDS_EXEMPLES) console.log(`--- exemple ${n}\n${xml.slice(0, 2500)}\n---`);
     const t = lisVersion(xml, auj, limite);
     if (!t) return;
     const domaines = rattache(V, t.titre, "legi");
-    if (!domaines.length) return;
+    if (!domaines.length) { raison("hors de nos sujets"); return; }
+    raison("retenu");
     const avant = textes.get(t.id);
     if (!avant || t.date > avant.date) textes.set(t.id, { ...t, domaines, articles: [] });
   });
   // 2. Leurs articles en vigueur.
-  let articles = 0;
+  let articles = 0, vus = 0;
   await parcourir(fichier, (n) => dansTnc(n) && /\/article\/.+\.xml$/.test(n), async (n, xml) => {
+    vus++;
+    if (vus <= 1 && process.env.FONDS_EXEMPLES) console.log(`--- exemple d'article ${n}\n${xml.slice(0, 2000)}\n---`);
     const a = lisArticle(xml, auj);
     if (!a || !textes.has(a.txt)) return;
     articles++;
@@ -160,7 +170,7 @@ export async function fonds(fichier, V, { auj = new Date().toISOString().slice(0
       domaines: t.domaines.map((d) => ({ id: d.id, nom: d.nom, mots: d.mots }))
     };
   }).filter((t) => t.articlesEnVigueur > 0).sort((a, b) => (a.date < b.date ? 1 : -1));
-  return { fiches, articles, textes: liste, limite };
+  return { fiches, articles, articlesVus: vus, textes: liste, limite };
 }
 
 async function derniereArchive() {
@@ -185,5 +195,6 @@ if (import.meta.url === `file://${process.argv[1]}`) {
     archive: arg.split("/").pop(), lu_le: auj, depuis: r.limite, textes: r.textes
   }) + "\n");
   console.log(`Fiches de textes lues : ${r.fiches}. Textes en vigueur depuis le ${r.limite} retenus : ${r.textes.length} (${r.articles} articles).`);
+  console.log(`Articles lus : ${r.articlesVus}. Raisons : ${JSON.stringify(RAISONS)}`);
   Object.entries(parSujet).sort((a, b) => b[1] - a[1]).forEach(([n, k]) => console.log(`  ${String(k).padStart(5)}  ${n}`));
 }
