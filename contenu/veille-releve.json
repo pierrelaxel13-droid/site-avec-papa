@@ -1,12 +1,12 @@
 {
  "licence": "Textes officiels de la République française — Licence Ouverte. Publications des autorités citées, reproduites avec leur source et leur date.",
- "releve_le": "2026-11-03",
- "depuis": "2026-10-20",
+ "releve_le": "2026-11-04",
+ "depuis": "2026-10-21",
  "rapport": [
   {
    "id": "jorf",
    "nom": "Journal officiel de la République française",
-   "entrees": 152093,
+   "entrees": 147410,
    "retenus": 616,
    "souci": null
   },
@@ -14,7 +14,7 @@
    "id": "eurlex-l",
    "nom": "Journal officiel de l'Union européenne — série L",
    "entrees": 100,
-   "retenus": 18,
+   "retenus": 19,
    "souci": null
   },
   {
@@ -28,12 +28,19 @@
    "id": "travail",
    "nom": "Ministère du Travail — actualités",
    "entrees": 50,
-   "retenus": 1,
+   "retenus": 3,
    "souci": null
   },
   {
    "id": "oppbtp",
    "nom": "OPPBTP — prévention BTP",
+   "entrees": 10,
+   "retenus": 0,
+   "souci": null
+  },
+  {
+   "id": "prismemploi",
+   "nom": "Prism'emploi — organisation professionnelle de l'intérim",
    "entrees": 10,
    "retenus": 0,
    "souci": null
@@ -63,7 +70,7 @@
    "id": "cnil",
    "nom": "CNIL — actualités",
    "entrees": 10,
-   "retenus": 2,
+   "retenus": 1,
    "souci": null
   },
   {
@@ -97,7 +104,7 @@
   {
    "id": "ademe",
    "nom": "ADEME — nouvelles publications",
-   "entrees": 82,
+   "entrees": 84,
    "retenus": 2,
    "souci": null
   },
@@ -119,13 +126,13 @@
    "id": "anses",
    "nom": "ANSES — avis et actualités",
    "entrees": 10,
-   "retenus": 0,
+   "retenus": 3,
    "souci": null
   },
   {
    "id": "entreprendre",
    "nom": "Entreprendre — service-public.fr",
-   "entrees": 236,
+   "entrees": 237,
    "retenus": 0,
    "souci": null
   },
@@ -140,7 +147,7 @@
    "id": "amf",
    "nom": "AMF — Autorité des marchés financiers",
    "entrees": 200,
-   "retenus": 2,
+   "retenus": 0,
    "souci": null
   },
   {
@@ -160,7 +167,7 @@
   {
    "id": "ansm",
    "nom": "ANSM — actualités",
-   "entrees": 1,
+   "entrees": 0,
    "retenus": 0,
    "souci": null
   },
@@ -168,7 +175,7 @@
    "id": "douane",
    "nom": "Douane française",
    "entrees": 10,
-   "retenus": 1,
+   "retenus": 0,
    "souci": null
   },
   {
@@ -184,11 +191,158 @@
    "source": "jorf",
    "sourceNom": "Journal officiel de la République française",
    "genre": "texte",
+   "id": "JORFARTI000055053909",
+   "titre": "Avis relatif à l'extension d'un accord conclu dans le cadre de la convention collective nationale des industries de carrières et de matériaux (ouvriers - employés, techniciens et agents de maîtrise, et cadres)",
+   "nature": "Article",
+   "date": "2026-11-04",
+   "corps": "En application de l'article L. 2261-15 du code du travail, le ministre du travail et des solidarités envisage de prendre un arrêté tendant à rendre obligatoires, pour tous les employeurs et tous les salariés entrant dans son champ d'application, les stipulations de l'accord ci-après indiqué.\nCe accord pourra être consulté en direction régionale de l'économie, de l'emploi, du travail et des solidarités.\nDans un délai de quinze jours, les organisations et toute personne intéressée sont priées de faire connaître leurs observations et avis au sujet de la généralisation envisagée.\nLeurs communications devront être adressées au ministère du travail et des solidarités (DGT, bureau DS1), 14, avenue Duquesne, 75350 Paris SP 07.\nDans un délai d'un mois, les organisations professionnelles d'employeurs reconnues représentatives au niveau de l'accord peuvent s'opposer à son extension. L'opposition écrite et motivée est notifiée et déposée dans les conditions prévues par les articles L. 2231-5 et L. 2231-6 du code du travail.\nTexte dont l'extension est envisagée :\nAccord du 17 février 2026.\nDépôt :\nDirection générale du travail au ministère du travail et des solidarités.\nObjet :\nRevalorisation des salaires minimaux conventionnels des cadres des industries de carrières et matériaux de construction et de la prime de tutorat.\nSignataires :\nUnion nationale des industries de carrières et matériaux de construction (UNICEM).\nFédération de l'industrie du béton (FIB).\nUnion Patronale de la Chaux.\nOrganisations syndicales de salariés intéressées rattachées à la CFDT et à la CFE-CGC.",
+   "nota": "",
+   "lien": "https://www.legifrance.gouv.fr/jorf/id/JORFARTI000055053909",
+   "domaines": [
+    {
+     "id": "extractive",
+     "nom": "Activités extractives et code minier",
+     "mots": [
+      "carrieres"
+     ]
+    }
+   ],
+   "morceaux": 1,
+   "dateTexte": "",
+   "vuLe": "2026-11-04",
+   "vuA": "2026-11-04T01:25:39Z"
+  },
+  {
+   "source": "jorf",
+   "sourceNom": "Journal officiel de la République française",
+   "genre": "texte",
+   "id": "JORFARTI000055053894",
+   "titre": "Avis relatif à l'extension d'un avenant à un accord conclu dans le secteur du travail temporaire",
+   "nature": "Article",
+   "date": "2026-11-04",
+   "corps": "En application de l'article L. 2261-15 du code du travail, le ministre du travail et des solidarités envisage de prendre un arrêté tendant à rendre obligatoires, pour tous les employeurs et tous les salariés entrant dans son champ d'application, les stipulations de l'avenant ci-après indiqué.\nCet avenant pourra être consulté en direction régionale de l'économie, de l'emploi, du travail et des solidarités.\nDans un délai de quinze jours, les organisations et toute personne intéressée sont priées de faire connaître leurs observations et avis au sujet de la généralisation envisagée.\nLeurs communications devront être adressées au ministère du travail et des solidarités (DGT, bureau DS1), 14, avenue Duquesne, 75350 Paris SP 07.\nDans un délai d'un mois, les organisations professionnelles d'employeurs reconnues représentatives au niveau de l'avenant peuvent s'opposer à son extension. L'opposition écrite et motivée est notifiée et déposée dans les conditions prévues par les articles L. 2231-5 et L. 2231-6 du code du travail.\nTexte dont l'extension est envisagée :\nAvenant n° 5 du 25 septembre 2026 à l'accord du 16 novembre 2018.\nDépôt :\nDirection générale du travail au ministère du travail et des solidarités.\nObjet :\nGaranties prévoyance des salariés intérimaires non-cadres et cadres.\nSignataires :\nProfessionnels de l'intérim, services et métiers de l'emploi (PRISM'EMPLOI).\nOrganisations syndicales de salariés intéressées rattachées à la CFDT, à la CFE-CGC, à la CFTC, à la CGT et à l'UNSA.",
+   "nota": "",
+   "lien": "https://www.legifrance.gouv.fr/jorf/id/JORFARTI000055053894",
+   "domaines": [
+    {
+     "id": "travail_temporaire",
+     "nom": "Intérim, placement et mise à disposition",
+     "mots": [
+      "travail temporaire"
+     ]
+    }
+   ],
+   "morceaux": 1,
+   "dateTexte": "",
+   "vuLe": "2026-11-04",
+   "vuA": "2026-11-04T01:25:39Z"
+  },
+  {
+   "source": "anses",
+   "sourceNom": "ANSES — avis et actualités",
+   "genre": "actualite",
+   "id": "https://www.anses.fr/fr/decisions/biocide/decision-relative-modification-administrative-dautorisation-mise-disposition-605",
+   "titre": "Décision relative à une modification administrative d’autorisation de mise à disposition sur le marché de la famille de produits biocides KORDON",
+   "nature": "Publication officielle",
+   "date": "2026-11-04",
+   "corps": "Décision relative à une modification administrative d’autorisation de mise à disposition sur le marché de la famille de produits biocides KORDON\n\nCOHEN Sylvie\n\nmer, 04/11/2026 - 09:48\n\nNom de produit\n\nKORDON\n\nType de demande\n\nChangement administratif d’une autorisation nationale\n\nNuméro de dossier\n\nBC-VA113804-49\n\nNuméro AMM\n\nFR-2016-0041\n\nDate signature\n\nlun, 19/10/2026 - 12:00\n\nDate de publication\n\nmer, 04/11/2026 - 12:00\n\nApparait dans le registre\n\nOui\n\nDocument(s)\n\nFichier\n\nKORDON_BC-VA113804-49_NA-ADC_D.pdf\n(405.03 Ko)\n\nType de document\n\nLettre décision",
+   "lien": "https://www.anses.fr/fr/decisions/biocide/decision-relative-modification-administrative-dautorisation-mise-disposition-605",
+   "domaines": [
+    {
+     "id": "chimie",
+     "nom": "Produits chimiques et risque chimique",
+     "mots": [
+      "produits biocides"
+     ]
+    }
+   ],
+   "morceaux": 1,
+   "dateTexte": "",
+   "vuLe": "2026-11-04",
+   "vuA": "2026-11-04T09:17:18Z"
+  },
+  {
+   "source": "anses",
+   "sourceNom": "ANSES — avis et actualités",
+   "genre": "actualite",
+   "id": "https://www.anses.fr/fr/decisions/biocide/decision-relative-modification-administrative-dautorisation-mise-disposition-606",
+   "titre": "Décision relative à une modification administrative d’autorisation de mise à disposition sur le marché de la famille de produits biocides LIGNUM WOODWORM KILLER PF",
+   "nature": "Publication officielle",
+   "date": "2026-11-04",
+   "corps": "Décision relative à une modification administrative d’autorisation de mise à disposition sur le marché de la famille de produits biocides LIGNUM WOODWORM KILLER PF\n\nCOHEN Sylvie\n\nmer, 04/11/2026 - 09:50\n\nNom de produit\n\nLIGNUM WOODWORM KILLER PF\n\nType de demande\n\nChangement administratif d’une autorisation nationale\n\nNuméro de dossier\n\nBC-SX114497-98\n\nNuméro AMM\n\nFR-2019-0017\n\nDate signature\n\nlun, 19/10/2026 - 12:00\n\nDate de publication\n\nmer, 04/11/2026 - 12:00\n\nApparait dans le registre\n\nOui\n\nDocument(s)\n\nFichier\n\nLIGNUMWOOD_BC-SX114497-98_NA-ADC_D.pdf\n(516.24 Ko)\n\nType de document\n\nLettre décision",
+   "lien": "https://www.anses.fr/fr/decisions/biocide/decision-relative-modification-administrative-dautorisation-mise-disposition-606",
+   "domaines": [
+    {
+     "id": "chimie",
+     "nom": "Produits chimiques et risque chimique",
+     "mots": [
+      "produits biocides"
+     ]
+    }
+   ],
+   "morceaux": 1,
+   "dateTexte": "",
+   "vuLe": "2026-11-04",
+   "vuA": "2026-11-04T09:17:18Z"
+  },
+  {
+   "source": "anses",
+   "sourceNom": "ANSES — avis et actualités",
+   "genre": "actualite",
+   "id": "https://www.anses.fr/fr/decisions/biocide/decision-relative-modification-administrative-dautorisation-mise-disposition-611",
+   "titre": "Décision relative à une modification administrative d’autorisation de mise à disposition sur le marché de la famille de produits biocides SANYTOL DETACHANT FRESH",
+   "nature": "Publication officielle",
+   "date": "2026-11-04",
+   "corps": "Décision relative à une modification administrative d’autorisation de mise à disposition sur le marché de la famille de produits biocides SANYTOL DETACHANT FRESH\n\nCOHEN Sylvie\n\nmer, 04/11/2026 - 10:13\n\nNom de produit\n\nSANYTOL DETACHANT FRESH\n\nType de demande\n\nChangement administratif d’une autorisation nationale\n\nNuméro de dossier\n\nBC-RP112285-26\n\nNuméro AMM\n\nFR-2021-0032\n\nDate signature\n\nmar, 20/10/2026 - 12:00\n\nDate de publication\n\nmer, 04/11/2026 - 12:00\n\nApparait dans le registre\n\nOui\n\nDocument(s)\n\nFichier\n\nSANYTOLDET_BC-RP112285-26_NA-ADC_D.pdf\n(454.03 Ko)\n\nType de document\n\nLettre décision",
+   "lien": "https://www.anses.fr/fr/decisions/biocide/decision-relative-modification-administrative-dautorisation-mise-disposition-611",
+   "domaines": [
+    {
+     "id": "chimie",
+     "nom": "Produits chimiques et risque chimique",
+     "mots": [
+      "produits biocides"
+     ]
+    }
+   ],
+   "morceaux": 1,
+   "dateTexte": "",
+   "vuLe": "2026-11-04",
+   "vuA": "2026-11-04T09:17:18Z"
+  },
+  {
+   "source": "jorf",
+   "sourceNom": "Journal officiel de la République française",
+   "genre": "texte",
+   "id": "JORFARTI000055053584",
+   "titre": "Décret n° 2026-1025 du 2 novembre 2026 modifiant le décret n° 2022-739 du 28 avril 2022 relatif à l'aide aux départements versée par la Caisse nationale de solidarité pour l'autonomie au titre de l'article 43 de la loi n° 2021-1754 du 23 décembre 2021 de financement de la sécurité sociale pour 2022",
+   "nature": "Article",
+   "date": "2026-11-04",
+   "corps": "L'article 1 er du décret du 28 avril 2022 susvisé est ainsi modifié :\n1° Les mots : « mentionné au II » sont remplacés par les mots : « mentionné au I » ;\n2° Les mots : « au même II » sont remplacés par les mots : « au même I ».\n\nL'article 2 du même décret est ainsi modifié :\n1° A la première phrase du premier alinéa, après les mots : « à chaque département », sont insérés les mots : « au titre de l'article 1 er » ;\n2° A la première phrase du deuxième alinéa, après les mots : « le montant définitif », sont insérés les mots : « au titre de l'article 1 er » ;\n3° Au troisième alinéa :\na) A la première phrase, après les mots : « à chaque département », sont insérés les mots : « au titre de l'article 1 er » ;\nb) A la seconde phrase, les mots : « 31 juillet » sont remplacés par les mots : « 30 septembre ».\n\nAu deuxième alinéa de l'article 3 du même décret, les mots : « 1 er avril, par tout moyen, » sont remplacés par les mots : « 30 juin ».\n\nAprès l'article 3 du même décret, est inséré un article 3-1 ainsi rédigé :\n\n« Art. 3-1. - I. - L'aide forfaitaire annuelle mentionnée au II de l'article 43 de la loi du 23 décembre 2021 de financement de la sécurité sociale pour 2022 susvisée est répartie entre les départements au prorata du nombre d'équivalents temps plein concernés par l'accord de branche visé au même II dans les établissements et services visés aux 6° et 7° du I de l'article L. 312-1 du code de l'action sociale et des familles, calculé sur la base du nombre de places installées financées par les départements dans ces établissements et services, pondéré par le taux d'encadrement en personnels administratifs et techniques de ces établissements et services. La répartition s'appuie sur les données de la statistique publique disponibles au 1 er janvier 2025.\n« L'aide forfaitaire annuelle vise exclusivement à contribuer au financement du coût à la charge des départements au titre de l'accord de branche mentionné au II de l'article 43 de la loi n° 2021-1754 du 23 décembre 2021 de financement de la sécurité sociale pour 2022.\n« Les modalités de répartition définies au présent article sont applicables aux aides dues à compter de l'exercice 2025.\n« La répartition de l'aide est annexée au présent décret.\n« II. - L'aide mentionnée au I est versée à chaque département par la Caisse nationale de solidarité pour l'autonomie au plus tard le 30 septembre de l'année civile en cours.\n« Pour l'année 2026, elle est versée au plus tard le 30 novembre.\n« III. - Les départements transmettent à la Caisse nationale de solidarité pour l'autonomie avant le 30 juin de chaque année une attestation justifiant, pour l'exercice précédent, l'utilisation des sommes versées effective et conforme aux fins visées au II de l'article 43 de la loi du 23 décembre 2021 de financement de la sécurité sociale pour 2022, sans prise en compte du domicile de secours des usagers ou de l'augmentation des créances d'aide sociale recouvrables sur succession.\n« Pour l'exercice 2025, l'attestation est transmise au plus tard le 15 décembre 2026.\n« Les informations transmises par les départements à la Caisse nationale de solidarité pour l'autonomie peuvent faire l'objet par cette dernière ou par toute personne mandatée par elle d'un contrôle sur place et sur pièces. »\n\nIl est ajouté au même décret une annexe 1 ainsi rédigée :\n\n« ANNEXE 1\n\n«\n\nDépartement\n\nMontant (en €)\n\nAin\n\n1 061 636\n\nAisne\n\n847 059\n\nAllier\n\n409 912\n\nAlpes-de-Haute-Provence\n\n277 159\n\nHautes-Alpes\n\n232 187\n\nAlpes-Maritimes\n\n1 261 205\n\nArdèche\n\n525 151\n\nArdennes\n\n227 872\n\nAriège\n\n230 907\n\nAube\n\n313 837\n\nAude\n\n471 091\n\nAveyron\n\n621 269\n\nBouches-du-Rhône\n\n2 367 370\n\nCalvados\n\n803 769\n\nCantal\n\n507 998\n\nCharente\n\n507 410\n\nCharente-Maritime\n\n592 255\n\nCher\n\n529 436\n\nCorrèze\n\n431 159\n\nCorse\n\n121 249\n\nCôte-d'Or\n\n751 384\n\nCotes-d'Armor\n\n859 006\n\nCreuse\n\n238 411\n\nDordogne\n\n527 854\n\nDoubs\n\n902 731\n\nDrome\n\n796 570\n\nEure\n\n820 305\n\nEure-et-Loir\n\n511 053\n\nFinistère\n\n1 424 889\n\nGard\n\n763 516\n\nHaute-Garonne\n\n1 302 971\n\nGers\n\n245 919\n\nGironde\n\n1 871 694\n\nHérault\n\n1 134 980\n\nIlle-et-Vilaine\n\n1 375 366\n\nIndre\n\n277 697\n\nIndre-et-Loire\n\n846 868\n\nIsère\n\n1 515 047\n\nJura\n\n341 908\n\nLandes\n\n615 728\n\nLoir-et-Cher\n\n368 563\n\nLoire\n\n978 266\n\nHaute-Loire\n\n220 689\n\nLoire-Atlantique\n\n1 200 002\n\nLoiret\n\n645 981\n\nLot\n\n269 510\n\nLot-et-Garonne\n\n441 885\n\nLozère\n\n712 630\n\nMaine-et-Loire\n\n980 406\n\nManche\n\n1 175 554\n\nMarne\n\n1 381 176\n\nHaute-Marne\n\n258 069\n\nMayenne\n\n493 714\n\nMeurthe-et-Moselle\n\n671 487\n\nMeuse\n\n213 789\n\nMorbihan\n\n1 123 336\n\nMoselle\n\n1 323 490\n\nNièvre\n\n487 585\n\nNord\n\n3 573 269\n\nOise\n\n1 308 028\n\nOrne\n\n592 614\n\nPas-de-Calais\n\n2 390 512\n\nPuy-de-Dôme\n\n1 083 115\n\nPyrénées-Atlantiques\n\n1 025 641\n\nHautes-Pyrénées\n\n320 847\n\nPyrénées-Orientales\n\n429 293\n\nCommunauté européenne d'Alsace\n\n2 811 261\n\nMétropole de Lyon\n\n2 217 955\n\nRhône\n\n916 433\n\nHaute-Saône\n\n344 698\n\nSaône-et-Loire\n\n1 242 942\n\nSarthe\n\n1 211 946\n\nSavoie\n\n672 828\n\nHaute-Savoie\n\n786 530\n\nParis\n\n1 621 811\n\nSeine-Maritime\n\n1 520 016\n\nSeine-et-Marne\n\n1 240 338\n\nYvelines\n\n1 349 027\n\nDeux-Sèvres\n\n607 253\n\nSomme\n\n718 446\n\nTarn\n\n785 350\n\nTarn-et-Garonne\n\n414 038\n\nVar\n\n839 059\n\nVaucluse\n\n818 096\n\nVendée\n\n770 135\n\nVienne\n\n587 525\n\nHaute-Vienne\n\n443 734\n\nVosges\n\n463 326\n\nYonne\n\n515 327\n\nTerritoire de Belfort\n\n80 321\n\nEssonne\n\n1 411 659\n\nHauts-de-Seine\n\n1 649 050\n\nSeine-Saint-Denis\n\n1 581 022\n\nVal-de-Marne\n\n1 726 138\n\nVal-d'Oise\n\n1 473 900\n\nGuadeloupe\n\n380 215\n\nMartinique\n\n83 112\n\nGuyane\n\n54 392\n\nLa Réunion\n\n483 864\n\nMayotte\n\n44 974\n\n».\n\nLa ministre de la santé, des familles, de l'autonomie et des personnes handicapées est chargée de l'exécution du présent décret, qui sera publié au Journal officiel de la République française.\n\nPublics concernés : départements, caisse nationale de solidarité pour l'autonomie.\n\nObjet : le décret modifie le décret n° 2022-739 du 28 avril 2022 afin d'y ajouter les modalités d'application de l'aide prévue au II de l'article 43 de la loi n° 2021-1754 du 23 décembre 2021 de financement de la sécurité sociale pour 2022.\n\nEntrée en vigueur : le décret entre en vigueur le lendemain de sa publication.\n\nApplication : le présent décret est pris en application de l'article 43 de la loi n° 2021-1754 du 23 décembre 2021 de financement de la sécurité sociale pour 2022.",
+   "nota": "",
+   "lien": "https://www.legifrance.gouv.fr/jorf/id/JORFARTI000055053584",
+   "domaines": [
+    {
+     "id": "paie",
+     "nom": "Paie, cotisations et protection sociale",
+     "mots": [
+      "securite sociale"
+     ]
+    }
+   ],
+   "morceaux": 7,
+   "dateTexte": "2026-11-02",
+   "vuLe": "2026-11-04",
+   "vuA": "2026-11-04T01:25:39Z"
+  },
+  {
+   "source": "jorf",
+   "sourceNom": "Journal officiel de la République française",
+   "genre": "texte",
    "id": "JORFARTI000055047508",
    "titre": "Arrêté du 5 octobre 2026 délimitant la zone nucléaire à accès réglementé du centre nucléaire de production d'électricité de Gravelines",
    "nature": "Article",
    "date": "2026-11-03",
-   "corps": "Une zone nucléaire à accès réglementé (ZNAR) est créée sur le centre nucléaire de production d'électricité de Gravelines. Les limites de cette ZNAR sont précisées dans le plan annexé au présent arrêté.\n\nConformément à l'article D. 1333-79 du code de la défense, le titulaire de l'autorisation n° 223/89 en date du 21 février 1989 rend apparentes les limites de la zone et les mesures d'interdiction dont elle fait l'objet par des panneaux conformes au modèle présenté en annexe du décret susvisé.\n\nLe fait de pénétrer à l'intérieur de la ZNAR sans autorisation du titulaire de l'autorisation est passible des sanctions prévues à l'article L. 1333-13-12 du code de la défense.\n\nL'arrêté du 29 décembre 2025 délimitant la zone nucléaire à accès réglementé du centre nucléaire de production d'électricité de Gravelines est abrogé.\n\nLe présent arrêté sera publié au Journal officiel de la République française.\n\nANNEXE\n\nVous pouvez consulter l'intégralité du texte avec ses images à partir de l'extrait du Journal officiel électronique authentifié accessible en bas de page\n\nArrêté du 5 octobre 2026 délimitant la zone nucléaire à accès réglementé du centre nucléaire de production d'électricité de Gravelines\n\nLe ministre de l'économie, des finances et de la souveraineté industrielle, énergétique et numérique,\nVu le code de la défense, notamment ses articles L. 1333-13-12 et D. 1333-79 ;\nVu le décret n° 2015-1255 du 8 octobre 2015 relatif à la délimitation des zones nucléaires à accès réglementé ;\nVu l'autorisation n° 223/89 en date du 21 février 1989 ;\nVu le courrier d'EDF en date du 16 juin 2026, proposant la modification de la zone nucléaire à accès réglementé du centre nucléaire de production d'électricité de Gravelines ;\nVu l'avis d'EDF en date du 9 septembre 2026 concernant le projet d'arrêté délimitant la zone nucléaire à accès réglementé du centre nucléaire de production d'électricité de Gravelines ;\nConsidérant que les installations présentes dans cette zone et abritant des matières nucléaires nécessitent une protection particulière,\nArrête :",
+   "corps": "Une zone nucléaire à accès réglementé (ZNAR) est créée sur le centre nucléaire de production d'électricité de Gravelines. Les limites de cette ZNAR sont précisées dans le plan annexé au présent arrêté.\n\nConformément à l'article D. 1333-79 du code de la défense, le titulaire de l'autorisation n° 223/89 en date du 21 février 1989 rend apparentes les limites de la zone et les mesures d'interdiction dont elle fait l'objet par des panneaux conformes au modèle présenté en annexe du décret susvisé.\n\nLe fait de pénétrer à l'intérieur de la ZNAR sans autorisation du titulaire de l'autorisation est passible des sanctions prévues à l'article L. 1333-13-12 du code de la défense.\n\nL'arrêté du 29 décembre 2025 délimitant la zone nucléaire à accès réglementé du centre nucléaire de production d'électricité de Gravelines est abrogé.\n\nLe présent arrêté sera publié au Journal officiel de la République française.\n\nANNEXE\n\nVous pouvez consulter l'intégralité du texte avec ses images à partir de l'extrait du Journal officiel électronique authentifié accessible en bas de page\n\nArrêté du 5 octobre 2026 délimitant la zone nucléaire à accès réglementé du centre nucléaire de production d'électricité de Gravelines\nArrêté du 5 octobre 2026 délimitant la zone nucléaire à accès réglementé du centre nucléaire de production d'électricité de Gravelines\n\nLe ministre de l'économie, des finances et de la souveraineté industrielle, énergétique et numérique,\nVu le code de la défense, notamment ses articles L. 1333-13-12 et D. 1333-79 ;\nVu le décret n° 2015-1255 du 8 octobre 2015 relatif à la délimitation des zones nucléaires à accès réglementé ;\nVu l'autorisation n° 223/89 en date du 21 février 1989 ;\nVu le courrier d'EDF en date du 16 juin 2026, proposant la modification de la zone nucléaire à accès réglementé du centre nucléaire de production d'électricité de Gravelines ;\nVu l'avis d'EDF en date du 9 septembre 2026 concernant le projet d'arrêté délimitant la zone nucléaire à accès réglementé du centre nucléaire de production d'électricité de Gravelines ;\nConsidérant que les installations présentes dans cette zone et abritant des matières nucléaires nécessitent une protection particulière,\nArrête :\n\nArrêté du 5 octobre 2026 délimitant la zone nucléaire à accès réglementé du centre nucléaire de production d'électricité de Gravelines",
    "nota": "",
    "lien": "https://www.legifrance.gouv.fr/jorf/id/JORFARTI000055047508",
    "domaines": [
@@ -200,7 +354,7 @@
      ]
     }
    ],
-   "morceaux": 8,
+   "morceaux": 9,
    "dateTexte": "2026-10-05",
    "vuLe": "2026-11-03",
    "vuA": "2026-11-02T23:34:11Z"
@@ -231,6 +385,78 @@
    "vuA": "2026-11-02T23:34:11Z"
   },
   {
+   "source": "eurlex-l",
+   "sourceNom": "Journal officiel de l'Union européenne — série L",
+   "genre": "texte",
+   "id": "https://eur-lex.europa.eu/./legal-content/AUTO/?uri=CELEX:32026D0455R(02)",
+   "titre": "CELEX:32026D0455R(02): Rectificatif à la décision (PESC) 2026/455 du Conseil du 26 février 2026 relative à des mesures restrictives en vue de lutter contre le terrorisme, abrogeant les articles 2, 3 et 3 bis de la position commune 2001/931/PESC relative à l’application de mesures spécifiques en vue de lutter contre le terrorisme et abrogeant la décision (PESC) 2025/1577 et la décision (PESC) 2026/421 (JO L, 2026/455, 26.2.2026)",
+   "nature": "Texte officiel",
+   "date": "2026-11-03",
+   "corps": "",
+   "lien": "https://eur-lex.europa.eu/./legal-content/AUTO/?uri=CELEX:32026D0455R(02)",
+   "domaines": [
+    {
+     "id": "douane",
+     "nom": "Douane et échanges internationaux",
+     "mots": [
+      "mesures restrictives"
+     ]
+    }
+   ],
+   "morceaux": 0,
+   "dateTexte": "2026-02-26",
+   "vuLe": "2026-11-03",
+   "vuA": "2026-11-04T09:17:18Z"
+  },
+  {
+   "source": "eurlex-l",
+   "sourceNom": "Journal officiel de l'Union européenne — série L",
+   "genre": "texte",
+   "id": "https://eur-lex.europa.eu/./legal-content/AUTO/?uri=CELEX:32026D2482",
+   "titre": "CELEX:32026D2482: Décision d’exécution (UE) 2026/2482 du Conseil du 29 octobre 2026 modifiant la décision d’exécution (UE) 2018/485 en ce qui concerne la prorogation de l’autorisation permettant au Danemark d’appliquer une mesure particulière dérogatoire à l’article 75 de la directive 2006/112/CE relative au système commun de taxe sur la valeur ajoutée",
+   "nature": "Texte officiel",
+   "date": "2026-11-03",
+   "corps": "",
+   "lien": "https://eur-lex.europa.eu/./legal-content/AUTO/?uri=CELEX:32026D2482",
+   "domaines": [
+    {
+     "id": "fiscal",
+     "nom": "Fiscalité, facturation et comptabilité",
+     "mots": [
+      "taxe sur la valeur ajoutee"
+     ]
+    }
+   ],
+   "morceaux": 0,
+   "dateTexte": "2026-10-29",
+   "vuLe": "2026-11-03",
+   "vuA": "2026-11-04T09:17:18Z"
+  },
+  {
+   "source": "eurlex-l",
+   "sourceNom": "Journal officiel de l'Union européenne — série L",
+   "genre": "texte",
+   "id": "https://eur-lex.europa.eu/./legal-content/AUTO/?uri=CELEX:32026R2490",
+   "titre": "CELEX:32026R2490: Règlement d’exécution (UE) 2026/2490 de la Commission du 3 novembre 2026 modifiant pour la 364e fois le règlement (CE) no 881/2002 du Conseil instituant certaines mesures restrictives spécifiques à l’encontre de certaines personnes et entités liées aux organisations EIIL (Daech) et Al-Qaida",
+   "nature": "Texte officiel",
+   "date": "2026-11-03",
+   "corps": "",
+   "lien": "https://eur-lex.europa.eu/./legal-content/AUTO/?uri=CELEX:32026R2490",
+   "domaines": [
+    {
+     "id": "douane",
+     "nom": "Douane et échanges internationaux",
+     "mots": [
+      "mesures restrictives"
+     ]
+    }
+   ],
+   "morceaux": 0,
+   "dateTexte": "2026-11-03",
+   "vuLe": "2026-11-03",
+   "vuA": "2026-11-04T09:17:18Z"
+  },
+  {
    "source": "travail",
    "sourceNom": "Ministère du Travail — actualités",
    "genre": "actualite",
@@ -253,6 +479,54 @@
    "dateTexte": "",
    "vuLe": "2026-11-03",
    "vuA": "2026-10-30T07:10:17Z"
+  },
+  {
+   "source": "travail",
+   "sourceNom": "Ministère du Travail — actualités",
+   "genre": "actualite",
+   "id": "https://travail-emploi.gouv.fr/legalite-professionnelle-femmes-hommes",
+   "titre": "L'égalité professionnelle Femmes-Hommes",
+   "nature": "Publication officielle",
+   "date": "2026-11-03",
+   "corps": "L’égalité de traitement entre les femmes et les hommes dans le travail implique le respect de plusieurs principes par l’employeur :\ninterdictions des discriminations en matière d’embauche, absence de différenciation en matière de rémunération et de déroulement de carrière, obligations vis-à-vis des représentants du personnel (mise à disposition d’informations relatives à l’égalité professionnelle dans la base de données économiques et sociales, négociation), information des salariés et candidats à l’embauche et mise en place de mesures de prévention du harcèlement sexuel dans l’entreprise.Des recours et sanctions civiles et pénales sont prévus en cas de non respect de l’égalité homme-femme. En outre, dans les conditions précisées par le code du travail, les entreprises d'au moins 50 salariés sont soumises à une pénalité à la charge de l'employeur lorsqu'elles ne sont pas couvertes par un accord ou un plan d’action relatif à l'égalité professionnelle ; cette disposition est entrée en vigueur à compter du 1er janvier 2012 ; pour les entreprises couvertes à la date du 10 novembre 2010 par un accord ou, à défaut, par un plan d'action destiné à assurer l'égalité professionnelle entre les femmes et les hommes, elle entre en vigueur à l'échéance de l'accord ou, à défaut d'accord, à l'échéance du plan d'action.\nL’égalité de traitement entre les femmes et les hommes dans le travail implique le respect de plusieurs principes par l’employeur :\ninterdictions des discriminations en matière d’embauche, absence de différenciation en matière de rémunération et de déroulement de carrière, obligations vis-à-vis des représentants du personnel (élaboration d’un rapport écrit et négociation), information des salariés et candidats à l’embauche et mise en place de mesures de prévention du harcèlement sexuel dans l’entreprise.Des recours et sanctions civiles et pénales sont prévus en cas de non respect de l’égalité femme-homme. Les entreprises d'au moins 50 salariés sont également soumises à des pénalités à la charge de l'employeur, qui peuvent être mises en œuvre, soit lorsqu'elles ne sont pas couvertes par un accord ou, à défaut, par un plan d’action relatif à l'égalité professionnelle, soit, dans les conditions fixées par la loi du 5 septembre 2018 et le décret du 8 janvier 2019, lorsqu’elles n’auront pas publié leur « Index de l’égalité » ou qu’elles n’auront pas mis en œuvre les mesures permettant de supprimer les écarts de rémunération constatés entre les femmes et les hommes.",
+   "lien": "https://travail-emploi.gouv.fr/legalite-professionnelle-femmes-hommes",
+   "domaines": [
+    {
+     "id": "social",
+     "nom": "Droit du travail et relations sociales",
+     "mots": [
+      "egalite professionnelle"
+     ]
+    }
+   ],
+   "morceaux": 1,
+   "dateTexte": "",
+   "vuLe": "2026-11-03",
+   "vuA": "2026-11-03T21:02:05Z"
+  },
+  {
+   "source": "travail",
+   "sourceNom": "Ministère du Travail — actualités",
+   "genre": "actualite",
+   "id": "https://travail-emploi.gouv.fr/la-prime-de-partage-de-la-valeur",
+   "titre": "La prime de partage de la valeur",
+   "nature": "Publication officielle",
+   "date": "2026-11-03",
+   "corps": "Les employeurs ont la possibilité de verser à leur(s) salarié(s), au titre d’une même année civile, une ou deux primes dites « prime de partage de la valeur » (PPV) exonérées de toutes cotisations sociales à la charge du salarié et de l’employeur, ainsi que des autres taxes, contributions et participations dues sur le salaire.",
+   "lien": "https://travail-emploi.gouv.fr/la-prime-de-partage-de-la-valeur",
+   "domaines": [
+    {
+     "id": "paie",
+     "nom": "Paie, cotisations et protection sociale",
+     "mots": [
+      "prime de partage"
+     ]
+    }
+   ],
+   "morceaux": 1,
+   "dateTexte": "",
+   "vuLe": "2026-11-03",
+   "vuA": "2026-11-03T21:02:05Z"
   },
   {
    "source": "jorf",
@@ -1316,30 +1590,6 @@
    "vuA": "2026-10-25T00:00:00Z"
   },
   {
-   "source": "eurlex-l",
-   "sourceNom": "Journal officiel de l'Union européenne — série L",
-   "genre": "texte",
-   "id": "https://eur-lex.europa.eu/./legal-content/AUTO/?uri=CELEX:32026R2346",
-   "titre": "CELEX:32026R2346: Règlement d’exécution (UE) 2026/2346 de la Commission du 23 octobre 2026 soumettant à enregistrement les importations de silicium originaire de la République populaire de Chine",
-   "nature": "Texte officiel",
-   "date": "2026-10-25",
-   "corps": "",
-   "lien": "https://eur-lex.europa.eu/./legal-content/AUTO/?uri=CELEX:32026R2346",
-   "domaines": [
-    {
-     "id": "douane",
-     "nom": "Douane et échanges internationaux",
-     "mots": [
-      "importation"
-     ]
-    }
-   ],
-   "morceaux": 0,
-   "dateTexte": "2026-10-23",
-   "vuLe": "2026-10-25",
-   "vuA": "2026-10-25T00:00:00Z"
-  },
-  {
    "source": "jorf",
    "sourceNom": "Journal officiel de la République française",
    "genre": "texte",
@@ -1440,30 +1690,6 @@
    "vuA": "2026-10-23T00:00:00Z"
   },
   {
-   "source": "eurlex-l",
-   "sourceNom": "Journal officiel de l'Union européenne — série L",
-   "genre": "texte",
-   "id": "https://eur-lex.europa.eu/./legal-content/AUTO/?uri=CELEX:32026H2329",
-   "titre": "CELEX:32026H2329: Recommandation (UE) 2026/2329 de la Commission du 21 octobre 2026 sur le contrôle de la présence de N-nitrosamines dans les denrées alimentaires",
-   "nature": "Texte officiel",
-   "date": "2026-10-22",
-   "corps": "",
-   "lien": "https://eur-lex.europa.eu/./legal-content/AUTO/?uri=CELEX:32026H2329",
-   "domaines": [
-    {
-     "id": "alimentaire",
-     "nom": "Hygiène et sécurité des aliments",
-     "mots": [
-      "denrees alimentaires"
-     ]
-    }
-   ],
-   "morceaux": 0,
-   "dateTexte": "2026-10-21",
-   "vuLe": "2026-10-22",
-   "vuA": "2026-10-22T00:00:00Z"
-  },
-  {
    "source": "jorf",
    "sourceNom": "Journal officiel de la République française",
    "genre": "texte",
@@ -1562,184 +1788,6 @@
    "dateTexte": "2026-10-20",
    "vuLe": "2026-10-21",
    "vuA": "2026-10-21T00:00:00Z"
-  },
-  {
-   "source": "jorf",
-   "sourceNom": "Journal officiel de la République française",
-   "genre": "texte",
-   "id": "JORFARTI000054999251",
-   "titre": "Arrêté du 15 octobre 2026 fixant la liste des établissements de santé qui démarrent en facturation individuelle des prestations de soins hospitaliers aux caisses d'assurance maladie obligatoire, ainsi que le périmètre de facturation concerné par la facturation individuelle pour chacun de ces établissements de santé",
-   "nature": "Article",
-   "date": "2026-10-20",
-   "corps": "En application de l'article 3-1 du décret du 8 juillet 2014 susvisé, la liste des établissements de santé concernés par la facturation individuelle des forfaits, mentionnés aux 3°, 5°, 6° et 7° de l'article R. 162-33-1 du code de la sécurité sociale et des actes et consultations associés aux caisses d'assurance maladie à compter du 1 er janvier 2026 est fixée en annexe 1 au présent arrêté.\nLorsque la date des soins est postérieure au 31 décembre 2025, les données d'activité mentionnées aux c, d, e, i, k et l du 1° du I de l'article 4 de l'arrêté du 31 décembre 2022 susvisé ne sont plus valorisées.\nEn conséquence, aucun montant ne figure au titre des prestations mentionnées au premier alinéa dans l'arrêté mensuel du directeur général de l'agence régionale de santé portant fixation des éléments d'activité mentionné à l'article 3 de l'arrêté précité.\nPour les versements effectués entre février 2026 et janvier 2027 inclus, le montant pris en compte pour la détermination des versements mentionnés au 1° et au 2° du I de l'article 9 de l'arrêté précité est minoré d'une somme correspondant au montant total des données d'activité mentionnées au deuxième alinéa valorisées au titre de l'année 2025.\n\nLe présent arrêté sera publié au Journal officiel de la République française.\n\nANNEXE 1\nLISTE DES ÉTABLISSEMENTS DE SANTÉ CONCERNÉS PAR UN DÉMARRAGE DE LA FACTURATION INDIVIDUELLE LE 1ER JANVIER 2026 EN APPLICATION DE L'ARTICLE 1ER DU PRÉSENT ARRÊTÉ ET PÉRIMÈTRE DE CELLE-CI\n\nFiness juridique\n\n620003814\n\nFiness géographique\n\n620038562\n\nEtablissement\n\nCLINIQUE DES ACACIAS - FONDATION HOPALE\n\nCode comptable\n\n-\n\nVille du comptable\n\n-\n\nCode CPU\n\n01-624\n\nLibellé CPU\n\nCPAM DE L'ARTOIS\n\nPérimètre de facturation\n\nLa facturation individuelle concerne les prestations de soins hospitaliers suivantes :\n- les actes et consultations externes visés à l'article L. 162-26 du code de la sécurité sociale, y compris les forfaits techniques d'imagerie ;\n- la rétrocession de médicaments ;\n- la facturation de la C2S et des prestations aux migrants ;\n- Pour les patients bénéficiaires de l'AME : les consultations et actes externes, les forfaits mentionnés aux 3°, 5° et 6° de\nl'article R. 162-33-1 du code de la sécurité sociale (ATU, FFM, SE, APE, et les forfaits IVG) ;\n- les forfaits mentionnés aux 3°, 5° et 6° de l'article R. 162-33-1 du code de la sécurité sociale (ATU, FFM, SE, APE) ;\npour les personnes relevant du régime général et du régime agricole ;\n- les consultations ou actes associés aux forfaits mentionnés aux 3°, 5°, 6° et 7° de l'article R.162-33-1 du code de la sécurité sociale (ATU, FFM, SE, APE) ;\npour les personnes relevant du régime général et du régime agricole.\nNe sont pas inclus dans le périmètre de la facturation individuelle :\n- les actes et consultations externes réalisés dans le cadre de l'activité libérale des praticiens hospitaliers temps plein.\n\nArrêté du 15 octobre 2026 fixant la liste des établissements de santé qui démarrent en facturation individuelle des prestations de soins hospitaliers aux caisses d'assurance maladie obligatoire, ainsi que le périmètre de facturation concerné par la facturation individuelle pour chacun de ces établissements de santé\nArrêté du 15 octobre 2026 fixant la liste des établissements de santé qui démarrent en facturation individuelle des prestations de soins hospitaliers aux caisses d'assurance maladie obligatoire, ainsi que le périmètre de facturation concerné par la facturation individuelle pour chacun de ces établissements de santé\n\nLa ministre de la santé, des familles, de l'autonomie et des personnes handicapées,\nVu le code de la sécurité sociale, notamment ses articles L. 162-22 et L. 174-2 ;\nVu la loi n° 2003-1199 du 18 décembre 2003 de financement de la sécurité sociale pour 2004, notamment son article 33 modifié ;\nVu la loi n° 2008-1330 du 17 décembre 2008 de financement de la sécurité sociale pour 2009, notamment son article 54 ;\nVu le décret n° 2014-787 du 8 juillet 2014 modifié relatif aux modalités calendaires de la généralisation de la facturation individuelle des établissements de santé mentionnés aux a, b et c de l'article L. 162-22-6 du code de la sécurité sociale ;\nVu l'arrêté du 31 décembre 2022 relatif aux modalités de versement des ressources des établissements de santé par les caisses d'assurance maladie ou par la Caisse nationale militaire de sécurité sociale, notamment son article 4 ;\nVu l'arrêté du 19 décembre 2025 fixant la liste des établissements de santé qui démarrent en facturation individuelle des prestations de soins hospitaliers aux caisses d'assurance maladie obligatoire ainsi que le périmètre de facturation concerné par la facturation individuelle pour chacun de ces établissements de santé,\nArrête :\n\nArrêté du 15 octobre 2026 fixant la liste des établissements de santé qui démarrent en facturation individuelle des prestations de soins hospitaliers aux caisses d'assurance maladie obligatoire, ainsi que le périmètre de facturation concerné par la facturation individuelle pour chacun de ces établissements de santé",
-   "nota": "",
-   "lien": "https://www.legifrance.gouv.fr/jorf/id/JORFARTI000054999251",
-   "domaines": [
-    {
-     "id": "sanitaire",
-     "nom": "Santé, médico-social et autorisations d'activité",
-     "mots": [
-      "etablissements de sante"
-     ]
-    }
-   ],
-   "morceaux": 6,
-   "dateTexte": "2026-10-15",
-   "vuLe": "2026-10-20",
-   "vuA": "2026-10-20T00:00:00Z"
-  },
-  {
-   "source": "jorf",
-   "sourceNom": "Journal officiel de la République française",
-   "genre": "texte",
-   "id": "JORFARTI000054999459",
-   "titre": "Arrêté du 19 octobre 2026 portant suspension de la commission des marchés de l'Union des caisses nationales de sécurité sociale",
-   "nature": "Article",
-   "date": "2026-10-20",
-   "corps": "La commission des marchés de l'Union des caisses nationales de la sécurité sociale est suspendue jusqu'au 2 novembre 2026.\n\nLe présent arrêté sera publié au Journal officiel de la République française.\n\nLa ministre de la santé, des familles, de l'autonomie et des personnes handicapées,\nVu le code de la sécurité sociale, notamment ses articles L. 224-5-4 et L. 281-3 ;\nVu l'arrêté du 19 juillet 2018 portant réglementation sur les marchés publics des organismes de sécurité sociale ;\nConsidérant que par une décision n° 13/2026 du 10 septembre 2026, la commission des marchés de l'Union des caisses nationales de sécurité sociale (UCANSS) a décidé de ne pas attribuer le marché 26AC09 relatif au régime complémentaire de couverture des frais de santé au profit des salariés et anciens salariés des organismes du régime général de la sécurité sociale ;\nConsidérant la décision d'opposition à la décision n° 13/2026 de la commission des marchés, prise par le directeur de la sécurité sociale le 24 septembre 2026 ;\nConsidérant que par un courriel du 25 septembre 2026, la directrice de l'UCANSS a demandé au président de la commission des marchés de convoquer la commission des marchés le 5 ou le 6 octobre 2026, soit une date compatible avec l'expiration du délai de validité des offres du marché au 15 octobre 2026, afin de permettre l'attribution du marché et sa mise en œuvre effective à compter du 1 er janvier 2027 ;\nConsidérant que par un courriel du 25 septembre 2026, le président de la commission des marchés a indiqué à la directrice de l'UCANSS ne pas donner suite à cette demande avant d'avoir eu connaissance du dossier transmis à la direction de la sécurité sociale du ministère ;\nConsidérant que lors d'un échange intervenu le 28 septembre 2026, le directeur de la sécurité sociale a appelé l'attention du président de la commission des marchés sur la nécessité d'attribuer le marché avant le 15 octobre 2026, au regard de la date limite de validité des offres et de celle d'entrée en vigueur du marché ;\nConsidérant que par deux courriels des 29 et 30 septembre 2026, la directrice de l'UCANSS a réitéré sa demande formulée auprès du président de la commission des marchés de convoquer cette dernière entre le 5 et le 7 octobre 2026 ;\nConsidérant que par un courriel du 30 septembre 2026, le président de la commission des marchés a informé la directrice de l'UCANSS de son souhait de réunir la commission le 13 octobre 2026, soit deux jours seulement avant l'expiration du délai de validité des offres fixée initialement au 15 octobre 2026 ;\nConsidérant que par un courriel du 2 octobre 2026, la directrice de l'UCANSS a demandé au président de la commission des marchés d'avancer la date de réunion de la commission pour qu'elle se tienne au plus tard le 8 octobre 2026 afin de tenir compte de la date limite de validité des offres de ce marché et de l'entrée en vigueur de ce dernier au 1 er janvier 2027 ;\nConsidérant que par un courriel du 2 octobre 2026, le président de la commission des marchés a indiqué à la directrice de l'UCANSS maintenir la date de convocation de la commission des marchés au 13 octobre 2026 ;\nConsidérant le courriel du 2 octobre 2026 par lequel la directrice de l'UCANSS a pris acte du refus du président de la commission des marchés d'avancer la date de réunion avant le 13 octobre 2026 ;\nConsidérant que la date limite de validité des offres du marché 26AC09 relatif au régime complémentaire de couverture des frais de santé au profit des salariés et anciens salariés des organismes du régime général de la sécurité sociale a été reportée au 14 novembre 2026 avec l'accord des quatre candidats au marché ;\nConsidérant que par une décision n° 18/2026 du 13 octobre 2026, la commission des marchés de l'UCANSS a décidé de suspendre sa séance relative à l'attribution du marché 26AC09 après que les services de l'UCANSS ont pourtant apporté à ses membres des réponses aux questions qu'ils soulevaient tenant, d'une part, à l'absence supposée d'éléments nécessaires à l'adoption d'une « décision sécurisée juridiquement » et, d'autre part, à l'envoi d'un courrier par un des quatre candidats au marché et au dépôt par ce dernier d'un recours contentieux ;\nConsidérant que par un courriel du 13 octobre 2026, la directrice de l'UCANSS a informé le président de la commission des marchés et ses membres du recours contentieux introduit par un des candidats au marché ;\nConsidérant que par une décision du 19 octobre 2026, le directeur de la sécurité sociale s'est opposé à la décision n° 18/2026 du 13 octobre 2026 après avoir relevé que la commission des marchés n'avait pas attribué le marché alors que ses membres avaient disposé de l'ensemble des informations pour se prononcer ;\nConsidérant que compte tenu du délai de suspension réglementaire s'imposant à l'UCANSS avant de pouvoir signer le marché, des délais liés aux éventuelles procédures contentieuses, ainsi que des délais nécessaires à la mise en œuvre effective du marché de protection sociale complémentaire, le refus par la commission des marchés de se prononcer sur l'attribution du marché est de nature à compromettre l'entrée en vigueur de celui-ci au 1 er janvier 2027 alors que la recommandation qui fonde la mutualisation financière du régime actuel arrive à échéance le 31 décembre 2026 ;\nConsidérant que le refus de la commission de se prononcer sur l'attribution du marché fait également courir des risques contentieux et indemnitaires pour l'UCANSS ;\nConstatant que malgré les alertes formulées à plusieurs reprises par la directrice de l'UCANSS et la direction de la sécurité sociale sur les conséquences d'un refus d'attribution et la nécessité de respecter des délais, la commission des marchés n'a pas exercé ses missions ;\nConsidérant que les conditions d'un fonctionnement normal de la commission des marchés ne sont pas réunies et aboutissent à une situation de blocage de nature à caractériser une situation de carence,\nArrête :",
-   "nota": "",
-   "lien": "https://www.legifrance.gouv.fr/jorf/id/JORFARTI000054999459",
-   "domaines": [
-    {
-     "id": "paie",
-     "nom": "Paie, cotisations et protection sociale",
-     "mots": [
-      "securite sociale"
-     ]
-    }
-   ],
-   "morceaux": 3,
-   "dateTexte": "2026-10-19",
-   "vuLe": "2026-10-20",
-   "vuA": "2026-10-20T00:00:00Z"
-  },
-  {
-   "source": "jorf",
-   "sourceNom": "Journal officiel de la République française",
-   "genre": "texte",
-   "id": "JORFARTI000054999819",
-   "titre": "Avis relatif à l'extension d'accords territoriaux (Hauts-de-France - Ile-de-France - Normandie) conclus dans le cadre de la convention collective nationale relative aux conditions de travail dans les industries de carrières et de matériaux (ouvriers - employés, techniciens et agents de maîtrise)",
-   "nature": "Article",
-   "date": "2026-10-20",
-   "corps": "En application de l'article L. 2261-15 du code du travail, le ministre du travail et des solidarités envisage de prendre un arrêté tendant à rendre obligatoires, pour tous les employeurs et tous les salariés entrant dans son champ d'application, les stipulations des accords ci-après indiqués.\nCes accords pourront être consultés en direction régionale de l'économie, de l'emploi, du travail et des solidarités.\nDans un délai de quinze jours, les organisations et toute personne intéressée sont priées de faire connaître leurs observations et avis au sujet de la généralisation envisagée.\nLeurs communications devront être adressées au ministère du travail et des solidarités (DGT, bureau DS1), 14, avenue Duquesne, 75350 Paris SP 07.\nDans un délai d'un mois, les organisations professionnelles d'employeurs reconnues représentatives au niveau des accords peuvent s'opposer à leur extension. L'opposition écrite et motivée est notifiée et déposée dans les conditions prévues par les articles L. 2231-5 et L. 2231-6 du code du travail.\nTextes dont l'extension est envisagée :\nAccord territorial (Hauts-de-France) du 9 septembre 2026.\nAccord territorial (Ile-de-France) du 3 septembre 2026.\nAccord territorial (Normandie) du 11 septembre 2026.\nDépôt :\nDirection générale du travail au ministère du travail et des solidarités.\nObjet :\nSalaires minimaux des ouvriers et ETAM (niveaux 1 à 7).\nSignataires :\nConcernant l'accord territorial (Hauts-de-France) du 9 septembre 2026 :\nUnion des industries de carrières et matériaux de construction (UNICEM) Hauts-de-France.\nUnion des producteurs de chaux.\nOrganisations syndicales de salariés intéressées rattachées à la CGT-FO et à la CFE-CGC.\nConcernant l'accord territorial (Ile-de-France) du 3 septembre 2026 :\nUnion des industries de carrières et matériaux de construction (UNICEM) de la région Ile-de-France.\nUnion des producteurs de chaux.\nOrganisations syndicales de salariés intéressées rattachées à la CGT-FO et à la CFE-CGC.\nConcernant l'accord territorial (Normandie) du 11 septembre 2026 :\nUnion des industries de carrières et matériaux de construction (UNICEM) de de Normandie.\nUnion des producteurs de chaux.\nOrganisations syndicales de salariés intéressées rattachées à la CGT-FO et à la CFE-CGC.",
-   "nota": "",
-   "lien": "https://www.legifrance.gouv.fr/jorf/id/JORFARTI000054999819",
-   "domaines": [
-    {
-     "id": "extractive",
-     "nom": "Activités extractives et code minier",
-     "mots": [
-      "carrieres"
-     ]
-    }
-   ],
-   "morceaux": 1,
-   "dateTexte": "",
-   "vuLe": "2026-10-20",
-   "vuA": "2026-10-20T00:00:00Z"
-  },
-  {
-   "source": "douane",
-   "sourceNom": "Douane française",
-   "genre": "actualite",
-   "id": "http://www.douane.gouv.fr/node/19197",
-   "titre": "Interpellés par les douaniers d’Aix-en-Provence avec 14,6 kg de cocaïne et 3 sacs de contrefaçon au péage d’Arles (13), les infracteurs ont été sévèrement condamnés.",
-   "nature": "Publication officielle",
-   "date": "2026-10-20",
-   "corps": "Interpellés par les douaniers d’Aix-en-Provence avec 14,6 kg de cocaïne et 3 sacs de contrefaçon au péage d’Arles (13), les infracteurs ont été sévèrement condamnés.\n\nasoutthiboune-dgddi\nmar 20/10/2026 - 17:43\n\nCatégorie\n\nCommuniqués de presse\n\nDate\n\nmar 20/10/2026 - 17:43\n\nImprimer\n\nEnvoyer par email\n\nPartager\n\nFichier principal\n\nFichier\n\nCP_DRDouane_Aix-en-Provence_20.10.2026.pdf",
-   "lien": "http://www.douane.gouv.fr/node/19197",
-   "domaines": [
-    {
-     "id": "propriete_intel",
-     "nom": "Propriété intellectuelle et contenus",
-     "mots": [
-      "contrefacon"
-     ]
-    }
-   ],
-   "morceaux": 1,
-   "dateTexte": "",
-   "vuLe": "2026-10-20",
-   "vuA": "2026-10-20T00:00:00Z"
-  },
-  {
-   "source": "cnil",
-   "sourceNom": "CNIL — actualités",
-   "genre": "actualite",
-   "id": "https://www.cnil.fr/fr/journee-rgpd-2026-poitiers",
-   "titre": "Journée RGPD à Poitiers : cybersécurité, IA et conformité au cœur des enjeux de protection des données",
-   "nature": "Publication officielle",
-   "date": "2026-10-20",
-   "corps": "La CNIL organise une nouvelle Journée RGPD à Poitiers le 1er décembre 2026. Cet évènement sera l’occasion d’échanger avec les acteurs du territoire sur les actualités en matière de protection des données personnelles et les enjeux concrets auxquels sont confrontés les professionnels.",
-   "lien": "https://www.cnil.fr/fr/journee-rgpd-2026-poitiers",
-   "domaines": [
-    {
-     "id": "rgpd",
-     "nom": "Données personnelles (RGPD)",
-     "mots": [
-      "protection des donnees"
-     ]
-    },
-    {
-     "id": "cyber",
-     "nom": "Cybersécurité et systèmes d'information",
-     "mots": [
-      "cybersecurite"
-     ]
-    }
-   ],
-   "morceaux": 1,
-   "dateTexte": "",
-   "vuLe": "2026-10-20",
-   "vuA": "2026-10-20T00:00:00Z"
-  },
-  {
-   "source": "amf",
-   "sourceNom": "AMF — Autorité des marchés financiers",
-   "genre": "actualite",
-   "id": "https://www.amf-france.org/fr/actualites-publications/communiques/communiques-de-lamf/la-sec-et-lamf-concluent-un-accord-renforcant-la-cooperation-en-matiere-de-supervision-des#xts=607212&at_medium=RSS feeds&at_campaign=Toutes les actualités et publications&type=RSS",
-   "titre": "La SEC et l'AMF concluent un accord renforçant la coopération en matière de supervision des conseillers en investissement et de prestataires de services d'investissement",
-   "nature": "Publication officielle",
-   "date": "2026-10-20",
-   "corps": "Communiqué AMF Coopération Europe & international Gestion d'actifs Supervision Conseil en investissement La SEC et l'AMF concluent un accord renforçant la coopération en matière de supervision des conseillers en investissement et de prestataires de services...",
-   "lien": "https://www.amf-france.org/fr/actualites-publications/communiques/communiques-de-lamf/la-sec-et-lamf-concluent-un-accord-renforcant-la-cooperation-en-matiere-de-supervision-des#xts=607212&at_medium=RSS feeds&at_campaign=Toutes les actualités et publications&type=RSS",
-   "domaines": [
-    {
-     "id": "finance",
-     "nom": "Services financiers, assurance et LCB-FT",
-     "mots": [
-      "prestataires de services d'investissement"
-     ]
-    }
-   ],
-   "morceaux": 1,
-   "dateTexte": "",
-   "vuLe": "2026-10-20",
-   "vuA": "2026-10-20T00:00:00Z"
-  },
-  {
-   "source": "amf",
-   "sourceNom": "AMF — Autorité des marchés financiers",
-   "genre": "actualite",
-   "id": "https://www.amf-france.org/fr/lamf/nos-accords-de-cooperation/conventions-bilaterales/accord-sec-amf-2026#xts=607212&at_medium=RSS feeds&at_campaign=Toutes les actualités et publications&type=RSS",
-   "titre": "SEC - 2026 - Accord concernant la consultation, la coopération et l’échange d’informations dans le cadre de la supervision de certains prestataires de services d’investissement, conseillers en investissements et sociétés d’investissement",
-   "nature": "Publication officielle",
-   "date": "2026-10-20",
-   "corps": "Accord bilatéral Coopération Gestion d'actifs Europe & international Conseil en investissement Supervision SEC - 2026 - Accord concernant la consultation, la coopération et l’échange d’informations dans le cadre de la supervision de certains prestataires de...",
-   "lien": "https://www.amf-france.org/fr/lamf/nos-accords-de-cooperation/conventions-bilaterales/accord-sec-amf-2026#xts=607212&at_medium=RSS feeds&at_campaign=Toutes les actualités et publications&type=RSS",
-   "domaines": [
-    {
-     "id": "finance",
-     "nom": "Services financiers, assurance et LCB-FT",
-     "mots": [
-      "prestataires de services d'investissement"
-     ]
-    }
-   ],
-   "morceaux": 1,
-   "dateTexte": "",
-   "vuLe": "2026-10-20",
-   "vuA": "2026-10-29T22:02:55Z"
   }
  ]
 }
