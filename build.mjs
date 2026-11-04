@@ -4009,8 +4009,8 @@ ${SITE.offreConsultant ? (() => {
   return `<section class="section section-tein" id="consultants">
   <div class="enveloppe">
     <h2 class="titre-section">Nos offres consultant</h2>
-    <p class="intro titre-section">Pour les consultants QSE qui suivent plusieurs entreprises : un prix par client et par mois,
-    dégressif. Chaque client reçoit la formule « ${esc(direct.carte || direct.l)} ».</p>
+    <p class="intro titre-section">Pour les consultants QSE qui accompagnent plusieurs entreprises : un prix par client et par mois.
+    Plus vous suivez de clients, plus le prix est dégressif.</p>
     <div class="formules">
       ${O.paliers.map((p, k) => `<article class="formule${k === 1 ? " mise-en-avant" : ""}" data-paraitre>
         <span class="etiq nom-offre">${p.a ? `De ${p.de} à ${p.a} clients` : `${p.de} clients et plus`}</span>
