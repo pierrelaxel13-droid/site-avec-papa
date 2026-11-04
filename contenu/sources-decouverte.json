@@ -1,5 +1,5 @@
 {
- "le": "2026-10-31T12:49:41.936Z",
+ "le": "2026-11-04T11:02:33.679Z",
  "bilan": [
   {
    "id": "inrs",
@@ -9,8 +9,8 @@
    "flux": [],
    "essais": 11,
    "refus": [
-    "HTTP 404",
-    "injoignable (fetch failed : UND_ERR_SOCKET) — l'hôte refuse le robot, ou le réseau d'ici le bloque"
+    "injoignable (fetch failed : UND_ERR_SOCKET) — l'hôte refuse le robot, ou le réseau d'ici le bloque",
+    "HTTP 404"
    ]
   },
   {
@@ -51,13 +51,40 @@
   {
    "id": "ansm",
    "nom": "ANSM — actualités",
-   "retenue": null,
-   "derniere": null,
-   "flux": [],
-   "essais": 34,
-   "refus": [
-    "HTTP 404"
-   ]
+   "retenue": "https://ansm.sante.fr/rss/informations_securite",
+   "derniere": "2026-11-03",
+   "flux": [
+    {
+     "url": "https://ansm.sante.fr/rss/informations_securite",
+     "entrees": 3,
+     "derniere": "2026-11-03",
+     "titre": "Informations de sécurité - Ansm.sante.fr",
+     "d_ou": "piste connue"
+    },
+    {
+     "url": "https://ansm.sante.fr/rss/informations_securite?produitsSante=dispositifs_medicaux",
+     "entrees": 3,
+     "derniere": "2026-11-03",
+     "titre": "Informations de sécurité - Ansm.sante.fr",
+     "d_ou": "déclaré par la page"
+    },
+    {
+     "url": "https://ansm.sante.fr/rss/disponibilite_produits_sante",
+     "entrees": 1,
+     "derniere": "2026-11-03",
+     "titre": "Disponibilité des produits de santé - Ansm.sante.fr",
+     "d_ou": "déclaré par la page"
+    },
+    {
+     "url": "https://ansm.sante.fr/rss/disponibilite_produits_sante?produitsSante=medicaments",
+     "entrees": 1,
+     "derniere": "2026-11-03",
+     "titre": "Disponibilité des produits de santé - Ansm.sante.fr",
+     "d_ou": "déclaré par la page"
+    }
+   ],
+   "essais": 26,
+   "refus": []
   },
   {
    "id": "boamp",
@@ -69,6 +96,234 @@
    "refus": [
     "HTTP 404",
     "HTTP 400"
+   ]
+  },
+  {
+   "id": "echa",
+   "nom": "ECHA — Agence européenne des produits chimiques",
+   "retenue": null,
+   "derniere": null,
+   "flux": [],
+   "essais": 9,
+   "refus": [
+    "injoignable (HTTP 403) — l'hôte refuse le robot, ou le réseau d'ici le bloque"
+   ]
+  },
+  {
+   "id": "euosha",
+   "nom": "EU-OSHA — Agence européenne pour la sécurité et la santé au travail",
+   "retenue": "https://osha.europa.eu/rss-feeds/latest/news.xml",
+   "derniere": "2026-10-15",
+   "flux": [
+    {
+     "url": "https://osha.europa.eu/rss-feeds/latest/news.xml",
+     "entrees": 10,
+     "derniere": "2026-10-15",
+     "titre": "https://osha.europa.eu/en\nEU-OSHA latest publications\nen\n\nManaging flood risks: new EU gui",
+     "d_ou": "déclaré par la page"
+    }
+   ],
+   "essais": 2,
+   "refus": []
+  },
+  {
+   "id": "asnr",
+   "nom": "ASNR — sûreté nucléaire et radioprotection",
+   "retenue": "https://www.asnr.fr/rss.xml",
+   "derniere": "2026-11-02",
+   "flux": [
+    {
+     "url": "https://www.asnr.fr/rss.xml",
+     "entrees": 10,
+     "derniere": "2026-11-02",
+     "titre": "ASNR - Autorité de sûreté nucléaire et de radioprotection",
+     "d_ou": "chemin courant"
+    }
+   ],
+   "essais": 9,
+   "refus": [
+    "HTTP 404"
+   ]
+  },
+  {
+   "id": "agriculture",
+   "nom": "Ministère de l'Agriculture — actualités",
+   "retenue": "https://agriculture.gouv.fr/rss.xml",
+   "derniere": "2026-11-04",
+   "flux": [
+    {
+     "url": "https://agriculture.gouv.fr/rss.xml",
+     "entrees": 30,
+     "derniere": "2026-11-04",
+     "titre": "Ministère de l'Agriculture, de la Souveraineté alimentaire et de la Forêt",
+     "d_ou": "déclaré par la page"
+    },
+    {
+     "url": "https://agriculture.gouv.fr/rss_presse.xml",
+     "entrees": 10,
+     "derniere": "2026-10-28",
+     "titre": "Ministère de l'Agriculture, de la Souveraineté alimentaire et de la Forêt - Espace presse",
+     "d_ou": "déclaré par la page"
+    },
+    {
+     "url": "https://agriculture.gouv.fr/rss_publications.xml",
+     "entrees": 10,
+     "derniere": "2026-11-03",
+     "titre": "Ministère de l'Agriculture, de la Souveraineté alimentaire et de la Forêt - Enseignemment",
+     "d_ou": "déclaré par la page"
+    }
+   ],
+   "essais": 4,
+   "refus": []
+  },
+  {
+   "id": "boagri",
+   "nom": "Bulletin officiel du ministère de l'Agriculture",
+   "retenue": null,
+   "derniere": null,
+   "flux": [],
+   "essais": 9,
+   "refus": [
+    "HTTP 404"
+   ]
+  },
+  {
+   "id": "francecompetences",
+   "nom": "France compétences — actualités",
+   "retenue": null,
+   "derniere": null,
+   "flux": [],
+   "essais": 9,
+   "refus": [
+    "HTTP 404"
+   ]
+  },
+  {
+   "id": "cre",
+   "nom": "CRE — Commission de régulation de l'énergie",
+   "retenue": null,
+   "derniere": null,
+   "flux": [],
+   "essais": 9,
+   "refus": [
+    "HTTP 404"
+   ]
+  },
+  {
+   "id": "cnaps",
+   "nom": "CNAPS — sécurité privée",
+   "retenue": null,
+   "derniere": null,
+   "flux": [],
+   "essais": 9,
+   "refus": [
+    "injoignable (fetch failed : UND_ERR_SOCKET) — l'hôte refuse le robot, ou le réseau d'ici le bloque",
+    "HTTP 404"
+   ]
+  },
+  {
+   "id": "anj",
+   "nom": "ANJ — Autorité nationale des jeux",
+   "retenue": "https://anj.fr/rss.xml",
+   "derniere": "2021-09-20",
+   "flux": [
+    {
+     "url": "https://anj.fr/rss.xml",
+     "entrees": 10,
+     "derniere": "2021-09-20",
+     "titre": "ANJ",
+     "d_ou": "chemin courant"
+    }
+   ],
+   "essais": 9,
+   "refus": [
+    "HTTP 404"
+   ]
+  },
+  {
+   "id": "arcom",
+   "nom": "Arcom — audiovisuel et numérique",
+   "retenue": "https://www.arcom.fr/rss.xml",
+   "derniere": "2026-02-09",
+   "flux": [
+    {
+     "url": "https://www.arcom.fr/rss.xml",
+     "entrees": 10,
+     "derniere": "2026-02-09",
+     "titre": "Arcom",
+     "d_ou": "chemin courant"
+    }
+   ],
+   "essais": 9,
+   "refus": [
+    "HTTP 404",
+    "HTTP 410"
+   ]
+  },
+  {
+   "id": "culture",
+   "nom": "Ministère de la Culture — actualités",
+   "retenue": null,
+   "derniere": null,
+   "flux": [],
+   "essais": 9,
+   "refus": [
+    "HTTP 404"
+   ]
+  },
+  {
+   "id": "sports",
+   "nom": "Ministère des Sports — actualités",
+   "retenue": null,
+   "derniere": null,
+   "flux": [],
+   "essais": 9,
+   "refus": [
+    "HTTP 404"
+   ]
+  },
+  {
+   "id": "ameli_entreprise",
+   "nom": "Ameli — entreprises, risques professionnels",
+   "retenue": null,
+   "derniere": null,
+   "flux": [],
+   "essais": 9,
+   "refus": [
+    "injoignable (HTTP 403) — l'hôte refuse le robot, ou le réseau d'ici le bloque"
+   ]
+  },
+  {
+   "id": "circulaires",
+   "nom": "Légifrance — circulaires et instructions",
+   "retenue": null,
+   "derniere": null,
+   "flux": [],
+   "essais": 9,
+   "refus": [
+    "injoignable (HTTP 403) — l'hôte refuse le robot, ou le réseau d'ici le bloque"
+   ]
+  },
+  {
+   "id": "sante_travail",
+   "nom": "Ministère de la Santé — actualités",
+   "retenue": null,
+   "derniere": null,
+   "flux": [],
+   "essais": 9,
+   "refus": [
+    "injoignable (fetch failed : ECONNRESET) — l'hôte refuse le robot, ou le réseau d'ici le bloque"
+   ]
+  },
+  {
+   "id": "georisques",
+   "nom": "Géorisques — risques industriels",
+   "retenue": null,
+   "derniere": null,
+   "flux": [],
+   "essais": 9,
+   "refus": [
+    "HTTP 404"
    ]
   }
  ]

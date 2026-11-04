@@ -126,7 +126,7 @@
    "id": "anses",
    "nom": "ANSES — avis et actualités",
    "entrees": 10,
-   "retenus": 3,
+   "retenus": 0,
    "souci": null
   },
   {
@@ -236,78 +236,6 @@
    "dateTexte": "",
    "vuLe": "2026-11-04",
    "vuA": "2026-11-04T01:25:39Z"
-  },
-  {
-   "source": "anses",
-   "sourceNom": "ANSES — avis et actualités",
-   "genre": "actualite",
-   "id": "https://www.anses.fr/fr/decisions/biocide/decision-relative-modification-administrative-dautorisation-mise-disposition-605",
-   "titre": "Décision relative à une modification administrative d’autorisation de mise à disposition sur le marché de la famille de produits biocides KORDON",
-   "nature": "Publication officielle",
-   "date": "2026-11-04",
-   "corps": "Décision relative à une modification administrative d’autorisation de mise à disposition sur le marché de la famille de produits biocides KORDON\n\nCOHEN Sylvie\n\nmer, 04/11/2026 - 09:48\n\nNom de produit\n\nKORDON\n\nType de demande\n\nChangement administratif d’une autorisation nationale\n\nNuméro de dossier\n\nBC-VA113804-49\n\nNuméro AMM\n\nFR-2016-0041\n\nDate signature\n\nlun, 19/10/2026 - 12:00\n\nDate de publication\n\nmer, 04/11/2026 - 12:00\n\nApparait dans le registre\n\nOui\n\nDocument(s)\n\nFichier\n\nKORDON_BC-VA113804-49_NA-ADC_D.pdf\n(405.03 Ko)\n\nType de document\n\nLettre décision",
-   "lien": "https://www.anses.fr/fr/decisions/biocide/decision-relative-modification-administrative-dautorisation-mise-disposition-605",
-   "domaines": [
-    {
-     "id": "chimie",
-     "nom": "Produits chimiques et risque chimique",
-     "mots": [
-      "produits biocides"
-     ]
-    }
-   ],
-   "morceaux": 1,
-   "dateTexte": "",
-   "vuLe": "2026-11-04",
-   "vuA": "2026-11-04T09:17:18Z"
-  },
-  {
-   "source": "anses",
-   "sourceNom": "ANSES — avis et actualités",
-   "genre": "actualite",
-   "id": "https://www.anses.fr/fr/decisions/biocide/decision-relative-modification-administrative-dautorisation-mise-disposition-606",
-   "titre": "Décision relative à une modification administrative d’autorisation de mise à disposition sur le marché de la famille de produits biocides LIGNUM WOODWORM KILLER PF",
-   "nature": "Publication officielle",
-   "date": "2026-11-04",
-   "corps": "Décision relative à une modification administrative d’autorisation de mise à disposition sur le marché de la famille de produits biocides LIGNUM WOODWORM KILLER PF\n\nCOHEN Sylvie\n\nmer, 04/11/2026 - 09:50\n\nNom de produit\n\nLIGNUM WOODWORM KILLER PF\n\nType de demande\n\nChangement administratif d’une autorisation nationale\n\nNuméro de dossier\n\nBC-SX114497-98\n\nNuméro AMM\n\nFR-2019-0017\n\nDate signature\n\nlun, 19/10/2026 - 12:00\n\nDate de publication\n\nmer, 04/11/2026 - 12:00\n\nApparait dans le registre\n\nOui\n\nDocument(s)\n\nFichier\n\nLIGNUMWOOD_BC-SX114497-98_NA-ADC_D.pdf\n(516.24 Ko)\n\nType de document\n\nLettre décision",
-   "lien": "https://www.anses.fr/fr/decisions/biocide/decision-relative-modification-administrative-dautorisation-mise-disposition-606",
-   "domaines": [
-    {
-     "id": "chimie",
-     "nom": "Produits chimiques et risque chimique",
-     "mots": [
-      "produits biocides"
-     ]
-    }
-   ],
-   "morceaux": 1,
-   "dateTexte": "",
-   "vuLe": "2026-11-04",
-   "vuA": "2026-11-04T09:17:18Z"
-  },
-  {
-   "source": "anses",
-   "sourceNom": "ANSES — avis et actualités",
-   "genre": "actualite",
-   "id": "https://www.anses.fr/fr/decisions/biocide/decision-relative-modification-administrative-dautorisation-mise-disposition-611",
-   "titre": "Décision relative à une modification administrative d’autorisation de mise à disposition sur le marché de la famille de produits biocides SANYTOL DETACHANT FRESH",
-   "nature": "Publication officielle",
-   "date": "2026-11-04",
-   "corps": "Décision relative à une modification administrative d’autorisation de mise à disposition sur le marché de la famille de produits biocides SANYTOL DETACHANT FRESH\n\nCOHEN Sylvie\n\nmer, 04/11/2026 - 10:13\n\nNom de produit\n\nSANYTOL DETACHANT FRESH\n\nType de demande\n\nChangement administratif d’une autorisation nationale\n\nNuméro de dossier\n\nBC-RP112285-26\n\nNuméro AMM\n\nFR-2021-0032\n\nDate signature\n\nmar, 20/10/2026 - 12:00\n\nDate de publication\n\nmer, 04/11/2026 - 12:00\n\nApparait dans le registre\n\nOui\n\nDocument(s)\n\nFichier\n\nSANYTOLDET_BC-RP112285-26_NA-ADC_D.pdf\n(454.03 Ko)\n\nType de document\n\nLettre décision",
-   "lien": "https://www.anses.fr/fr/decisions/biocide/decision-relative-modification-administrative-dautorisation-mise-disposition-611",
-   "domaines": [
-    {
-     "id": "chimie",
-     "nom": "Produits chimiques et risque chimique",
-     "mots": [
-      "produits biocides"
-     ]
-    }
-   ],
-   "morceaux": 1,
-   "dateTexte": "",
-   "vuLe": "2026-11-04",
-   "vuA": "2026-11-04T09:17:18Z"
   },
   {
    "source": "jorf",

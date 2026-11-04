@@ -1,6 +1,6 @@
-Vérification de 25 sources.
+Vérification de 26 sources.
 
-  jorf             répond — 878 archives
+  jorf             répond — 885 archives
   eurlex-l         répond — 100 entrées
   inrs             répond — 0 entrées  ← format à revoir
                   type : text/html;charset=UTF-8
@@ -8,6 +8,7 @@ Vérification de 25 sources.
                   balises : 0 <item>, 0 <entry>, 0 <ns:item>
   travail          répond — 50 entrées
   oppbtp           répond — 10 entrées
+  prismemploi      répond — 10 entrées
   boss             injoignable (fetch failed : UND_ERR_CONNECT_TIMEOUT) — l'hôte refuse le robot, ou le réseau d'ici le bloque
   urssaf           injoignable (fetch failed : ECONNRESET) — l'hôte refuse le robot, ou le réseau d'ici le bloque
   bofip            répond — 7 entrées
@@ -16,11 +17,11 @@ Vérification de 25 sources.
   certfr-alerte    répond — 40 entrées
   ecologie         répond — 10 entrées
   ineris-aida      répond — 10 entrées
-  ademe            répond — 81 entrées
+  ademe            répond — 84 entrées
   rappelconso      répond — 100 entrées
   dgccrf           répond — 20 entrées
   anses            répond — 10 entrées
-  entreprendre     répond — 236 entrées
+  entreprendre     répond — 237 entrées
   acpr             injoignable (HTTP 403) — l'hôte refuse le robot, ou le réseau d'ici le bloque
   amf              répond — 200 entrées
   arcep            répond — 10 entrées
@@ -32,5 +33,5 @@ Vérification de 25 sources.
   douane           répond — 10 entrées
   boamp            HTTP 404
 
-19 source(s) sur 25 exploitables.
+20 source(s) sur 26 exploitables.
 Passer « confirme: true » dans contenu/sources.js pour celles-là, et seulement celles-là.
