@@ -134,8 +134,8 @@ const dateFr = (iso) => new Date(iso + "T12:00:00Z")
   .toLocaleDateString("fr-FR", JOUR).replace(/^1 /, "1er ");
 
 /* --- Les trois formules et ce que chacune ouvre ---------------------------- */
-/* Grille du 4 novembre 2026 : 39, 59 et 89 € HT par mois ; à l'année, 410, 650
-   et 999 € HT (« 1 mois offert »), sans cadrage sur place. Les montants sont
+/* Grille du 4 novembre 2026 : 39, 59 et 79 € HT par mois ; à l'année, 410, 650
+   et 869 € HT (« 1 mois offert »), sans cadrage sur place. Les montants sont
    ici, en euros ; tout le reste (libellés, mention de TVA) en est tiré. Le rang décide : une page demande un
    rang, la session en porte un. C'est la seule règle et elle est appliquée
    dans le navigateur — donc contournable. Elle décrit le produit, elle ne le
@@ -172,7 +172,7 @@ const FORMULES = {
                      "Les alertes : une alerte vous rappelle de prendre connaissance des nouveautés",
                      "Préconisation des actions pour répondre aux nouvelles exigences",
                      "Tableau de bord de suivi de réalisation des actions"] },
-  complet: { l: "Veille complète", carte: "État des lieux réglementaire, plan d'actions, état de conformité réglementaire", rang: 3, surCarte: false, mois: 89, an: 999,
+  complet: { l: "Veille complète", carte: "État des lieux réglementaire, plan d'actions, état de conformité réglementaire", rang: 3, surCarte: false, mois: 79, an: 869,
              pour: "Vous passez un audit ou une certification.",
              ouvre: "Tout, le registre de preuves et le conseil de l'IA pour votre métier compris.",
              donne: ["Tout ce que donne l'offre État des lieux réglementaire et plan d'actions",
