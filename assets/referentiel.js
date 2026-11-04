@@ -1131,7 +1131,7 @@ window.VEILLE = (function () {
     { id: "vehicules", q: "Vous exploitez des véhicules ou transportez des marchandises", d: "Code des transports, temps de conduite, ADR le cas échéant.", domaines: ["transport"] },
     { id: "engins", q: "Vous utilisez des engins, machines ou appareils de levage", d: "Vérifications périodiques, autorisations de conduite.", domaines: ["levage"] },
     { id: "chantier", q: "Vous intervenez sur des chantiers ou chez des clients", d: "Plans de prévention, coordination SPS, co-activité.", domaines: ["chantier_sps"] },
-    { id: "bati_ancien", q: "Vous intervenez sur du bâti susceptible de contenir de l'amiante", d: "Repérage avant travaux, sous-section 3 ou 4.", domaines: ["amiante"] },
+    { id: "bati_ancien", q: "Vous êtes en contact avec l'amiante ou le plomb (travaux, entretien ou maintenance dans des bâtiments anciens)", d: "Repérage avant travaux, formation des salariés exposés, sous-section 3 ou 4.", domaines: ["amiante"] },
     { id: "alimentaire", q: "Vous manipulez, transformez ou servez des denrées alimentaires", d: "Paquet hygiène, HACCP, traçabilité.", domaines: ["alimentaire"] },
     { id: "consommateurs", q: "Vous vendez à des particuliers (BtoC)", d: "Code de la consommation, garanties, vente à distance.", domaines: ["consommation"] },
     { id: "produits", q: "Vous fabriquez ou importez des produits mis sur le marché", d: "Marquage CE, déclaration de conformité, rappels.", domaines: ["produits_ce"] },
@@ -1143,7 +1143,26 @@ window.VEILLE = (function () {
     { id: "interim", q: "Vous recourez à l'intérim ou mettez du personnel à disposition", d: "Contrats de mission, égalité de traitement, sécurité.", domaines: ["travail_temporaire"] },
     { id: "formation", q: "Vous dispensez de la formation professionnelle", d: "Déclaration d'activité, référentiel qualité.", domaines: ["enseignement"] },
     { id: "subventions", q: "Vous percevez des subventions publiques", d: "Justification de l'emploi des fonds, contrôle.", domaines: ["association", "marches_publics"] },
-    { id: "reglementee", q: "Votre activité exige un diplôme, un agrément ou une carte professionnelle", d: "Conditions d'exercice et déontologie.", domaines: ["deontologie"] }
+    { id: "reglementee", q: "Votre activité exige un diplôme, un agrément ou une carte professionnelle", d: "Conditions d'exercice et déontologie.", domaines: ["deontologie"] },
+    /* Questions ajoutées le 4 novembre 2026 (demande d'Axel) : chacune amène
+       un thème que le code APE seul ne donne pas toujours. */
+    { id: "eau_rejets", q: "Vous rejetez des eaux usées autres que domestiques ou prélevez de l'eau (forage, captage)", d: "Autorisation ou déclaration, convention de rejet, autosurveillance.", domaines: ["eau"] },
+    { id: "nuisances", q: "Votre activité émet des fumées, poussières, odeurs ou du bruit pour le voisinage", d: "Émissions dans l'air, bruit de voisinage, mesures.", domaines: ["air"] },
+    { id: "construire", q: "Vous construisez, agrandissez ou rénovez des bâtiments", d: "Règles de construction, assurances, réception des travaux.", domaines: ["construction"] },
+    { id: "energie", q: "Vous produisez de l'énergie (panneaux solaires, méthanisation, cogénération…)", d: "Raccordement, contrat de vente, obligations de producteur.", domaines: ["energie_reseau"] },
+    { id: "immobilier", q: "Vous louez, gérez ou vendez des biens immobiliers", d: "Baux, diagnostics, carte professionnelle le cas échéant.", domaines: ["immobilier"] },
+    { id: "vivant", q: "Vous élevez des animaux, cultivez ou utilisez des produits phytosanitaires", d: "Santé animale et végétale, certiphyto, traçabilité.", domaines: ["agri", "chimie"] },
+    { id: "soins", q: "Vous accueillez ou soignez des personnes âgées, malades, handicapées ou de jeunes enfants", d: "Autorisation d'activité, sécurité des personnes accueillies.", domaines: ["sanitaire"] },
+    { id: "medical", q: "Vous fabriquez, vendez ou utilisez des dispositifs médicaux ou des appareils à rayonnements", d: "Matériovigilance, radioprotection, marquage.", domaines: ["pharma"] },
+    { id: "fonds_clients", q: "Vous manipulez des fonds de clients, accordez des crédits ou distribuez des assurances", d: "Agréments, lutte contre le blanchiment, information du client.", domaines: ["finance"] },
+    { id: "surveillance", q: "Vous assurez du gardiennage, de la surveillance ou installez de la vidéoprotection", d: "Autorisation, carte professionnelle, règles de la vidéoprotection.", domaines: ["securite_privee"] },
+    { id: "evenements", q: "Vous organisez des spectacles ou des événements, ou diffusez de la musique en public", d: "Licence d'entrepreneur de spectacles, droits d'auteur, sécurité du public.", domaines: ["culture_spectacle", "propriete_intel"] },
+    { id: "creations", q: "Vous créez ou exploitez des marques, des logiciels, des contenus ou des brevets", d: "Dépôt et protection, contrats de cession et de licence.", domaines: ["propriete_intel"] },
+    { id: "sport", q: "Vous encadrez des activités sportives ou de loisirs", d: "Diplômes d'encadrement, sécurité des pratiquants, déclaration d'établissement.", domaines: ["sport"] },
+    { id: "hebergement", q: "Vous hébergez des clients (chambres, gîtes, camping, résidence)", d: "Déclaration, classement, taxe de séjour, sécurité incendie.", domaines: ["hotellerie"] },
+    { id: "telecom", q: "Vous fournissez un accès internet, un service de télécommunication ou un service audiovisuel", d: "Déclaration à l'autorité de régulation, obligations d'opérateur.", domaines: ["telecom"] },
+    { id: "jeux", q: "Vous organisez des jeux d'argent, des loteries ou des paris", d: "Autorisation, encadrement des jeux, protection des joueurs.", domaines: ["jeux"] },
+    { id: "extraction", q: "Vous extrayez des matériaux (carrière, sablière, forage)", d: "Code minier, autorisation d'exploitation, remise en état du site.", domaines: ["extractive"] }
   ];
 
   /* ------------------------------------------------------- SOURCES GÉNÉRALES */
