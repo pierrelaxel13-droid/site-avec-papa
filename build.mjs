@@ -300,8 +300,7 @@ function bandeInstallation(a) {
     <div class="deux-colonnes">
       <div>
         <h2>Installer l'application</h2>
-        <p class="intro">Posée sur l'écran d'accueil du téléphone, elle s'ouvre comme une
-        application et marche sans réseau — sur un chantier, dans un entrepôt.</p>
+        <p class="intro">Accessible sur votre téléphone, elle s'ouvre comme une application et fonctionne sans réseau.</p>
         <p class="rangee" style="margin-top:var(--t4)">
           <button type="button" class="bouton bouton-accent" id="installer-appli" hidden>
             Installer maintenant
