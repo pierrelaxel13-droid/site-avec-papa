@@ -4441,7 +4441,8 @@ function pageMonCompte() {
           <div id="compte-cabinet" hidden>
             <div class="rg-ligne"><span class="rg-libelle">Cabinet</span><div class="rg-champ"><strong id="cabinet-nom"></strong></div></div>
             <div class="rg-ligne"><span class="rg-libelle">Abonnement</span><div class="rg-champ"><span id="cabinet-statut"></span></div></div>
-            <div class="compte-actions"><a class="bouton bouton-accent" href="cabinet.html">Ouvrir l'espace consultant</a></div>
+            <div class="compte-actions"><a class="bouton bouton-accent" href="cabinet.html">Ouvrir l'espace consultant</a>
+              <a class="bouton bouton-sobre" href="nouveau-client.html">Créer l'accès d'un client</a></div>
           </div>
           <div class="compte-corps">
           <form id="form-entreprise" method="post" novalidate hidden>
@@ -4806,6 +4807,9 @@ function pageCabinet(V, NAF, SOURCES) {
         <div class="admin-grille" id="cabinet-clients"></div>
         <form class="carte-connexion cs-ajout" id="form-client" method="post" novalidate>
           <h3>Ajouter un client</h3>
+          <p class="cs-ajout-lien">Pour créer en une fois son espace, son code APE et l'invitation de son responsable :
+          <a class="bouton bouton-accent" href="nouveau-client.html">Créer l'accès d'un client</a></p>
+          <p class="aide-bas">Ou créez seulement son espace, avec son nom :</p>
           <ol class="etapes-cabinet">
             <li>Créez son espace ici.</li>
             <li>Ouvrez-le pour régler son plan de veille (code APE, situations).</li>

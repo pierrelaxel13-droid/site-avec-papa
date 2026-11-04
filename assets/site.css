@@ -4616,3 +4616,5 @@ ol.etapes-carres p { margin: 0; color: var(--encre-douce); text-align: center; m
 .zone-public ol.etapes-carres > li.etape, .zone-public ol.etapes-carres > li.etape :is(h3, p) { text-align: center !important; }
 .zone-public ol.etapes-carres > li.etape :is(h3, p) { margin-left: auto !important; margin-right: auto !important; padding-right: 0 !important; }
 @media (min-width: 64rem) { ol.etapes-carres > li.etape { aspect-ratio: 5 / 4; } }
+.cs-ajout-lien { display: flex; flex-wrap: wrap; align-items: center; gap: .75rem; margin: .25rem 0 1rem; }
+.compte-actions { display: flex; flex-wrap: wrap; gap: .5rem; }
