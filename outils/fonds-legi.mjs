@@ -1,0 +1,189 @@
+#!/usr/bin/env node
+/* ==========================================================================
+   Vigie réglementaire — le fonds des textes en vigueur (4 novembre 2026)
+   --------------------------------------------------------------------------
+   Demande d'Axel : que la veille reprenne les textes des 50 dernières années,
+   SEULEMENT ceux qui sont encore en vigueur. Les codes (code du travail…)
+   sont déjà lus article par article (outils/codes.mjs) ; ce robot ajoute les
+   textes NON codifiés encore en vigueur : lois, ordonnances, décrets et
+   arrêtés publiés depuis 50 ans, rattachés à nos 44 sujets.
+
+   LA SOURCE
+   La base LEGI de la DILA (textes consolidés de Légifrance), en archive
+   ouverte : https://echanges.dila.gouv.fr/OPENDATA/LEGI/ — fichier
+   « Freemium_legi_global_AAAAMMJJ-HHMMSS.tar.gz », licence ouverte. On n'en
+   lit que le dossier « TNC_en_vigueur » (textes non codifiés en vigueur).
+
+   COMMENT
+   L'archive pèse plus d'un gigaoctet : on ne la décompresse pas sur le
+   disque, on la lit en flux, deux fois.
+     1. Les fiches des textes (texte/version) : on garde ceux qui sont en
+        vigueur (ni abrogés ni périmés), publiés depuis 50 ans, de nature loi,
+        ordonnance, décret ou arrêté, et dont le titre touche un de nos sujets
+        (outils/tri.mjs, la même règle que le relevé quotidien).
+     2. Les articles de ces textes : seuls ceux en vigueur, dans l'ordre.
+   Rien n'est deviné : ce qui n'est pas dans la base n'est pas écrit.
+
+   USAGE
+     node outils/fonds-legi.mjs --url            # l'adresse de la dernière archive complète
+     node outils/fonds-legi.mjs archive.tar.gz   # écrit contenu/fonds-legi.json
+   Lancé par .github/workflows/fonds.yml (la DILA n'est joignable que de là).
+   ========================================================================== */
+import { createReadStream } from "node:fs";
+import { readFile, writeFile } from "node:fs/promises";
+import { createGunzip } from "node:zlib";
+import { dirname, join, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
+import { rattache, texteBrut } from "./tri.mjs";
+
+const RACINE = resolve(dirname(fileURLToPath(import.meta.url)), "..");
+const SORTIE = join(RACINE, "contenu", "fonds-legi.json");
+const INDEX = "https://echanges.dila.gouv.fr/OPENDATA/LEGI/";
+export const ANS = 50;
+const PLAFOND_CORPS = 6000;      // caractères gardés par texte (le texte entier est à la source)
+const NATURES = { LOI: "Loi", LOI_ORGANIQUE: "Loi organique", ORDONNANCE: "Ordonnance", DECRET: "Décret", DECRET_LOI: "Décret-loi", ARRETE: "Arrêté" };
+
+/* --- Lire une archive .tar.gz en flux -------------------------------------
+   Le format tar : des blocs de 512 octets ; un en-tête (nom, taille, type)
+   puis le contenu, complété jusqu'au bloc suivant. Les noms longs arrivent
+   dans une entrée « L » (GNU) ou « x » (pax) juste avant. */
+export async function parcourir(fichier, garder, traiter) {
+  let tampon = Buffer.alloc(0), etat = "entete", reste = 0, bourrage = 0, nom = "", type = "", morceaux = [], nomLong = "";
+  const octal = (b) => parseInt(b.toString("ascii").replace(/\0.*$/s, "").trim() || "0", 8);
+  const flux = createReadStream(fichier).pipe(createGunzip());
+  for await (const bloc of flux) {
+    tampon = tampon.length ? Buffer.concat([tampon, bloc]) : bloc;
+    for (;;) {
+      if (etat === "entete") {
+        if (tampon.length < 512) break;
+        const h = tampon.subarray(0, 512); tampon = tampon.subarray(512);
+        if (h.every((x) => x === 0)) continue;
+        const base = h.subarray(0, 100).toString("utf8").replace(/\0.*$/s, "");
+        const prefixe = h.subarray(345, 500).toString("utf8").replace(/\0.*$/s, "");
+        type = String.fromCharCode(h[156] || 48);
+        nom = nomLong || (prefixe ? `${prefixe}/${base}` : base);
+        nomLong = "";
+        reste = octal(h.subarray(124, 136));
+        bourrage = (512 - (reste % 512)) % 512;
+        morceaux = [];
+        etat = "contenu";
+        if (reste === 0) { etat = "fin"; }
+      }
+      if (etat === "contenu") {
+        if (!tampon.length) break;
+        const n = Math.min(reste, tampon.length);
+        const utile = type === "L" || type === "x" || ((type === "0" || type === "\0") && garder(nom));
+        if (utile) morceaux.push(tampon.subarray(0, n));
+        tampon = tampon.subarray(n); reste -= n;
+        if (reste > 0) break;
+        etat = "fin";
+      }
+      if (etat === "fin") {
+        if (tampon.length < bourrage) break;
+        tampon = tampon.subarray(bourrage);
+        etat = "entete";
+        const contenu = morceaux.length ? Buffer.concat(morceaux) : null;
+        if (type === "L" && contenu) nomLong = contenu.toString("utf8").replace(/\0.*$/s, "");
+        else if (type === "x" && contenu) { const m = /\d+ path=([^\n]*)\n/.exec(contenu.toString("utf8")); if (m) nomLong = m[1]; }
+        else if (contenu) await traiter(nom, contenu.toString("utf8"));
+      }
+    }
+  }
+}
+
+const entre = (xml, b) => { const m = new RegExp(`<${b}(?:\\s[^>]*)?>([\\s\\S]*?)</${b}>`).exec(xml); return m ? m[1] : ""; };
+const nu = (xml, b) => texteBrut(entre(xml, b)).trim();
+const enVigueur = (etat, fin, auj) => !/^ABROGE$|^PERIME|^ANNULE|^TRANSFERE|^DISJOINT/.test(etat || "") && (!fin || fin.slice(0, 10) > auj);
+
+/* Une fiche de texte (texte/version) : ce qu'on en garde, ou null. */
+export function lisVersion(xml, auj, limite) {
+  const id = nu(xml, "ID");
+  const natureBrute = nu(xml, "NATURE").toUpperCase();
+  const nature = NATURES[natureBrute];
+  const version = entre(xml, "META_TEXTE_VERSION");
+  const etat = nu(version, "ETAT"), fin = nu(version, "DATE_FIN");
+  const date = (nu(xml, "DATE_PUBLI") || nu(xml, "DATE_TEXTE")).slice(0, 10);
+  const titre = nu(version, "TITREFULL") || nu(version, "TITRE");
+  if (!id || !nature || !titre || !date || date.startsWith("2999")) return null;
+  if (date < limite || !enVigueur(etat, fin, auj)) return null;
+  return { id, cid: nu(xml, "CID"), nature, titre, date, nota: nu(entre(xml, "NOTA"), "CONTENU") };
+}
+
+/* Un article : son texte, s'il est en vigueur, et le texte auquel il appartient. */
+export function lisArticle(xml, auj) {
+  const meta = entre(xml, "META_ARTICLE");
+  if (!enVigueur(nu(meta, "ETAT"), nu(meta, "DATE_FIN"), auj)) return null;
+  const txt = (/<TITRE_TXT[^>]*\bid_txt="([^"]+)"/.exec(xml) || [])[1] || "";
+  const corps = texteBrut(entre(entre(xml, "BLOC_TEXTUEL"), "CONTENU")).replace(/\s+/g, " ").trim();
+  if (!txt || !corps) return null;
+  return { txt, num: nu(meta, "NUM"), corps };
+}
+
+const ordreNum = (a) => String(a.num || "").replace(/\d+/g, (n) => n.padStart(6, "0"));
+
+export async function fonds(fichier, V, { auj = new Date().toISOString().slice(0, 10), ans = ANS } = {}) {
+  const limite = `${Number(auj.slice(0, 4)) - ans}${auj.slice(4)}`;
+  const dansTnc = (n) => n.includes("/TNC_en_vigueur/");
+  const textes = new Map();
+  let fiches = 0;
+  // 1. Les fiches des textes.
+  await parcourir(fichier, (n) => dansTnc(n) && /\/texte\/version\/[^/]+\.xml$/.test(n), async (n, xml) => {
+    fiches++;
+    const t = lisVersion(xml, auj, limite);
+    if (!t) return;
+    const domaines = rattache(V, t.titre, "legi");
+    if (!domaines.length) return;
+    const avant = textes.get(t.id);
+    if (!avant || t.date > avant.date) textes.set(t.id, { ...t, domaines, articles: [] });
+  });
+  // 2. Leurs articles en vigueur.
+  let articles = 0;
+  await parcourir(fichier, (n) => dansTnc(n) && /\/article\/.+\.xml$/.test(n), async (n, xml) => {
+    const a = lisArticle(xml, auj);
+    if (!a || !textes.has(a.txt)) return;
+    articles++;
+    textes.get(a.txt).articles.push({ num: a.num, corps: a.corps });
+  });
+  const liste = [...textes.values()].map((t) => {
+    t.articles.sort((a, b) => (ordreNum(a) < ordreNum(b) ? -1 : 1));
+    let corps = "";
+    for (const a of t.articles) {
+      if (corps.length >= PLAFOND_CORPS) break;
+      corps += (corps ? "\n\n" : "") + (a.num ? `Article ${a.num} : ` : "") + a.corps;
+    }
+    if (corps.length > PLAFOND_CORPS) corps = corps.slice(0, PLAFOND_CORPS).replace(/\s+\S*$/, "") + "\n\n[…] La suite est à la source.";
+    return {
+      source: "legi", sourceNom: "Légifrance — textes consolidés (base LEGI)", genre: "texte", fonds: true,
+      id: t.id, titre: t.titre, nature: t.nature, date: t.date, dateTexte: t.date,
+      articlesEnVigueur: t.articles.length, corps, nota: t.nota || "",
+      lien: `https://www.legifrance.gouv.fr/loda/id/${t.id}`,
+      domaines: t.domaines.map((d) => ({ id: d.id, nom: d.nom, mots: d.mots }))
+    };
+  }).filter((t) => t.articlesEnVigueur > 0).sort((a, b) => (a.date < b.date ? 1 : -1));
+  return { fiches, articles, textes: liste, limite };
+}
+
+async function derniereArchive() {
+  const html = await (await fetch(INDEX)).text();
+  const l = [...html.matchAll(/href="([^"]*Freemium_legi_global_[^"]+\.tar\.gz)"/gi)].map((m) => m[1]).sort();
+  if (!l.length) throw new Error("Aucune archive complète LEGI dans l'index de la DILA.");
+  return new URL(l[l.length - 1], INDEX).href;
+}
+
+if (import.meta.url === `file://${process.argv[1]}`) {
+  const arg = process.argv[2];
+  if (arg === "--url") { console.log(await derniereArchive()); process.exit(0); }
+  if (!arg) { console.error("Usage : node outils/fonds-legi.mjs archive.tar.gz"); process.exit(2); }
+  const source = await readFile(join(RACINE, "assets/referentiel.js"), "utf8");
+  const w = {}; new Function("window", source)(w);
+  const auj = new Date().toISOString().slice(0, 10);
+  const r = await fonds(arg, w.VEILLE, { auj });
+  const parSujet = {};
+  r.textes.forEach((t) => t.domaines.forEach((d) => { parSujet[d.nom] = (parSujet[d.nom] || 0) + 1; }));
+  await writeFile(SORTIE, JSON.stringify({
+    licence: "Base LEGI (DILA), licence ouverte Etalab 2.0 — https://echanges.dila.gouv.fr/OPENDATA/LEGI/",
+    archive: arg.split("/").pop(), lu_le: auj, depuis: r.limite, textes: r.textes
+  }) + "\n");
+  console.log(`Fiches de textes lues : ${r.fiches}. Textes en vigueur depuis le ${r.limite} retenus : ${r.textes.length} (${r.articles} articles).`);
+  Object.entries(parSujet).sort((a, b) => b[1] - a[1]).forEach(([n, k]) => console.log(`  ${String(k).padStart(5)}  ${n}`));
+}

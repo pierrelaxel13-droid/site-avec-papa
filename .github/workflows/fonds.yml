@@ -1,0 +1,64 @@
+# Vigie — le fonds des textes en vigueur (4 novembre 2026)
+#
+# Reprend, dans la base LEGI de la DILA, les lois, ordonnances, décrets et
+# arrêtés NON codifiés encore en vigueur, publiés depuis 50 ans, qui touchent
+# un de nos 44 sujets (outils/fonds-legi.mjs). Les codes, eux, sont déjà lus
+# par la relève (outils/codes.mjs).
+# L'archive complète de la DILA est refaite à peu près une fois par mois :
+# on la relit le 3 de chaque mois, et à la demande (onglet Actions).
+# Écrit contenu/fonds-legi.json ; « Publier le site » part ensuite.
+name: Fonds des textes en vigueur
+
+on:
+  schedule:
+    - cron: "23 2 3 * *"       # le 3 du mois, 2 h 23 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: fonds
+  cancel-in-progress: false
+
+jobs:
+  fonds:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: "22"
+
+      - name: Le robot, testé
+        run: node outils/fonds-legi.test.mjs
+
+      - name: La dernière archive complète de la base LEGI
+        run: |
+          url=$(node outils/fonds-legi.mjs --url)
+          echo "Archive : $url"
+          curl -fL --retry 4 --retry-delay 20 -o "$RUNNER_TEMP/legi.tar.gz" "$url"
+          ls -lh "$RUNNER_TEMP/legi.tar.gz"
+
+      - name: Les textes en vigueur depuis 50 ans
+        run: node outils/fonds-legi.mjs "$RUNNER_TEMP/legi.tar.gz" | tee "$RUNNER_TEMP/fonds.log"
+
+      - name: Le site se construit avec
+        run: node build.mjs > /dev/null
+
+      - name: Commiter
+        run: |
+          if [ -z "$(git status --porcelain contenu/fonds-legi.json)" ]; then echo "Rien n'a changé."; exit 0; fi
+          taille=$(du -m contenu/fonds-legi.json | cut -f1)
+          if [ "$taille" -gt 90 ]; then echo "::error::contenu/fonds-legi.json pèse ${taille} Mo : trop pour le dépôt."; exit 1; fi
+          git config user.name  "Relève Pierrel & Co"
+          git config user.email "releve@users.noreply.github.com"
+          git add contenu/fonds-legi.json
+          git commit -m "Fonds des textes en vigueur : $(head -1 "$RUNNER_TEMP/fonds.log" | cut -c1-120)"
+          for i in 1 2 3; do
+            if git pull --rebase -X theirs origin main && git push; then exit 0; fi
+            sleep $((i * 5))
+          done
+          exit 1

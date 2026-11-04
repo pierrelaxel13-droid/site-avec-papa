@@ -3734,7 +3734,7 @@ ${bandeAvis(AVIS)}
       <div class="rail-item" data-paraitre data-compte="${suivis.total}">
         <span class="chiffre">${suivis.total.toLocaleString("fr-FR")}</span>
         <p class="legende">Textes réglementaires et normatifs suivis</p>
-        <p class="legende-detail">${[suivis.articles ? `${suivis.articles.toLocaleString("fr-FR")} articles de codes en vigueur lus un à un` : "",
+        <p class="legende-detail">${[suivis.articles ? `${suivis.articles.toLocaleString("fr-FR")} articles de codes en vigueur` : "",
           `${suivis.fiches} textes de référence`, suivis.normes ? `${suivis.normes} normes` : "",
           suivis.publies ? `${suivis.publies} textes publiés relevés depuis le ${esc(dateFr(suivis.depuis))}` : ""].filter(Boolean).join(", ").replace(/, ([^,]*)$/, " et $1")}.
         Mis à jour chaque jour avec les nouvelles publications.</p>

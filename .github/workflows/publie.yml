@@ -23,7 +23,7 @@ on:
   push:
     branches: [main]
   workflow_run:
-    workflows: ["Relève"]
+    workflows: ["Relève", "Fonds des textes en vigueur"]
     types: [completed]
     branches: [main]
   workflow_dispatch:
