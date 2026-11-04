@@ -3529,6 +3529,10 @@ function pageAccueil(V, D, METIERS, ECRANS, C = null, NAF = null, SOURCES = [], 
       les domaines de la santé, de la sécurité, de l'hygiène, de l'environnement et des ressources humaines.
       Vigie réglementaire vous accompagne également dans la mise en conformité de votre société.
     </p>
+    <p class="rangee rangee-centre heros-actions">
+      <a class="bouton bouton-accent" href="abonnement.html">Démarrer un abonnement</a>
+      <a class="bouton bouton-sobre" href="abonnement.html#essayer">Essayer la démonstration</a>
+    </p>
     ${blocCollecte(JO)}
 
     <div class="heros-visuel">

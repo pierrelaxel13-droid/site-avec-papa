@@ -4266,3 +4266,77 @@ main .lecture, main .note-source, main li, main p {
    plus affichée (4 novembre 2026, demande d'Axel). Elle reste dans la page :
    les scripts y lisent le nombre de sujets. */
 .tete-app .chapeau:has([data-plan-total]) { display: none; }
+
+/* ==========================================================================
+   Téléphone, pages publiques (4 novembre 2026, « plus professionnel ») :
+   textes à gauche, chiffres en liste, cartes sur une colonne, compactes.
+   ========================================================================== */
+.heros-actions { margin-top: var(--t4); }
+@media (max-width: 40rem) {
+  /* L'en-tête des pages */
+  .heros { padding-block: 2rem 2.25rem; }
+  .heros-texte, .heros h1, .heros-sous { text-align: left !important; margin-inline: 0 !important; }
+  .heros h1 { font-size: 1.85rem; line-height: 1.15; max-width: none; }
+  .heros-sous { font-size: .98rem; line-height: 1.6; margin-top: .9rem; max-width: none; }
+  .heros-actions { justify-content: flex-start; flex-wrap: wrap; gap: .5rem; margin-top: 1.25rem; }
+  .heros-actions .bouton { padding: .65rem 1.1rem; font-size: .92rem; }
+  .collecte { justify-content: flex-start !important; text-align: left !important; font-size: .8rem; margin-top: 1rem; }
+
+  /* Titres de section et introductions */
+  .titre-section, .intro.titre-section, main .section h2.titre-section { text-align: left !important; margin-inline: 0 !important; max-width: none; }
+  .intro.titre-section { font-size: .98rem; line-height: 1.55; margin-top: .6rem; }
+
+  /* Les chiffres : une liste, le nombre à gauche */
+  .rail { grid-template-columns: minmax(0, 1fr) !important; gap: 0 !important; }
+  .rail-fil { display: none; }
+  .rail-item { display: grid; grid-template-columns: 4.5rem minmax(0, 1fr); column-gap: 1rem; align-items: start;
+    padding: 1rem 0 !important; border-bottom: 1px solid var(--filet); text-align: left !important; }
+  .rail-item:last-child { border-bottom: 0; }
+  .rail-item .chiffre { grid-row: span 2; font-size: 1.75rem; line-height: 1.1; }
+  .rail-item .legende, .rail-item .legende-detail { text-align: left !important; margin: 0 !important; max-width: none !important; }
+  .rail-item .legende { font-weight: 600; color: var(--encre); font-size: .95rem; }
+  .rail-item .legende-detail { margin-top: .25rem !important; font-size: .84rem; }
+
+  /* Les cartes : une colonne, à gauche */
+  .traits, .raisons, .raisons-deux, .pieces, .normes { grid-template-columns: minmax(0, 1fr) !important; gap: .75rem !important; }
+  .raisons > :last-child:nth-child(odd), .pieces > :last-child:nth-child(odd) { grid-column: auto !important; }
+  .raison { text-align: left !important; padding: 1.1rem 1.15rem !important; }
+  .raison .numero { margin: 0 0 .5rem !important; }
+  .zone-public .raison :is(h3, p), .zone-public .raisons-deux .raison p { text-align: left !important; }
+  .raison h3 { font-size: 1.02rem; }
+  .raison p, .trait p { font-size: .9rem; }
+  .trait { padding: 1rem 1.1rem; background: var(--carte); border: 1px solid var(--filet); border-radius: var(--rayon-carte); box-shadow: var(--ombre-carte); }
+  .trait h3 { font-size: 1rem; }
+
+  /* Les étapes de la Présentation : compactes, l'icône à gauche */
+  .etapes { grid-template-columns: minmax(0, 1fr) !important; gap: .6rem !important; }
+  .etape { display: grid !important; grid-template-columns: 2.5rem minmax(0, 1fr); column-gap: .9rem; align-items: start;
+    padding: 1rem 1.1rem !important; text-align: left !important; position: relative; }
+  .etape .etape-icone { grid-row: span 2; margin: 0 !important; }
+  .zone-public .etape :is(h3, p), [data-page="presentation"] .heros .etape :is(h3, p) { text-align: left !important; margin-inline: 0; }
+  .etape h3 { font-size: .98rem; margin: 0 0 .25rem; padding-right: 1.5rem; }
+  .etape p { font-size: .88rem; margin: 0; }
+  .etape .etape-num { position: absolute; top: .8rem; right: .9rem; }
+  .etapes .etape + .etape::before, .etapes .etape::after { display: none !important; }
+
+  /* Les onglets Dirigeant / QHSE / Consultant */
+  .bascule-trois button { font-size: .82rem; padding: .55rem .35rem; line-height: 1.2; }
+
+  /* Présentation : ce qui était centré se lit à gauche */
+  [data-page="presentation"] main > section.section:not(.section-tein):not(.installation) :is(h2, h3, p, li) { text-align: left !important; }
+  .section-appel .rangee { justify-content: flex-start; }
+}
+@media (max-width: 40rem) {
+  .rail-item { padding-left: 0 !important; padding-right: 0 !important; }
+  .rail-item::before { display: none !important; }
+  .rail-item .legende, .rail-item .legende-detail { padding: 0 !important; grid-column: 2; }
+  .rail-item .chiffre { grid-column: 1; grid-row: 1 / span 2; }
+  .heros-actions { display: grid !important; grid-template-columns: minmax(0, 1fr); gap: .55rem !important; }
+  .heros-actions .bouton { width: 100%; justify-content: center; text-align: center; margin: 0 !important; }
+  .etape .etape-icone { align-self: start; margin-top: .1rem !important; }
+}
+@media (max-width: 40rem) {
+  .heros .rangee.heros-actions { grid-template-columns: minmax(0, 1fr) !important; }
+  .heros .rangee.heros-actions > .bouton { grid-column: 1 / -1 !important; }
+  .rail-item { margin-inline: 0 !important; width: 100%; }
+}
