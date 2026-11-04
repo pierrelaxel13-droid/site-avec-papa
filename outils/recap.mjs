@@ -156,10 +156,30 @@ async function envoyer({ cle, expediteur, a, sujet, html, texte, desinscrire }) 
       headers: { "List-Unsubscribe": `<${desinscrire}>` }
     })
   });
-  if (!r.ok) throw new Error(`envoi refusé (${r.status})`);
+  if (!r.ok) { let d = ""; try { d = ((await r.json()) || {}).message || ""; } catch { /* corps illisible */ } throw new Error(`envoi refusé (${r.status}${d ? " : " + d : ""})`); }
+}
+
+/* L'essai (RECAP_TEST_A=adresse) : un rappel d'exemple, avec des actions
+   fictives, envoyé à une seule adresse. Ne lit ni n'écrit rien en base. */
+async function essai(a) {
+  const cle = process.env.BREVO_API_KEY || "", expediteur = process.env.RECAP_EXPEDITEUR || "";
+  if (!cle || !expediteur) {
+    console.log("::error::Envoi impossible : il manque le secret " + (!cle ? "BREVO_API_KEY" : "RECAP_EXPEDITEUR") + " (GitHub → Settings → Secrets and variables → Actions).");
+    process.exitCode = 1; return;
+  }
+  const jour = new Date().toLocaleDateString("fr-CA", { timeZone: "Europe/Paris" });
+  const avant = (n) => { const d = new Date(Date.parse(jour) - n * 86400000); return d.toISOString().slice(0, 10); };
+  const m = rappel({ denomination: "Maçonnerie Vidal (essai)", jour, jeton: "00000000-0000-0000-0000-000000000000", actions: [
+    { id: 1, objet: "Mettre à jour le document unique (DUERP) et dater la mise à jour — Décret n° 2026-1025", echeance: avant(12), note: "Responsable : Karim Vidal" },
+    { id: 2, objet: "Vérifier la validité des habilitations électriques du personnel", echeance: avant(3), note: "Responsable : Julie Martin" }
+  ] });
+  m.sujet = "[Essai] " + m.sujet;
+  try { await envoyer({ cle, expediteur, a, ...m }); console.log("ok : e-mail d'essai (rappel d'actions en retard) envoyé."); }
+  catch (e) { console.log("::error::L'envoi a échoué : " + e.message); process.exitCode = 1; }
 }
 
 async function principal() {
+  if (process.env.RECAP_TEST_A) return essai(process.env.RECAP_TEST_A.trim());
   const jour = process.env.RECAP_JOUR || new Date().toLocaleDateString("fr-CA", { timeZone: "Europe/Paris" });
   const essai = process.env.RECAP_ESSAI || "";
   const url = process.env.SUPABASE_DB_URL || "";

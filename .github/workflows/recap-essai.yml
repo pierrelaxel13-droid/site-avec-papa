@@ -1,0 +1,37 @@
+# ==========================================================================
+# Vigie réglementaire — e-mail d'essai (rappel d'actions en retard)
+# --------------------------------------------------------------------------
+# À lancer à la main : envoie UN rappel d'exemple (actions fictives) à
+# l'adresse saisie, par Brevo. Ne touche pas à la base. L'adresse est masquée
+# dans le journal (le dépôt est public).
+# Secrets : BREVO_API_KEY et RECAP_EXPEDITEUR (voir recap.yml).
+# ==========================================================================
+name: E-mail d'essai
+
+on:
+  workflow_dispatch:
+    inputs:
+      destinataire:
+        description: "Adresse qui reçoit l'e-mail d'essai"
+        required: true
+
+permissions:
+  contents: read
+
+jobs:
+  envoyer:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Masquer l'adresse
+        run: echo "::add-mask::${{ inputs.destinataire }}"
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: 22
+      - name: Envoyer le rappel d'exemple
+        env:
+          RECAP_TEST_A: ${{ inputs.destinataire }}
+          BREVO_API_KEY: ${{ secrets.BREVO_API_KEY }}
+          RECAP_EXPEDITEUR: ${{ secrets.RECAP_EXPEDITEUR }}
+        run: node outils/recap.mjs
