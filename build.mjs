@@ -4054,28 +4054,39 @@ const comptesFermes = () => `<p class="reserve" data-comptes-fermes hidden>
    3 novembre 2026 : deux colonnes au bureau, le formulaire à droite et, à
    gauche, ce que l'on retrouve une fois connecté (rien qui ne soit pas déjà
    dans l'application). Au téléphone, le formulaire seul. */
-function ecranAuth({ titre, sous, carte, pied = "" }) {
+function ecranAuth({ titre, sous, carte, pied = "", carteTitre = "Vos identifiants" }) {
+  /* 4 novembre 2026 : sur le modèle des autres pages (Mon compte, Réglages) —
+     le titre à gauche, puis des cartes : le formulaire, et à côté ce que l'on
+     retrouve dans son espace. */
   return `
-<section class="auth-ecran">
-  <aside class="auth-marque" aria-hidden="true">
-    <div class="auth-marque-corps">
-      <p class="auth-marque-sur">Veille réglementaire</p>
-      <ul class="auth-points">
-        <li>Les textes relevés sur les sources officielles : Journal officiel, Légifrance, ministères</li>
-        <li>Votre veille classée par catégorie : santé et sécurité, environnement, ressources humaines</li>
-        <li>Plan d'actions, registre de conformité et historique datés</li>
-      </ul>
-      <p class="auth-marque-note">Ne constitue pas un conseil juridique.</p>
-    </div>
-  </aside>
-  <div class="auth-zone">
-    <div class="auth-boite">
-      <div class="auth-tete">
+<section class="section compte-page auth-uni">
+  <div class="enveloppe">
+    <div class="compte-tete">
+      <div>
         <h1>${titre}</h1>
-        ${sous ? `<p>${sous}</p>` : ""}
+        ${sous ? `<p class="compte-connecte">${sous}</p>` : ""}
       </div>
-      ${carte}
-      ${pied}
+    </div>
+    <div class="auth-grille">
+      <section class="rg-carte compte-carte" aria-label="${esc(carteTitre)}">
+        <header class="rg-tete"><h2>${esc(carteTitre)}</h2></header>
+        <div class="compte-corps">
+          ${carte}
+          ${pied}
+        </div>
+      </section>
+      <aside class="rg-carte compte-carte auth-aside" aria-label="Votre espace">
+        <header class="rg-tete">
+          <h2>Votre espace de veille réglementaire</h2>
+          <p>Ce que vous retrouvez une fois connecté.</p>
+        </header>
+        <ul class="auth-liste">
+          <li><strong>Ma veille réglementaire</strong><span>Les textes qui s'appliquent à votre entreprise, par catégorie, avec leur source officielle.</span></li>
+          <li><strong>Plan d'actions</strong><span>Les actions à mener, avec un délai, un responsable et leur validation.</span></li>
+          <li><strong>Registre et conformité réglementaire</strong><span>L'évaluation de chaque texte et l'historique daté de vos décisions.</span></li>
+        </ul>
+        <p class="auth-note">Ne constitue pas un conseil juridique.</p>
+      </aside>
     </div>
   </div>
 </section>`;
@@ -4167,6 +4178,7 @@ function pageCreer() {
 function pageOubli() {
   const corps = ecranAuth({
     titre: "Mot de passe oublié",
+    carteTitre: "Recevoir un lien",
     sous: `Saisissez votre adresse : vous recevrez un lien, valable une heure, pour choisir un nouveau mot de passe.`,
     carte: `<form class="carte-connexion auth-carte" id="form-oubli" method="post" novalidate>
         ${comptesFermes()}

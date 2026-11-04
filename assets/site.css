@@ -4177,3 +4177,67 @@ main .lecture, main .note-source, main li, main p {
 .compte-lignes .ligne-reglage { border-top: 0 !important; }
 [data-page="compte"] #compte-principal > section.compte-reglages { grid-column: auto; }
 [data-page="compte"] #entreprise-role, [data-page="compte"] #entreprise-formule, [data-page="compte"] #cabinet-statut { color: var(--encre); font-size: .95rem; }
+
+/* ==========================================================================
+   Téléphone (4 novembre 2026, « plus joli sur téléphone ») : des cartes de
+   tableau compactes (le texte en tête, puis deux informations par ligne),
+   des carrés deux par deux, un en-tête et un bandeau plus courts.
+   ========================================================================== */
+@media (max-width: 47.99rem) {
+  /* Les tableaux devenus cartes */
+  .tableau-plan tr { display: grid !important; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: .9rem; row-gap: .1rem;
+    padding: .85rem .95rem; margin-bottom: .6rem; border-radius: var(--rayon-carte); box-shadow: var(--ombre-carte); }
+  .tableau-plan tr[hidden], .tableau-plan tr.hors-filtre { display: none !important; }
+  .tableau-plan td { padding: .35rem 0; min-width: 0; }
+  .tableau-plan td::before { font-size: .68rem; letter-spacing: .05em; text-transform: uppercase; margin-bottom: .2rem; color: var(--encre-douce); }
+  .tableau-plan td[data-titre="Référence et lien"], .tableau-plan td[data-titre="Texte"], .tableau-plan td[data-titre="Texte de référence"] {
+    order: -1; grid-column: 1 / -1; padding-bottom: .55rem; margin-bottom: .2rem; border-bottom: 1px solid var(--filet) !important; font-size: .95rem; }
+  .tableau-plan td[data-titre="Référence et lien"]::before, .tableau-plan td[data-titre="Texte"]::before,
+  .tableau-plan td[data-titre="Texte de référence"]::before { display: none; }
+  .tableau-plan td[data-titre="Actions à déclencher"], .tableau-plan td[data-titre="Action à mener"],
+  .tableau-plan td[data-titre="Preuve ou commentaire"], .tableau-plan td[data-titre="Évaluation"],
+  .tableau-plan td[data-titre="Validation"] { grid-column: 1 / -1; }
+  .tableau-plan td[data-titre="Lu"]::before { visibility: hidden; }
+  .tableau-plan td select, .tableau-plan td input:not([type="checkbox"]) { width: 100%; max-width: 100%; min-height: 2.4rem; font-size: .9rem; }
+  .tableau-plan .etat-date, .tableau-plan .categorie-texte { font-size: .74rem; }
+  .tableau-plan ul { font-size: .88rem; }
+  .export-barre { margin-bottom: .5rem; }
+
+  /* Les carrés, deux par deux */
+  .compteurs, .faits { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .6rem; }
+  .compteurs > :last-child:nth-child(odd), .faits > :last-child:nth-child(odd) { grid-column: 1 / -1; }
+  .compteurs > div, .faits > div { padding: .8rem .9rem; }
+  .compteurs .grand { font-size: 1.45rem; }
+  .compteurs dt { font-size: .64rem; letter-spacing: .05em; margin-bottom: .3rem; }
+  .compteurs .precision { font-size: .76rem; }
+
+  /* L'en-tête de l'application : les étiquettes de l'entreprise sur une ou deux lignes */
+  .jalons { display: flex; flex-wrap: wrap; gap: .35rem; margin-bottom: var(--t3); }
+  .jalons li > span, .jalons li > a { display: inline-block; padding: .2rem .6rem; font-size: .74rem; }
+  .tete-app { padding-block: 1.4rem .4rem; }
+  .tete-app .lecture, .tete-app .chapeau { font-size: .95rem; }
+
+  /* Le bandeau de démonstration, plus court */
+  .bandeau-demo { padding-block: .55rem; font-size: .8rem; line-height: 1.45; }
+
+  /* Des sections moins espacées */
+  .section, .rubrique { padding-block: clamp(1.75rem, 1.2rem + 3vw, 2.5rem); }
+  .rubrique > .enveloppe > h2 { margin-bottom: .9rem; }
+}
+
+/* --- Écrans d'accès, sur le modèle des autres pages (4 novembre 2026) ------ */
+.auth-uni { padding-top: clamp(1.75rem, 1.2rem + 2vw, 3rem); }
+.auth-uni .compte-tete { margin: 0 0 var(--t4); }
+.auth-uni .compte-tete .compte-connecte { margin: .35rem 0 0; font-size: var(--chapeau-site); color: var(--encre-douce); }
+.auth-grille { display: grid; gap: var(--ecart-cartes); align-items: start; }
+@media (min-width: 64rem) { .auth-grille { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); } }
+.auth-uni .compte-corps { padding: 1.25rem 1.25rem 1.4rem; }
+.auth-uni .auth-carte { max-width: none; }
+.auth-uni .auth-pied { margin-top: 1.25rem; }
+.auth-liste { list-style: none; margin: 0; padding: .25rem 1.25rem .5rem; }
+.auth-liste li { padding: .8rem 0; border-bottom: 1px solid var(--filet); display: grid; gap: .2rem; }
+.auth-liste li:last-child { border-bottom: 0; }
+.auth-liste strong { font-size: .95rem; font-weight: 600; color: var(--encre); }
+.auth-liste span { font-size: .88rem; color: var(--encre-douce); line-height: 1.5; }
+.auth-note { margin: 0; padding: .8rem 1.25rem 1rem; border-top: 1px solid var(--filet); font-size: .8rem; color: var(--encre-douce); }
+.auth-uni .carte-connexion.auth-carte { padding: 0; border: 0; box-shadow: none; background: none; border-radius: 0; }
