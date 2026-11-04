@@ -3661,7 +3661,7 @@ ${bandeAvis(AVIS)}
 
 <section class="section section-tein">
   <div class="enveloppe">
-    <h2 class="titre-section">Pourquoi nous</h2>
+    <h2 class="titre-section">Pourquoi choisir Vigie réglementaire</h2>
     <ul class="raisons raisons-deux">
       <li class="raison" data-paraitre>
         <span class="numero" aria-hidden="true">1</span>
