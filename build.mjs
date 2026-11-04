@@ -2668,19 +2668,6 @@ function appReglages(V, D, NAF, METIERS) {
         <button type="submit" class="bouton bouton-accent">Enregistrer</button>
       </div>
     </form>
-    <!-- Supprimer le compte (4 novembre 2026), dans un compte seulement : la
-         suppression elle-même se fait dans « Mon compte », avec confirmation. -->
-    <section class="rg-carte rg-danger" aria-labelledby="rg-t-supprimer" data-compte hidden>
-      <header class="rg-tete">
-        <h2 id="rg-t-supprimer">Supprimer le compte</h2>
-        <p>Votre compte, votre profil et vos accès sont supprimés définitivement. Téléchargez d'abord ce dont vous avez
-        besoin : vos tableaux (Excel ou PDF) et vos données personnelles.</p>
-      </header>
-      <div class="rg-ligne">
-        <span class="rg-libelle">Suppression définitive</span>
-        <div class="rg-champ"><a class="bouton bouton-sobre bouton-danger" href="../compte/#supprimer">Supprimer mon compte</a></div>
-      </div>
-    </section>
   </div>
 </section>
 
