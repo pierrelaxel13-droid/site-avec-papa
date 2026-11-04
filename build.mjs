@@ -3111,30 +3111,21 @@ function pageConsultants() {
 <section class="section">
   <div class="enveloppe">
     <h2 class="titre-section">Ce que vous y gagnez</h2>
-    <ul class="raisons">
+    <ul class="raisons raisons-trois">
       <li class="raison" data-paraitre>
         <span class="numero" aria-hidden="true">1</span>
-        <h3>Votre marque, pas la nôtre</h3>
-        <p>À partir de ${O.paliers.find((p) => p.blanche).de} clients, l'espace de vos clients et leurs exports PDF porteront
-        votre logo, votre nom et vos couleurs : pour eux, ce sera votre outil. La marque blanche est en préparation.</p>
+        <h3>Une gestion centralisée</h3>
+        <p>Tous vos clients, leur veille, leur plan d'actions et leur registre de conformité dans un seul espace.</p>
       </li>
       <li class="raison" data-paraitre>
         <span class="numero" aria-hidden="true">2</span>
-        <h3>Des heures gagnées, chaque mois, par client</h3>
-        <p>Le relevé des textes, le tri par métier, le rythme de revue de chaque sujet et le registre daté sont tenus
-        pour vous. Votre temps va à ce qui se facture : l'analyse et l'accompagnement.</p>
+        <h3>Une veille réglementaire mise à jour quotidiennement</h3>
+        <p>Les textes officiels sont relevés chaque jour et rangés selon le métier et la situation de chaque client.</p>
       </li>
       <li class="raison" data-paraitre>
         <span class="numero" aria-hidden="true">3</span>
-        <h3>Un revenu récurrent</h3>
-        <p>Chaque client équipé est une ligne mensuelle de plus sur votre facture, à votre prix. Vous l'achetez
-        ${esc(eur(palier.mois))} ; en direct, votre client paierait ${esc(eur(direct.mois))}.</p>
-      </li>
-      <li class="raison" data-paraitre>
-        <span class="numero" aria-hidden="true">4</span>
-        <h3>Une vue sur tous vos clients</h3>
-        <p>Un seul espace pour voir vos clients et ce qui est en retard chez chacun : les revues à faire, les textes
-        à analyser, les actions ouvertes.</p>
+        <h3>Un suivi de la conformité réglementaire de vos clients en temps réel</h3>
+        <p>Textes non lus, taux de conformité et avancement du plan d'actions : le tableau de bord de vos clients se met à jour dès qu'ils avancent.</p>
       </li>
     </ul>
   </div>
