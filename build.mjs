@@ -932,6 +932,35 @@ function carresCategories() {
         <span class="etiq">${esc(CATEGORIES_TABLEAU[cl])}</span><span class="grand" data-n-cat="${cl}">0</span><span class="precision">texte(s)</span></button>`).join("")}
     </div>`;
 }
+/* La date d'application d'un texte (4 novembre 2026, demande d'Axel) :
+   lue dans le texte officiel lui-même, jamais devinée. On cherche « entre en
+   vigueur le… », « à compter du… », « prend effet le… » et « le lendemain de
+   sa publication ». Rien de trouvé : on le dit. */
+const MOIS_FR = { janvier: 1, "février": 2, fevrier: 2, mars: 3, avril: 4, mai: 5, juin: 6, juillet: 7, "août": 8, aout: 8,
+  septembre: 9, octobre: 10, novembre: 11, "décembre": 12, decembre: 12 };
+function applicationDuTexte(t) {
+  const corps = `${t.corps || ""} ${t.nota || ""}`.replace(/\s+/g, " ");
+  if (t.genre !== "texte") return { etiquette: "—", classe: "" };
+  if (corps.trim().length < 40) return { etiquette: "Voir le texte officiel", classe: "" };
+  const re = new RegExp("(entre(?:nt)? en vigueur|prend(?:ront|ra|nent)? effet|sont applicables|est applicable|s.appliqu\\w*)[^.;]{0,120}?" +
+    "(?:le|à compter du|à partir du|au)\\s+(1\\s?er|\\d{1,2})\\s+(" + Object.keys(MOIS_FR).join("|") + ")\\s+(\\d{4})", "i");
+  const m = re.exec(corps);
+  if (m) {
+    const iso = `${m[4]}-${String(MOIS_FR[m[3].toLowerCase()]).padStart(2, "0")}-${String(parseInt(m[2], 10)).padStart(2, "0")}`;
+    return { iso, etiquette: dateFr(iso), classe: iso > new Date().toISOString().slice(0, 10) ? "app-venir" : "app-vigueur" };
+  }
+  if (/entre(?:nt)? en vigueur le lendemain de (?:sa|leur) publication/i.test(corps)) {
+    const d = new Date(`${t.dateTexte || t.date}T12:00:00Z`); d.setUTCDate(d.getUTCDate() + 1);
+    const iso = d.toISOString().slice(0, 10);
+    return { iso, etiquette: dateFr(iso), precision: "lendemain de la publication", classe: "app-vigueur" };
+  }
+  if (/en vigueur à (?:une|la) date fixée par/i.test(corps)) return { etiquette: "Date fixée par un texte à venir", classe: "app-venir" };
+  return { etiquette: "Non précisée dans le texte", classe: "" };
+}
+const celluleApplication = (a) => `<td data-titre="Application">${a.iso ? `<time datetime="${esc(a.iso)}">${esc(a.etiquette)}</time>` : `<span class="app-texte">${esc(a.etiquette)}</span>`}` +
+  `${a.classe === "app-venir" ? '<span class="etat-date app-venir">À venir</span>' : a.classe === "app-vigueur" ? '<span class="etat-date app-vigueur">En vigueur</span>' : ""}` +
+  `${a.precision ? `<span class="precision">${esc(a.precision)}</span>` : ""}</td>`;
+
 function tableauTextesPlan(V, C, LIENS, plan, JO) {
   const categorie = (ids) => {
     const parCat = {};
@@ -965,6 +994,7 @@ function tableauTextesPlan(V, C, LIENS, plan, JO) {
       <td data-titre="Catégorie">${categorie(ids)}</td>
       <td data-titre="Référence et lien"><a href="texte/${slug(ref)}.html">${esc(ref)}</a>
         <a class="lien-officiel" href="${esc(L.url)}" target="_blank" rel="noopener">${esc(intituleDuLien(L))} ${sortant}</a></td>
+      <td data-titre="Application"><span class="app-texte">En vigueur</span></td>
       <td data-titre="Lu"><label class="case-lu"><input type="checkbox" class="lu" aria-label="Texte lu"><span>Lu</span></label></td>
       <td data-titre="Applicable"><select class="applicable" aria-label="Ce texte est-il applicable ?"><option value="">À décider</option><option value="applicable">Oui</option><option value="sans_objet">Non</option></select><span class="precision applicable-etat"></span></td>
     </tr>` };
@@ -981,6 +1011,7 @@ function tableauTextesPlan(V, C, LIENS, plan, JO) {
       <td data-titre="Catégorie">${categorie(ids)}</td>
       <td data-titre="Référence et lien"><span class="marque-neuf marque-nouveau" hidden>Nouveau texte</span>${lien ? `<a href="${esc(lien)}" target="_blank" rel="noopener">${esc(t.titre)}</a>` : esc(t.titre)}
         ${lien ? `<a class="lien-officiel" href="${esc(lien)}" target="_blank" rel="noopener">${/legifrance\.gouv\.fr/.test(lien) ? "Légifrance" : esc(t.sourceNom || "Voir chez la source")} ${sortant}</a>` : ""}</td>
+      ${celluleApplication(applicationDuTexte(t))}
       <td data-titre="Lu"><label class="case-lu"><input type="checkbox" class="lu" aria-label="Texte lu"><span>Lu</span></label></td>
       <td data-titre="Applicable"><select class="applicable" aria-label="Ce texte est-il applicable ?"><option value="">À décider</option><option value="applicable">Oui</option><option value="sans_objet">Non</option></select><span class="precision applicable-etat"></span></td>
     </tr>` };
@@ -1001,6 +1032,7 @@ function tableauTextesPlan(V, C, LIENS, plan, JO) {
       <td data-titre="Catégorie">${categorie(ids)}</td>
       <td data-titre="Référence et lien"><a href="code/${esc(m.id)}.html">${esc(nom)}</a>
         <span class="precision">${esc(m.chemin[m.chemin.length - 1] || "")} · ${vig.length} article${vig.length > 1 ? "s" : ""} en vigueur</span></td>
+      ${(() => { const auj = new Date().toISOString().slice(0, 10); const fut = m.articles.filter((x) => x.depuis && x.depuis > auj).map((x) => x.depuis).sort()[0]; return fut ? celluleApplication({ iso: fut, etiquette: dateFr(fut), classe: "app-venir", precision: "modification programmée" }) : '<td data-titre="Application"><span class="app-texte">En vigueur</span></td>'; })()}
       <td data-titre="Lu"><label class="case-lu"><input type="checkbox" class="lu" aria-label="Texte lu"><span>Lu</span></label></td>
       <td data-titre="Applicable"><select class="applicable" aria-label="Ce texte est-il applicable ?"><option value="">À décider</option><option value="applicable">Oui</option><option value="sans_objet">Non</option></select><span class="precision applicable-etat"></span></td>
     </tr>` };
@@ -1025,7 +1057,7 @@ function tableauTextesPlan(V, C, LIENS, plan, JO) {
     </div>
     <div class="defile-tableau">
     <table class="tableau-plan tableau-textes-plan" data-export="veille-reglementaire" data-titre-export="Ma veille réglementaire">
-      <thead><tr><th scope="col">Date</th><th scope="col">Catégorie</th><th scope="col">Référence et lien</th><th scope="col">Lu</th><th scope="col">Applicable</th></tr></thead>
+      <thead><tr><th scope="col">Date</th><th scope="col">Catégorie</th><th scope="col">Référence et lien</th><th scope="col">Application</th><th scope="col">Lu</th><th scope="col">Applicable</th></tr></thead>
       <tbody>${toutes.map((x) => x.html(touche(x.ids))).join("\n")}</tbody>
     </table>
     </div>

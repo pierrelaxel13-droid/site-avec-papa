@@ -4340,3 +4340,10 @@ main .lecture, main .note-source, main li, main p {
   .heros .rangee.heros-actions > .bouton { grid-column: 1 / -1 !important; }
   .rail-item { margin-inline: 0 !important; width: 100%; }
 }
+
+/* Colonne « Application » (4 novembre 2026). */
+.etat-date.app-venir { background: var(--ambre-fond); color: var(--ambre); }
+.etat-date.app-vigueur { background: var(--vert-fond); color: var(--vert); }
+.tableau-plan .app-texte { color: var(--encre-douce); font-size: .88rem; }
+.tableau-textes-plan td[data-titre="Application"] { white-space: nowrap; }
+@media (max-width: 47.99rem) { .tableau-textes-plan td[data-titre="Application"] { white-space: normal; } }
