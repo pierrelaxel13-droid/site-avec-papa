@@ -2957,7 +2957,7 @@ function pageConsultants() {
     <p class="rangee rangee-centre">
       <a class="bouton bouton-accent" href="compte/creer.html?type=cabinet">Créer mon compte consultant</a>
       <a class="bouton bouton-sobre" href="demo/cabinet.html">Voir la démonstration</a>
-      <a class="bouton bouton-sobre" href="#grille">Voir la grille</a>
+      <a class="bouton bouton-sobre" href="abonnement.html#consultants">Voir les tarifs</a>
     </p>
   </div>
 </section>
@@ -3020,27 +3020,6 @@ function pageConsultants() {
     </ul>
   </div>
 </section>
-
-<section class="section section-tein" id="grille">
-  <div class="enveloppe">
-    <h2 class="titre-section">La grille, par client suivi</h2>
-    <p class="intro titre-section">Un prix par client et par mois, dégressif. Chaque client a la formule
-    « ${esc(direct.l)} ». Prix affichés, sans devis.</p>
-    <div class="formules">
-      ${O.paliers.map((p) => `<article class="formule${p === palier ? " mise-en-avant" : ""}" data-paraitre>
-        <span class="etiq">${p.a ? `De ${p.de} à ${p.a} clients` : `${p.de} clients et plus`}</span>
-        <p class="prix"><span class="grand">${esc(eur(p.mois))}</span> <span class="etiq">par client et par mois</span></p>
-        <ul class="formule-donne">
-          <li>La formule ${esc(direct.l)} pour chaque client</li>
-          <li>L'espace consultant : le tableau de bord de tous vos clients (textes non lus, conformité, avancement du plan d'actions)</li>
-          <li>${p.blanche ? "Votre marque : logo, nom, couleurs, exports PDF (en préparation)" : "Sans marque blanche (dès 6 clients)"}</li>
-        </ul>
-      </article>`).join("\n      ")}
-    </div>
-  </div>
-</section>
-
-
 
 <section class="section section-tein">
   <div class="enveloppe">
@@ -4558,7 +4537,7 @@ function pageCabinet() {
         de vos clients ; ils s'ouvrent avec l'abonnement.</p>
         <p class="rangee" style="margin-top:var(--t3)">
           <a class="bouton bouton-accent" id="cabinet-demander" href="mailto:${esc(SITE.courriel)}">Demander l'ouverture</a>
-          <a class="bouton bouton-sobre" href="../consultants.html#grille">Voir les tarifs</a>
+          <a class="bouton bouton-sobre" href="../abonnement.html#consultants">Voir les tarifs</a>
         </p>
       </div>
       <section id="cabinet-vos-clients" class="cs-bloc" aria-labelledby="cs-t-bord" hidden>
