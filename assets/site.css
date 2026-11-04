@@ -4241,3 +4241,11 @@ main .lecture, main .note-source, main li, main p {
 .auth-liste span { font-size: .88rem; color: var(--encre-douce); line-height: 1.5; }
 .auth-note { margin: 0; padding: .8rem 1.25rem 1rem; border-top: 1px solid var(--filet); font-size: .8rem; color: var(--encre-douce); }
 .auth-uni .carte-connexion.auth-carte { padding: 0; border: 0; box-shadow: none; background: none; border-radius: 0; }
+
+/* Encadrés d'information (4 novembre 2026, « je n'aime pas la couleur marron ») :
+   ils étaient en ambre, qui vire au brun en mode sombre. Ils prennent la
+   teinte du site ; l'ambre reste aux seules alertes (retards). */
+.reserve { background: var(--accent-clair); border-left: 3px solid var(--accent); color: var(--encre); }
+.reserve a { color: var(--accent-fonce); }
+.reserve.reserve-ok { border-left-color: var(--vert); }
+.rg-note { border-left-color: var(--accent); }
