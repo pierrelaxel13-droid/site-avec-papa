@@ -3662,6 +3662,7 @@ ${bandeAvis(AVIS)}
 <section class="section section-tein">
   <div class="enveloppe">
     <h2 class="titre-section">Pourquoi choisir Vigie réglementaire</h2>
+    <p class="intro titre-section">Un outil simple, ludique et facile d'utilisation pour assurer votre veille réglementaire.</p>
     <ul class="raisons raisons-deux">
       <li class="raison" data-paraitre>
         <span class="numero" aria-hidden="true">1</span>
