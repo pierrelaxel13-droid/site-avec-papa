@@ -2810,6 +2810,8 @@ function appReglages(V, D, NAF, METIERS) {
                  placeholder="1" inputmode="numeric">`)}
         ${ligne("e-siret", "Numéro SIRET", `<input type="text" id="e-siret" data-champ="siret" inputmode="numeric" autocomplete="off"
                  placeholder="14 chiffres" maxlength="20">`, `<p class="rg-aide" id="e-siret-aide"></p>`)}
+        ${ligne("e-tva", "Numéro de TVA intracommunautaire", `<input type="text" id="e-tva" data-champ="tva" autocomplete="off" spellcheck="false"
+                 placeholder="FR + 11 caractères" maxlength="20">`, `<p class="rg-aide" id="e-tva-aide"></p>`)}
         <div class="rg-ligne">
           <span class="rg-libelle">Certifications obtenues ou visées</span>
           <div class="rg-champ certifs">

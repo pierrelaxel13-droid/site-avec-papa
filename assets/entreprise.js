@@ -390,6 +390,39 @@
         : "Format correct.";
     }
     if (siret) siret.addEventListener("input", verifierSiret);
+    /* Le numéro de TVA intracommunautaire (4 novembre 2026) : en France,
+       FR + une clé de deux chiffres + le SIREN. La clé se calcule depuis le
+       SIREN : on propose le numéro, on ne l'impose pas. */
+    var tva = $("#e-tva"), tvaAide = $("#e-tva-aide");
+    function tvaDuSiren(sirenTexte) {
+      if (!/^\d{9}$/.test(sirenTexte)) return "";
+      var cle = (12 + 3 * (Number(sirenTexte) % 97)) % 97;
+      return "FR" + (cle < 10 ? "0" : "") + cle + sirenTexte;
+    }
+    function verifierTva() {
+      if (!tva || !tvaAide) return;
+      var v = tva.value.replace(/\s+/g, "").toUpperCase();
+      var n = siret ? siret.value.replace(/\s+/g, "") : "";
+      var calcule = /^\d{14}$/.test(n) && luhn(n.slice(0, 9)) ? tvaDuSiren(n.slice(0, 9)) : "";
+      tvaAide.textContent = "";
+      if (!v && calcule) {
+        tvaAide.appendChild(document.createTextNode("D'après votre SIRET : " + calcule + ". "));
+        var b = document.createElement("button");
+        b.type = "button"; b.className = "lien-nu"; b.textContent = "Utiliser ce numéro";
+        b.addEventListener("click", function () { tva.value = calcule; verifierTva(); });
+        tvaAide.appendChild(b);
+        return;
+      }
+      if (!v) return;
+      if (/^FR/.test(v)) {
+        tvaAide.textContent = !/^FR[0-9A-Z]{2}\d{9}$/.test(v) ? "Un numéro français s'écrit FR, deux caractères, puis les 9 chiffres du SIREN."
+          : calcule && v !== calcule ? "Ce numéro ne correspond pas au SIREN de votre SIRET (" + calcule + ") : vérifiez-le."
+          : "Format correct.";
+      } else {
+        tvaAide.textContent = /^[A-Z]{2}[0-9A-Z+*]{2,13}$/.test(v) ? "Format correct." : "Un numéro de TVA commence par le code du pays (FR pour la France).";
+      }
+    }
+    if (tva) { tva.addEventListener("input", verifierTva); if (siret) siret.addEventListener("input", verifierTva); }
     var etat = $("#e-etat");
     var coches = {};
 
@@ -556,6 +589,7 @@
       chiffres.forEach(function (c) { if (plus[c.getAttribute("data-champ")] != null) c.value = plus[c.getAttribute("data-champ")]; });
       certifs.forEach(function (c) { c.checked = (plus.certifs || []).indexOf(c.getAttribute("data-certif")) !== -1; });
       verifierSiret();
+      verifierTva();
     }
 
     poserQuestions();
