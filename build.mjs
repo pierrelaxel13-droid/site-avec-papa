@@ -3565,7 +3565,7 @@ function pageAccueil(V, D, METIERS, ECRANS, C = null, NAF = null, SOURCES = [], 
         <p>L'application est ouverte en démonstration, avec une entreprise et des textes d'essai. Vous choisissez
         une formule et vous voyez exactement les écrans qu'elle ouvre — ceux qu'elle n'ouvre pas vous le disent.
         Vous pouvez en changer autant de fois que vous voulez.</p>
-        <p><a href="abonnement.html#essayer">Essayer la démonstration</a>.</p>`],
+        <p><a href="abonnement.html#essayer">Démarrer une démonstration</a>.</p>`],
       ["Comment on démarre ?",
        `<p><strong>En trois étapes.</strong></p>
         <ul>
@@ -3641,7 +3641,7 @@ function pageAccueil(V, D, METIERS, ECRANS, C = null, NAF = null, SOURCES = [], 
     </p>
     <p class="rangee rangee-centre heros-actions">
       <a class="bouton bouton-accent" href="abonnement.html">Démarrer un abonnement</a>
-      <a class="bouton bouton-sobre" href="abonnement.html#essayer">Essayer la démonstration</a>
+      <a class="bouton bouton-sobre" href="abonnement.html#essayer">Démarrer une démonstration</a>
     </p>
     ${blocCollecte(JO)}
 
@@ -4179,6 +4179,8 @@ function pageAbonnement(V) {
       </article>`).join("\n      ")}
     </div>
 
+    <p class="note-source abo-promo">Vous avez un code promo ? Vous le saisissez à l'étape du paiement : la réduction s'applique au prix mensuel ou annuel, selon le code.</p>
+
     ${paiementComplet() ? `<p class="reserve reserve-ok" style="margin-top:var(--t5)">
       <strong>Paiement en ligne, sécurisé par Stripe.</strong>
       Par carte bancaire ou par prélèvement SEPA, chaque année ou chaque mois.
@@ -4628,6 +4630,14 @@ function pageSouscrire() {
             <span><strong>Mensuel</strong><span class="precision" id="paie-prix-mois"></span></span></label>
         </div>
         <dl class="paie-total" id="paie-total"></dl>
+        <form class="paie-promo" id="paie-promo" novalidate>
+          <label for="paie-code">Code promo</label>
+          <div class="paie-promo-ligne">
+            <input type="text" id="paie-code" maxlength="40" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="Votre code">
+            <button type="submit" class="bouton bouton-sobre">Appliquer</button>
+          </div>
+          <p class="precision" id="paie-promo-dit" role="status"></p>
+        </form>
         <p class="precision">Renouvelé automatiquement à chaque échéance ; résiliable à tout moment pour l'échéance suivante.</p>
       </div>
 

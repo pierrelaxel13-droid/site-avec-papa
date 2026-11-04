@@ -68,9 +68,34 @@
     }
     b.textContent = "Continuer vers le paiement sécurisé";
     b.href = pret ? lien + (lien.indexOf("?") === -1 ? "?" : "&") + "client_reference_id=" + encodeURIComponent(entreprise.entreprise_id) +
-      (courriel ? "&prefilled_email=" + encodeURIComponent(courriel) : "") : "#";
+      (courriel ? "&prefilled_email=" + encodeURIComponent(courriel) : "") +
+      (promo ? "&prefilled_promo_code=" + encodeURIComponent(promo) : "") : "#";
     dit.textContent = !entreprise ? "" : !$("#paie-cgv").checked ? "Cochez l'acceptation des conditions générales de vente pour continuer." : "";
   }
+
+  /* Le code promo (4 novembre 2026) : il part vers la page de paiement
+     Stripe (prefilled_promo_code), qui le vérifie et affiche la réduction
+     avant toute validation. Les codes se créent dans Stripe (Produits →
+     Coupons → Codes promotionnels) : réduction sur la première échéance, sur
+     quelques mois ou sur toute la durée de l'abonnement. */
+  var promo = (params.get("code") || "").trim().toUpperCase().replace(/[^A-Z0-9_-]/g, "").slice(0, 40);
+  function direPromo() {
+    $("#paie-promo-dit").textContent = promo
+      ? "Code « " + promo + " » retenu : la réduction s'affiche sur la page de paiement sécurisée, avant que vous validiez."
+      : "";
+  }
+  if (promo) $("#paie-code").value = promo;
+  direPromo();
+  $("#paie-promo").addEventListener("submit", function (e) {
+    e.preventDefault();
+    var v = $("#paie-code").value.trim().toUpperCase();
+    if (v && !/^[A-Z0-9_-]{2,40}$/.test(v)) {
+      $("#paie-promo-dit").textContent = "Un code promo ne contient que des lettres, des chiffres, des tirets ou des traits bas.";
+      return;
+    }
+    promo = v; $("#paie-code").value = v;
+    direPromo(); bouton();
+  });
 
   [].forEach.call(document.querySelectorAll('input[name="paie-periode"]'), function (r) {
     r.addEventListener("change", function () { periode = r.value; peindre(); });

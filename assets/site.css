@@ -4415,3 +4415,14 @@ details.analyse > summary:focus-visible { outline: 2px solid var(--accent); outl
   .partage-liens { justify-content: flex-start; }
   .partage-lien span { font-size: .84rem; }
 }
+
+/* --- Code promo (paiement, 4 novembre 2026) -------------------------------- */
+.paie-promo { margin: .25rem 0 .75rem; }
+.paie-promo label { display: block; font-size: .85rem; font-weight: 600; margin-bottom: .3rem; }
+.paie-promo-ligne { display: flex; gap: .5rem; }
+.paie-promo input { flex: 1 1 auto; min-width: 0; padding: .5rem .7rem; border: 1px solid var(--filet-fort); border-radius: 8px;
+  background: var(--papier); color: var(--encre); font: inherit; text-transform: uppercase; letter-spacing: .04em; }
+.paie-promo input::placeholder { text-transform: none; letter-spacing: 0; }
+.paie-promo .bouton { padding: .5rem 1rem; }
+.paie-promo .precision:empty { display: none; }
+.abo-promo { text-align: center; margin-top: var(--t4); }
