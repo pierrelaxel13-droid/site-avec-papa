@@ -4705,3 +4705,16 @@ ol.etapes-carres p { margin: 0; color: var(--encre-douce); text-align: center; m
 @media (min-width: 48rem) and (max-width: 59.99rem) {
   .rail-item:last-child:nth-child(odd) { grid-column: 1 / -1; }
 }
+
+/* --- Le rail de l'accueil : chaque bloc centré, partout (4 novembre 2026) --
+   Un bloc de grille avec « margin-inline: auto » se rétrécit à son contenu :
+   le premier était plus étroit que les autres, donc décalé. */
+.rail-item { margin-inline: 0 !important; text-align: center; }
+.rail-item .chiffre { display: block; text-align: center; }
+@media (max-width: 47.99rem) {
+  .rail-item { display: block !important; text-align: center !important; padding: 1.1rem 0 !important; }
+  .rail-item .chiffre { font-size: 2rem; line-height: 1.1; }
+  .rail-item .legende, .rail-item .legende-detail { text-align: center !important; margin-inline: auto !important; max-width: 34ch !important; }
+  .rail-item .legende { margin-top: .35rem !important; }
+  .rail-item .legende-detail { margin-top: .3rem !important; }
+}
