@@ -937,10 +937,10 @@ function carresCategories() {
    l'ouvrir. Pas d'actions à entreprendre : elles sont dans le plan
    d'actions. Rien n'y est inventé : tout est lu dans le texte officiel (ou
    dans la fiche du texte de référence, contenu/textes.js). */
-function analyseCadre(lignes) {
+function analyseCadre(lignes, note = "") {
   return `<details class="analyse"><summary>Analyse synthétique</summary><div class="analyse-corps">
         <dl class="analyse-champs">${lignes.filter(Boolean).map(([t, v]) => `<div><dt>${esc(t)}</dt><dd>${v}</dd></div>`).join("")}</dl>
-        <p class="analyse-note">À retenir, lu dans le texte officiel. Seul le texte officiel fait foi ; ne constitue pas un conseil juridique.</p>
+        <p class="analyse-note">${note ? esc(note) + " " : ""}À retenir, lu dans le texte officiel. Seul le texte officiel fait foi ; ne constitue pas un conseil juridique.</p>
       </div></details>`;
 }
 const majuscule = (x) => (x ? x.charAt(0).toUpperCase() + x.slice(1) : "");
@@ -1011,17 +1011,36 @@ function sectionsDuTexte(ref) {
     derniere ? ["Dernière évolution", `article ${esc(derniere.num)}, en vigueur depuis le ${esc(dateFr(derniere.depuis))}`] : null
   ].filter(Boolean);
 }
+/* La même structure partout (4 novembre 2026, demande d'Axel) : Nature,
+   Objet, Ce que dit le texte, Textes et articles cités, Publication,
+   Application. Une rubrique sans information le dit, sans rien inventer. */
+const SANS = {
+  nature: "Non précisée",
+  objet: "Voir le titre et le texte officiel, par le lien ci-dessus.",
+  dit: "Le relevé ne donne que le titre de ce texte : son contenu se lit à la source officielle, par le lien ci-dessus.",
+  cites: "Aucun texte ni article cité dans ce que nous avons relevé.",
+  publication: "Non précisée",
+  application: "Non précisée dans le texte"
+};
+function analyseStructuree(r, note = "") {
+  const v = (k) => r[k] || esc(SANS[k]);
+  return analyseCadre([
+    ["Nature", v("nature")], ["Objet", v("objet")], ["Ce que dit le texte", v("dit")],
+    ["Textes et articles cités", v("cites")], ["Publication", v("publication")], ["Application", v("application")]
+  ], note);
+}
 function analyseRef(V, ref, ids) {
   const f = FICHES[ref] || null;
-  if (!f) return analyseCadre([["À retenir", "La fiche de ce texte est en préparation : son contenu se lit à la source officielle, par le lien ci-dessus."]]);
-  return analyseCadre([
-    f.nature ? ["Nature", esc(f.nature)] : null,
-    f.porte ? ["Porte sur", esc(f.porte)] : null,
-    f.qui ? ["Qui est concerné", esc(f.qui)] : null,
-    f.exige && f.exige.length ? ["Ce que prévoit le texte", liste(f.exige)] : null,
-    ...sectionsDuTexte(ref),
-    f.valide === false ? ["Statut", "Fiche à faire relire par un consultant"] : null
-  ]);
+  const secs = sectionsDuTexte(ref);
+  const sec = (t) => (secs.find((x) => x[0] === t) || [])[1] || "";
+  return analyseStructuree({
+    nature: f && f.nature ? esc(f.nature) : "",
+    objet: f ? [f.porte ? `<p>${esc(f.porte)}</p>` : "", f.qui ? `<p>Concerne : ${esc(f.qui)}</p>` : ""].join("") : "",
+    dit: f && f.exige && f.exige.length ? liste(f.exige) : f ? "" : esc("La fiche de ce texte est en préparation : son contenu se lit à la source officielle, par le lien ci-dessus."),
+    cites: secs.length ? sec("Sections suivies") + (sec("Articles suivis") ? `<p>${sec("Articles suivis")}</p>` : "") : esc("Les articles se lisent à la source officielle, par le lien ci-dessus."),
+    publication: "Version consolidée, lue à la source officielle" + (sec("Dernière évolution") ? ` · dernière évolution : ${sec("Dernière évolution")}` : ""),
+    application: "En vigueur"
+  }, f && f.valide === false ? "Fiche à faire relire par un consultant." : "");
 }
 function analyseJO(V, t, ids) {
   const c = String(t.corps || "").replace(/\r/g, "");
@@ -1035,8 +1054,6 @@ function analyseJO(V, t, ids) {
   // Ce qu'il modifie : « L'arrêté du … susvisé est ainsi modifié ».
   const mm = /((?:l'|le |la )(?:article [^.:;]{1,40}? d[eu]s? |annexe [^.:;]{0,30}? d[eu]s? )?(?:arrêté|décret|ordonnance|loi|code|règlement)[^.:;]{0,120}?)\s+(?:susvisée?\s+)?(?:est|sont) ainsi modifiée?s?/i.exec(c);
   const modifie = mm ? majuscule(mm[1].replace(/\s+susvisée?$/i, "").replace(/(\d) er\b/g, "$1er").trim()) : "";
-  // Un texte qui ne fait que réécrire un autre (« … est ainsi modifié : les mots … ») : sa
-  // lettre n'apprend rien ; l'objet et le texte modifié suffisent.
   const modifs = modifications(c);
   const dit = /est ainsi modifiée?\s*:/i.test(c.slice(0, 400)) && (objet || objetTitre) ? { resume: "", paras: [], puces: [] } : cequeDit(c);
   const type = typeDuTexte(t);
@@ -1044,19 +1061,17 @@ function analyseJO(V, t, ids) {
   const signe = (/\bdu\s+(\d{1,2}(?:er)?\s+[a-zéû]+\s+\d{4})/i.exec(String(t.titre || "").replace(/^CELEX:\S+\s*/, "")) || [])[1] || "";
   const source = String(t.sourceNom || "").split(" — ")[0];
   const publie = t.dateTexte || t.date;
-  return analyseCadre([
-    type ? ["Nature", esc(type)] : null,
-    objet || objetTitre ? ["Objet", esc(objet || objetTitre)] : null,
-    publics ? ["Publics concernés", esc(publics)] : null,
-    dit.paras.length ? ["Ce que dit le texte", dit.paras.map((p) => `<p>${esc(p)}</p>`).join("") + (dit.puces.length ? liste(dit.puces) : "")]
-      : dit.puces.length ? ["Ce que dit le texte", liste(dit.puces)] : null,
-    modifie ? ["Texte modifié", esc(modifie)] : null,
-    modifs.length ? ["Principales modifications", liste(modifs)] : null,
-    cites.length ? ["Textes et articles cités", liste(cites)] : null,
-    publie || source ? ["Publication", [signe ? `signé le ${esc(signe)}` : "", publie ? `publié le ${esc(dateFr(publie))}` : "", source ? `${/^(signé|publié)/.test(signe || publie) ? "" : ""}source : ${esc(source)}` : ""].filter(Boolean).join(" · ")] : null,
-    !dit.resume && !dit.puces.length && !objet && !objetTitre ? ["À retenir", "Le relevé ne donne que le titre de ce texte : son contenu se lit à la source officielle, par le lien ci-dessus."] : null,
-    t.genre === "texte" ? ["Application", esc(app.etiquette) + (app.precision ? ` (${esc(app.precision)})` : "")] : null
-  ]);
+  const objetTexte = objet || objetTitre || majuscule(coupe(String(t.titre || "").replace(/^CELEX:\S+\s*/, "").trim(), 300));
+  const ditHtml = dit.paras.map((p) => `<p>${esc(p)}</p>`).join("") + (dit.puces.length ? liste(dit.puces) : "") +
+    (modifie ? `<p>Texte modifié : ${esc(modifie)}</p>` : "") + (modifs.length ? `<p>Principales modifications :</p>${liste(modifs)}` : "");
+  return analyseStructuree({
+    nature: esc(type || "Texte officiel"),
+    objet: objetTexte || publics ? (objetTexte ? `<p>${esc(objetTexte)}</p>` : "") + (publics ? `<p>Publics concernés : ${esc(publics)}</p>` : "") : "",
+    dit: ditHtml,
+    cites: cites.length ? liste(cites) : "",
+    publication: majuscule([signe ? `signé le ${esc(signe)}` : "", publie ? `publié le ${esc(dateFr(publie))}` : "", source ? `source : ${esc(source)}` : ""].filter(Boolean).join(" · ")),
+    application: app && app.etiquette && app.etiquette !== "—" ? esc(app.etiquette) + (app.precision ? ` (${esc(app.precision)})` : "") : ""
+  });
 }
 function analyseCode(V, m, vig, ids) {
   const auj = new Date().toISOString().slice(0, 10);
@@ -1068,13 +1083,14 @@ function analyseCode(V, m, vig, ids) {
     const p = txt.split(/(?<=[a-zà-ÿ0-9)»]\.)\s+(?=[A-ZÀ-Ý])/)[0] || "";
     return p ? `Article ${x.num} : ${coupe(p, 320)}` : "";
   }).filter(Boolean);
-  return analyseCadre([
-    ["Section", esc(m.chemin.join(" › "))],
-    ["Articles en vigueur", `${vig.length} (articles ${esc(vig[0].num)} à ${esc(vig[vig.length - 1].num)})`],
-    debuts.length ? ["Ce que disent les articles", liste(debuts)] : null,
-    recents.length ? ["Dernières évolutions", recents.map((x) => `article ${esc(x.num)} le ${esc(dateFr(x.depuis))}`).join(" · ")] : null,
-    futurs.length ? ["Modifications programmées", futurs.map((x) => `article ${esc(x.num)} au ${esc(dateFr(x.depuis))}`).join(" · ")] : null
-  ]);
+  return analyseStructuree({
+    nature: esc(m.codeTitre ? `Section du ${m.codeTitre.charAt(0).toLowerCase()}${m.codeTitre.slice(1)}` : "Section de code"),
+    objet: esc(m.chemin.join(" › ")),
+    dit: debuts.length ? liste(debuts) : "",
+    cites: `${vig.length} article${vig.length > 1 ? "s" : ""} en vigueur (articles ${esc(vig[0].num)} à ${esc(vig[vig.length - 1].num)})`,
+    publication: "Version consolidée, lue à la source officielle" + (recents.length ? ` · dernières évolutions : ${recents.map((x) => `article ${esc(x.num)} le ${esc(dateFr(x.depuis))}`).join(", ")}` : ""),
+    application: "En vigueur" + (futurs.length ? ` · modifications programmées : ${futurs.map((x) => `article ${esc(x.num)} au ${esc(dateFr(x.depuis))}`).join(", ")}` : "")
+  });
 }
 
 /* La date d'application d'un texte (4 novembre 2026, demande d'Axel) :
