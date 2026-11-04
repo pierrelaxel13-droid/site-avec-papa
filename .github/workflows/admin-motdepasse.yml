@@ -1,0 +1,52 @@
+# ==========================================================================
+# Vigie réglementaire — réinitialiser le mot de passe de l'administrateur
+# --------------------------------------------------------------------------
+# À lancer à la main (Actions → « Mot de passe administrateur » → Run).
+# Le robot lit dans la base les comptes inscrits comme administrateurs du
+# service (prive.administrateurs) et leur fait envoyer, par Supabase, l'e-mail
+# « mot de passe oublié ». L'administrateur choisit son nouveau mot de passe
+# par le lien reçu : le mot de passe ne passe jamais par GitHub.
+# Les adresses sont masquées dans le journal (le dépôt est public).
+# ==========================================================================
+name: Mot de passe administrateur
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  envoyer:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: E-mail de réinitialisation aux administrateurs
+        env:
+          SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+          API: https://denpxyqbvjcwsbxjtqpd.supabase.co
+          CLE: sb_publishable_zJXo39cN5hEAdCQFwm5DkA_ru99Xodj   # publique : elle est dans le site
+          RETOUR: https://vigie-reglementaire.fr/compte/
+        run: |
+          if [ -z "$SUPABASE_DB_URL" ]; then echo "::error::Le secret SUPABASE_DB_URL manque."; exit 1; fi
+          adresses=$(psql "$SUPABASE_DB_URL" -tA -c "select u.email from prive.administrateurs a join auth.users u on u.id = a.user_id where u.email is not null order by u.email")
+          if [ -z "$adresses" ]; then
+            echo "::error::Aucun compte n'est inscrit comme administrateur du service dans la base."
+            exit 1
+          fi
+          n=0
+          while IFS= read -r adresse; do
+            [ -z "$adresse" ] && continue
+            echo "::add-mask::$adresse"
+            masque=$(printf '%s' "$adresse" | sed -E 's/^(.).*@(.).*\.([a-z]+)$/\1***@\2***.\3/')
+            corps=$(printf '{"email":"%s"}' "$adresse")
+            code=$(curl -sS -o /tmp/r.txt -w '%{http_code}' -X POST "$API/auth/v1/recover?redirect_to=$(printf %s "$RETOUR" | jq -sRr @uri)" \
+              -H "apikey: $CLE" -H "Content-Type: application/json" -d "$corps")
+            if [ "$code" -ge 200 ] && [ "$code" -lt 300 ]; then
+              echo "ok : e-mail de réinitialisation envoyé à $masque"; n=$((n+1))
+            else
+              echo "::error::Envoi refusé pour $masque (HTTP $code) : $(head -c 200 /tmp/r.txt)"
+            fi
+          done <<< "$adresses"
+          echo "$n e-mail(s) envoyé(s). Ouvrez le lien reçu (valable une heure) pour choisir le nouveau mot de passe."
+          [ "$n" -gt 0 ]
