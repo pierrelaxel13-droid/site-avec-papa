@@ -28,7 +28,7 @@
    "id": "travail",
    "nom": "Ministère du Travail — actualités",
    "entrees": 50,
-   "retenus": 3,
+   "retenus": 4,
    "souci": null
   },
   {
@@ -166,9 +166,23 @@
   },
   {
    "id": "ansm",
-   "nom": "ANSM — actualités",
-   "entrees": 0,
+   "nom": "ANSM — informations de sécurité",
+   "entrees": 3,
    "retenus": 0,
+   "souci": null
+  },
+  {
+   "id": "asnr",
+   "nom": "ASNR — sûreté nucléaire et radioprotection",
+   "entrees": 10,
+   "retenus": 0,
+   "souci": null
+  },
+  {
+   "id": "agriculture",
+   "nom": "Ministère de l'Agriculture — actualités",
+   "entrees": 30,
+   "retenus": 1,
    "souci": null
   },
   {
@@ -261,6 +275,54 @@
    "dateTexte": "2026-11-02",
    "vuLe": "2026-11-04",
    "vuA": "2026-11-04T01:25:39Z"
+  },
+  {
+   "source": "agriculture",
+   "sourceNom": "Ministère de l'Agriculture — actualités",
+   "genre": "actualite",
+   "id": "https://agriculture.gouv.fr/laboratoires-officiels-et-reconnus-en-sante-animale",
+   "titre": "Laboratoires officiels et reconnus en santé animale",
+   "nature": "Publication officielle",
+   "date": "2026-11-04",
+   "corps": "Les services de contrôle du ministère en charge de l’agriculture s’appuient sur un réseau de laboratoires officiels, constitué principalement par les laboratoires nationaux de référence (LNR) et les laboratoires d’analyses agréés.",
+   "lien": "https://agriculture.gouv.fr/laboratoires-officiels-et-reconnus-en-sante-animale",
+   "domaines": [
+    {
+     "id": "agri",
+     "nom": "Agriculture, pêche et santé des végétaux et animaux",
+     "mots": [
+      "sante animale"
+     ]
+    }
+   ],
+   "morceaux": 1,
+   "dateTexte": "",
+   "vuLe": "2026-11-04",
+   "vuA": "2026-11-04T13:18:15Z"
+  },
+  {
+   "source": "travail",
+   "sourceNom": "Ministère du Travail — actualités",
+   "genre": "actualite",
+   "id": "https://travail-emploi.gouv.fr/nouvelle-convention-relative-la-prevention-du-risque-routier-professionnel-et-des-tms-dans-le-secteur-du-transport-routier-de-marchandises-et-du-demenagement",
+   "titre": "Nouvelle convention relative à la prévention du risque routier professionnel et des TMS dans le secteur du transport routier de marchandises et du déménagement",
+   "nature": "Publication officielle",
+   "date": "2026-11-04",
+   "corps": "",
+   "lien": "https://travail-emploi.gouv.fr/nouvelle-convention-relative-la-prevention-du-risque-routier-professionnel-et-des-tms-dans-le-secteur-du-transport-routier-de-marchandises-et-du-demenagement",
+   "domaines": [
+    {
+     "id": "transport",
+     "nom": "Transport, logistique et marchandises dangereuses",
+     "mots": [
+      "transport routier de marchandises"
+     ]
+    }
+   ],
+   "morceaux": 0,
+   "dateTexte": "",
+   "vuLe": "2026-11-04",
+   "vuA": "2026-11-04T13:18:15Z"
   },
   {
    "source": "jorf",
