@@ -3931,13 +3931,13 @@ ${bandeAvis(AVIS)}
       </li>
       <li class="raison" data-paraitre>
         <span class="numero" aria-hidden="true">3</span>
-        <h3>Une équipe de consultants séniors</h3>
-        <p>Une équipe de consultants séniors à votre service.</p>
+        <h3>Une veille réglementaire individualisée</h3>
+        <p>Une veille adaptée à votre société : ${NAF ? `${NAF.codes.length} codes NAF` : `${V.divisions.length} familles de métiers`}, des questions sur les spécificités de votre société, pour une veille réglementaire individualisée.</p>
       </li>
       <li class="raison" data-paraitre>
         <span class="numero" aria-hidden="true">4</span>
-        <h3>Une veille réglementaire individualisée</h3>
-        <p>Une veille adaptée à votre société : ${NAF ? `${NAF.codes.length} codes NAF` : `${V.divisions.length} familles de métiers`}, des questions sur les spécificités de votre société, pour une veille réglementaire individualisée.</p>
+        <h3>Une équipe de consultants séniors</h3>
+        <p>Une équipe de consultants séniors à votre service.</p>
       </li>
     </ul>
   </div>
