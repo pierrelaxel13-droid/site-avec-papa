@@ -43,6 +43,8 @@ const SITE = {
   concepteur: "Clément Pierrel",
   bareme: "Veille réglementaire par secteur",
   courriel: "contact@pierrel-co.fr",
+  /* L'adresse publique du site : pour les liens de partage et l'aperçu sur les réseaux sociaux. */
+  adresseWeb: "https://pierrelaxel13-droid.github.io/site-avec-papa/",
   /* Le téléphone : vide tant qu'on n'a pas le vrai numéro. Vide, aucune ligne
      téléphone n'apparaît nulle part — un faux numéro est pire que pas de
      numéro. Pour l'ajouter : telephone "04 42 12 34 56", telephoneLien
@@ -390,6 +392,11 @@ function page({ titre, description, racine = "", zone = "public", actif = "", co
 ${zone === "app" ? '<meta name="robots" content="noindex">' : ""}
 <meta property="og:title" content="${esc(titre)}">
 <meta property="og:description" content="${esc(description)}">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="${esc(SITE.nom)} réglementaire">
+<meta property="og:locale" content="fr_FR">
+<meta property="og:image" content="${esc(SITE.adresseWeb)}assets/ecrans/bord.png">
+<meta name="twitter:card" content="summary_large_image">
 <link rel="icon" href="${a("assets/favicon.svg")}" type="image/svg+xml">
 <link rel="apple-touch-icon" href="${a("assets/icones/icone-apple.png")}">
 <link rel="manifest" href="${a("manifest.webmanifest")}">
@@ -3843,6 +3850,7 @@ ${bandeAvis(AVIS)}
      Chaque réponse commence par la réponse elle-même (oui, non, le chiffre),
      puis le détail. Elle dit ce qui est vrai aujourd'hui, y compris ce qui
      n'est pas encore en place. Repliées : on n'ouvre que celle qui intéresse. -->
+${sectionPartage()}
 ${SITE.offreConsultant ? `<section class="section">
   <div class="enveloppe">
     <div class="bloc-consultant">
@@ -3857,8 +3865,48 @@ ${SITE.offreConsultant ? `<section class="section">
   return page({
     titre: `${SITE.nom} — ${SITE.bareme}`,
     description: "Votre veille réglementaire tenue et prouvable : plan de veille, relevé des textes de votre métier, registre de preuves prêt pour l'audit.",
-    zone: "public", actif: "produit", corps, donneesPlan: true
+    zone: "public", actif: "produit", corps, donneesPlan: true, scripts: ["assets/partage.js"]
   });
+}
+
+/* --- Partager le site sur les réseaux sociaux (4 novembre 2026, demande
+   d'Axel) : de simples liens vers les pages de partage de chaque réseau.
+   Aucun script ni traceur tiers n'est chargé : rien ne part tant que
+   l'internaute ne clique pas. Sur téléphone, le bouton « Partager » ouvre
+   le partage du système (assets/partage.js). */
+function sectionPartage() {
+  const url = SITE.adresseWeb, e = encodeURIComponent;
+  const texte = `J'utilise ${SITE.nom} réglementaire pour suivre la veille réglementaire de mon entreprise : les textes qui s'appliquent, un plan d'actions et un registre de conformité.`;
+  const reseaux = [
+    ["LinkedIn", `https://www.linkedin.com/sharing/share-offsite/?url=${e(url)}`,
+      '<path d="M4.98 3.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5zM3 9h4v12H3zM9 9h3.8v1.7h.05c.53-1 1.83-2.05 3.77-2.05C20.6 8.65 21 11.2 21 14.5V21h-4v-5.8c0-1.4 0-3.2-1.95-3.2S12.8 13.5 12.8 15.1V21H9z"/>'],
+    ["Facebook", `https://www.facebook.com/sharer/sharer.php?u=${e(url)}`,
+      '<path d="M14 8.5V6.8c0-.8.5-1 1-1h2.5V2h-3.4C10.4 2 9.7 4.6 9.7 6.3v2.2H7.5V12h2.2v10H14V12h3l.4-3.5z"/>'],
+    ["X", `https://twitter.com/intent/tweet?text=${e(texte)}&url=${e(url)}`,
+      '<path d="M17.8 3h3.1l-6.8 7.7L22 21h-6.2l-4.9-6.4L5.3 21H2.2l7.3-8.3L2 3h6.4l4.4 5.8zm-1.1 16.2h1.7L7.4 4.7H5.6z"/>'],
+    ["WhatsApp", `https://wa.me/?text=${e(texte + " " + url)}`,
+      '<path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8s-.4-.1-.6.1-.7.8-.8 1-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.3-.4.3-.4.7-1.4.1-.2 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-.9 2.2 5.2 5.2 0 0 0 1.1 2.7 11.8 11.8 0 0 0 4.5 4c1.7.7 2.3.8 3.2.6.5-.1 1.5-.6 1.7-1.2s.2-1.1.2-1.2-.2-.2-.4-.3z"/>'],
+    ["E-mail", `mailto:?subject=${e(`${SITE.nom} réglementaire`)}&body=${e(texte + "\n\n" + url)}`,
+      '<rect x="3" y="5" width="18" height="14" rx="2" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M3 7l9 6 9-6" fill="none" stroke="currentColor" stroke-width="1.8"/>']
+  ];
+  return `<section class="section section-partage" id="partager">
+  <div class="enveloppe">
+    <div class="bloc-partage">
+      <div class="partage-texte">
+        <h2>Vous aimez ${esc(SITE.nom)} réglementaire&nbsp;? Faites-le savoir</h2>
+        <p>Partagez le site avec votre réseau : collègues, clients, fournisseurs ou partenaires.</p>
+      </div>
+      <ul class="partage-liens" role="list">
+        ${reseaux.map(([nom, href, icone]) => `<li><a class="partage-lien" href="${esc(href)}"${nom === "E-mail" ? "" : ' target="_blank" rel="noopener"'} aria-label="Partager sur ${esc(nom)}${nom === "E-mail" ? "" : " (nouvelle fenêtre)"}">
+          <svg viewBox="0 0 24 24" aria-hidden="true" fill="currentColor">${icone}</svg><span>${esc(nom)}</span></a></li>`).join("\n        ")}
+        <li><button type="button" class="partage-lien" data-copier-lien="${esc(url)}"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1"/><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/></svg><span>Copier le lien</span></button></li>
+        <li data-partage-natif hidden><button type="button" class="partage-lien partage-natif" data-partager="${esc(url)}" data-texte="${esc(texte)}"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="18" cy="5" r="2.5"/><circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="19" r="2.5"/><path d="M8.2 10.8l7.6-4.4M8.2 13.2l7.6 4.4"/></svg><span>Partager</span></button></li>
+      </ul>
+      <p class="partage-etat" role="status"></p>
+    </div>
+  </div>
+</section>
+`;
 }
 
 /* --- Nous contacter (3 novembre 2026) -----------------------------------------

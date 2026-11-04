@@ -4392,3 +4392,26 @@ details.analyse > summary:focus-visible { outline: 2px solid var(--accent); outl
   .export-barre .export-bouton { flex: 1 1 auto; justify-content: center; }
   .export-barre .export-etat { flex-basis: 100%; }
 }
+
+/* --- Partager le site (accueil, 4 novembre 2026) --------------------------- */
+.bloc-partage { display: grid; gap: 1rem 2rem; grid-template-columns: minmax(0, 1fr) auto; align-items: center;
+  padding: clamp(1.25rem, 3vw, 2rem); border: 1px solid var(--filet); border-radius: var(--rayon-carte, 16px);
+  background: linear-gradient(135deg, var(--accent-clair), var(--carte)); }
+.bloc-partage h2 { margin: 0 0 .35rem; font-size: var(--h3-site, 1.35rem); }
+.bloc-partage .partage-texte p { margin: 0; color: var(--encre-douce); }
+.partage-liens { display: flex; flex-wrap: wrap; gap: .5rem; margin: 0; padding: 0; list-style: none; justify-content: flex-end; }
+.partage-lien { display: inline-flex; align-items: center; gap: .45rem; padding: .5rem .85rem; border-radius: 999px;
+  border: 1px solid var(--filet-fort); background: var(--carte); color: var(--encre); font: inherit; font-size: .88rem; font-weight: 600;
+  text-decoration: none; cursor: pointer; }
+.partage-lien svg { width: 1.05rem; height: 1.05rem; flex: none; }
+.partage-lien:hover { border-color: var(--accent); color: var(--accent); }
+.partage-lien:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.partage-natif { background: var(--accent); border-color: var(--accent); color: #fff; }
+.partage-natif:hover { background: var(--accent-fonce); color: #fff; }
+.partage-etat { grid-column: 1 / -1; margin: 0; font-size: .85rem; color: var(--encre-douce); min-height: 1em; }
+.partage-etat:empty { display: none; }
+@media (max-width: 47.99rem) {
+  .bloc-partage { grid-template-columns: 1fr; }
+  .partage-liens { justify-content: flex-start; }
+  .partage-lien span { font-size: .84rem; }
+}
