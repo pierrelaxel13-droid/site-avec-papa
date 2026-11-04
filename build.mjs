@@ -3517,19 +3517,21 @@ ${bandeAvis(AVIS)}
       <span class="rail-fil" data-fil></span>
       <div class="rail-item" data-paraitre data-compte="${NAF ? NAF.codes.length : V.divisions.length}">
         <span class="chiffre">${NAF ? NAF.codes.length : V.divisions.length}</span>
-        <p class="legende">${NAF ? "codes APE" : "familles de métiers"}</p>
+        <p class="legende">${NAF ? "Codes APE" : "Familles de métiers"}</p>
       </div>
       <div class="rail-item" data-paraitre data-compte="${nbDomaines}">
         <span class="chiffre">${nbDomaines}</span>
-        <p class="legende">thèmes</p>
+        <p class="legende">Thèmes abordés</p>
+        <p class="legende-detail">Santé et sécurité au travail, environnement, droit du travail et paie, fiscalité,
+        numérique et données personnelles, bâtiment et sécurité incendie, et les réglementations propres à chaque métier.</p>
       </div>
       <div class="rail-item" data-paraitre data-compte="${V.declencheurs.length}">
         <span class="chiffre">${V.declencheurs.length}</span>
-        <p class="legende">questions qui permettent de préciser les spécificités de votre structure et d'individualiser la veille réglementaire</p>
+        <p class="legende">Questions qui permettent de préciser les spécificités de votre structure et d'individualiser la veille réglementaire</p>
       </div>
       <div class="rail-item" data-paraitre>
         <span class="chiffre">ISO</span>
-        <p class="legende">les certifications qui exigent une veille : ISO 14001, ISO 45001, MASE, Qualiopi</p>
+        <p class="legende">Les certifications qui exigent une veille : ISO 14001, ISO 45001, MASE, Qualiopi</p>
       </div>
     </div>
   </div>

@@ -4135,3 +4135,5 @@ main .lecture, main .note-source, main li, main p {
 /* Titres de rubrique (« Les textes de votre plan… ») : la taille d'un h2,
    pas plus grand que le titre de la page. */
 .rubrique > .enveloppe > h2 { font-size: var(--h2-site); }
+.rail-item .legende-detail { margin: .4rem 0 0; max-width: 36ch; font-size: .85rem; line-height: 1.5; color: var(--encre-douce); }
+.rail-item, .rail-item .legende, .rail-item .legende-detail { text-align: center; margin-inline: auto; }
