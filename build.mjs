@@ -3428,12 +3428,14 @@ function pageAccueil(V, D, METIERS, ECRANS, C = null, NAF = null, SOURCES = [], 
     ] },
     { theme: "L'outil et vos données", questions: [
       ["Est-ce que ça m'aide pour ma certification ?",
-       `<p><strong>Oui pour la partie réglementaire : ISO 14001, ISO 45001, MASE, Qualiopi.</strong></p>
+       `<p><strong>Oui pour la partie réglementaire : ISO 9001, ISO 14001, ISO 45001, MASE, Qualiopi.</strong></p>
         <p>Ces référentiels demandent tous deux choses : connaître les exigences légales qui vous concernent, et
         montrer que vous les suivez. Concrètement :</p>
         <ul>
-          <li><strong>ISO 14001 et ISO 45001</strong> : identifier vos obligations (§ 6.1.3) et évaluer votre
-            conformité, preuve à l'appui (§ 9.1.2) ;</li>
+          <li><strong>ISO 9001</strong> : déterminer les exigences légales et réglementaires applicables à vos
+            produits et services (§ 5.1.2 et § 8.2.2) ;</li>
+          <li><strong>ISO 14001 et ISO 45001</strong> : identifier vos obligations (§ 6.1.3) et évaluer votre
+            conformité, preuve à l'appui (§ 9.1.2) ;</li>
           <li><strong>MASE</strong> : connaître et suivre la réglementation de vos interventions ;</li>
           <li><strong>Qualiopi</strong> : une veille légale et réglementaire et son exploitation (indicateur 23).</li>
         </ul>
@@ -3595,11 +3597,14 @@ ${bandeAvis(AVIS)}
     site vous donne pour le montrer à l'auditeur.</p>
     <ul class="normes">
       ${[
+        { n: "ISO 9001", t: "Qualité",
+          demande: "Déterminer les exigences légales et réglementaires applicables à vos produits et services et les satisfaire (§ 5.1.2 et § 8.2.2).",
+          donne: "Les textes qui s'appliquent à votre activité, leur source officielle et le registre de conformité pour le démontrer." },
         { n: "ISO 14001", t: "Environnement",
-          demande: "Connaître vos obligations de conformité (§ 6.1.3) et évaluer votre conformité, en gardant la preuve (§ 9.1.2).",
+          demande: "Connaître vos obligations de conformité (§ 6.1.3) et évaluer votre conformité, en gardant la preuve (§ 9.1.2).",
           donne: "La liste de ce qui s'applique chez vous, les textes qui paraissent et chaque évaluation datée au registre." },
         { n: "ISO 45001", t: "Santé et sécurité au travail",
-          demande: "Déterminer les exigences légales applicables (§ 6.1.3) et évaluer votre conformité, preuve à l'appui (§ 9.1.2).",
+          demande: "Déterminer les exigences légales applicables (§ 6.1.3) et évaluer votre conformité, preuve à l'appui (§ 9.1.2).",
           donne: "Les sujets santé-sécurité de votre métier, ce qu'il faut faire pour chaque texte et la case « fait » datée." },
         { n: "MASE", t: "Entreprises intervenantes",
           demande: "Connaître et suivre la réglementation qui s'applique à vos interventions et le montrer.",
