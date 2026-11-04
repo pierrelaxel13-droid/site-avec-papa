@@ -4928,9 +4928,9 @@ function pageNouveauClient(V, NAF, demo = null) {
       <aside class="rg-carte nc-aide">
         <header class="rg-tete"><h2>Comment ça marche</h2></header>
         <ol class="nc-etapes">
-          <li><strong>Vous créez l'accès</strong></li>
-          <li><strong>Le client crée son compte</strong></li>
-          <li><strong>Vous pilotez</strong></li>
+          <li>Vous créez l'accès</li>
+          <li>Le client crée son compte</li>
+          <li>Vous pilotez</li>
         </ol>
       </aside>
       <div class="rg-carte nc-fait" id="nc-fait" hidden>
