@@ -90,7 +90,7 @@ const SITE = {
 };
 
 /* Le logo écrit : le sigle et le nom du produit. Partout le même. */
-const motMarque = () => `${sigle}<span>${esc(SITE.nom)}</span>`;
+const motMarque = () => `${sigle}<span>${esc(SITE.nom)} <span class="marque-suite">réglementaire</span></span>`;
 
 /* « de Istres » ne se dit pas : « d'Istres ». */
 const de = (lieu) => (/^[aeiouyéèêh]/i.test(lieu) ? "d'" : "de ") + lieu;

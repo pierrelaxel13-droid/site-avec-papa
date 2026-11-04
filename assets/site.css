@@ -4001,3 +4001,18 @@ a.puce-fixe { text-decoration: none; color: inherit; }
 }
 .rg-danger { border-color: color-mix(in srgb, var(--rouge) 35%, var(--filet)); max-width: 52rem; margin-top: var(--t4); }
 .rg-danger .rg-tete h2 { color: var(--rouge); }
+.marque .marque-suite { font-weight: 500; color: var(--encre-douce); }
+/* « Vigie réglementaire » (4 novembre 2026) : sur téléphone, le nom tient à
+   côté de « Connexion » et du menu. */
+@media (max-width: 30rem) {
+  .marque { font-size: 1.02rem; gap: .4rem; }
+  .marque .sigle { width: 1.35rem; height: 1.35rem; }
+  .bandeau-interieur { gap: .5rem; }
+  .connexion-telephone { padding: .45rem .8rem; font-size: .88rem; }
+}
+@media (max-width: 24rem) {
+  .marque { font-size: .94rem; gap: .3rem; letter-spacing: -.04em; }
+  .marque .sigle { width: 1.2rem; height: 1.2rem; }
+  .connexion-telephone { padding: .4rem .65rem; font-size: .84rem; }
+}
+@media (max-width: 21.5rem) { .marque .marque-suite { display: none; } }
