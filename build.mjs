@@ -4747,7 +4747,12 @@ function barreCs(pct, detail = "") {
   return `<span class="cs-barre" role="img" aria-label="${pct} %"><span style="width:${pct}%"></span></span><span class="cs-pct">${pct} %</span>${detail ? `<span class="cs-detail">${detail}</span>` : ""}`;
 }
 
-function pageCabinet() {
+function pageCabinet(V, NAF, SOURCES) {
+  // Les chiffres de la veille, lus dans les données du site.
+  const nCodes = NAF ? NAF.codes.length : 0;
+  const nThemes = Object.keys(V.domaines).length;
+  const nSources = SOURCES.filter((x) => x.confirme && x.officielle !== false).length;
+  const O = OFFRE_CONSULTANT;
   const corps = `
 <section class="section compte-page cs-page">
   <div class="enveloppe">
@@ -4776,6 +4781,36 @@ function pageCabinet() {
           <a class="bouton bouton-sobre" href="../abonnement.html#consultants">Voir les tarifs</a>
         </p>
       </div>
+      <!-- La page d'accueil du consultant (4 novembre 2026) : ses premiers pas,
+           cochés d'après ses données (cabinet, clients, code APE, invitations,
+           abonnement). Elle se retire quand tout est fait. -->
+      <section id="cabinet-demarrage" class="cs-bloc cs-demarrage" aria-labelledby="cs-t-demarrage" hidden>
+        <div class="cs-bienvenue">
+          <div>
+            <h2 id="cs-t-demarrage">Bienvenue dans votre espace consultant</h2>
+            <p>Depuis cette page, vous créez l'espace de chacun de vos clients et vous suivez leur veille réglementaire
+            en un coup d'œil : textes non lus, conformité, avancement du plan d'actions.</p>
+          </div>
+          <dl class="cs-chiffres">
+            ${nCodes ? `<div><dt>Codes APE couverts</dt><dd>${nCodes}</dd></div>` : ""}
+            <div><dt>Thèmes de veille</dt><dd>${nThemes}</dd></div>
+            <div><dt>Sources officielles</dt><dd>${nSources}</dd></div>
+          </dl>
+        </div>
+        <ol class="cs-etapes" id="cs-etapes">
+          <li data-etape="cabinet"><span class="cs-coche" aria-hidden="true"></span><div><strong>Créer votre cabinet</strong>
+            <span class="cs-etape-detail" data-detail></span></div></li>
+          <li data-etape="client"><span class="cs-coche" aria-hidden="true"></span><div><strong>Créer l'espace de votre premier client</strong>
+            <span class="cs-etape-detail" data-detail>Son nom suffit, dans « Ajouter un client » plus bas.</span></div></li>
+          <li data-etape="plan"><span class="cs-coche" aria-hidden="true"></span><div><strong>Régler son plan de veille</strong>
+            <span class="cs-etape-detail" data-detail>Ouvrez son espace, puis Réglages : son code APE et ses situations décident des textes suivis.</span></div></li>
+          <li data-etape="invite"><span class="cs-coche" aria-hidden="true"></span><div><strong>Inviter son responsable</strong>
+            <span class="cs-etape-detail" data-detail>Il crée son compte et voit tout ; il peut couper votre accès quand il veut.</span></div></li>
+          <li data-etape="abonnement"><span class="cs-coche" aria-hidden="true"></span><div><strong>Ouvrir votre abonnement consultant</strong>
+            <span class="cs-etape-detail" data-detail>${O.paliers.map((p) => `${p.a ? `${p.de} à ${p.a}` : `${p.de} et plus`} clients : ${esc(eur(p.mois))} par client et par mois`).join(" · ")}.</span></div></li>
+        </ol>
+        <p class="cs-exemple"><a href="../demo/cabinet.html">Voir un exemple avec des clients fictifs</a></p>
+      </section>
       <section id="cabinet-vos-clients" class="cs-bloc" aria-labelledby="cs-t-bord" hidden>
         <h2 id="cs-t-bord" class="cs-titre">Tableau de bord de vos clients</h2>
         ${tableauConsultant()}
@@ -5429,7 +5464,7 @@ async function main() {
   // Le nom de domaine du site (GitHub Pages) : vigie-reglementaire.fr.
   await writeFile(join(SORTIE, "CNAME"), new URL(SITE.adresseWeb).hostname + "\n");
   await writeFile(join(SORTIE, "compte", "paiement.html"), pageSouscrire());
-  await writeFile(join(SORTIE, "compte", "cabinet.html"), pageCabinet());
+  await writeFile(join(SORTIE, "compte", "cabinet.html"), pageCabinet(V, NAF, SOURCES));
   await writeFile(join(SORTIE, "compte", "invitation.html"), pageInvitation());
 
   await writeFile(join(SORTIE, "app", "index.html"), appTableauBord(V, D, C, LIENS));

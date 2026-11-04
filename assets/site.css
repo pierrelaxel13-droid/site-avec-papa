@@ -4542,3 +4542,30 @@ details.analyse.analyse-deportee > .analyse-corps { display: none; }
   .ligne-analyse .analyse-corps { padding-top: 2.6rem; }
 }
 @media print { tr.ligne-analyse { display: none !important; } }
+
+/* --- Espace consultant : la page d'accueil du nouveau consultant (4 novembre 2026) */
+.cs-demarrage { padding: clamp(1.25rem, 3vw, 2rem); border: 1px solid var(--filet); border-radius: var(--rayon-carte, 16px);
+  background: linear-gradient(135deg, var(--accent-clair), var(--carte) 60%); }
+.cs-bienvenue { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr); gap: 1.5rem; align-items: start; }
+.cs-bienvenue h2 { margin: 0 0 .5rem; font-size: var(--h2-site, 1.6rem); }
+.cs-bienvenue p { margin: 0; color: var(--encre-douce); max-width: 60ch; }
+.cs-chiffres { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .75rem; margin: 0; }
+.cs-chiffres > div { padding: .75rem .9rem; background: var(--carte); border: 1px solid var(--filet); border-radius: 12px; }
+.cs-chiffres dt { font-size: .75rem; color: var(--encre-douce); }
+.cs-chiffres dd { margin: .15rem 0 0; font-size: 1.5rem; font-weight: 700; color: var(--encre); font-variant-numeric: tabular-nums; }
+.cs-etapes { list-style: none; margin: 1.5rem 0 0; padding: 0; display: grid; gap: .6rem; }
+.cs-etapes li { display: flex; gap: .85rem; align-items: flex-start; padding: .85rem 1rem; background: var(--carte); border: 1px solid var(--filet); border-radius: 12px; }
+.cs-etapes li strong { display: block; color: var(--encre); }
+.cs-etape-detail { display: block; margin-top: .15rem; font-size: .88rem; color: var(--encre-douce); }
+.cs-coche { flex: none; width: 1.5rem; height: 1.5rem; border-radius: 50%; border: 2px solid var(--filet-fort); margin-top: .1rem; position: relative; }
+.cs-etapes li.fait { border-color: color-mix(in srgb, var(--vert) 40%, var(--filet)); background: var(--vert-fond); }
+.cs-etapes li.fait .cs-coche { background: var(--vert); border-color: var(--vert); }
+.cs-etapes li.fait .cs-coche::after { content: ""; position: absolute; left: .42rem; top: .18rem; width: .38rem; height: .7rem;
+  border: solid #fff; border-width: 0 2px 2px 0; transform: rotate(45deg); }
+.cs-exemple { margin: 1rem 0 0; font-size: .9rem; }
+.cs-vide-ligne { text-align: center; color: var(--encre-douce); padding: 1.25rem !important; }
+.reserve .bouton-accent, .reserve a.bouton-accent { color: #fff; }
+@media (max-width: 47.99rem) {
+  .cs-bienvenue { grid-template-columns: 1fr; }
+  .cs-chiffres dd { font-size: 1.2rem; }
+}

@@ -850,7 +850,29 @@
         var liste = $("#cabinet-clients"); liste.textContent = "";
         cl.forEach(function (c) { liste.appendChild(carteClient(c)); });
         tableauBord(cl);
-        $("#cabinet-vos-clients").hidden = !cl.length;
+        // Le tableau de bord s'affiche dès le début, même vide.
+        $("#cabinet-vos-clients").hidden = false;
+        if (!cl.length) {
+          var vide = mk("tr"), tv = mk("td", "cs-vide-ligne", "Aucun client pour l'instant : créez l'espace du premier dans « Ajouter un client », plus bas.");
+          tv.colSpan = 5; vide.appendChild(tv); $("#cs-lignes").appendChild(vide);
+        }
+        // Les premiers pas, cochés d'après les données du cabinet.
+        var etapes = {
+          cabinet: [true, "« " + cabinet.nom + " » est créé ; vous en êtes l'administrateur."],
+          client: [cl.length > 0, cl.length ? pluriel(cl.length, "client créé", "clients créés") + "." : null],
+          plan: [cl.some(function (c) { return !!c.naf; }), cl.length ? pluriel(cl.filter(function (c) { return !!c.naf; }).length, "client a son code APE", "clients ont leur code APE") + " sur " + cl.length + "." : null],
+          invite: [cl.some(function (c) { return c.membres > 0; }), cl.some(function (c) { return c.membres > 0; }) ? pluriel(cl.filter(function (c) { return c.membres > 0; }).length, "client a un compte", "clients ont un compte") + "." : null],
+          abonnement: [!!cabinet.actif, cabinet.actif ? "Ouvert : vos clients ont la veille complète." : null]
+        };
+        var faites = 0;
+        Object.keys(etapes).forEach(function (k) {
+          var li = document.querySelector('#cs-etapes [data-etape="' + k + '"]');
+          if (!li) return;
+          li.classList.toggle("fait", etapes[k][0]);
+          if (etapes[k][0]) faites++;
+          if (etapes[k][1]) li.querySelector("[data-detail]").textContent = etapes[k][1];
+        });
+        $("#cabinet-demarrage").hidden = faites === Object.keys(etapes).length;
         cabinetP.hidden = false;
       });
     };
