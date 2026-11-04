@@ -45,8 +45,8 @@
     return d.toISOString().slice(0, 10);
   }
   function rubrique(titre, contenu, teinte) {
-    return '<section class="rubrique' + (teinte ? " section-tein" : "") + '"><div class="enveloppe"><h2>' +
-      echappe(titre) + "</h2>" + contenu + "</div></section>";
+    return '<section class="rubrique' + (teinte ? " section-tein" : "") + '"><div class="enveloppe">' +
+      (titre ? "<h2>" + echappe(titre) + "</h2>" : "") + contenu + "</div></section>";
   }
 
   /* L'état de chaque revue du plan : jamais faite, en retard, ou à jour. */
@@ -116,7 +116,7 @@
       .sort(function (a, b) { return a.prochaine < b.prochaine ? -1 : 1; }).slice(0, 6);
     /* Le tableau de bord en carrés, comme au début (3 novembre 2026), avec
        les intitulés demandés : nouveaux, publiés, applicables, lus, actions. */
-    if (plan.length) html += rubrique("Tableau de bord", (function () {
+    if (plan.length) html += rubrique("", (function () {
       var ouv = M.actions(), auj = new Date().toISOString().slice(0, 10);
       var retard = ouv.filter(function (a) { return a.echeance < auj; }).length;
       var carre = function (alerte, lien, nom, nombre, detail, voir) {

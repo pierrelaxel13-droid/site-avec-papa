@@ -679,7 +679,7 @@ function blocDomaine(C, LIENS, id, d, origine, lienSecteur = "", racine = "", fa
 function rubrique({ etiq, contenu, aplat = false, id = "", attrs = "" }) {
   return `<section class="rubrique${aplat ? " section-tein" : ""}"${id ? ` id="${id}"` : ""}${attrs}>
   <div class="enveloppe">
-    <h2>${esc(etiq)}</h2>
+    ${etiq ? `<h2>${esc(etiq)}</h2>` : ""}
     ${contenu}
   </div>
 </section>`;
@@ -743,7 +743,7 @@ function appTableauBord(V, D, C, LIENS) {
      dans un compte. -->
 <div data-demo>
 
-${rubrique({ etiq: "Tableau de bord", contenu: `
+${rubrique({ etiq: "", attrs: ' aria-label="Tableau de bord"', contenu: `
   <dl class="compteurs compteurs-liens tableau-bord" id="bord-demo">
     <div><dt class="etiq">Nouveaux textes</dt><dd><span class="grand" data-bord="nouveaux">—</span><span class="precision">non lus</span>${lienCarte("plan.html", "Voir ma veille réglementaire")}</dd></div>
     <div><dt class="etiq">Textes publiés</dt><dd><span class="grand" data-bord="publies">—</span><span class="precision">ces 14 derniers jours</span>${lienCarte("plan.html", "Voir ma veille réglementaire")}</dd></div>
@@ -4891,9 +4891,6 @@ function pageNouveauClient(V, NAF, demo = null) {
   }).join("") : "";
   const ic = (d) => `<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${d}</svg>`;
   const I = {
-    entreprise: '<path d="M3 21h18M5 21V7l7-4 7 4v14"/><path d="M9 21v-5h6v5M9 10h.01M15 10h.01M9 13.5h.01M15 13.5h.01"/>',
-    ape: '<path d="M4 6h16M4 12h10M4 18h7"/><circle cx="18" cy="16" r="3"/><path d="m20.2 18.2 1.8 1.8"/>',
-    mail: '<rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3.5 6.5 8.5 6 8.5-6"/>',
     ok: '<path d="M20 6 9 17l-5-5"/>'
   };
   const corps = `${demo ? `
@@ -4910,66 +4907,51 @@ function pageNouveauClient(V, NAF, demo = null) {
       <a class="bouton bouton-sobre" href="cabinet.html">Tableau de bord des clients</a>
     </div>
     ${demo ? "" : comptesFermes()}
-    <ol class="nc-etapes" id="nc-etapes" aria-label="Les étapes">
-      <li data-etape="1" class="en-cours"><span class="nc-pastille">1</span><span>Vous créez l'accès</span></li>
-      <li data-etape="2"><span class="nc-pastille">2</span><span>Le client crée son compte</span></li>
-      <li data-etape="3"><span class="nc-pastille">3</span><span>Vous pilotez</span></li>
-    </ol>
-    <div class="nc-grille" id="nc-principal"${demo ? "" : " hidden"}>
-      <form class="nc-form" id="form-nc" novalidate>
-        <header class="nc-form-tete">
-          <h2>Le client</h2>
-          <p>Son espace est créé tout de suite ; vous pourrez le compléter ensuite dans ses réglages.</p>
-        </header>
-        <div class="nc-champ">
-          <label for="nc-nom"><span class="nc-ic">${ic(I.entreprise)}</span>Nom de l'entreprise cliente</label>
-          <input type="text" id="nc-nom" maxlength="200" autocomplete="off" required placeholder="Ex. : Boulangerie Durand">
-        </div>
-        ${NAF ? `<div class="nc-champ">
-          <label for="nc-naf"><span class="nc-ic">${ic(I.ape)}</span>Code APE <span class="nc-facultatif">Facultatif</span></label>
-          <select id="nc-naf"><option value="">À régler plus tard</option>${options}</select>
-          <p class="nc-aide-champ">Il décide des textes suivis pour ce client.</p>
-        </div>` : ""}
-        <div class="nc-champ">
-          <label for="nc-courriel"><span class="nc-ic">${ic(I.mail)}</span>E-mail de son responsable <span class="nc-facultatif">Facultatif</span></label>
-          <input type="email" id="nc-courriel" autocomplete="off" inputmode="email" spellcheck="false" placeholder="prenom.nom@entreprise.fr">
-          <p class="nc-aide-champ">Il reçoit un lien pour créer son compte et devient l'administrateur de son espace.</p>
-        </div>
-        <div class="nc-pied">
-          <p class="etat-compte" id="nc-etat" role="status"></p>
-          <button type="submit" class="bouton bouton-accent">Créer l'accès</button>
-        </div>
-      </form>
-      <aside class="nc-aide nc-apercu" aria-labelledby="nc-t-apercu">
-        <p class="nc-apercu-titre" id="nc-t-apercu">Ce que reçoit votre client</p>
-        <div class="nc-mail">
-          <div class="nc-mail-tete">
-            <p><span>À</span><strong id="ap-courriel">prenom.nom@entreprise.fr</strong></p>
-            <p><span>Objet</span><strong>Votre espace de veille réglementaire « <span id="ap-client">Votre client</span> »</strong></p>
-          </div>
-          <div class="nc-mail-corps">
-            <p>Bonjour,</p>
-            <p><span id="ap-cabinet">${demo ? esc(demo) : "Votre cabinet"}</span> a ouvert l'espace de « <span data-ap-client>Votre client</span> » sur Vigie réglementaire.</p>
-            <p class="nc-mail-lien">Créer mon compte →</p>
-            <p class="nc-mail-note">Lien valable 7 jours, utilisable une fois.</p>
-          </div>
-        </div>
+    <div class="nc-carte" id="nc-principal"${demo ? "" : " hidden"}>
+      <aside class="nc-cote">
+        <p class="nc-cote-sur">Nouveau client</p>
+        <h2>Son espace, ouvert en une minute</h2>
+        <ol class="nc-etapes" id="nc-etapes" aria-label="Les étapes">
+          <li data-etape="1" class="en-cours"><span class="nc-pastille">1</span><div><strong>Vous créez l'accès</strong><span>Le nom de l'entreprise suffit.</span></div></li>
+          <li data-etape="2"><span class="nc-pastille">2</span><div><strong>Le client crée son compte</strong><span>Avec le lien d'invitation, valable 7 jours.</span></div></li>
+          <li data-etape="3"><span class="nc-pastille">3</span><div><strong>Vous pilotez</strong><span>Son espace s'ajoute à votre tableau de bord.</span></div></li>
+        </ol>
       </aside>
-      <div class="nc-fait" id="nc-fait" hidden>
-        <div class="nc-fait-tete">
+      <div class="nc-panneau">
+        <form class="nc-form" id="form-nc" novalidate>
+          <h2>Le client</h2>
+          <div class="nc-champ">
+            <label for="nc-nom">Nom de l'entreprise cliente</label>
+            <input type="text" id="nc-nom" maxlength="200" autocomplete="off" required placeholder="Ex. : Boulangerie Durand">
+          </div>
+          ${NAF ? `<div class="nc-champ">
+            <label for="nc-naf">Code APE <span class="nc-facultatif">facultatif</span></label>
+            <select id="nc-naf"><option value="">À régler plus tard</option>${options}</select>
+            <p class="nc-aide-champ">Il décide des textes suivis pour ce client.</p>
+          </div>` : ""}
+          <div class="nc-champ">
+            <label for="nc-courriel">E-mail de son responsable <span class="nc-facultatif">facultatif</span></label>
+            <input type="email" id="nc-courriel" autocomplete="off" inputmode="email" spellcheck="false" placeholder="prenom.nom@entreprise.fr">
+            <p class="nc-aide-champ">Il reçoit un lien pour créer son compte et devient l'administrateur de son espace.</p>
+          </div>
+          <p class="etat-compte" id="nc-etat" role="status"></p>
+          <button type="submit" class="bouton bouton-accent nc-envoyer">Créer l'accès</button>
+          <p class="nc-aide">Vous pourrez compléter son espace ensuite, dans ses réglages.</p>
+        </form>
+        <div class="nc-fait" id="nc-fait" hidden>
           <span class="nc-fait-ic">${ic(I.ok)}</span>
-          <div><h2 id="nc-fait-titre">Accès créé</h2><p id="nc-fait-texte"></p></div>
-        </div>
-        <div id="nc-lien-bloc" hidden>
-          <label for="nc-lien">Lien d'invitation</label>
-          <div class="nc-lien-ligne"><input type="text" id="nc-lien" readonly>
-            <button type="button" class="bouton bouton-sobre" id="nc-copier">Copier le lien</button></div>
-          <p class="rangee"><a class="bouton bouton-accent" id="nc-courriel-lien" href="#">Écrire l'e-mail d'invitation</a></p>
-        </div>
-        <div class="nc-suite">
-          <a class="bouton bouton-sobre" id="nc-ouvrir" href="../app/reglages.html">Ouvrir son espace</a>
-          <button type="button" class="bouton bouton-sobre" id="nc-autre">Créer un autre client</button>
-          <a class="lien-nu" href="cabinet.html">Retour au tableau de bord</a>
+          <h2 id="nc-fait-titre">Accès créé</h2>
+          <p id="nc-fait-texte"></p>
+          <div id="nc-lien-bloc" hidden>
+            <label for="nc-lien">Lien d'invitation</label>
+            <div class="nc-lien-ligne"><input type="text" id="nc-lien" readonly>
+              <button type="button" class="bouton bouton-sobre" id="nc-copier">Copier le lien</button></div>
+            <a class="bouton bouton-accent nc-envoyer" id="nc-courriel-lien" href="#">Écrire l'e-mail d'invitation</a>
+          </div>
+          <div class="nc-suite">
+            <a class="bouton bouton-sobre" id="nc-ouvrir" href="../app/reglages.html">Ouvrir son espace</a>
+            <button type="button" class="bouton bouton-sobre" id="nc-autre">Créer un autre client</button>
+          </div>
         </div>
       </div>
     </div>
