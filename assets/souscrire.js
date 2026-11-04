@@ -46,7 +46,8 @@
     var montant = periode === "an" ? F.montantAn : F.montantMois;
     var par = periode === "an" ? " par an" : " par mois";
     $("#paie-total").innerHTML = D.tva === "ht"
-      ? ligne("Prix HT", eur(montant) + par) + ligne("TVA 20 %", eur(montant * 0.2)) + ligne("Total TTC", eur(montant * 1.2) + par, true)
+      ? ligne("Prix HT", eur(montant) + " HT" + par) + ligne("TVA 20 %", eur(montant * 0.2)) + ligne("Total TTC", eur(montant * 1.2) + " TTC" + par, true) +
+        '<div class="paie-mention"><dd>Prix hors taxes ; la TVA (20 %) s\'ajoute au paiement.</dd></div>'
       : ligne("Total", eur(montant) + par, true) + '<div class="paie-mention"><dd>' + D.mention + "</dd></div>";
     var u = new URL(window.location.href);
     u.searchParams.set("formule", formule); u.searchParams.set("periode", periode);
