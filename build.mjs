@@ -2957,7 +2957,7 @@ function pageConsultants() {
     <p class="rangee rangee-centre">
       <a class="bouton bouton-accent" href="compte/creer.html?type=cabinet">Créer mon compte consultant</a>
       <a class="bouton bouton-sobre" href="demo/cabinet.html">Voir la démonstration</a>
-      <a class="bouton bouton-sobre" href="abonnement.html#consultants">Voir les tarifs</a>
+      <a class="bouton bouton-sobre" href="abonnement.html#consultants">Nos offres consultant</a>
     </p>
   </div>
 </section>
