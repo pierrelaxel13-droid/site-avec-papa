@@ -31,7 +31,7 @@ concurrency:
 # Depuis le 27 octobre 2026, le site est publié par GitHub Pages
 # (.github/workflows/publie.yml) : le quota de Netlify était épuisé.
 env:
-  SITE: https://pierrelaxel13-droid.github.io/site-avec-papa
+  SITE: https://vigie-reglementaire.fr
 
 jobs:
   verifier:

@@ -24,7 +24,7 @@ import { randomBytes } from "node:crypto";
 import { appendFileSync } from "node:fs";
 
 const { chromium } = createRequire((process.env.PLAYWRIGHT_DOSSIER || process.cwd()) + "/")("playwright");
-const SITE = (process.env.SITE || "https://pierrelaxel13-droid.github.io/site-avec-papa/").replace(/\/?$/, "/");
+const SITE = (process.env.SITE || "https://vigie-reglementaire.fr/").replace(/\/?$/, "/");
 const URL_SB = process.env.SUPABASE_URL || "https://denpxyqbvjcwsbxjtqpd.supabase.co";
 const SECRETE = process.env.SUPABASE_SECRET_KEY || "";
 const BASE = process.env.SUPABASE_DB_URL || "";
