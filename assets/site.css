@@ -4317,7 +4317,7 @@ main .lecture, main .note-source, main li, main p {
   .bascule-trois button { font-size: .82rem; padding: .55rem .35rem; line-height: 1.2; }
 
   /* Présentation : ce qui était centré se lit à gauche */
-  [data-page="presentation"] main > section.section:not(.section-tein):not(.installation) :is(h2, h3, p, li) { text-align: left !important; }
+  [data-page="presentation"] main > section.section:not(.section-tein):not(.installation) :is(h2, h3, p, li):not(.titre-section) { text-align: left !important; }
   .section-appel .rangee { justify-content: flex-start; }
 }
 @media (max-width: 40rem) {
@@ -4618,3 +4618,33 @@ ol.etapes-carres p { margin: 0; color: var(--encre-douce); text-align: center; m
 @media (min-width: 64rem) { ol.etapes-carres > li.etape { aspect-ratio: 5 / 4; } }
 .cs-ajout-lien { display: flex; flex-wrap: wrap; align-items: center; gap: .75rem; margin: .25rem 0 1rem; }
 .compte-actions { display: flex; flex-wrap: wrap; gap: .5rem; }
+
+/* --- Téléphone, alignement uniforme (4 novembre 2026, demande d'Axel) -------
+   Les titres, les introductions, les notes et les boutons sont centrés ; le
+   contenu des cartes reste aligné à gauche, de la même façon partout. */
+@media (max-width: 47.99rem) {
+  .zone-public .heros-texte, .zone-public .heros h1, .zone-public .heros-sous,
+  .zone-public .titre-section, .zone-public .intro.titre-section, .zone-public main .section h2.titre-section,
+  .zone-public .section-appel, .zone-public .bloc-consultant, .zone-public .abo-promo,
+  .zone-public .formules ~ .note-source, .zone-public .section > .enveloppe > .note-source,
+  .zone-public .installation .deux-colonnes > div:first-child,
+  .zone-public .installation .deux-colonnes > div:first-child :is(h2, p) {
+    text-align: center !important; margin-left: auto !important; margin-right: auto !important;
+  }
+  .zone-public .heros-actions, .zone-public .rangee-centre, .zone-public .section-appel .rangee,
+  .zone-public .installation .deux-colonnes > div:first-child .rangee { justify-content: center !important; }
+  .zone-public .collecte { justify-content: center !important; text-align: center !important; }
+  .zone-public .partage-barre { justify-content: center; }
+  .zone-public .heros h1 { font-size: 1.8rem; }
+  /* « Installer l'application » : un titre de section comme les autres. */
+  .zone-public .installation h2 { font-size: var(--h2-site, 1.5rem); line-height: 1.2; margin: 0 0 .6rem; font-weight: 700; color: var(--encre); }
+  .zone-public .installation .intro { font-size: .98rem; }
+  .zone-public .installation .appareils { margin-top: 1.25rem; }
+  .zone-public .installation .deux-colonnes > p, .zone-public .installation .enveloppe > p { text-align: center; font-size: .88rem; }
+  /* Les titres de rubrique de l'application restent à gauche, avec leur tableau. */
+}
+@media (max-width: 47.99rem) {
+  .zone-public .deux-temps > div:first-child > :is(h2, p), .zone-public .contact-intro > :is(h1, .contact-texte) {
+    text-align: center !important; margin-left: auto !important; margin-right: auto !important;
+  }
+}

@@ -4311,7 +4311,7 @@ function ecranAuth({ titre, sous, carte, pied = "", carteTitre = "Vos identifian
       </section>
       <aside class="rg-carte compte-carte auth-aside" aria-label="Votre espace">
         <ul class="auth-liste">
-          <li><strong>Ma veille réglementaire</strong><span>Les textes qui s'appliquent à votre entreprise, par catégorie, avec leur source officielle.</span></li>
+          <li><strong>Ma veille réglementaire</strong><span>Les textes qui s'appliquent à votre entreprise, par catégorie, avec leurs sources officielles.</span></li>
           <li><strong>Plan d'actions</strong><span>Les actions à mener, avec un délai, un responsable et leur validation.</span></li>
           <li><strong>Registre et conformité réglementaire</strong><span>L'évaluation de chaque texte et l'historique daté de vos décisions.</span></li>
         </ul>
