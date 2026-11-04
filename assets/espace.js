@@ -135,22 +135,22 @@
           retard ? "dont " + retard + " en retard" : "", "Voir le plan d'actions") +
         "</dl>";
     })());
-    if (suivantes.length) {
-      html += rubrique("Prochaines revues", '<ul class="liste-echeances">' + suivantes.map(function (x) {
-        return '<li><a href="plan.html#domaine-' + echappe(x.id) + '"><span class="etiq">' + echappe(x.nom) +
-          '</span><span class="mono">' + echappe(jour(x.prochaine)) + "</span></a></li>";
+    /* Les prochaines revues, par rythme, comme dans la démonstration
+       (4 novembre 2026) : la date la plus proche de chaque rythme du plan,
+       ou « À faire » quand une revue de ce rythme est due. */
+    if (plan.length) {
+      var P = window.PLAN || {}, F = P.f || {}, parRythme = {};
+      plan.forEach(function (x) {
+        var r = parRythme[x.frequence] = parRythme[x.frequence] || { aFaire: false, prochaine: null };
+        if (x.aFaire) r.aFaire = true;
+        else if (!r.prochaine || x.prochaine < r.prochaine) r.prochaine = x.prochaine;
+      });
+      var rythmes = Object.keys(parRythme).sort(function (a, b) { return ((F[a] || {}).ordre || 9) - ((F[b] || {}).ordre || 9); });
+      html += rubrique("Prochaines revues", '<ul class="liste-echeances">' + rythmes.map(function (k) {
+        var r = parRythme[k];
+        return '<li><a href="plan.html"><span class="etiq">' + echappe((F[k] || {}).l || k) +
+          '</span><span class="mono">' + (r.aFaire ? "À faire" : echappe(jour(r.prochaine))) + "</span></a></li>";
       }).join("") + "</ul>", true);
-    }
-    var ouvertes = M.actions();
-    if (ouvertes.length) {
-      var auj = new Date().toISOString().slice(0, 10);
-      html += '<div id="bord-actions">' + rubrique("Actions à mener",
-        '<p class="lecture">Ce que vos décisions sur les textes ont mis à faire, par échéance.</p>' +
-        '<ul class="liste-echeances" style="margin-top:var(--t4)">' + ouvertes.map(function (a) {
-          return '<li' + (a.echeance < auj ? ' class="retard"' : "") + '><div class="echeance-action"><span class="objet-action">' + echappe(a.objet) +
-            '</span><span class="mono">pour le ' + echappe(jour(a.echeance)) + (a.echeance < auj ? " — en retard" : "") + "</span>" +
-            '<button type="button" class="lien-nu" data-faite="' + a.id + '">C\'est fait</button></div></li>';
-        }).join("") + "</ul>") + "</div>";
     }
     html += '<div id="bord-traces"></div>';
     hote.innerHTML = html;
