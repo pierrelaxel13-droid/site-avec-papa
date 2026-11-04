@@ -4701,7 +4701,7 @@ function pageCabinetDemo(V, D) {
       <td data-titre="Textes non lus"><span class="cs-nombre${c.non_lus ? " cs-attention" : ""}">${c.non_lus}</span><span class="cs-detail">sur ${c.textes} textes</span></td>
       <td data-titre="Conformité réglementaire">${barreCs(pct(c.conformes, c.textes))}</td>
       <td data-titre="Avancement du plan d'actions"${c.actions_en_retard ? ' class="cs-retard"' : ""}>${barreCs(pct(c.actions_faites, eng), eng ? `${c.actions_faites} sur ${eng}${c.actions_en_retard ? ` · ${c.actions_en_retard} en retard` : ""}` : "Aucune action engagée")}</td>
-      <td class="cs-ouvrir">${c.vidal ? `<ul class="cs-liens">${[["plan.html", "Veille réglementaire"], ["actions.html", "Plan d'actions"], ["conformite.html", "Registre de conformité"]]
+      <td class="cs-ouvrir">${c.vidal ? `<ul class="cs-liens">${[["index.html", "Tableau de bord"], ["plan.html", "Veille réglementaire"], ["actions.html", "Plan d'actions"], ["conformite.html", "Registre de conformité"]]
         .map(([u, l]) => `<li><a href="${u}" data-demo-consultant="${esc(C.nom)}" data-demo-client="${esc(E.nom)}">${l}</a></li>`).join("")}</ul>` : '<span class="cs-detail">Démonstration : seul Maçonnerie Vidal s\'ouvre</span>'}</td></tr>`;
   }).join("");
   const somme = (k) => vus.reduce((t, c) => t + (c[k] || 0), 0);

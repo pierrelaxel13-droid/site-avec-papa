@@ -753,7 +753,7 @@
         if (c.acces && cabinet.actif) {
           // Ouvrir le compte du client, directement sur l'écran voulu.
           var ul = mk("ul", "cs-liens");
-          [["plan.html", "Veille réglementaire"], ["actions.html", "Plan d'actions"], ["conformite.html", "Registre de conformité"]].forEach(function (x) {
+          [["index.html", "Tableau de bord"], ["plan.html", "Veille réglementaire"], ["actions.html", "Plan d'actions"], ["conformite.html", "Registre de conformité"]].forEach(function (x) {
             var li = mk("li"), o = mk("a", "", x[1]);
             o.href = vers("app/" + x[0]);
             o.setAttribute("aria-label", x[1] + " de " + c.denomination);
