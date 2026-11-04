@@ -3509,8 +3509,11 @@ function pageAccueil(V, D, METIERS, ECRANS, C = null, NAF = null, SOURCES = [], 
     const fiches = Object.keys(FICHES).length;
     const normes = new Set(Object.values(NORMES).flat().map((x) => x.ref)).size;
     const articles = CODES_LUS && CODES_LUS.morceaux ? CODES_LUS.morceaux.reduce((n, m) => n + m.articles.filter((x) => !x.etat || x.etat === "VIGUEUR").length, 0) : 0;
-    const publies = JO && JO.textes ? JO.textes.length : 0;
-    return { fiches, normes, articles, publies, depuis: JO && JO.depuis, total: fiches + normes + articles + publies };
+    // Tous les textes publiés relevés depuis le début (outils/compte-textes.mjs), pas seulement
+    // les 14 jours que garde le relevé ; à défaut, ceux du relevé.
+    const cumul = existsSync(resolve(RACINE, "contenu/textes-suivis.json")) ? JSON.parse(readFileSync(resolve(RACINE, "contenu/textes-suivis.json"), "utf8")) : null;
+    const publies = cumul && cumul.ids ? cumul.ids.length : JO && JO.textes ? JO.textes.length : 0;
+    return { fiches, normes, articles, publies, depuis: (cumul && cumul.depuis) || (JO && JO.depuis), total: fiches + normes + articles + publies };
   })();
   const nbDomaines = Object.keys(V.domaines).length;
   const defaut = "43";                      // Travaux de construction spécialisés
@@ -3733,7 +3736,7 @@ ${bandeAvis(AVIS)}
         <p class="legende">Textes réglementaires et normatifs suivis</p>
         <p class="legende-detail">${[suivis.articles ? `${suivis.articles.toLocaleString("fr-FR")} articles de codes en vigueur lus un à un` : "",
           `${suivis.fiches} textes de référence`, suivis.normes ? `${suivis.normes} normes` : "",
-          suivis.publies ? `${suivis.publies} textes publiés retenus depuis le ${esc(dateFr(suivis.depuis))}` : ""].filter(Boolean).join(", ").replace(/, ([^,]*)$/, " et $1")}.
+          suivis.publies ? `${suivis.publies} textes publiés relevés depuis le ${esc(dateFr(suivis.depuis))}` : ""].filter(Boolean).join(", ").replace(/, ([^,]*)$/, " et $1")}.
         Mis à jour chaque jour avec les nouvelles publications.</p>
       </div>
       <div class="rail-item" data-paraitre data-compte="${nbDomaines}">

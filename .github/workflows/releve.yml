@@ -127,6 +127,11 @@ jobs:
           node outils/veille.mjs --jours 14 2>&1 | tee releve-flux.log || \
             echo "::warning::Relève des flux : $(tail -c 500 releve-flux.log | tr '\n' ' ')"
 
+      # Le registre cumulé des textes publiés relevés (contenu/textes-suivis.json) :
+      # le relevé ne garde que 14 jours, l'accueil compte tout depuis le début.
+      - name: Le compte des textes relevés
+        run: node outils/compte-textes.mjs || echo "::warning::Le compte cumulé des textes n'a pas pu être mis à jour."
+
       # Les conseils de l'IA (Perplexity), avec leurs garde-fous
       # (outils/conseils.mjs) : seulement pour les textes qui touchent le plan
       # d'un client en formule 2 ou 3 — lus dans la base, où les conseils sont
