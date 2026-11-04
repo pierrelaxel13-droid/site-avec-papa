@@ -4016,3 +4016,5 @@ a.puce-fixe { text-decoration: none; color: inherit; }
   .connexion-telephone { padding: .4rem .65rem; font-size: .84rem; }
 }
 @media (max-width: 21.5rem) { .marque .marque-suite { display: none; } }
+/* Présentation : quatre captures, en 2 × 2 (4 novembre 2026). */
+@media (min-width: 48rem) { .pieces { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; } }

@@ -3912,7 +3912,7 @@ function pageDecouvrir(V, ECRANS, C, NAF, SOURCES) {
     { img: "bord.png", t: "Tableaux de bord", d: "" },
     { img: "plan.png", t: "Ma veille réglementaire", d: "" },
     { img: "actions.png", t: "Plan d'actions", d: "" },
-    { img: "reglages.png", t: "Réglages", d: "Votre entreprise, ses chiffres, vos réponses, vos alertes. Le plan se refait dessus, aussitôt." }
+    { img: "reglages.png", t: "Réglages", d: "" }
   ];
   const vignette = (p) => {
     if (!p.img || !ECRANS.includes(p.img)) return `<div class="vignette vignette-vide">${icone('<circle cx="12" cy="12" r="3"/><path d="M12 3v3m0 12v3M3 12h3m12 0h3M5.6 5.6l2.1 2.1m8.6 8.6 2.1 2.1m0-12.8-2.1 2.1M7.7 16.3l-2.1 2.1"/>')}</div>`;
@@ -3939,39 +3939,9 @@ function pageDecouvrir(V, ECRANS, C, NAF, SOURCES) {
 </section>
 
 <section class="section section-tein">
-  <div class="enveloppe deux-temps">
-    <div>
-      <h2>Ce que vous voyez pour chaque texte</h2>
-      <ol class="legende">
-        <li><strong>Ce que vous devez faire</strong>, en premier : les gestes, en
-          français courant. Le bouton <strong>Fait</strong> garde la date.</li>
-        <li><strong>Le texte, tel que publié</strong> : pas un résumé, le texte lui-même.</li>
-        <li><strong>D'où vient ce texte</strong> : la source, la date, et le lien direct.
-          C'est la source qui fait foi.</li>
-      </ol>
-    </div>
-    <figure class="dessin-cadre"><div class="dessin-large">${dessinFiche}</div><div class="dessin-etroit">${dessinFicheTel}</div></figure>
-  </div>
-</section>
-
-<section class="section">
-  <div class="enveloppe deux-temps deux-temps-inverse">
-    <figure class="dessin-cadre"><div class="dessin-large">${dessinRythmes}</div><div class="dessin-etroit">${dessinRythmesTel}</div>
-      <figcaption>Exemple sur un trimestre. Votre plan dit quels sujets sont à quel rythme.</figcaption></figure>
-    <div>
-      <h2>Votre plan, à son rythme</h2>
-      <p class="lecture">Tout ne se revoit pas aussi souvent. La sécurité d'un chantier se
-        relit chaque semaine ; la fiscalité, chaque mois ; les normes, chaque trimestre.
-        Votre plan range vos sujets par rythme, et une revue cochée
-        « faite » redevient à faire quand son rythme revient.</p>
-    </div>
-  </div>
-</section>
-
-<section class="section section-tein">
   <div class="enveloppe">
     <h2 class="titre-section">Ce que vous trouvez dans l'application</h2>
-    <p class="intro titre-section">Six écrans. Cliquez sur une capture pour la voir en grand.</p>
+    <p class="intro titre-section">${["", "Un écran", "Deux écrans", "Trois écrans", "Quatre écrans", "Cinq écrans", "Six écrans"][pieces.length] || `${pieces.length} écrans`}. Cliquez sur une capture pour la voir en grand.</p>
     <ul class="pieces">
       ${pieces.map((p) => `<li class="piece">
         ${vignette(p)}
