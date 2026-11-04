@@ -28,7 +28,7 @@
    "id": "travail",
    "nom": "Ministère du Travail — actualités",
    "entrees": 50,
-   "retenus": 4,
+   "retenus": 6,
    "souci": null
   },
   {
@@ -104,7 +104,7 @@
   {
    "id": "ademe",
    "nom": "ADEME — nouvelles publications",
-   "entrees": 84,
+   "entrees": 86,
    "retenus": 2,
    "souci": null
   },
@@ -167,7 +167,7 @@
   {
    "id": "ansm",
    "nom": "ANSM — informations de sécurité",
-   "entrees": 3,
+   "entrees": 5,
    "retenus": 0,
    "souci": null
   },
@@ -277,6 +277,30 @@
    "vuA": "2026-11-04T01:25:39Z"
   },
   {
+   "source": "travail",
+   "sourceNom": "Ministère du Travail — actualités",
+   "genre": "actualite",
+   "id": "https://travail-emploi.gouv.fr/index-de-legalite-professionnelle-calcul-et-questionsreponses",
+   "titre": "Index de l’égalité professionnelle : calcul et questions/réponses",
+   "nature": "Publication officielle",
+   "date": "2026-11-04",
+   "corps": "Toutes les entreprises d’au moins 50 salariés doivent calculer et publier leur Index de l’égalité professionnelle entre les femmes et les hommes, chaque année au plus tard le 1er mars.",
+   "lien": "https://travail-emploi.gouv.fr/index-de-legalite-professionnelle-calcul-et-questionsreponses",
+   "domaines": [
+    {
+     "id": "social",
+     "nom": "Droit du travail et relations sociales",
+     "mots": [
+      "egalite professionnelle"
+     ]
+    }
+   ],
+   "morceaux": 1,
+   "dateTexte": "",
+   "vuLe": "2026-11-04",
+   "vuA": "2026-11-04T17:21:39Z"
+  },
+  {
    "source": "agriculture",
    "sourceNom": "Ministère de l'Agriculture — actualités",
    "genre": "actualite",
@@ -323,6 +347,30 @@
    "dateTexte": "",
    "vuLe": "2026-11-04",
    "vuA": "2026-11-04T13:18:15Z"
+  },
+  {
+   "source": "travail",
+   "sourceNom": "Ministère du Travail — actualités",
+   "genre": "actualite",
+   "id": "https://travail-emploi.gouv.fr/simulateur-de-calcul-et-formulaire-de-declaration-de-lindex-de-legalite-professionnelle",
+   "titre": "Simulateur de calcul et formulaire de déclaration de l'Index de l'égalité professionnelle",
+   "nature": "Publication officielle",
+   "date": "2026-11-04",
+   "corps": "Simulateur de calcul en ligne et formulaire de transmission à l'inspection du travail (Direccte et Dieccte) des indicateurs et de l'Index de l'égalité professionnelle entre les femmes et les hommes.",
+   "lien": "https://travail-emploi.gouv.fr/simulateur-de-calcul-et-formulaire-de-declaration-de-lindex-de-legalite-professionnelle",
+   "domaines": [
+    {
+     "id": "social",
+     "nom": "Droit du travail et relations sociales",
+     "mots": [
+      "egalite professionnelle"
+     ]
+    }
+   ],
+   "morceaux": 1,
+   "dateTexte": "",
+   "vuLe": "2026-11-04",
+   "vuA": "2026-11-04T17:21:39Z"
   },
   {
    "source": "jorf",
