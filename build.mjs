@@ -3627,6 +3627,11 @@ ${bandeAvis(AVIS)}
     <div id="profil-consultant" role="tabpanel" aria-labelledby="onglet-consultant" hidden>
     <ul class="traits">
       <li class="trait">
+        <svg class="icone" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 12l2 2 4-5"/><circle cx="12" cy="12" r="9"/></svg>
+        <div><h3>Réalisation des registres de conformité réglementaire de vos clients</h3>
+        <p>Une synthèse des textes qui sont applicables à vos clients.</p></div>
+      </li>
+      <li class="trait">
         <svg class="icone" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18M9 20V10"/></svg>
         <div><h3>Gérer vos clients sur un même et seul espace</h3>
         <p>La veille de vos clients est optimisée.</p></div>
@@ -3640,11 +3645,6 @@ ${bandeAvis(AVIS)}
         <svg class="icone" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 7v5l3 2"/><circle cx="12" cy="12" r="9"/></svg>
         <div><h3>Une synthèse globale des textes qui sont applicables à vos clients</h3>
         <p>Seuls les textes qui concernent vos clients sont présentés.</p></div>
-      </li>
-      <li class="trait">
-        <svg class="icone" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 12l2 2 4-5"/><circle cx="12" cy="12" r="9"/></svg>
-        <div><h3>Réalisation des registres de conformité réglementaire de vos clients</h3>
-        <p>Une synthèse des textes qui sont applicables à vos clients.</p></div>
       </li>
       <li class="trait">
         <svg class="icone" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h14v16l-7-3-7 3Z"/><path d="M9 9h6"/></svg>
