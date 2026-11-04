@@ -14,7 +14,7 @@
    "id": "eurlex-l",
    "nom": "Journal officiel de l'Union européenne — série L",
    "entrees": 100,
-   "retenus": 18,
+   "retenus": 19,
    "souci": null
   },
   {
@@ -104,7 +104,7 @@
   {
    "id": "ademe",
    "nom": "ADEME — nouvelles publications",
-   "entrees": 83,
+   "entrees": 84,
    "retenus": 2,
    "souci": null
   },
@@ -126,7 +126,7 @@
    "id": "anses",
    "nom": "ANSES — avis et actualités",
    "entrees": 10,
-   "retenus": 0,
+   "retenus": 3,
    "souci": null
   },
   {
@@ -238,6 +238,78 @@
    "vuA": "2026-11-04T01:25:39Z"
   },
   {
+   "source": "anses",
+   "sourceNom": "ANSES — avis et actualités",
+   "genre": "actualite",
+   "id": "https://www.anses.fr/fr/decisions/biocide/decision-relative-modification-administrative-dautorisation-mise-disposition-605",
+   "titre": "Décision relative à une modification administrative d’autorisation de mise à disposition sur le marché de la famille de produits biocides KORDON",
+   "nature": "Publication officielle",
+   "date": "2026-11-04",
+   "corps": "Décision relative à une modification administrative d’autorisation de mise à disposition sur le marché de la famille de produits biocides KORDON\n\nCOHEN Sylvie\n\nmer, 04/11/2026 - 09:48\n\nNom de produit\n\nKORDON\n\nType de demande\n\nChangement administratif d’une autorisation nationale\n\nNuméro de dossier\n\nBC-VA113804-49\n\nNuméro AMM\n\nFR-2016-0041\n\nDate signature\n\nlun, 19/10/2026 - 12:00\n\nDate de publication\n\nmer, 04/11/2026 - 12:00\n\nApparait dans le registre\n\nOui\n\nDocument(s)\n\nFichier\n\nKORDON_BC-VA113804-49_NA-ADC_D.pdf\n(405.03 Ko)\n\nType de document\n\nLettre décision",
+   "lien": "https://www.anses.fr/fr/decisions/biocide/decision-relative-modification-administrative-dautorisation-mise-disposition-605",
+   "domaines": [
+    {
+     "id": "chimie",
+     "nom": "Produits chimiques et risque chimique",
+     "mots": [
+      "produits biocides"
+     ]
+    }
+   ],
+   "morceaux": 1,
+   "dateTexte": "",
+   "vuLe": "2026-11-04",
+   "vuA": "2026-11-04T09:17:18Z"
+  },
+  {
+   "source": "anses",
+   "sourceNom": "ANSES — avis et actualités",
+   "genre": "actualite",
+   "id": "https://www.anses.fr/fr/decisions/biocide/decision-relative-modification-administrative-dautorisation-mise-disposition-606",
+   "titre": "Décision relative à une modification administrative d’autorisation de mise à disposition sur le marché de la famille de produits biocides LIGNUM WOODWORM KILLER PF",
+   "nature": "Publication officielle",
+   "date": "2026-11-04",
+   "corps": "Décision relative à une modification administrative d’autorisation de mise à disposition sur le marché de la famille de produits biocides LIGNUM WOODWORM KILLER PF\n\nCOHEN Sylvie\n\nmer, 04/11/2026 - 09:50\n\nNom de produit\n\nLIGNUM WOODWORM KILLER PF\n\nType de demande\n\nChangement administratif d’une autorisation nationale\n\nNuméro de dossier\n\nBC-SX114497-98\n\nNuméro AMM\n\nFR-2019-0017\n\nDate signature\n\nlun, 19/10/2026 - 12:00\n\nDate de publication\n\nmer, 04/11/2026 - 12:00\n\nApparait dans le registre\n\nOui\n\nDocument(s)\n\nFichier\n\nLIGNUMWOOD_BC-SX114497-98_NA-ADC_D.pdf\n(516.24 Ko)\n\nType de document\n\nLettre décision",
+   "lien": "https://www.anses.fr/fr/decisions/biocide/decision-relative-modification-administrative-dautorisation-mise-disposition-606",
+   "domaines": [
+    {
+     "id": "chimie",
+     "nom": "Produits chimiques et risque chimique",
+     "mots": [
+      "produits biocides"
+     ]
+    }
+   ],
+   "morceaux": 1,
+   "dateTexte": "",
+   "vuLe": "2026-11-04",
+   "vuA": "2026-11-04T09:17:18Z"
+  },
+  {
+   "source": "anses",
+   "sourceNom": "ANSES — avis et actualités",
+   "genre": "actualite",
+   "id": "https://www.anses.fr/fr/decisions/biocide/decision-relative-modification-administrative-dautorisation-mise-disposition-611",
+   "titre": "Décision relative à une modification administrative d’autorisation de mise à disposition sur le marché de la famille de produits biocides SANYTOL DETACHANT FRESH",
+   "nature": "Publication officielle",
+   "date": "2026-11-04",
+   "corps": "Décision relative à une modification administrative d’autorisation de mise à disposition sur le marché de la famille de produits biocides SANYTOL DETACHANT FRESH\n\nCOHEN Sylvie\n\nmer, 04/11/2026 - 10:13\n\nNom de produit\n\nSANYTOL DETACHANT FRESH\n\nType de demande\n\nChangement administratif d’une autorisation nationale\n\nNuméro de dossier\n\nBC-RP112285-26\n\nNuméro AMM\n\nFR-2021-0032\n\nDate signature\n\nmar, 20/10/2026 - 12:00\n\nDate de publication\n\nmer, 04/11/2026 - 12:00\n\nApparait dans le registre\n\nOui\n\nDocument(s)\n\nFichier\n\nSANYTOLDET_BC-RP112285-26_NA-ADC_D.pdf\n(454.03 Ko)\n\nType de document\n\nLettre décision",
+   "lien": "https://www.anses.fr/fr/decisions/biocide/decision-relative-modification-administrative-dautorisation-mise-disposition-611",
+   "domaines": [
+    {
+     "id": "chimie",
+     "nom": "Produits chimiques et risque chimique",
+     "mots": [
+      "produits biocides"
+     ]
+    }
+   ],
+   "morceaux": 1,
+   "dateTexte": "",
+   "vuLe": "2026-11-04",
+   "vuA": "2026-11-04T09:17:18Z"
+  },
+  {
    "source": "jorf",
    "sourceNom": "Journal officiel de la République française",
    "genre": "texte",
@@ -311,6 +383,78 @@
    "dateTexte": "",
    "vuLe": "2026-11-03",
    "vuA": "2026-11-02T23:34:11Z"
+  },
+  {
+   "source": "eurlex-l",
+   "sourceNom": "Journal officiel de l'Union européenne — série L",
+   "genre": "texte",
+   "id": "https://eur-lex.europa.eu/./legal-content/AUTO/?uri=CELEX:32026D0455R(02)",
+   "titre": "CELEX:32026D0455R(02): Rectificatif à la décision (PESC) 2026/455 du Conseil du 26 février 2026 relative à des mesures restrictives en vue de lutter contre le terrorisme, abrogeant les articles 2, 3 et 3 bis de la position commune 2001/931/PESC relative à l’application de mesures spécifiques en vue de lutter contre le terrorisme et abrogeant la décision (PESC) 2025/1577 et la décision (PESC) 2026/421 (JO L, 2026/455, 26.2.2026)",
+   "nature": "Texte officiel",
+   "date": "2026-11-03",
+   "corps": "",
+   "lien": "https://eur-lex.europa.eu/./legal-content/AUTO/?uri=CELEX:32026D0455R(02)",
+   "domaines": [
+    {
+     "id": "douane",
+     "nom": "Douane et échanges internationaux",
+     "mots": [
+      "mesures restrictives"
+     ]
+    }
+   ],
+   "morceaux": 0,
+   "dateTexte": "2026-02-26",
+   "vuLe": "2026-11-03",
+   "vuA": "2026-11-04T09:17:18Z"
+  },
+  {
+   "source": "eurlex-l",
+   "sourceNom": "Journal officiel de l'Union européenne — série L",
+   "genre": "texte",
+   "id": "https://eur-lex.europa.eu/./legal-content/AUTO/?uri=CELEX:32026D2482",
+   "titre": "CELEX:32026D2482: Décision d’exécution (UE) 2026/2482 du Conseil du 29 octobre 2026 modifiant la décision d’exécution (UE) 2018/485 en ce qui concerne la prorogation de l’autorisation permettant au Danemark d’appliquer une mesure particulière dérogatoire à l’article 75 de la directive 2006/112/CE relative au système commun de taxe sur la valeur ajoutée",
+   "nature": "Texte officiel",
+   "date": "2026-11-03",
+   "corps": "",
+   "lien": "https://eur-lex.europa.eu/./legal-content/AUTO/?uri=CELEX:32026D2482",
+   "domaines": [
+    {
+     "id": "fiscal",
+     "nom": "Fiscalité, facturation et comptabilité",
+     "mots": [
+      "taxe sur la valeur ajoutee"
+     ]
+    }
+   ],
+   "morceaux": 0,
+   "dateTexte": "2026-10-29",
+   "vuLe": "2026-11-03",
+   "vuA": "2026-11-04T09:17:18Z"
+  },
+  {
+   "source": "eurlex-l",
+   "sourceNom": "Journal officiel de l'Union européenne — série L",
+   "genre": "texte",
+   "id": "https://eur-lex.europa.eu/./legal-content/AUTO/?uri=CELEX:32026R2490",
+   "titre": "CELEX:32026R2490: Règlement d’exécution (UE) 2026/2490 de la Commission du 3 novembre 2026 modifiant pour la 364e fois le règlement (CE) no 881/2002 du Conseil instituant certaines mesures restrictives spécifiques à l’encontre de certaines personnes et entités liées aux organisations EIIL (Daech) et Al-Qaida",
+   "nature": "Texte officiel",
+   "date": "2026-11-03",
+   "corps": "",
+   "lien": "https://eur-lex.europa.eu/./legal-content/AUTO/?uri=CELEX:32026R2490",
+   "domaines": [
+    {
+     "id": "douane",
+     "nom": "Douane et échanges internationaux",
+     "mots": [
+      "mesures restrictives"
+     ]
+    }
+   ],
+   "morceaux": 0,
+   "dateTexte": "2026-11-03",
+   "vuLe": "2026-11-03",
+   "vuA": "2026-11-04T09:17:18Z"
   },
   {
    "source": "travail",
@@ -1446,30 +1590,6 @@
    "vuA": "2026-10-25T00:00:00Z"
   },
   {
-   "source": "eurlex-l",
-   "sourceNom": "Journal officiel de l'Union européenne — série L",
-   "genre": "texte",
-   "id": "https://eur-lex.europa.eu/./legal-content/AUTO/?uri=CELEX:32026R2346",
-   "titre": "CELEX:32026R2346: Règlement d’exécution (UE) 2026/2346 de la Commission du 23 octobre 2026 soumettant à enregistrement les importations de silicium originaire de la République populaire de Chine",
-   "nature": "Texte officiel",
-   "date": "2026-10-25",
-   "corps": "",
-   "lien": "https://eur-lex.europa.eu/./legal-content/AUTO/?uri=CELEX:32026R2346",
-   "domaines": [
-    {
-     "id": "douane",
-     "nom": "Douane et échanges internationaux",
-     "mots": [
-      "importation"
-     ]
-    }
-   ],
-   "morceaux": 0,
-   "dateTexte": "2026-10-23",
-   "vuLe": "2026-10-25",
-   "vuA": "2026-10-25T00:00:00Z"
-  },
-  {
    "source": "jorf",
    "sourceNom": "Journal officiel de la République française",
    "genre": "texte",
@@ -1568,30 +1688,6 @@
    "dateTexte": "2026-07-27",
    "vuLe": "2026-10-23",
    "vuA": "2026-10-23T00:00:00Z"
-  },
-  {
-   "source": "eurlex-l",
-   "sourceNom": "Journal officiel de l'Union européenne — série L",
-   "genre": "texte",
-   "id": "https://eur-lex.europa.eu/./legal-content/AUTO/?uri=CELEX:32026H2329",
-   "titre": "CELEX:32026H2329: Recommandation (UE) 2026/2329 de la Commission du 21 octobre 2026 sur le contrôle de la présence de N-nitrosamines dans les denrées alimentaires",
-   "nature": "Texte officiel",
-   "date": "2026-10-22",
-   "corps": "",
-   "lien": "https://eur-lex.europa.eu/./legal-content/AUTO/?uri=CELEX:32026H2329",
-   "domaines": [
-    {
-     "id": "alimentaire",
-     "nom": "Hygiène et sécurité des aliments",
-     "mots": [
-      "denrees alimentaires"
-     ]
-    }
-   ],
-   "morceaux": 0,
-   "dateTexte": "2026-10-21",
-   "vuLe": "2026-10-22",
-   "vuA": "2026-10-22T00:00:00Z"
   },
   {
    "source": "jorf",
