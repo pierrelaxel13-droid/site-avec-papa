@@ -4889,10 +4889,17 @@ function pageNouveauClient(V, NAF, demo = null) {
     const codes = NAF.codes.filter((c) => c.d === d.c);
     return codes.length ? `<optgroup label="${esc(d.c)} — ${esc(d.l)}">${codes.map((c) => `<option value="${esc(c.c)}">${esc(c.c)} — ${esc(c.l)}</option>`).join("")}</optgroup>` : "";
   }).join("") : "";
+  const ic = (d) => `<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${d}</svg>`;
+  const I = {
+    entreprise: '<path d="M3 21h18M5 21V7l7-4 7 4v14"/><path d="M9 21v-5h6v5M9 10h.01M15 10h.01M9 13.5h.01M15 13.5h.01"/>',
+    ape: '<path d="M4 6h16M4 12h10M4 18h7"/><circle cx="18" cy="16" r="3"/><path d="m20.2 18.2 1.8 1.8"/>',
+    mail: '<rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3.5 6.5 8.5 6 8.5-6"/>',
+    ok: '<path d="M20 6 9 17l-5-5"/>'
+  };
   const corps = `${demo ? `
 <p class="bandeau-demo"><strong>Démonstration consultant.</strong> Essayez librement : aucun espace, aucun compte ni aucun e-mail
   n'est créé, le lien d'invitation est fictif. <a href="../compte/creer.html?type=cabinet">Créer mon compte consultant</a></p>` : ""}
-<section class="section compte-page cs-page">
+<section class="section compte-page cs-page nc-page">
   <div class="enveloppe nc-enveloppe"${demo ? ` data-demo-cabinet="${esc(demo)}"` : ""}>
     <div class="cs-tete">
       <div>
@@ -4903,50 +4910,66 @@ function pageNouveauClient(V, NAF, demo = null) {
       <a class="bouton bouton-sobre" href="cabinet.html">Tableau de bord des clients</a>
     </div>
     ${demo ? "" : comptesFermes()}
+    <ol class="nc-etapes" id="nc-etapes" aria-label="Les étapes">
+      <li data-etape="1" class="en-cours"><span class="nc-pastille">1</span><span>Vous créez l'accès</span></li>
+      <li data-etape="2"><span class="nc-pastille">2</span><span>Le client crée son compte</span></li>
+      <li data-etape="3"><span class="nc-pastille">3</span><span>Vous pilotez</span></li>
+    </ol>
     <div class="nc-grille" id="nc-principal"${demo ? "" : " hidden"}>
-      <form class="rg-carte nc-form" id="form-nc" novalidate>
-        <header class="rg-tete"><h2>Le client</h2><p>Son espace est créé tout de suite ; vous pourrez le compléter ensuite.</p></header>
-        <div class="nc-corps">
-          <div class="champ">
-            <label for="nc-nom">Nom de l'entreprise cliente</label>
-            <input type="text" id="nc-nom" maxlength="200" autocomplete="off" required placeholder="Ex. : Boulangerie Durand">
-          </div>
-          ${NAF ? `<div class="champ">
-            <label for="nc-naf">Code APE <span class="aide">(facultatif : il décide des textes suivis)</span></label>
-            <select id="nc-naf"><option value="">À régler plus tard</option>${options}</select>
-          </div>` : ""}
-          <div class="champ">
-            <label for="nc-courriel">Adresse e-mail de son responsable <span class="aide">(facultatif)</span></label>
-            <input type="email" id="nc-courriel" autocomplete="off" inputmode="email" spellcheck="false" placeholder="prenom.nom@entreprise.fr">
-            <p class="aide-bas">Il reçoit un lien pour créer son compte et devient l'administrateur de son espace. Il voit tout
-            et peut couper votre accès quand il veut.</p>
-          </div>
-          <p class="rangee"><button type="submit" class="bouton bouton-accent">Créer l'accès</button></p>
+      <form class="nc-form" id="form-nc" novalidate>
+        <header class="nc-form-tete">
+          <h2>Le client</h2>
+          <p>Son espace est créé tout de suite ; vous pourrez le compléter ensuite dans ses réglages.</p>
+        </header>
+        <div class="nc-champ">
+          <label for="nc-nom"><span class="nc-ic">${ic(I.entreprise)}</span>Nom de l'entreprise cliente</label>
+          <input type="text" id="nc-nom" maxlength="200" autocomplete="off" required placeholder="Ex. : Boulangerie Durand">
+        </div>
+        ${NAF ? `<div class="nc-champ">
+          <label for="nc-naf"><span class="nc-ic">${ic(I.ape)}</span>Code APE <span class="nc-facultatif">Facultatif</span></label>
+          <select id="nc-naf"><option value="">À régler plus tard</option>${options}</select>
+          <p class="nc-aide-champ">Il décide des textes suivis pour ce client.</p>
+        </div>` : ""}
+        <div class="nc-champ">
+          <label for="nc-courriel"><span class="nc-ic">${ic(I.mail)}</span>E-mail de son responsable <span class="nc-facultatif">Facultatif</span></label>
+          <input type="email" id="nc-courriel" autocomplete="off" inputmode="email" spellcheck="false" placeholder="prenom.nom@entreprise.fr">
+          <p class="nc-aide-champ">Il reçoit un lien pour créer son compte et devient l'administrateur de son espace.</p>
+        </div>
+        <div class="nc-pied">
           <p class="etat-compte" id="nc-etat" role="status"></p>
+          <button type="submit" class="bouton bouton-accent">Créer l'accès</button>
         </div>
       </form>
-      <aside class="rg-carte nc-aide">
-        <header class="rg-tete"><h2>Comment ça marche</h2></header>
-        <ol class="nc-etapes">
-          <li>Vous créez l'accès</li>
-          <li>Le client crée son compte</li>
-          <li>Vous pilotez</li>
-        </ol>
-      </aside>
-      <div class="rg-carte nc-fait" id="nc-fait" hidden>
-        <header class="rg-tete"><h2 id="nc-fait-titre">Accès créé</h2><p id="nc-fait-texte"></p></header>
-        <div class="nc-corps">
-          <div id="nc-lien-bloc" hidden>
-            <label for="nc-lien">Lien d'invitation</label>
-            <div class="nc-lien-ligne"><input type="text" id="nc-lien" readonly>
-              <button type="button" class="bouton bouton-sobre" id="nc-copier">Copier le lien</button></div>
-            <p class="rangee"><a class="bouton bouton-accent" id="nc-courriel-lien" href="#">Écrire l'e-mail d'invitation</a></p>
+      <aside class="nc-aide nc-apercu" aria-labelledby="nc-t-apercu">
+        <p class="nc-apercu-titre" id="nc-t-apercu">Ce que reçoit votre client</p>
+        <div class="nc-mail">
+          <div class="nc-mail-tete">
+            <p><span>À</span><strong id="ap-courriel">prenom.nom@entreprise.fr</strong></p>
+            <p><span>Objet</span><strong>Votre espace de veille réglementaire « <span id="ap-client">Votre client</span> »</strong></p>
           </div>
-          <p class="rangee nc-suite">
-            <a class="bouton bouton-sobre" id="nc-ouvrir" href="../app/reglages.html">Ouvrir son espace</a>
-            <button type="button" class="bouton bouton-sobre" id="nc-autre">Créer un autre client</button>
-            <a class="lien-nu" href="cabinet.html">Retour au tableau de bord</a>
-          </p>
+          <div class="nc-mail-corps">
+            <p>Bonjour,</p>
+            <p><span id="ap-cabinet">${demo ? esc(demo) : "Votre cabinet"}</span> a ouvert l'espace de « <span data-ap-client>Votre client</span> » sur Vigie réglementaire.</p>
+            <p class="nc-mail-lien">Créer mon compte →</p>
+            <p class="nc-mail-note">Lien valable 7 jours, utilisable une fois.</p>
+          </div>
+        </div>
+      </aside>
+      <div class="nc-fait" id="nc-fait" hidden>
+        <div class="nc-fait-tete">
+          <span class="nc-fait-ic">${ic(I.ok)}</span>
+          <div><h2 id="nc-fait-titre">Accès créé</h2><p id="nc-fait-texte"></p></div>
+        </div>
+        <div id="nc-lien-bloc" hidden>
+          <label for="nc-lien">Lien d'invitation</label>
+          <div class="nc-lien-ligne"><input type="text" id="nc-lien" readonly>
+            <button type="button" class="bouton bouton-sobre" id="nc-copier">Copier le lien</button></div>
+          <p class="rangee"><a class="bouton bouton-accent" id="nc-courriel-lien" href="#">Écrire l'e-mail d'invitation</a></p>
+        </div>
+        <div class="nc-suite">
+          <a class="bouton bouton-sobre" id="nc-ouvrir" href="../app/reglages.html">Ouvrir son espace</a>
+          <button type="button" class="bouton bouton-sobre" id="nc-autre">Créer un autre client</button>
+          <a class="lien-nu" href="cabinet.html">Retour au tableau de bord</a>
         </div>
       </div>
     </div>
@@ -4960,7 +4983,7 @@ function pageNouveauClient(V, NAF, demo = null) {
   </div>
 </section>`;
   return page({ titre: `${demo ? "Démonstration — " : ""}Créer l'accès d'un client | ${SITE.nom}`, description: "Espace consultant : créer l'espace et l'accès d'une entreprise cliente.",
-    racine: "../", zone: "public", corps, scripts: [demo ? "assets/nouveau-client-demo.js" : "assets/nouveau-client.js"], installation: false, piedCourt: true, attrsBody: ' data-page="cabinet"' });
+    racine: "../", zone: "public", corps, scripts: [demo ? "assets/nouveau-client-demo.js" : "assets/nouveau-client.js", "assets/nouveau-client-apercu.js"], installation: false, piedCourt: true, attrsBody: ' data-page="cabinet"' });
 }
 
 /* La démonstration consultant (demo/cabinet.html) : la page « Mon cabinet »
