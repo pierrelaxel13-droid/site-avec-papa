@@ -4380,13 +4380,17 @@ details.analyse > summary:focus-visible { outline: 2px solid var(--accent); outl
 .export-bouton svg { width: 1rem; height: 1rem; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; flex: none; }
 .export-bouton-fort { background: var(--accent); border-color: var(--accent); color: #fff; }
 .export-bouton-fort:hover { background: var(--accent-fonce); border-color: var(--accent-fonce); color: #fff; }
-.export-envoi { margin: 0 0 .8rem auto; max-width: 34rem; padding: .8rem .9rem; border: 1px solid var(--filet); border-radius: 10px; background: var(--carte); }
-.export-envoi label { display: block; font-size: .82rem; font-weight: 600; margin-bottom: .3rem; }
+/* Le formulaire d'envoi : la même forme que la recherche au-dessus du tableau. */
+.export-envoi { margin: 0 0 var(--t3) auto; max-width: 36rem; padding: 1rem; background: var(--carte);
+  border: 1px solid var(--filet); border-radius: var(--r3); font: inherit; }
+.export-envoi label { display: block; margin-bottom: .3rem; font-size: .8rem; font-weight: 500; color: var(--encre-douce); }
 .export-envoi-ligne { display: flex; flex-wrap: wrap; gap: .5rem; align-items: center; }
-.export-envoi input { flex: 1 1 14rem; min-width: 0; padding: .45rem .6rem; border: 1px solid var(--filet-fort); border-radius: 8px; background: var(--papier); color: var(--encre); font: inherit; }
+.export-envoi input { flex: 1 1 14rem; min-width: 0; font: inherit; font-size: .9rem; color: var(--encre);
+  background: var(--papier); border: 1px solid var(--filet-fort); border-radius: var(--r1); padding: .5rem .65rem; }
+.export-envoi input:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
 .export-envoi input[aria-invalid="true"] { border-color: var(--rouge); }
-.export-envoi .bouton { padding: .45rem .9rem; }
-.export-aide { margin: .5rem 0 0; font-size: .78rem; color: var(--encre-douce); }
+.export-envoi .export-bouton { min-height: 0; padding: .5rem .95rem; font-size: .9rem; border-radius: var(--r1); }
+.export-aide { margin: .6rem 0 0; font-size: .8rem; line-height: 1.45; color: var(--encre-douce); }
 @media (max-width: 47.99rem) {
   .export-barre { justify-content: stretch; }
   .export-barre .export-bouton { flex: 1 1 auto; justify-content: center; }

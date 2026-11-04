@@ -321,8 +321,8 @@
     var idc = "export-dest-" + n;
     form.innerHTML = '<label for="' + idc + '">Destinataire</label>' +
       '<div class="export-envoi-ligne"><input type="email" id="' + idc + '" autocomplete="email" placeholder="prenom.nom@entreprise.fr" required>' +
-      '<button type="submit" class="bouton bouton-accent">Préparer l\'e-mail</button>' +
-      '<button type="button" class="lien-nu export-annuler">Annuler</button></div>' +
+      '<button type="submit" class="export-bouton export-bouton-fort">Préparer l\'e-mail</button>' +
+      '<button type="button" class="export-bouton export-annuler">Annuler</button></div>' +
       '<p class="export-aide">Le fichier Excel est téléchargé et votre messagerie s\'ouvre, adressée au destinataire : il reste à joindre le fichier, puis à envoyer.</p>';
 
     bx.addEventListener("click", function () {

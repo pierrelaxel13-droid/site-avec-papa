@@ -108,7 +108,7 @@ async function essai() {
     await p.fill("#e-nom", "Essai automatique");
     await p.click("#form-entreprise button[type=submit]");
     await p.waitForSelector("#compte-entreprise:not([hidden])");
-    ok((await p.locator("#entreprise-formule").textContent()).includes("Pas encore d'abonnement"), "entreprise nommée ; sans abonnement, l'espace est fermé");
+    ok((await p.locator("#entreprise-formule").textContent()).includes("Aucun abonnement"), "entreprise nommée ; sans abonnement, l'espace est fermé");
     const e = sql(`select entreprise_id from public.membres_entreprise where user_id = ${litteral(uid)}`);
     sql(`insert into public.abonnements (entreprise_id, formule, periode, statut) values (${litteral(e)}, 'complet', 'an', 'offert')`);
 
@@ -160,7 +160,7 @@ async function essai() {
     await p.goto(SITE + "app/index.html"); await pret(p);
     // Le tableau de bord (3 novembre 2026) : le tableau des textes et les historiques.
     await p.waitForFunction(() => document.querySelectorAll("#bord-traces .ligne-registre").length > 0, null, { timeout: 30000 });
-    ok((await p.locator(".tableau-bord > div").count()) === 5 && (await p.locator("#bord-traces .ligne-registre").count()) === 3,
+    ok((await p.locator(".tableau-bord:visible > div").count()) === 5 && (await p.locator("#bord-traces .ligne-registre").count()) === 3,
       "tableau de bord : le tableau (publiés, applicables, lus, actions) et les 3 entrées du registre dans « Historiques »");
 
     // 6 bis. Dire qu'un texte s'applique (Ma veille réglementaire), puis donner
@@ -241,7 +241,7 @@ async function essai() {
     await pk.locator("#cabinet-clients article", { hasText: "Client essai automatique" }).locator("text=Ouvrir son espace").click();
     await pk.waitForURL(/app\/index\.html/, { timeout: 30000 });
     await pret(pk);
-    ok((await pk.locator(".bandeau-consultant").innerText()).includes("Espace de « Client essai automatique »"),
+    ok((await pk.locator(".bandeau-consultant").innerText()).includes("Client : « Client essai automatique »"),
       "abonnement ouvert : il entre chez son client et le bandeau le dit");
 
     // 8. Déconnexion.
