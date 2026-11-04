@@ -9,7 +9,7 @@
     b.addEventListener("click", function () {
       var url = b.getAttribute("data-copier-lien");
       (navigator.clipboard ? navigator.clipboard.writeText(url) : Promise.reject())
-        .then(function () { dire("Lien copié : collez-le où vous voulez."); })
+        .then(function () { dire("Lien copié."); })
         .catch(function () { dire("Adresse du site : " + url); });
     });
   });

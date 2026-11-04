@@ -3640,6 +3640,7 @@ function pageAccueil(V, D, METIERS, ECRANS, C = null, NAF = null, SOURCES = [], 
   const corps = `
 <section class="heros heros-accueil">
   <div class="enveloppe">
+    ${barrePartage()}
     <div class="heros-texte">
       <h1>Votre veille réglementaire, notre préoccupation</h1>
     </div>
@@ -3860,7 +3861,6 @@ ${bandeAvis(AVIS)}
      Chaque réponse commence par la réponse elle-même (oui, non, le chiffre),
      puis le détail. Elle dit ce qui est vrai aujourd'hui, y compris ce qui
      n'est pas encore en place. Repliées : on n'ouvre que celle qui intéresse. -->
-${sectionPartage()}
 ${SITE.offreConsultant ? `<section class="section">
   <div class="enveloppe">
     <div class="bloc-consultant">
@@ -3884,7 +3884,7 @@ ${SITE.offreConsultant ? `<section class="section">
    Aucun script ni traceur tiers n'est chargé : rien ne part tant que
    l'internaute ne clique pas. Sur téléphone, le bouton « Partager » ouvre
    le partage du système (assets/partage.js). */
-function sectionPartage() {
+function barrePartage() {
   const url = SITE.adresseWeb, e = encodeURIComponent;
   const texte = `J'utilise ${SITE.nom} réglementaire pour suivre la veille réglementaire de mon entreprise : les textes qui s'appliquent, un plan d'actions et un registre de conformité.`;
   const reseaux = [
@@ -3897,26 +3897,18 @@ function sectionPartage() {
     ["WhatsApp", `https://wa.me/?text=${e(texte + " " + url)}`,
       '<path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8s-.4-.1-.6.1-.7.8-.8 1-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.3-.4.3-.4.7-1.4.1-.2 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-.9 2.2 5.2 5.2 0 0 0 1.1 2.7 11.8 11.8 0 0 0 4.5 4c1.7.7 2.3.8 3.2.6.5-.1 1.5-.6 1.7-1.2s.2-1.1.2-1.2-.2-.2-.4-.3z"/>'],
     ["E-mail", `mailto:?subject=${e(`${SITE.nom} réglementaire`)}&body=${e(texte + "\n\n" + url)}`,
-      '<rect x="3" y="5" width="18" height="14" rx="2" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M3 7l9 6 9-6" fill="none" stroke="currentColor" stroke-width="1.8"/>']
+      '<rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/>']
   ];
-  return `<section class="section section-partage" id="partager">
-  <div class="enveloppe">
-    <div class="bloc-partage">
-      <div class="partage-texte">
-        <h2>Vous aimez ${esc(SITE.nom)} réglementaire&nbsp;? Faites-le savoir</h2>
-        <p>Partagez le site avec votre réseau : collègues, clients, fournisseurs ou partenaires.</p>
-      </div>
+  const icone = (d, plein = true) => `<svg viewBox="0 0 24 24" aria-hidden="true"${plein ? ' fill="currentColor"' : ' fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"'}>${d}</svg>`;
+  return `<div class="partage-barre" role="group" aria-label="Partager ${esc(SITE.nom)} réglementaire">
+      <span class="partage-libelle">Partager</span>
       <ul class="partage-liens" role="list">
-        ${reseaux.map(([nom, href, icone]) => `<li><a class="partage-lien" href="${esc(href)}"${nom === "E-mail" ? "" : ' target="_blank" rel="noopener"'} aria-label="Partager sur ${esc(nom)}${nom === "E-mail" ? "" : " (nouvelle fenêtre)"}">
-          <svg viewBox="0 0 24 24" aria-hidden="true" fill="currentColor">${icone}</svg><span>${esc(nom)}</span></a></li>`).join("\n        ")}
-        <li><button type="button" class="partage-lien" data-copier-lien="${esc(url)}"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1"/><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/></svg><span>Copier le lien</span></button></li>
-        <li data-partage-natif hidden><button type="button" class="partage-lien partage-natif" data-partager="${esc(url)}" data-texte="${esc(texte)}"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="18" cy="5" r="2.5"/><circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="19" r="2.5"/><path d="M8.2 10.8l7.6-4.4M8.2 13.2l7.6 4.4"/></svg><span>Partager</span></button></li>
+        ${reseaux.map(([nom, href, d]) => `<li><a class="partage-icone" href="${esc(href)}"${nom === "E-mail" ? "" : ' target="_blank" rel="noopener"'} title="${nom === "E-mail" ? "Envoyer par e-mail" : `Partager sur ${esc(nom)}`}" aria-label="${nom === "E-mail" ? "Envoyer par e-mail" : `Partager sur ${esc(nom)} (nouvelle fenêtre)`}">${icone(d, nom !== "E-mail")}</a></li>`).join("")}
+        <li><button type="button" class="partage-icone" data-copier-lien="${esc(url)}" title="Copier le lien du site" aria-label="Copier le lien du site">${icone('<path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1"/><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/>', false)}</button></li>
+        <li data-partage-natif hidden><button type="button" class="partage-icone" data-partager="${esc(url)}" data-texte="${esc(texte)}" title="Partager" aria-label="Partager avec une autre application">${icone('<circle cx="18" cy="5" r="2.5"/><circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="19" r="2.5"/><path d="M8.2 10.8l7.6-4.4M8.2 13.2l7.6 4.4"/>', false)}</button></li>
       </ul>
-      <p class="partage-etat" role="status"></p>
-    </div>
-  </div>
-</section>
-`;
+      <span class="partage-etat" role="status"></span>
+    </div>`;
 }
 
 /* --- Nous contacter (3 novembre 2026) -----------------------------------------

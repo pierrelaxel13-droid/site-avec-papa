@@ -4397,28 +4397,21 @@ details.analyse > summary:focus-visible { outline: 2px solid var(--accent); outl
   .export-barre .export-etat { flex-basis: 100%; }
 }
 
-/* --- Partager le site (accueil, 4 novembre 2026) --------------------------- */
-.bloc-partage { display: grid; gap: 1rem 2rem; grid-template-columns: minmax(0, 1fr) auto; align-items: center;
-  padding: clamp(1.25rem, 3vw, 2rem); border: 1px solid var(--filet); border-radius: var(--rayon-carte, 16px);
-  background: linear-gradient(135deg, var(--accent-clair), var(--carte)); }
-.bloc-partage h2 { margin: 0 0 .35rem; font-size: var(--h3-site, 1.35rem); }
-.bloc-partage .partage-texte p { margin: 0; color: var(--encre-douce); }
-.partage-liens { display: flex; flex-wrap: wrap; gap: .5rem; margin: 0; padding: 0; list-style: none; justify-content: flex-end; }
-.partage-lien { display: inline-flex; align-items: center; gap: .45rem; padding: .5rem .85rem; border-radius: 999px;
-  border: 1px solid var(--filet-fort); background: var(--carte); color: var(--encre); font: inherit; font-size: .88rem; font-weight: 600;
-  text-decoration: none; cursor: pointer; }
-.partage-lien svg { width: 1.05rem; height: 1.05rem; flex: none; }
-.partage-lien:hover { border-color: var(--accent); color: var(--accent); }
-.partage-lien:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-.partage-natif { background: var(--accent); border-color: var(--accent); color: #fff; }
-.partage-natif:hover { background: var(--accent-fonce); color: #fff; }
-.partage-etat { grid-column: 1 / -1; margin: 0; font-size: .85rem; color: var(--encre-douce); min-height: 1em; }
+/* --- Partager le site : une rangée d'icônes discrète, en haut à gauche de
+   l'accueil (4 novembre 2026). */
+.partage-barre { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem .75rem; margin: 0 0 var(--t4, 1.5rem); }
+.partage-libelle { font-size: .78rem; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--encre-douce); }
+.partage-liens { display: flex; gap: .4rem; margin: 0; padding: 0; list-style: none; }
+.partage-icone { display: inline-flex; align-items: center; justify-content: center; width: 2.25rem; height: 2.25rem; padding: 0;
+  border: 1px solid var(--filet-fort); border-radius: 50%; background: var(--carte); color: var(--encre-douce); cursor: pointer;
+  text-decoration: none; transition: color .15s, border-color .15s, background .15s; }
+.partage-icone svg { width: 1rem; height: 1rem; }
+.partage-liens .partage-icone:hover { color: #fff; background: var(--accent); border-color: var(--accent); }
+.partage-icone:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.partage-etat { font-size: .82rem; color: var(--vert); }
 .partage-etat:empty { display: none; }
-@media (max-width: 47.99rem) {
-  .bloc-partage { grid-template-columns: 1fr; }
-  .partage-liens { justify-content: flex-start; }
-  .partage-lien span { font-size: .84rem; }
-}
+.heros-accueil .partage-barre { justify-content: flex-start; }
+@media (prefers-reduced-motion: reduce) { .partage-icone { transition: none; } }
 
 /* --- Code promo (paiement, 4 novembre 2026) -------------------------------- */
 .paie-promo { margin: .25rem 0 .75rem; }
