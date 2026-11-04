@@ -4831,24 +4831,26 @@ function pageCabinet(V, NAF, SOURCES) {
    compte/nouveau-client.html : en une fois, l'espace de l'entreprise cliente
    (nom, code APE) et l'invitation de son responsable, qui crée son compte
    par le lien et devient administrateur de son espace. */
-function pageNouveauClient(V, NAF) {
+function pageNouveauClient(V, NAF, demo = null) {
   const options = NAF ? V.divisions.map((d) => {
     const codes = NAF.codes.filter((c) => c.d === d.c);
     return codes.length ? `<optgroup label="${esc(d.c)} — ${esc(d.l)}">${codes.map((c) => `<option value="${esc(c.c)}">${esc(c.c)} — ${esc(c.l)}</option>`).join("")}</optgroup>` : "";
   }).join("") : "";
-  const corps = `
+  const corps = `${demo ? `
+<p class="bandeau-demo"><strong>Démonstration consultant.</strong> Essayez librement : aucun espace, aucun compte ni aucun e-mail
+  n'est créé, le lien d'invitation est fictif. <a href="../compte/creer.html?type=cabinet">Créer mon compte consultant</a></p>` : ""}
 <section class="section compte-page cs-page">
-  <div class="enveloppe nc-enveloppe">
+  <div class="enveloppe nc-enveloppe"${demo ? ` data-demo-cabinet="${esc(demo)}"` : ""}>
     <div class="cs-tete">
       <div>
         <p class="cs-sur">Espace consultant</p>
         <h1>Créer l'accès d'un client</h1>
-        <p class="etat-compte" id="nc-cabinet" role="status">Chargement…</p>
+        <p class="etat-compte" id="nc-cabinet" role="status">${demo ? `Cabinet « ${esc(demo)} »` : "Chargement…"}</p>
       </div>
       <a class="bouton bouton-sobre" href="cabinet.html">Tableau de bord des clients</a>
     </div>
-    ${comptesFermes()}
-    <div class="nc-grille" id="nc-principal" hidden>
+    ${demo ? "" : comptesFermes()}
+    <div class="nc-grille" id="nc-principal"${demo ? "" : " hidden"}>
       <form class="rg-carte nc-form" id="form-nc" novalidate>
         <header class="rg-tete"><h2>Le client</h2><p>Son espace est créé tout de suite ; vous pourrez le compléter ensuite.</p></header>
         <div class="nc-corps">
@@ -4905,8 +4907,8 @@ function pageNouveauClient(V, NAF) {
     </div>
   </div>
 </section>`;
-  return page({ titre: `Créer l'accès d'un client | ${SITE.nom}`, description: "Espace consultant : créer l'espace et l'accès d'une entreprise cliente.",
-    racine: "../", zone: "public", corps, scripts: ["assets/nouveau-client.js"], installation: false, piedCourt: true, attrsBody: ' data-page="cabinet"' });
+  return page({ titre: `${demo ? "Démonstration — " : ""}Créer l'accès d'un client | ${SITE.nom}`, description: "Espace consultant : créer l'espace et l'accès d'une entreprise cliente.",
+    racine: "../", zone: "public", corps, scripts: [demo ? "assets/nouveau-client-demo.js" : "assets/nouveau-client.js"], installation: false, piedCourt: true, attrsBody: ' data-page="cabinet"' });
 }
 
 /* La démonstration consultant (demo/cabinet.html) : la page « Mon cabinet »
@@ -4986,6 +4988,7 @@ function pageCabinetDemo(V, D) {
         <h1>${esc(C.nom)}</h1>
         <p class="etat-compte">${pl(clients.length, "client", "clients")}${retard ? ` — ${pl(retard, "avec des actions en retard", "avec des actions en retard")}.` : ", aucun en retard."}</p>
       </div>
+      <p class="rangee cs-tete-boutons"><a class="bouton bouton-accent" href="nouveau-client.html">Créer l'accès d'un client</a></p>
     </div>
     <section class="cs-bloc" aria-labelledby="cs-t-bord">
       <h2 id="cs-t-bord" class="cs-titre">Tableau de bord de vos clients</h2>
@@ -5004,9 +5007,9 @@ function pageCabinetDemo(V, D) {
         <li>Ouvrez-le pour régler son plan de veille (code APE, situations).</li>
         <li>Invitez son responsable : il crée son compte et voit tout. Il peut couper votre accès quand il veut.</li>
       </ol>
-      <p>Dans la démonstration, on n'ajoute pas de client : cela se fait avec votre compte consultant.</p>
+      <p>Essayez-le dans la démonstration : rien n'est enregistré ni envoyé.</p>
       <p class="rangee" style="margin-top:var(--t4)">
-        <a class="bouton bouton-accent" href="../compte/creer.html?type=cabinet">Créer mon compte consultant</a>
+        <a class="bouton bouton-accent" href="nouveau-client.html">Créer l'accès d'un client</a>
       </p>
     </div>
     </section>
@@ -5014,7 +5017,7 @@ function pageCabinetDemo(V, D) {
 </section>`;
   return page({ titre: `Démonstration consultant | ${SITE.nom}`,
     description: "La page d'un cabinet de conseil sur Vigie : ses clients, où ils en sont, leur espace. Démonstration avec des données fictives.",
-    racine: "../", zone: "public", corps, scripts: ["assets/session.js"], installation: false, piedCourt: true,
+    racine: "../", zone: "public", corps, scripts: ["assets/session.js", "assets/nouveau-client-demo.js"], installation: false, piedCourt: true,
     attrsBody: ' data-page="cabinet"' });
 }
 
@@ -5578,6 +5581,7 @@ async function main() {
 
   await copieDemo();
   if (SITE.offreConsultant) await writeFile(join(SORTIE, "demo", "cabinet.html"), pageCabinetDemo(V, D));
+  if (SITE.offreConsultant) await writeFile(join(SORTIE, "demo", "nouveau-client.html"), pageNouveauClient(V, NAF, D.cabinet.nom));
 
   const total = await poids(SORTIE);
   console.log(`  public              4 pages (accueil, comment ça marche, abonnement, connexion)`);
