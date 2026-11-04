@@ -40,7 +40,7 @@ const RACINE = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const SORTIE = join(RACINE, "contenu", "fonds-legi.json");
 const INDEX = "https://echanges.dila.gouv.fr/OPENDATA/LEGI/";
 export const ANS = 50;
-const PLAFOND_CORPS = 6000;      // caractères gardés par texte (le texte entier est à la source)
+const PLAFOND_CORPS = 2500;      // caractères gardés par texte (le texte entier est à la source)
 const NATURES = { LOI: "Loi", LOI_ORGANIQUE: "Loi organique", ORDONNANCE: "Ordonnance", DECRET: "Décret", DECRET_LOI: "Décret-loi", ARRETE: "Arrêté" };
 
 /* --- Lire une archive .tar.gz en flux -------------------------------------
@@ -93,7 +93,10 @@ export async function parcourir(fichier, garder, traiter) {
 
 const entre = (xml, b) => { const m = new RegExp(`<${b}(?:\\s[^>]*)?>([\\s\\S]*?)</${b}>`).exec(xml); return m ? m[1] : ""; };
 const nu = (xml, b) => texteBrut(entre(xml, b)).trim();
-const enVigueur = (etat, fin, auj) => !/^ABROGE$|^PERIME|^ANNULE|^TRANSFERE|^DISJOINT/.test(etat || "") && (!fin || fin.slice(0, 10) > auj);
+/* L'état d'un texte ou d'un article dans LEGI : VIGUEUR, VIGUEUR_DIFF, MODIFIE (en vigueur,
+   modifié depuis), ABROGE_DIFF (abrogé à une date à venir : encore en vigueur aujourd'hui),
+   et ceux qui ne le sont plus (ABROGE, PERIME, ANNULE, MODIFIE_MORT_NE…). */
+const enVigueur = (etat, fin, auj) => !/^ABROGE$|^PERIME|^ANNULE|^TRANSFERE|^DISJOINT|MORT_NE/.test(etat || "") && (!fin || fin.slice(0, 10) > auj);
 
 /* Une fiche de texte (texte/version) : ce qu'on en garde, ou null. */
 export const RAISONS = {};
@@ -119,10 +122,17 @@ export function lisVersion(xml, auj, limite) {
 export function lisArticle(xml, auj) {
   const meta = entre(xml, "META_ARTICLE");
   if (!enVigueur(nu(meta, "ETAT"), nu(meta, "DATE_FIN"), auj)) return null;
-  const txt = (/<TITRE_TXT[^>]*\bid_txt="([^"]+)"/.exec(xml) || [])[1] || "";
+  // Un article cite son texte deux fois : par son numéro au Journal officiel (JORFTEXT…)
+  // et par son numéro consolidé (LEGITEXT…). On garde les deux.
+  const txts = [...xml.matchAll(/<TITRE_TXT[^>]*\bid_txt="([^"]+)"/g)].map((m) => m[1]);
+  const cid = (/<TEXTE[^>]*\bcid="([^"]+)"/.exec(xml) || [])[1];
+  if (cid) txts.push(cid);
   const corps = texteBrut(entre(entre(xml, "BLOC_TEXTUEL"), "CONTENU")).replace(/\s+/g, " ").trim();
-  if (!txt || !corps) return null;
-  return { txt, num: nu(meta, "NUM"), corps };
+  if (!txts.length || !corps) return null;
+  // « a modifié les dispositions suivantes » : un texte qui n'a fait que modifier d'autres
+  // textes ; ce qu'il a changé est déjà dans les textes consolidés.
+  if (/^(?:a |ont )?(?:modifié|abrogé|créé|transféré|modifie|abroge|crée)\s.{0,40}dispositions suivantes/i.test(corps) || corps.length < 15) return null;
+  return { txts, num: nu(meta, "NUM"), corps };
 }
 
 const ordreNum = (a) => String(a.num || "").replace(/\d+/g, (n) => n.padStart(6, "0"));
@@ -144,15 +154,18 @@ export async function fonds(fichier, V, { auj = new Date().toISOString().slice(0
     const avant = textes.get(t.id);
     if (!avant || t.date > avant.date) textes.set(t.id, { ...t, domaines, articles: [] });
   });
-  // 2. Leurs articles en vigueur.
+  // 2. Leurs articles en vigueur, retrouvés par l'un ou l'autre numéro du texte.
+  const parCid = new Map([...textes.values()].filter((t) => t.cid).map((t) => [t.cid, t.id]));
   let articles = 0, vus = 0;
   await parcourir(fichier, (n) => dansTnc(n) && /\/article\/.+\.xml$/.test(n), async (n, xml) => {
     vus++;
     if (vus <= 1 && process.env.FONDS_EXEMPLES) console.log(`--- exemple d'article ${n}\n${xml.slice(0, 2000)}\n---`);
     const a = lisArticle(xml, auj);
-    if (!a || !textes.has(a.txt)) return;
+    if (!a) return;
+    const id = a.txts.map((x) => (textes.has(x) ? x : parCid.get(x))).find(Boolean);
+    if (!id) return;
     articles++;
-    textes.get(a.txt).articles.push({ num: a.num, corps: a.corps });
+    textes.get(id).articles.push({ num: a.num, corps: a.corps });
   });
   const liste = [...textes.values()].map((t) => {
     t.articles.sort((a, b) => (ordreNum(a) < ordreNum(b) ? -1 : 1));
@@ -196,5 +209,6 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   }) + "\n");
   console.log(`Fiches de textes lues : ${r.fiches}. Textes en vigueur depuis le ${r.limite} retenus : ${r.textes.length} (${r.articles} articles).`);
   console.log(`Articles lus : ${r.articlesVus}. Raisons : ${JSON.stringify(RAISONS)}`);
+  for (let i = 0; i < Math.min(25, r.textes.length); i++) { const t = r.textes[Math.floor((i * r.textes.length) / 25)]; console.log(`  · ${t.date} ${t.titre.slice(0, 150)} [${t.domaines.map((d) => d.id).join(", ")}] ${t.articlesEnVigueur} art.`); }
   Object.entries(parSujet).sort((a, b) => b[1] - a[1]).forEach(([n, k]) => console.log(`  ${String(k).padStart(5)}  ${n}`));
 }

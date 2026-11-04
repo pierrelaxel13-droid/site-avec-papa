@@ -5558,6 +5558,13 @@ async function main() {
   CODES_LUS = C;
   const cheminFonds = resolve(RACINE, "contenu/fonds-legi.json");
   FONDS = existsSync(cheminFonds) ? JSON.parse(await readFile(cheminFonds, "utf8")) : null;
+  /* Au-delà de quelques centaines de textes, les mettre tous dans la page « Ma veille
+     réglementaire » la rendrait trop lourde : ils attendent le chargement à la demande.
+     Ni affichés ni comptés à l'accueil d'ici là — on ne compte que ce qu'on montre. */
+  if (FONDS && FONDS.textes && FONDS.textes.length > 400) {
+    console.log(`  fonds LEGI          ${FONDS.textes.length} textes en vigueur : en attente du chargement à la demande, pas encore affichés`);
+    FONDS = null;
+  }
   if (C) verifieCodes(TEXTES, C);
   verifieLiens(TEXTES, C, LIENS);
   verifie(V, PIEGES, METIERS, D, TEXTES);

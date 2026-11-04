@@ -20,7 +20,7 @@ const version = (id, nature, date, titre, etat = "VIGUEUR", fin = "2999-01-01") 
 <META_TEXTE_VERSION><TITRE>${titre}</TITRE><TITREFULL>${titre}</TITREFULL><ETAT>${etat}</ETAT><DATE_DEBUT>${date}</DATE_DEBUT><DATE_FIN>${fin}</DATE_FIN></META_TEXTE_VERSION></META_SPEC></META></TEXTE_VERSION>`;
 const article = (id, txt, num, etat, corps) => `<?xml version="1.0" encoding="UTF-8"?>
 <ARTICLE><META><META_COMMUN><ID>${id}</ID></META_COMMUN><META_SPEC><META_ARTICLE><NUM>${num}</NUM><ETAT>${etat}</ETAT><DATE_DEBUT>2001-01-01</DATE_DEBUT><DATE_FIN>2999-01-01</DATE_FIN></META_ARTICLE></META_SPEC></META>
-<CONTEXTE><TEXTE cid="JORF${txt}"><TITRE_TXT id_txt="${txt}">x</TITRE_TXT></TEXTE></CONTEXTE><BLOC_TEXTUEL><CONTENU><p>${corps}</p></CONTENU></BLOC_TEXTUEL></ARTICLE>`;
+<CONTEXTE><TEXTE cid="JORF${txt}"><TITRE_TXT id_txt="JORF${txt}">x</TITRE_TXT><TITRE_TXT id_txt="${txt}">x</TITRE_TXT></TEXTE></CONTEXTE><BLOC_TEXTUEL><CONTENU><p>${corps}</p></CONTENU></BLOC_TEXTUEL></ARTICLE>`;
 const ecrire = async (chemin, x) => { await mkdir(join(racine, chemin, ".."), { recursive: true }); await writeFile(join(racine, chemin), x); };
 const T = (id) => `${base}/JORF${id}/texte/version/${id}.xml`;
 await ecrire(T("LEGITEXT1"), version("LEGITEXT1", "DECRET", "2001-05-10", `Décret n° 2001-1 du 10 mai 2001 relatif à la ${mot}`));
@@ -33,6 +33,10 @@ const long = `${base}/JORFLEGITEXT1/article/LEGI/ARTI/00/00/00/00/00/${"x".repea
 await ecrire(`${long}2.xml`, article("LEGIARTI2", "LEGITEXT1", "2", "VIGUEUR", "Deuxième article."));
 await ecrire(`${long}1.xml`, article("LEGIARTI1", "LEGITEXT1", "1", "VIGUEUR", "Premier article."));
 await ecrire(`${long}3.xml`, article("LEGIARTI3", "LEGITEXT1", "3", "ABROGE", "Article abrogé."));
+await ecrire(`${long}4.xml`, article("LEGIARTI4", "LEGITEXT1", "4", "VIGUEUR", "a modifié les dispositions suivantes"));
+// Un texte « MODIFIE » est en vigueur ; ses articles ne citent que le numéro du Journal officiel.
+await ecrire(T("LEGITEXT6"), version("LEGITEXT6", "ARRETE", "2015-03-01", `Arrêté du 1er mars 2015 relatif à la ${mot}`, "MODIFIE"));
+await ecrire(`${base}/JORFLEGITEXT6/article/LEGI/ARTI/a/LEGIARTI61.xml`, article("LEGIARTI61", "LEGITEXT6", "1", "", "Seul article de cet arrêté.").replace('<TITRE_TXT id_txt="LEGITEXT6">x</TITRE_TXT>', ""));
 // Le même texte hors du dossier « en vigueur » : ignoré.
 await ecrire(`legi/global/code_et_TNC_non_vigueur/TNC_non_vigueur/JORF/TEXT/x/texte/version/LEGITEXT9.xml`, version("LEGITEXT9", "DECRET", "2001-01-01", `Décret relatif à la ${mot}`));
 const archive = join(racine, "legi.tar.gz");
@@ -40,8 +44,9 @@ execFileSync("tar", ["-czf", archive, "--format=gnu", "-C", racine, "legi"]);
 
 const r = await fonds(archive, V, { auj: "2026-11-04" });
 assert.equal(r.limite, "1976-11-04");
-assert.deepEqual(r.textes.map((t) => t.id), ["LEGITEXT1"]);
-const t = r.textes[0];
+assert.deepEqual(r.textes.map((t) => t.id), ["LEGITEXT6", "LEGITEXT1"]);
+assert.equal(r.textes[0].corps, "Article 1 : Seul article de cet arrêté.");
+const t = r.textes[1];
 assert.equal(t.nature, "Décret"); assert.equal(t.articlesEnVigueur, 2); assert.equal(t.fonds, true);
 assert.equal(t.corps, "Article 1 : Premier article.\n\nArticle 2 : Deuxième article.");
 assert.equal(t.lien, "https://www.legifrance.gouv.fr/loda/id/LEGITEXT1");
