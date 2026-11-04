@@ -3948,3 +3948,9 @@ a.puce-fixe { text-decoration: none; color: inherit; }
   .cs-liens a { white-space: normal; }
 }
 .bandeau-consultant .choix-client { margin: 0 .2rem; padding: .15rem .4rem; border: 1px solid var(--filet-fort); border-radius: 6px; background: var(--carte); color: var(--encre); font: inherit; font-size: .9em; }
+/* Le dessin du tableau de bord consultant (4 novembre 2026). */
+.dessin .d-piste { fill: var(--filet); }
+.dessin .d-barre { fill: var(--vert); }
+.dessin .d-barre-retard { fill: #D97706; }
+.dessin .d-chiffre { fill: var(--encre); font-size: 15px; font-weight: 700; }
+.dessin .d-chiffre-accent { fill: var(--accent-fonce); font-size: 15px; font-weight: 700; }

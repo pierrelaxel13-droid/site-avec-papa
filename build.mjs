@@ -2896,43 +2896,47 @@ function pageInfos({ titre, h1, sous, encarts, suite }) {
 
 /* La page de vente pour les consultants QSE. Elle n'est écrite que si
    SITE.offreConsultant est allumé (après le choix du nom du produit). */
-/* La vue consultant, dessinée : sa marque en haut, ses clients, et ce qui est
-   en retard chez chacun. Des clients sans nom (« Entreprise A »…) : c'est une
-   illustration, pas une capture, et la légende le dit. */
+/* Le tableau de bord consultant, dessiné (4 novembre 2026) : le même que
+   l'espace consultant — par société, les textes non lus, la conformité
+   réglementaire et l'avancement du plan d'actions. Des sociétés sans nom
+   (« Entreprise A »…) et des chiffres d'exemple : c'est une illustration,
+   pas une capture, et la légende le dit. */
 function dessinVueConsultant() {
+  // [nom, non lus, conformité %, actions %, en retard]
   const clients = [
-    ["Entreprise A", "2 revues en retard", "retard"], ["Entreprise B", "À jour", "fait"],
-    ["Entreprise C", "3 textes à analyser", "faire"], ["Entreprise D", "À jour", "fait"],
-    ["Entreprise E", "1 revue en retard", "retard"], ["Entreprise F", "1 texte à analyser", "faire"]
+    ["Entreprise A", 12, 68, 75, true], ["Entreprise B", 0, 92, 100, false],
+    ["Entreprise C", 31, 40, 50, true], ["Entreprise D", 4, 85, 90, false],
+    ["Entreprise E", 18, 55, 60, false]
   ];
-  const pastille = (x, y, texte, genre, w) => `<rect class="${genre === "retard" ? "d-retard" : genre === "fait" ? "d-fait" : "d-encart-faire"}" x="${x}" y="${y}" width="${w}" height="26" rx="13"/>
-    <text class="${genre === "retard" ? "d-retard-t" : genre === "fait" ? "d-fait-p" : "d-faire-t"}" x="${x + w / 2}" y="${y + 17}" text-anchor="middle">${texte}</text>`;
+  const barre = (x, y, w, pct, retard) => `<rect class="d-piste" x="${x}" y="${y}" width="${w}" height="8" rx="4"/>
+    <rect class="${retard ? "d-barre-retard" : "d-barre"}" x="${x}" y="${y}" width="${Math.max(4, w * pct / 100)}" height="8" rx="4"/>`;
   const large = `<svg class="dessin" viewBox="0 0 640 400" role="img"
-    aria-label="Illustration de la vue consultant : votre logo et votre nom en haut, puis la liste de vos clients, chacun avec ce qui est en retard ou à analyser.">
+    aria-label="Illustration du tableau de bord consultant : pour chaque société, les textes non lus, le pourcentage de conformité réglementaire et l'avancement du plan d'actions.">
     <rect class="d-carte" x="8" y="8" width="624" height="384" rx="18"/>
-    <rect class="d-pastille" x="32" y="30" width="96" height="40" rx="10" stroke-dasharray="5 4"/>
-    <text class="d-petit" x="80" y="55" text-anchor="middle">Votre logo</text>
-    <text class="d-titre" x="146" y="47">Votre nom</text>
-    <text class="d-petit" x="146" y="65">Veille réglementaire de vos clients</text>
-    <text class="d-titre" x="32" y="108">Mes clients</text>
-    <text class="d-petit" x="608" y="108" text-anchor="end">6 équipés</text>
-    ${clients.map(([n, t, g], k) => `<line class="d-repere" x1="32" x2="608" y1="${124 + k * 44}" y2="${124 + k * 44}"/>
-    <text class="d-titre" x="32" y="${152 + k * 44}">${n}</text>
-    ${pastille(398, 133 + k * 44, t, g, 210)}`).join("")}
+    <text class="d-titre" x="32" y="48">Tableau de bord de vos clients</text>
+    <text class="d-petit" x="608" y="48" text-anchor="end">5 sociétés</text>
+    <text class="d-petit" x="32" y="88">Société</text>
+    <text class="d-petit" x="196" y="88">Non lus</text>
+    <text class="d-petit" x="290" y="88">Conformité</text>
+    <text class="d-petit" x="460" y="88">Plan d'actions</text>
+    ${clients.map(([n, nl, cf, ac, rt], k) => { const y = 100 + k * 56; return `<line class="d-repere" x1="32" x2="608" y1="${y}" y2="${y}"/>
+    <text class="d-titre" x="32" y="${y + 34}">${n}</text>
+    <text class="${nl ? "d-chiffre-accent" : "d-chiffre"}" x="196" y="${y + 34}">${nl}</text>
+    ${barre(290, y + 24, 100, cf, false)}<text class="d-petit" x="400" y="${y + 33}">${cf} %</text>
+    ${barre(460, y + 24, 100, ac, rt)}<text class="d-petit" x="570" y="${y + 33}">${ac} %</text>`; }).join("")}
   </svg>`;
   const etroit = `<svg class="dessin" viewBox="0 0 340 470" role="img"
-    aria-label="Illustration de la vue consultant sur téléphone : votre marque, puis vos clients et leurs retards.">
+    aria-label="Illustration du tableau de bord consultant sur téléphone : par société, textes non lus, conformité et plan d'actions.">
     <rect class="d-carte" x="6" y="6" width="328" height="458" rx="16"/>
-    <rect class="d-pastille" x="22" y="22" width="80" height="34" rx="9" stroke-dasharray="5 4"/>
-    <text class="d-petit" x="62" y="44" text-anchor="middle">Votre logo</text>
-    <text class="d-titre" x="114" y="44">Votre nom</text>
-    <text class="d-titre" x="22" y="88">Mes clients</text>
-    ${clients.map(([n, t, g], k) => `<line class="d-repere" x1="22" x2="318" y1="${100 + k * 60}" y2="${100 + k * 60}"/>
-    <text class="d-titre" x="22" y="${124 + k * 60}">${n}</text>
-    ${pastille(150, 106 + k * 60, t, g, 168)}`).join("")}
+    <text class="d-titre" x="22" y="40">Tableau de bord de vos clients</text>
+    ${clients.slice(0, 4).map(([n, nl, cf, ac, rt], k) => { const y = 58 + k * 100; return `<line class="d-repere" x1="22" x2="318" y1="${y}" y2="${y}"/>
+    <text class="d-titre" x="22" y="${y + 26}">${n}</text>
+    <text class="d-petit" x="318" y="${y + 26}" text-anchor="end">${nl} non lus</text>
+    <text class="d-petit" x="22" y="${y + 52}">Conformité</text>${barre(130, y + 44, 130, cf, false)}<text class="d-petit" x="318" y="${y + 52}" text-anchor="end">${cf} %</text>
+    <text class="d-petit" x="22" y="${y + 78}">Actions</text>${barre(130, y + 70, 130, ac, rt)}<text class="d-petit" x="318" y="${y + 78}" text-anchor="end">${ac} %</text>`; }).join("")}
   </svg>`;
   return `<figure class="dessin-cadre"><div class="dessin-large">${large}</div><div class="dessin-etroit">${etroit}</div>
-    <figcaption>Illustration de la vue consultant.</figcaption></figure>`;
+    <figcaption>Illustration du tableau de bord consultant (chiffres d'exemple).</figcaption></figure>`;
 }
 
 /* Le calcul de marge : servi tout fait pour 10 clients (lisible sans
