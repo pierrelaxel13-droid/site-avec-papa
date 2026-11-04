@@ -3682,7 +3682,7 @@ function pageAccueil(V, D, METIERS, ECRANS, C = null, NAF = null, SOURCES = [], 
     </p>
     <p class="rangee rangee-centre heros-actions">
       <a class="bouton bouton-accent" href="abonnement.html">Démarrer un abonnement</a>
-      <a class="bouton bouton-sobre" href="abonnement.html#essayer">Démarrer une démonstration</a>
+      <a class="bouton bouton-sobre" href="abonnement.html#essayer">Démonstration</a>
     </p>
     ${blocCollecte(JO)}
 
@@ -4257,7 +4257,7 @@ ${SITE.offreConsultant ? (() => {
 
     <div class="essai" id="essai">
       <p class="rangee rangee-centre" style="margin-top:var(--t4)">
-        <button type="button" class="bouton bouton-accent" id="entrer-demo">Entrer en démonstration</button>
+        <button type="button" class="bouton bouton-accent" id="entrer-demo">Démonstration</button>
       </p>
     </div>
   </div>
