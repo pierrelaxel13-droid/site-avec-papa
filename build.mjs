@@ -735,7 +735,7 @@ function appTableauBord(V, D, C, LIENS) {
 
   const fiche = ficheDeLEntreprise(V, D);
   const corps = enTeteApp(D, "Tableau de bord",
-    "Ce qui attend une décision, ce qui arrive et ce qui est en retard.", fiche) + `
+    "", fiche) + `
 <!-- Le jeu d'essai : caché dans un vrai compte (assets/espace.js montre le vrai).
      4 novembre 2026 : la démonstration montre le MÊME tableau de bord qu'un
      compte — cinq carrés, prochaines revues, historiques. Les chiffres des
