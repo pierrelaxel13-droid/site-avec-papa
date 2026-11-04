@@ -203,6 +203,7 @@
           });
         }
         consultant(e, r.acces);
+        suiviPar(e);
         if (!e.rang && e.role === "consultant") {
           sansFormule("L'abonnement de votre cabinet n'est pas encore ouvert",
             "L'espace de « " + e.denomination + " » s'ouvre avec lui. Votre page cabinet dit comment l'ouvrir.",
@@ -287,6 +288,24 @@
     retour.textContent = "Revenir au tableau de bord des clients";
     vrai.appendChild(retour);
     vrai.classList.add("bandeau-consultant");
+  }
+
+  /* Chez un client suivi par un cabinet (4 novembre 2026) : le nom du cabinet
+     est mis en avant en haut de chaque page de son espace. */
+  function suiviPar(e) {
+    if (!e || e.role === "consultant") return;
+    var vrai = document.querySelector('.bandeau-demo[data-mode="compte"]');
+    if (!vrai) return;
+    window.VIGIE.rpc("mon_consultant", { e: e.entreprise_id }).then(function (r) {
+      var c = r.ok && r.donnees;
+      if (!c || typeof c !== "object" || !c.nom) return;
+      var marque = document.createElement("span");
+      marque.className = "suivi-par";
+      marque.appendChild(document.createTextNode("Veille réglementaire suivie par "));
+      var nom = document.createElement("strong"); nom.textContent = c.nom;
+      marque.appendChild(nom);
+      vrai.insertBefore(marque, vrai.firstChild);
+    });
   }
 
   /* --- Sur la page des tarifs : ouvrir la démonstration ------------------------ */

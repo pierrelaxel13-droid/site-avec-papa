@@ -4590,3 +4590,9 @@ details.analyse.analyse-deportee > .analyse-corps { display: none; }
 .nc-corps select { appearance: auto; font: inherit; font-size: .95rem; color: var(--encre); background: var(--papier);
   border: 1px solid var(--filet-fort); border-radius: var(--r1); padding: .7rem .8rem; min-height: 3rem; }
 .nc-corps select:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+
+/* --- Chez un client suivi par un cabinet : le cabinet en avant (4 novembre 2026) */
+.suivi-par { display: inline-block; margin: 0 .75rem .2rem 0; padding: .2rem .75rem; border-radius: 999px;
+  background: var(--accent); color: var(--papier); font-size: .85rem; line-height: 1.4; }
+.suivi-par strong { color: inherit; font-weight: 700; }
+@media (max-width: 47.99rem) { .suivi-par { display: table; margin: 0 0 .5rem; border-radius: 10px; } }

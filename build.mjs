@@ -3098,7 +3098,7 @@ function pageConsultants() {
       ${[
         ["Tous vos clients sur un même espace", "Chaque client dispose de son espace."],
         ["Accès aux mêmes informations", "Vous disposez de la même interface que vos clients et le pilotage en est facilité."],
-        ["Vous suivez tout", "Votre vue liste vos clients et ce qui est en retard chez chacun. Le registre de chaque client est prêt pour son audit."]
+        ["Votre société mise en avant", "Votre société est mise en avant sur chaque page de l'espace de vos clients."]
       ].map(([t, d], k) => `<li class="etape">
         <span class="etape-num">${k + 1}</span>
         <h3>${esc(t)}</h3>
