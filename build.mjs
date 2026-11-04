@@ -1042,7 +1042,7 @@ function analyseRef(V, ref, ids) {
     application: "En vigueur"
   }, f && f.valide === false ? "Fiche à faire relire par un consultant." : "");
 }
-function analyseJO(V, t, ids) {
+function analyseJO(V, t, ids, force = {}) {
   const c = String(t.corps || "").replace(/\r/g, "");
   const ligneApres = (re) => { const m = re.exec(c); return m ? majuscule(coupe(m[1].replace(/\s+/g, " ").trim(), 400)) : ""; };
   const objet = ligneApres(/(?:^|\n)\s*Objet\s*:\s*\n?\s*([^\n]{8,500})/i);
@@ -1070,7 +1070,7 @@ function analyseJO(V, t, ids) {
     dit: ditHtml,
     cites: cites.length ? liste(cites) : "",
     publication: majuscule([signe ? `signé le ${esc(signe)}` : "", publie ? `publié le ${esc(dateFr(publie))}` : "", source ? `source : ${esc(source)}` : ""].filter(Boolean).join(" · ")),
-    application: app && app.etiquette && app.etiquette !== "—" ? esc(app.etiquette) + (app.precision ? ` (${esc(app.precision)})` : "") : ""
+    application: force.application ? esc(force.application) : app && app.etiquette && app.etiquette !== "—" ? esc(app.etiquette) + (app.precision ? ` (${esc(app.precision)})` : "") : ""
   });
 }
 function analyseCode(V, m, vig, ids) {
@@ -1181,7 +1181,25 @@ function tableauTextesPlan(V, C, LIENS, plan, JO) {
     </tr>` };
   }).filter(Boolean);
 
-  const toutes = recents.concat(fond, sections).sort((a, b) =>
+  /* Le fonds : les textes non codifiés encore en vigueur, publiés depuis 50 ans
+     (outils/fonds-legi.mjs, demande d'Axel du 4 novembre 2026). Jamais « nouveaux » :
+     ils ne passent pas par la cloche ni par le récapitulatif quotidien. */
+  const anciens = !(FONDS && FONDS.textes) ? [] : FONDS.textes.map((t) => {
+    const ids = t.domaines.map((d) => d.id).filter((id) => V.domaines[id]);
+    if (!ids.length) return null;
+    return { ids, date: t.date, ordre: t.titre, src: "Légifrance", html: (dans) => `<tr data-domaines="${esc(ids.join(" "))}" data-date="${esc(t.date)}" data-source="Légifrance" data-cle="legi:${esc(t.id)}" data-objet="${esc(String(t.titre).slice(0, 480))}"${dans ? "" : " hidden"}>
+      <td data-titre="Date"><time datetime="${esc(t.date)}">${esc(dateFr(t.date))}</time><span class="etat-date etat-fond">Texte en vigueur</span></td>
+      <td data-titre="Catégorie">${categorie(ids)}</td>
+      <td data-titre="Référence et lien"><a href="${esc(t.lien)}" target="_blank" rel="noopener">${esc(t.titre)}</a>
+        <a class="lien-officiel" href="${esc(t.lien)}" target="_blank" rel="noopener">Légifrance ${sortant}</a>
+        ${analyseJO(V, { ...t, sourceNom: "Légifrance" }, ids, { application: `En vigueur · ${t.articlesEnVigueur} article${t.articlesEnVigueur > 1 ? "s" : ""} en vigueur` })}</td>
+      <td data-titre="Application"><span class="app-texte">En vigueur</span></td>
+      <td data-titre="Lu"><label class="case-lu"><input type="checkbox" class="lu" aria-label="Texte lu"><span>Lu</span></label></td>
+      <td data-titre="Applicable"><select class="applicable" aria-label="Ce texte est-il applicable ?"><option value="">À décider</option><option value="applicable">Oui</option><option value="sans_objet">Non</option></select><span class="precision applicable-etat"></span></td>
+    </tr>` };
+  }).filter(Boolean);
+
+  const toutes = recents.concat(fond, sections, anciens).sort((a, b) =>
     a.date !== b.date ? (a.date < b.date ? 1 : -1) : a.ordre.localeCompare(b.ordre, "fr"));
   if (!toutes.length) return "";
   return `<section class="rubrique" id="textes-du-plan">
@@ -1320,6 +1338,7 @@ function appActions(V, D, C, LIENS, JO = null) {
 
 let TEXTES_CLES = [];
 let FICHES = {};   // contenu/textes.js, posé au chargement (analyse des textes de référence)
+let FONDS = null;       // contenu/fonds-legi.json : textes non codifiés en vigueur depuis 50 ans (outils/fonds-legi.mjs)
 let CODES_LUS = null;   // contenu/codes.json, posé au chargement (analyse des textes de référence)
 function appConformite(V, D, C, LIENS, JO = null) {
   const plan = planDe(V, D.entreprise);
@@ -3513,7 +3532,8 @@ function pageAccueil(V, D, METIERS, ECRANS, C = null, NAF = null, SOURCES = [], 
     // les 14 jours que garde le relevé ; à défaut, ceux du relevé.
     const cumul = existsSync(resolve(RACINE, "contenu/textes-suivis.json")) ? JSON.parse(readFileSync(resolve(RACINE, "contenu/textes-suivis.json"), "utf8")) : null;
     const publies = cumul && cumul.ids ? cumul.ids.length : JO && JO.textes ? JO.textes.length : 0;
-    return { fiches, normes, articles, publies, depuis: (cumul && cumul.depuis) || (JO && JO.depuis), total: fiches + normes + articles + publies };
+    const enVigueur = FONDS && FONDS.textes ? FONDS.textes.length : 0;
+    return { fiches, normes, articles, publies, enVigueur, depuis: (cumul && cumul.depuis) || (JO && JO.depuis), total: fiches + normes + articles + publies + enVigueur };
   })();
   const nbDomaines = Object.keys(V.domaines).length;
   const defaut = "43";                      // Travaux de construction spécialisés
@@ -3735,7 +3755,7 @@ ${bandeAvis(AVIS)}
         <span class="chiffre">${suivis.total.toLocaleString("fr-FR")}</span>
         <p class="legende">Textes réglementaires et normatifs suivis</p>
         <p class="legende-detail">${[suivis.articles ? `${suivis.articles.toLocaleString("fr-FR")} articles de codes en vigueur` : "",
-          `${suivis.fiches} textes de référence`, suivis.normes ? `${suivis.normes} normes` : "",
+          `${suivis.fiches} textes de référence`, suivis.enVigueur ? `${suivis.enVigueur.toLocaleString("fr-FR")} lois, décrets et arrêtés en vigueur publiés depuis 50 ans` : "", suivis.normes ? `${suivis.normes} normes` : "",
           suivis.publies ? `${suivis.publies} textes publiés relevés depuis le ${esc(dateFr(suivis.depuis))}` : ""].filter(Boolean).join(", ").replace(/, ([^,]*)$/, " et $1")}.
         Mis à jour chaque jour avec les nouvelles publications.</p>
       </div>
@@ -5536,6 +5556,8 @@ async function main() {
   const cheminCodes = resolve(RACINE, "contenu/codes.json");
   const C = existsSync(cheminCodes) ? JSON.parse(await readFile(cheminCodes, "utf8")) : null;
   CODES_LUS = C;
+  const cheminFonds = resolve(RACINE, "contenu/fonds-legi.json");
+  FONDS = existsSync(cheminFonds) ? JSON.parse(await readFile(cheminFonds, "utf8")) : null;
   if (C) verifieCodes(TEXTES, C);
   verifieLiens(TEXTES, C, LIENS);
   verifie(V, PIEGES, METIERS, D, TEXTES);
