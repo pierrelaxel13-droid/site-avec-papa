@@ -45,7 +45,7 @@ const SITE = {
   bareme: "Veille réglementaire par secteur",
   courriel: "contact@pierrel-co.fr",
   /* L'adresse publique du site : pour les liens de partage et l'aperçu sur les réseaux sociaux. */
-  adresseWeb: "https://pierrelaxel13-droid.github.io/site-avec-papa/",
+  adresseWeb: "https://vigie-reglementaire.fr/",
   /* Le téléphone : vide tant qu'on n'a pas le vrai numéro. Vide, aucune ligne
      téléphone n'apparaît nulle part — un faux numéro est pire que pas de
      numéro. Pour l'ajouter : telephone "04 42 12 34 56", telephoneLien
@@ -5427,6 +5427,8 @@ async function main() {
   await writeFile(join(SORTIE, "compte", "oubli.html"), pageOubli());
   await writeFile(join(SORTIE, "compte", "admin.html"), pageAdmin());
   await writeFile(join(SORTIE, "compte", "recap.html"), pageRecap());
+  // Le nom de domaine du site (GitHub Pages) : vigie-reglementaire.fr.
+  await writeFile(join(SORTIE, "CNAME"), new URL(SITE.adresseWeb).hostname + "\n");
   await writeFile(join(SORTIE, "compte", "paiement.html"), pageSouscrire());
   await writeFile(join(SORTIE, "compte", "cabinet.html"), pageCabinet());
   await writeFile(join(SORTIE, "compte", "invitation.html"), pageInvitation());

@@ -51,8 +51,8 @@ applique, toute seule, à chaque envoi qui touche ce dossier ou le référentiel
 
 **Authentication → URL Configuration** — sinon les liens des courriels
 mènent à une adresse d'essai (localhost) :
-- *Site URL* : `https://pierrelaxel13-droid.github.io/site-avec-papa/compte/`
-- *Redirect URLs* : ajouter `https://pierrelaxel13-droid.github.io/site-avec-papa/**`
+- *Site URL* : `https://vigie-reglementaire.fr/compte/`
+- *Redirect URLs* : ajouter `https://vigie-reglementaire.fr/**` et `https://www.vigie-reglementaire.fr/**` (garder l'ancienne `https://pierrelaxel13-droid.github.io/site-avec-papa/**` le temps de la bascule)
 
 Le jour du nom de domaine, ajouter aussi son adresse.
 

@@ -24,7 +24,7 @@
       récurrents (par an, par mois). Sur chaque produit, une métadonnée
       « formule » = textes, suivi ou complet (sinon le robot lit le nom).
    3. Pour chaque lien de paiement, « Après le paiement » → « Rediriger vers
-      votre site » : https://pierrelaxel13-droid.github.io/site-avec-papa/compte/paiement.html?merci=1
+      votre site » : https://vigie-reglementaire.fr/compte/paiement.html?merci=1
    4. Développeurs → Clés API → « Créer une clé restreinte », en LECTURE sur
       Checkout Sessions, Subscriptions, Products et Prices. La copier dans les
       secrets du dépôt GitHub sous le nom STRIPE_SECRET_KEY — jamais ici, jamais

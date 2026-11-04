@@ -7,7 +7,7 @@ jamais son cabinet : un consultant n'achète pas l'outil d'un confrère.
 Nom, société et concepteur : `SITE.nom`, `SITE.societe`, `SITE.concepteur`
 (build.mjs).
 
-**En ligne : https://pierrelaxel13-droid.github.io/site-avec-papa/**
+**En ligne : https://vigie-reglementaire.fr/** (ancienne adresse, redirigée : https://pierrelaxel13-droid.github.io/site-avec-papa/)
 GitHub Pages publie la branche `main` à chaque envoi et après chaque relève
 (`.github/workflows/publie.yml`), environ deux minutes plus tard. L'ancienne
 adresse Netlify (https://adorable-marigold-fd062f.netlify.app) est figée au

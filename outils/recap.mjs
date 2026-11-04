@@ -28,7 +28,7 @@ import { fileURLToPath } from "node:url";
 import { applicationDuTexte, CATEGORIES_TABLEAU, dateFr } from "./textes-communs.mjs";
 
 const RACINE = resolve(dirname(fileURLToPath(import.meta.url)), "..");
-const SITE = "https://pierrelaxel13-droid.github.io/site-avec-papa/";
+const SITE = process.env.RECAP_SITE || "https://vigie-reglementaire.fr/";
 const NOM = "Vigie réglementaire";
 
 const esc = (v) => String(v == null ? "" : v)

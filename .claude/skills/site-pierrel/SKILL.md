@@ -12,7 +12,7 @@ comme l'outil d'un cabinet de conseil (ni Istres, ni « cabinet ») : c'est ce
 qui ouvre le canal consultant. Logo écrit : `motMarque()`. L'offre consultant
 (`pageConsultants()`, `OFFRE_CONSULTANT`) est allumée par `SITE.offreConsultant`.
 
-**En ligne : https://pierrelaxel13-droid.github.io/site-avec-papa/** —
+**En ligne : https://vigie-reglementaire.fr/** (ancienne adresse, redirigée : https://pierrelaxel13-droid.github.io/site-avec-papa/) —
 GitHub Pages (`.github/workflows/publie.yml`) construit `main` à chaque envoi
 et après chaque relève, et publie environ deux minutes plus tard. Pousser
 suffit. Netlify n'est plus utilisé depuis le 27 octobre 2026 : son quota
