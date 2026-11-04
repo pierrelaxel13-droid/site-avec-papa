@@ -58,7 +58,7 @@ const SITE = {
   /* La TVA. "franchise" : micro-entreprise sous franchise en base, les prix
      sont nets et portent « TVA non applicable, art. 293 B du CGI ». "ht" : le
      jour où la TVA est facturée, les prix s'affichent « HT ». */
-  tva: "franchise",
+  tva: "ht",
   /* L'identité légale de l'éditeur, pour les mentions légales, la politique de
      confidentialité et les CGV (legales.mjs). Vide = « [À COMPLÉTER] » visible
      sur ces pages et listé à chaque construction. */
