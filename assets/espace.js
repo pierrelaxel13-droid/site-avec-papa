@@ -135,23 +135,6 @@
           retard ? "dont " + retard + " en retard" : "", "Voir le plan d'actions") +
         "</dl>";
     })());
-    /* Les prochaines revues, par rythme, comme dans la démonstration
-       (4 novembre 2026) : la date la plus proche de chaque rythme du plan,
-       ou « À faire » quand une revue de ce rythme est due. */
-    if (plan.length) {
-      var P = window.PLAN || {}, F = P.f || {}, parRythme = {};
-      plan.forEach(function (x) {
-        var r = parRythme[x.frequence] = parRythme[x.frequence] || { aFaire: false, prochaine: null };
-        if (x.aFaire) r.aFaire = true;
-        else if (!r.prochaine || x.prochaine < r.prochaine) r.prochaine = x.prochaine;
-      });
-      var rythmes = Object.keys(parRythme).sort(function (a, b) { return ((F[a] || {}).ordre || 9) - ((F[b] || {}).ordre || 9); });
-      html += rubrique("Prochaines revues", '<ul class="liste-echeances">' + rythmes.map(function (k) {
-        var r = parRythme[k];
-        return '<li><a href="plan.html"><span class="etiq">' + echappe((F[k] || {}).l || k) +
-          '</span><span class="mono">' + (r.aFaire ? "À faire" : echappe(jour(r.prochaine))) + "</span></a></li>";
-      }).join("") + "</ul>", true);
-    }
     html += '<div id="bord-traces"></div>';
     hote.innerHTML = html;
     if (!hote.hasAttribute("data-ecoute")) hote.setAttribute("data-ecoute", ""), hote.addEventListener("click", function (e) {

@@ -752,16 +752,6 @@ ${rubrique({ etiq: "Tableau de bord", contenu: `
     <div data-bord-carre="actions"><dt class="etiq">Actions à réaliser</dt><dd><span class="grand" data-bord="actions">0</span><span class="precision" data-bord="retard"></span>${lienCarte("actions.html", "Voir le plan d'actions")}</dd></div>
   </dl>` })}
 
-${rubrique({ etiq: "Prochaines revues", aplat: true, contenu: `
-  <ul class="liste-echeances">
-    ${D.echeances.filter((e) => !e.retard).map((e) => `<li>
-      <a href="plan.html">
-        <span class="etiq">${esc(V.frequences[e.frequence] ? V.frequences[e.frequence].l : e.frequence)}</span>
-        <span class="mono">${esc(dateFr(e.prochaine))}</span>
-      </a>
-    </li>`).join("")}
-  </ul>` })}
-
 ${rubrique({ etiq: "Historiques", contenu: `
   <ul class="liste-registre">
     ${D.registre.slice(0, 10).map((r) => ligneRegistre(r)).join("")}
