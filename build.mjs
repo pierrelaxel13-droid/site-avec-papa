@@ -3281,14 +3281,55 @@ function sectionSimulateur(V) {
 }
 
 /* --- D'où viennent les textes (page Présentation) -------------------------- */
-function sectionSources(V) {
+/* « Nos sources » (4 novembre 2026, « être plus complets ») : toutes les
+   sources que le robot relève réellement (contenu/sources.js, confirmées),
+   les codes lus article par article, et les sites de référence consultés,
+   rangés par famille. Chaque nom mène au site officiel, pas au flux. */
+function sectionSources(V, SOURCES = [], C = null) {
+  const accueil = { jorf: "https://www.legifrance.gouv.fr/jorf/", "eurlex-l": "https://eur-lex.europa.eu/",
+    "certfr-avis": "https://www.cert.ssi.gouv.fr/", rappelconso: "https://rappel.conso.gouv.fr/",
+    entreprendre: "https://entreprendre.service-public.gouv.fr/", dgccrf: "https://www.economie.gouv.fr/dgccrf",
+    ademe: "https://www.ademe.fr/", "ineris-aida": "https://aida.ineris.fr/" };
+  const nom = (x) => x.nom.split(" — ")[0].replace(/^Journal officiel de l'Union européenne$/, "Journal officiel de l'Union européenne");
+  const lien = (x) => accueil[x.id] || (() => { try { return new URL(x.url).origin + "/"; } catch (e) { return "#"; } })();
+  const familles = [
+    { t: "Textes officiels", ids: ["jorf", "eurlex-l"] },
+    { t: "Ministères et administrations", ids: ["travail", "ecologie", "agriculture", "entreprendre", "dgccrf", "douane", "bofip"] },
+    { t: "Agences et autorités", ids: ["anses", "ansm", "has", "asnr", "cnil", "certfr-avis", "ineris-aida", "ademe", "amf", "arcep", "rappelconso", "oppbtp"] }
+  ];
+  const confirmees = SOURCES.filter((x) => x.confirme && x.officielle !== false && x.id !== "certfr-alerte");
+  const rangees = new Set(familles.flatMap((f) => f.ids));
+  const autres = confirmees.filter((x) => !rangees.has(x.id));
+  if (autres.length) familles[2].ids.push(...autres.map((x) => x.id));
+  const parId = Object.fromEntries(confirmees.map((x) => [x.id, x]));
+  const pastille = (nomS, url) => `<li><a href="${esc(url)}" target="_blank" rel="noopener">${esc(nomS)} ${sortant}</a></li>`;
+  const codes = (C && C.codes) || [];
+  const deja = new Set(["Légifrance", "Journal officiel (JORF)", "EUR-Lex / JOUE", "Entreprendre.service-public.fr", "BOFiP"]);
+  const references = V.sourcesGenerales.filter((x) => !deja.has(x.nom));
+  const pros = SOURCES.filter((x) => x.confirme && x.officielle === false);
+  const nbReleve = confirmees.length + (SOURCES.some((x) => x.id === "certfr-alerte" && x.confirme) ? 0 : 0);
   return `
 <section class="section">
   <div class="enveloppe">
     <h2 class="titre-section">Nos sources</h2>
-    <ul class="sources-bande">
-      ${V.sourcesGenerales.map((s) => `<li><a href="${esc(s.url)}" target="_blank" rel="noopener">${esc(s.nom)} ${sortant}</a></li>`).join("\n")}
-    </ul>
+    <p class="intro titre-section">Le robot relève chaque jour ${nbReleve} sources officielles${codes.length ? ` et lit ${codes.length} codes article par article sur Légifrance` : ""}.
+    Chaque texte garde le lien vers sa source : c'est la source officielle qui fait foi.</p>
+    <div class="sources-familles">
+      ${familles.map((f) => `<div class="sources-famille">
+        <h3>${esc(f.t)}</h3>
+        <ul class="sources-bande sources-bande-gauche">
+          ${f.ids.filter((id) => parId[id]).map((id) => pastille(nom(parId[id]), lien(parId[id]))).join("\n          ")}
+          ${f.t === "Textes officiels" ? codes.map((c) => pastille(c.titre, "https://www.legifrance.gouv.fr/liste/code")).join("\n          ") : ""}
+        </ul>
+      </div>`).join("\n      ")}
+      <div class="sources-famille">
+        <h3>Sites de référence consultés</h3>
+        <ul class="sources-bande sources-bande-gauche">
+          ${references.map((x) => pastille(x.nom, x.url)).join("\n          ")}
+        </ul>
+        ${pros.length ? `<p class="sources-note">Également suivie, mais non officielle : ${pros.map((x) => esc(nom(x))).join(", ")} (organisation professionnelle).</p>` : ""}
+      </div>
+    </div>
   </div>
 </section>
 
@@ -3942,7 +3983,7 @@ function pageDecouvrir(V, ECRANS, C, NAF, SOURCES) {
   </div>
 </section>
 
-${sectionSources(V)}<section class="section section-appel">
+${sectionSources(V, SOURCES, C)}<section class="section section-appel">
   <div class="enveloppe">
     <p class="rangee rangee-centre">
       <a class="bouton bouton-accent" href="abonnement.html">Démarrer un abonnement</a>
@@ -4080,10 +4121,6 @@ function ecranAuth({ titre, sous, carte, pied = "", carteTitre = "Vos identifian
         </div>
       </section>
       <aside class="rg-carte compte-carte auth-aside" aria-label="Votre espace">
-        <header class="rg-tete">
-          <h2>Votre espace de veille réglementaire</h2>
-          <p>Ce que vous retrouvez une fois connecté.</p>
-        </header>
         <ul class="auth-liste">
           <li><strong>Ma veille réglementaire</strong><span>Les textes qui s'appliquent à votre entreprise, par catégorie, avec leur source officielle.</span></li>
           <li><strong>Plan d'actions</strong><span>Les actions à mener, avec un délai, un responsable et leur validation.</span></li>

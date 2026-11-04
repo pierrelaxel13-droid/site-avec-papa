@@ -4252,3 +4252,17 @@ main .lecture, main .note-source, main li, main p {
 .rail-item { padding-inline: .35rem; }
 /* Cinq normes (ISO 9001 ajoutée le 4 novembre 2026) : cinq colonnes au bureau. */
 @media (min-width: 80rem) { .normes { grid-template-columns: repeat(5, minmax(0, 1fr)) !important; } .normes > :last-child { grid-column: auto !important; } }
+
+/* « Nos sources », par famille (4 novembre 2026). */
+.sources-familles { display: grid; gap: var(--ecart-cartes); margin-top: var(--t4); }
+@media (min-width: 48rem) { .sources-familles { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.sources-famille { padding: var(--marge-carte); border: 1px solid var(--filet); border-radius: var(--rayon-carte); background: var(--carte); box-shadow: var(--ombre-carte); }
+.sources-famille h3 { margin: 0 0 .75rem; font-size: 1rem; text-align: left !important; }
+.sources-famille .sources-bande { margin: 0; justify-content: flex-start; max-width: none; }
+.sources-note { margin: .8rem 0 0; font-size: .82rem; color: var(--encre-douce); text-align: left !important; }
+.sources-famille .sources-bande li { flex: 0 0 auto; }
+.sources-famille .sources-bande a { font-size: .86rem; padding: .35rem .8rem; }
+/* Ma veille réglementaire : la phrase « N sujets s'appliquent chez… » n'est
+   plus affichée (4 novembre 2026, demande d'Axel). Elle reste dans la page :
+   les scripts y lisent le nombre de sujets. */
+.tete-app .chapeau:has([data-plan-total]) { display: none; }

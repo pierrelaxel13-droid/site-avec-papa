@@ -180,11 +180,22 @@ window.SOURCES = [
     url: "https://www.has-sante.fr/feed/Rss2.jsp?id=p_3081656",
     vu: "25 octobre 2026 : trouvé par la recherche de flux, répond avec des entrées datées — 50 entrées, la plus récente du 21 octobre. Le site envoie une chaîne de certificats incomplète : la relève la complète (voir releve.yml)" },
 
-  { id: "ansm", nom: "ANSM — actualités",
-    type: "rss", genre: "actualite", confirme: false,
-    url: "https://ansm.sante.fr/rss/actualites",
-    vu: "26 octobre 2026 : le flux répond, mais il est resté vide à chacune des vingt dernières relèves, lundi compris — il ne donne rien à relever",
-    pourquoi: "son flux reste vide" },
+  { id: "ansm", nom: "ANSM — informations de sécurité",
+    type: "rss", genre: "actualite", confirme: true,
+    url: "https://ansm.sante.fr/rss/informations_securite",
+    vu: "4 novembre 2026 : trouvé par la recherche de flux (l'ancien flux « actualités » restait vide), répond avec des entrées datées, la plus récente du 3 novembre" },
+
+  /* Ajoutées le 4 novembre 2026, après la recherche de flux lancée depuis
+     GitHub sur les sources candidates (contenu/sources-candidates.js). */
+  { id: "asnr", nom: "ASNR — sûreté nucléaire et radioprotection",
+    type: "rss", genre: "actualite", confirme: true,
+    url: "https://www.asnr.fr/rss.xml",
+    vu: "4 novembre 2026 : trouvé par la recherche de flux, répond avec des entrées datées — 10 entrées, la plus récente du 2 novembre" },
+
+  { id: "agriculture", nom: "Ministère de l'Agriculture — actualités",
+    type: "rss", genre: "actualite", confirme: true,
+    url: "https://agriculture.gouv.fr/rss.xml",
+    vu: "4 novembre 2026 : trouvé par la recherche de flux, répond avec des entrées datées — 30 entrées, la plus récente du 4 novembre" },
 
   { id: "douane", nom: "Douane française",
     type: "rss", genre: "actualite", confirme: true,
