@@ -115,12 +115,14 @@
     etat.textContent = q ? (q.statut === "a_suivre" ? "À suivre, " : "") + "le " + jour(q.le) : "";
   }
 
-  M.quandPret(function () {
+  function brancherApplicable() {
     var lecture = M.mode === "compte" && M.espace && (!M.espace.ecrit || M.espace.rang < 2);
     lignes.forEach(function (tr) {
       var sel = tr.querySelector(".applicable");
       if (!sel) return;
       peindre(tr);
+      if (sel.hasAttribute("data-ecoute")) return;
+      sel.setAttribute("data-ecoute", "");
       if (lecture) { sel.disabled = true; return; }
       sel.addEventListener("change", function () {
         if (!sel.value) { peindre(tr); return; }   // « À décider » ne s'enregistre pas : le registre ne s'efface pas
@@ -134,8 +136,17 @@
         });
       });
     });
+  }
+  M.quandPret(function () {
+    brancherApplicable();
     lus();
     filtrer();
+  });
+  /* Des lignes ajoutées après coup (le fonds des textes en vigueur, assets/fonds.js) :
+     on les compte, on branche leurs colonnes et on refiltre. */
+  window.addEventListener("pco-lignes", function () {
+    lignes = [].slice.call(table.querySelectorAll("tbody tr:not(.ligne-analyse)"));
+    M.quandPret(function () { brancherApplicable(); lus(); filtrer(); });
   });
 
   /* --- La colonne « Lu » et la mention « Nouveau texte » (3 novembre 2026) --

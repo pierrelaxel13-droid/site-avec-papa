@@ -1199,7 +1199,13 @@ function tableauTextesPlan(V, C, LIENS, plan, JO) {
     </tr>` };
   }).filter(Boolean);
 
-  const toutes = recents.concat(fond, sections, anciens).sort((a, b) =>
+  /* Trop nombreux pour la page : un fichier par sujet (app/fonds/<sujet>.html), que
+     assets/fonds.js charge pour les seuls sujets du plan de l'entreprise. */
+  FRAGMENTS_FONDS = {};
+  anciens.sort((a, b) => (a.date < b.date ? 1 : -1)).forEach((x) => x.ids.forEach((id) => {
+    (FRAGMENTS_FONDS[id] = FRAGMENTS_FONDS[id] || []).push(x.html(true));
+  }));
+  const toutes = recents.concat(fond, sections).sort((a, b) =>
     a.date !== b.date ? (a.date < b.date ? 1 : -1) : a.ordre.localeCompare(b.ordre, "fr"));
   if (!toutes.length) return "";
   return `<section class="rubrique" id="textes-du-plan">
@@ -1217,7 +1223,8 @@ function tableauTextesPlan(V, C, LIENS, plan, JO) {
       <span class="precision" id="filtre-compte" role="status"></span>
     </div>
     <div class="defile-tableau">
-    <table class="tableau-plan tableau-textes-plan" data-export="veille-reglementaire" data-titre-export="Ma veille réglementaire">
+    ${anciens.length ? `<p class="precision fonds-etat" id="fonds-etat" role="status"></p>` : ""}
+    <table class="tableau-plan tableau-textes-plan" data-export="veille-reglementaire" data-titre-export="Ma veille réglementaire"${anciens.length ? ` data-fonds="fonds/" data-fonds-sujets="${esc(Object.keys(FRAGMENTS_FONDS).join(" "))}"` : ""}>
       <thead><tr><th scope="col">Date</th><th scope="col">Catégorie</th><th scope="col">Référence et lien</th><th scope="col">Application</th><th scope="col">Lu</th><th scope="col">Applicable</th></tr></thead>
       <tbody>${toutes.map((x) => x.html(touche(x.ids))).join("\n")}</tbody>
     </table>
@@ -1338,6 +1345,7 @@ function appActions(V, D, C, LIENS, JO = null) {
 
 let TEXTES_CLES = [];
 let FICHES = {};   // contenu/textes.js, posé au chargement (analyse des textes de référence)
+let FRAGMENTS_FONDS = {};  // sujet → lignes du fonds, écrites dans app/fonds/<sujet>.html
 let FONDS = null;       // contenu/fonds-legi.json : textes non codifiés en vigueur depuis 50 ans (outils/fonds-legi.mjs)
 let CODES_LUS = null;   // contenu/codes.json, posé au chargement (analyse des textes de référence)
 function appConformite(V, D, C, LIENS, JO = null) {
@@ -1569,7 +1577,7 @@ ${plan.ecartes.map((id) => blocPlan(id)).join("\n")}
     titre: `Ma veille réglementaire | ${SITE.nom}`,
     description: "Ce qui s'applique chez vous et à quel rythme le revoir.",
     racine: "../", zone: "app", actif: "plan", corps, verrou: true, formule: "textes",
-    donneesPlan: true, scripts: ["assets/applicable.js", "assets/export-tableaux.js", "assets/analyse.js"]
+    donneesPlan: true, scripts: ["assets/applicable.js", "assets/export-tableaux.js", "assets/analyse.js", "assets/fonds.js"]
   });
 }
 
@@ -5558,13 +5566,6 @@ async function main() {
   CODES_LUS = C;
   const cheminFonds = resolve(RACINE, "contenu/fonds-legi.json");
   FONDS = existsSync(cheminFonds) ? JSON.parse(await readFile(cheminFonds, "utf8")) : null;
-  /* Au-delà de quelques centaines de textes, les mettre tous dans la page « Ma veille
-     réglementaire » la rendrait trop lourde : ils attendent le chargement à la demande.
-     Ni affichés ni comptés à l'accueil d'ici là — on ne compte que ce qu'on montre. */
-  if (FONDS && FONDS.textes && FONDS.textes.length > 400) {
-    console.log(`  fonds LEGI          ${FONDS.textes.length} textes en vigueur : en attente du chargement à la demande, pas encore affichés`);
-    FONDS = null;
-  }
   if (C) verifieCodes(TEXTES, C);
   verifieLiens(TEXTES, C, LIENS);
   verifie(V, PIEGES, METIERS, D, TEXTES);
@@ -5659,6 +5660,11 @@ async function main() {
 
   await writeFile(join(SORTIE, "app", "index.html"), appTableauBord(V, D, C, LIENS));
   await writeFile(join(SORTIE, "app", "plan.html"), appPlan(V, D, C, LIENS, JO));
+  if (Object.keys(FRAGMENTS_FONDS).length) {
+    await mkdir(join(SORTIE, "app", "fonds"), { recursive: true });
+    for (const [id, l] of Object.entries(FRAGMENTS_FONDS)) await writeFile(join(SORTIE, "app", "fonds", `${id}.html`), l.join("\n"));
+    console.log(`  fonds LEGI          ${FONDS.textes.length} textes en vigueur, en ${Object.keys(FRAGMENTS_FONDS).length} fichiers par sujet`);
+  }
   await writeFile(join(SORTIE, "app", "conformite.html"), appConformite(V, D, C, LIENS, JO));
   await writeFile(join(SORTIE, "assets", "textes-plan.js"), "/* Les textes du plan de veille : [clé, sujets]. Engendré par build.mjs. */\nwindow.TEXTES_PLAN = " + JSON.stringify(TEXTES_CLES) + ";\n");
   await writeFile(join(SORTIE, "app", "actions.html"), appActions(V, D, C, LIENS, JO));

@@ -25,7 +25,7 @@
 
   tables.forEach(function (table) {
     var colonnes = (table.querySelector("thead tr") || {}).children ? table.querySelector("thead tr").children.length : 1;
-    [].forEach.call(table.querySelectorAll("details.analyse"), function (d) {
+    function brancher() { [].forEach.call(table.querySelectorAll("details.analyse:not(.analyse-deportee)"), function (d) {
       var tr = d.closest("tr");
       if (!tr) return;
       d.classList.add("analyse-deportee");
@@ -56,7 +56,10 @@
         tr.classList.add("analyse-ouverte");
         suivre(tr);
       });
-    });
+    }); }
+    brancher();
+    // Des lignes ajoutées après coup (assets/fonds.js) : on les branche aussi.
+    window.addEventListener("pco-lignes", brancher);
     // Un filtre, une recherche cachent la ligne du texte : la fiche suit.
     new MutationObserver(function (ms) {
       ms.forEach(function (m) { if (m.target.tagName === "TR" && !m.target.classList.contains("ligne-analyse")) suivre(m.target); });
