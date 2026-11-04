@@ -411,7 +411,7 @@ ${zone === "app" ? '<meta name="robots" content="noindex">' : ""}
 <script src="${a("assets/theme.js")}"></script>
 <script src="${a("assets/amorce.js")}"></script>
 </head>
-<body class="zone-${zone}" data-racine="${racine || "./"}" data-courriel="${esc(SITE.courriel)}" data-nom="${esc(SITE.nom)}"${zone === "app" || scripts.includes("assets/compte.js") || scripts.includes("assets/contact.js") || scripts.includes("assets/recap.js") ? ` data-supabase="${esc(SITE.supabase.url)}" data-supabase-cle="${esc(SITE.supabase.cle)}"` : ""}${formule ? ` data-formule="${esc(formule)}"` : ""}${attrsBody}>
+<body class="zone-${zone}" data-racine="${racine || "./"}" data-courriel="${esc(SITE.courriel)}" data-nom="${esc(SITE.nom)}"${zone === "app" || ["assets/compte.js", "assets/contact.js", "assets/recap.js", "assets/nouveau-client.js"].some((f) => scripts.includes(f)) ? ` data-supabase="${esc(SITE.supabase.url)}" data-supabase-cle="${esc(SITE.supabase.cle)}"` : ""}${formule ? ` data-formule="${esc(formule)}"` : ""}${attrsBody}>
 
 <a class="evitement" href="#contenu">Aller au contenu</a>
 
@@ -554,7 +554,7 @@ ${zone === "app" ? `<script src="${a("assets/vigie.js")}"></script>
 ${zone === "app" ? `<script src="${a("assets/avis-data.js")}"></script>
 <script src="${a("assets/entreprise.js")}"></script>
 <script src="${a("assets/avis.js")}"></script>` : ""}
-${zone !== "app" && (scripts.includes("assets/compte.js") || scripts.includes("assets/contact.js") || scripts.includes("assets/recap.js")) ? `<script src="${a("assets/vigie.js")}"></script>` : ""}
+${zone !== "app" && ["assets/compte.js", "assets/contact.js", "assets/recap.js", "assets/nouveau-client.js"].some((f) => scripts.includes(f)) ? `<script src="${a("assets/vigie.js")}"></script>` : ""}
 ${zone === "app" || verrou || actif === "abonnement" ? `<script src="${a("assets/session.js")}"></script>` : ""}
 ${zone === "app" ? `<script src="${a("assets/espace.js")}"></script>` : ""}
 ${scripts.map((f) => `<script src="${a(f)}"></script>`).join("\n")}
@@ -3094,10 +3094,9 @@ function pageConsultants() {
 
 <section class="section section-tein">
   <div class="enveloppe">
-    <h2 class="titre-section">Comment ça se passe</h2>
     <ol class="etapes etapes-trois">
       ${[
-        ["Vous équipez vos clients", "Pour chacun, vous ouvrez un espace : son métier, ses réponses à quelques questions. Sa veille se fait dessus, aussitôt."],
+        ["Tous vos clients sur un même espace", "Chaque client dispose de son espace."],
         ["Ils voient votre marque", `Dès ${O.paliers.find((p) => p.blanche).de} clients, l'interface et les exports porteront votre logo et votre nom (en préparation). Vous facturez vos clients à votre prix.`],
         ["Vous suivez tout", "Votre vue liste vos clients et ce qui est en retard chez chacun. Le registre de chaque client est prêt pour son audit."]
       ].map(([t, d], k) => `<li class="etape">
@@ -4762,7 +4761,8 @@ function pageCabinet(V, NAF, SOURCES) {
         <h1 id="cabinet-titre">Mon cabinet</h1>
         <p class="etat-compte" id="cabinet-etat" role="status">Chargement…</p>
       </div>
-      <a class="bouton bouton-sobre" href="./">Mon compte</a>
+      <p class="rangee cs-tete-boutons"><a class="bouton bouton-accent" href="nouveau-client.html">Créer l'accès d'un client</a>
+      <a class="bouton bouton-sobre" href="./">Mon compte</a></p>
     </div>
     ${comptesFermes()}
     <div class="connexion connexion-seule" id="cabinet-aucun" hidden>
@@ -4801,7 +4801,7 @@ function pageCabinet(V, NAF, SOURCES) {
           <li data-etape="cabinet"><span class="cs-coche" aria-hidden="true"></span><div><strong>Créer votre cabinet</strong>
             <span class="cs-etape-detail" data-detail></span></div></li>
           <li data-etape="client"><span class="cs-coche" aria-hidden="true"></span><div><strong>Créer l'espace de votre premier client</strong>
-            <span class="cs-etape-detail" data-detail>Son nom suffit, dans « Ajouter un client » plus bas.</span></div></li>
+            <span class="cs-etape-detail" data-detail>Son nom suffit : <a href="nouveau-client.html">créer l'accès d'un client</a>.</span></div></li>
           <li data-etape="plan"><span class="cs-coche" aria-hidden="true"></span><div><strong>Régler son plan de veille</strong>
             <span class="cs-etape-detail" data-detail>Ouvrez son espace, puis Réglages : son code APE et ses situations décident des textes suivis.</span></div></li>
           <li data-etape="invite"><span class="cs-coche" aria-hidden="true"></span><div><strong>Inviter son responsable</strong>
@@ -4842,6 +4842,88 @@ function pageCabinet(V, NAF, SOURCES) {
   return page({ titre: `Espace consultant | ${SITE.nom}`, description: `Votre cabinet de conseil sur ${SITE.nom} : le tableau de bord de vos clients.`,
     racine: "../", zone: "public", corps, donneesPlan: true, scripts: ["assets/textes-plan.js", "assets/compte.js"], installation: false, piedCourt: true,
     attrsBody: ' data-page="cabinet"' });
+}
+
+/* --- Créer l'accès d'un client (4 novembre 2026, demande d'Axel) ------------
+   compte/nouveau-client.html : en une fois, l'espace de l'entreprise cliente
+   (nom, code APE) et l'invitation de son responsable, qui crée son compte
+   par le lien et devient administrateur de son espace. */
+function pageNouveauClient(V, NAF) {
+  const options = NAF ? V.divisions.map((d) => {
+    const codes = NAF.codes.filter((c) => c.d === d.c);
+    return codes.length ? `<optgroup label="${esc(d.c)} — ${esc(d.l)}">${codes.map((c) => `<option value="${esc(c.c)}">${esc(c.c)} — ${esc(c.l)}</option>`).join("")}</optgroup>` : "";
+  }).join("") : "";
+  const corps = `
+<section class="section compte-page cs-page">
+  <div class="enveloppe nc-enveloppe">
+    <div class="cs-tete">
+      <div>
+        <p class="cs-sur">Espace consultant</p>
+        <h1>Créer l'accès d'un client</h1>
+        <p class="etat-compte" id="nc-cabinet" role="status">Chargement…</p>
+      </div>
+      <a class="bouton bouton-sobre" href="cabinet.html">Tableau de bord des clients</a>
+    </div>
+    ${comptesFermes()}
+    <div class="nc-grille" id="nc-principal" hidden>
+      <form class="rg-carte nc-form" id="form-nc" novalidate>
+        <header class="rg-tete"><h2>Le client</h2><p>Son espace est créé tout de suite ; vous pourrez le compléter ensuite.</p></header>
+        <div class="nc-corps">
+          <div class="champ">
+            <label for="nc-nom">Nom de l'entreprise cliente</label>
+            <input type="text" id="nc-nom" maxlength="200" autocomplete="off" required placeholder="Ex. : Boulangerie Durand">
+          </div>
+          ${NAF ? `<div class="champ">
+            <label for="nc-naf">Code APE <span class="aide">(facultatif : il décide des textes suivis)</span></label>
+            <select id="nc-naf"><option value="">À régler plus tard</option>${options}</select>
+          </div>` : ""}
+          <div class="champ">
+            <label for="nc-courriel">Adresse e-mail de son responsable <span class="aide">(facultatif)</span></label>
+            <input type="email" id="nc-courriel" autocomplete="off" inputmode="email" spellcheck="false" placeholder="prenom.nom@entreprise.fr">
+            <p class="aide-bas">Il reçoit un lien pour créer son compte et devient l'administrateur de son espace. Il voit tout
+            et peut couper votre accès quand il veut.</p>
+          </div>
+          <p class="rangee"><button type="submit" class="bouton bouton-accent">Créer l'accès</button></p>
+          <p class="etat-compte" id="nc-etat" role="status"></p>
+        </div>
+      </form>
+      <aside class="rg-carte nc-aide">
+        <header class="rg-tete"><h2>Comment ça marche</h2></header>
+        <ol class="nc-etapes">
+          <li><strong>Vous créez l'accès</strong> : l'espace du client existe tout de suite, à son nom.</li>
+          <li><strong>Vous l'envoyez</strong> : le lien d'invitation, par e-mail ou copié, valable 7 jours et utilisable une fois.</li>
+          <li><strong>Le client crée son compte</strong> avec cette adresse : il arrive dans sa veille réglementaire, son plan d'actions et son registre.</li>
+          <li><strong>Vous suivez tout</strong> depuis le tableau de bord de vos clients.</li>
+        </ol>
+      </aside>
+      <div class="rg-carte nc-fait" id="nc-fait" hidden>
+        <header class="rg-tete"><h2 id="nc-fait-titre">Accès créé</h2><p id="nc-fait-texte"></p></header>
+        <div class="nc-corps">
+          <div id="nc-lien-bloc" hidden>
+            <label for="nc-lien">Lien d'invitation</label>
+            <div class="nc-lien-ligne"><input type="text" id="nc-lien" readonly>
+              <button type="button" class="bouton bouton-sobre" id="nc-copier">Copier le lien</button></div>
+            <p class="rangee"><a class="bouton bouton-accent" id="nc-courriel-lien" href="#">Écrire l'e-mail d'invitation</a></p>
+          </div>
+          <p class="rangee nc-suite">
+            <a class="bouton bouton-sobre" id="nc-ouvrir" href="../app/reglages.html">Ouvrir son espace</a>
+            <button type="button" class="bouton bouton-sobre" id="nc-autre">Créer un autre client</button>
+            <a class="lien-nu" href="cabinet.html">Retour au tableau de bord</a>
+          </p>
+        </div>
+      </div>
+    </div>
+    <div class="connexion connexion-seule" id="nc-aucun" hidden>
+      <div class="carte-connexion">
+        <h2>Cette page est réservée aux consultants</h2>
+        <p>Créez d'abord votre cabinet dans Mon compte : choisissez « Un cabinet de conseil QSE ».</p>
+        <p class="rangee" style="margin-top:var(--t4)"><a class="bouton bouton-accent" href="./">Mon compte</a></p>
+      </div>
+    </div>
+  </div>
+</section>`;
+  return page({ titre: `Créer l'accès d'un client | ${SITE.nom}`, description: "Espace consultant : créer l'espace et l'accès d'une entreprise cliente.",
+    racine: "../", zone: "public", corps, scripts: ["assets/nouveau-client.js"], installation: false, piedCourt: true, attrsBody: ' data-page="cabinet"' });
 }
 
 /* La démonstration consultant (demo/cabinet.html) : la page « Mon cabinet »
@@ -5465,6 +5547,7 @@ async function main() {
   await writeFile(join(SORTIE, "CNAME"), new URL(SITE.adresseWeb).hostname + "\n");
   await writeFile(join(SORTIE, "compte", "paiement.html"), pageSouscrire());
   await writeFile(join(SORTIE, "compte", "cabinet.html"), pageCabinet(V, NAF, SOURCES));
+  await writeFile(join(SORTIE, "compte", "nouveau-client.html"), pageNouveauClient(V, NAF));
   await writeFile(join(SORTIE, "compte", "invitation.html"), pageInvitation());
 
   await writeFile(join(SORTIE, "app", "index.html"), appTableauBord(V, D, C, LIENS));

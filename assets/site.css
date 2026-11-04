@@ -4569,3 +4569,24 @@ details.analyse.analyse-deportee > .analyse-corps { display: none; }
   .cs-bienvenue { grid-template-columns: 1fr; }
   .cs-chiffres dd { font-size: 1.2rem; }
 }
+
+/* --- Créer l'accès d'un client (espace consultant, 4 novembre 2026) -------- */
+.nc-grille { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); gap: var(--ecart-cartes, 1rem); align-items: start; }
+.nc-corps { padding: 1.1rem 1.25rem 1.25rem; }
+.nc-corps .champ { margin-bottom: 1rem; }
+.nc-corps select, .nc-corps input[type="text"], .nc-corps input[type="email"] { width: 100%; }
+.nc-etapes { margin: 0; padding: 1rem 1.25rem 1.25rem 2.5rem; display: grid; gap: .75rem; color: var(--encre-douce); font-size: .92rem; }
+.nc-etapes strong { color: var(--encre); }
+.nc-fait { grid-column: 1 / -1; border-color: color-mix(in srgb, var(--vert) 40%, var(--filet)); }
+.nc-fait .rg-tete { background: var(--vert-fond); }
+.nc-lien-ligne { display: flex; gap: .5rem; margin: .3rem 0 .75rem; }
+.nc-lien-ligne input { flex: 1; min-width: 0; font: inherit; font-size: .9rem; padding: .55rem .7rem; border: 1px solid var(--filet-fort); border-radius: var(--r1); background: var(--papier); color: var(--encre); }
+.nc-suite { margin-top: 1rem; align-items: center; }
+.cs-tete-boutons { margin: 0; gap: .5rem; justify-content: flex-end; }
+@media (max-width: 63.99rem) { .nc-grille { grid-template-columns: 1fr; } }
+@media (max-width: 47.99rem) { .nc-lien-ligne { flex-direction: column; } }
+.nc-corps .champ label { display: block; margin-bottom: .35rem; font-weight: 600; font-size: .92rem; }
+.nc-corps .champ .aide { font-weight: 400; color: var(--encre-douce); }
+.nc-corps select { appearance: auto; font: inherit; font-size: .95rem; color: var(--encre); background: var(--papier);
+  border: 1px solid var(--filet-fort); border-radius: var(--r1); padding: .7rem .8rem; min-height: 3rem; }
+.nc-corps select:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
