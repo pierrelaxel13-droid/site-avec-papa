@@ -128,8 +128,8 @@ autre lien, et toute clé Stripe. Tant qu'un lien est vide, le bouton de la
 formule ouvre un courriel. Le paiement n'est pas encore relié aux comptes : c'est
 le dernier lot (Stripe écrira dans la table `abonnements`).
 
-La grille, fixée le 28 octobre 2026 : **59, 99 et 149 € par mois, ou 590, 990
-et 1 490 € par an** (« 2 mois offerts »), sans cadrage sur place. Sous
+La grille, revue le 4 novembre 2026 : **39, 99 et 149 € par mois, ou 410, 990
+et 1 490 € par an** (« 1 mois offert » pour la première, « 2 mois offerts » ensuite), sans cadrage sur place. Sous
 franchise de TVA : « TVA non applicable, art. 293 B du CGI » (`SITE.tva` ;
 mettre "ht" le jour où la TVA est facturée). Montants dans `FORMULES`
 (build.mjs) — la construction vérifie que l'année vaut dix mois.
@@ -196,7 +196,7 @@ notification système. Le panneau le dit plutôt que de le laisser croire.
 
 ## Les trois formules
 
-La formule choisie décide des écrans ouverts : **Textes** (59 €) donne le
+La formule choisie décide des écrans ouverts : **Textes** (39 €) donne le
 relevé, les textes, les fiches de secteur et les réglages ; **Textes et suivi**
 (99 €) y ajoute le plan, le tableau de bord et les alertes (la cloche, l'onglet
 « Mes alertes » : `data-exige="suivi"`) ; **Veille complète** (149 €) ouvre le

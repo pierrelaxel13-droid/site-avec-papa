@@ -41,6 +41,7 @@
     $("#paie-offre").textContent = F.l;
     $("#paie-prix-an").textContent = F.an + " par an";
     $("#paie-prix-mois").textContent = F.mois + " par mois";
+    $("#paie-offert").textContent = F.offre || "";
     [].forEach.call(document.querySelectorAll('input[name="paie-periode"]'), function (r) { r.checked = r.value === periode; });
     var montant = periode === "an" ? F.montantAn : F.montantMois;
     var par = periode === "an" ? " par an" : " par mois";

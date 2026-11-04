@@ -133,8 +133,8 @@ const dateFr = (iso) => new Date(iso + "T12:00:00Z")
   .toLocaleDateString("fr-FR", JOUR).replace(/^1 /, "1er ");
 
 /* --- Les trois formules et ce que chacune ouvre ---------------------------- */
-/* Grille du 28 octobre 2026 : 59, 99 et 149 € par mois, ou à l'année au prix
-   de dix mois (« 2 mois offerts »), sans cadrage sur place. Les montants sont
+/* Grille du 4 novembre 2026 : 39, 99 et 149 € par mois ; à l'année, 410, 990
+   et 1490 € (« 1 mois offert » pour la première, « 2 mois offerts » ensuite), sans cadrage sur place. Les montants sont
    ici, en euros ; tout le reste (libellés, mention de TVA) en est tiré. Le rang décide : une page demande un
    rang, la session en porte un. C'est la seule règle et elle est appliquée
    dans le navigateur — donc contournable. Elle décrit le produit, elle ne le
@@ -152,7 +152,7 @@ const lienPaiement = (id, periode) =>
 const paiementComplet = () => Object.keys(FORMULES).every((id) => lienPaiement(id, "an") && lienPaiement(id, "mois"));
 
 const FORMULES = {
-  textes:  { l: "Textes", carte: "État des lieux réglementaire", rang: 1, mois: 59, an: 590,
+  textes:  { l: "Textes", carte: "État des lieux réglementaire", rang: 1, mois: 39, an: 410,
              pour: "Vous voulez savoir ce qui paraît pour votre métier.",
              ouvre: "Les textes de votre métier, chacun avec ce qu'il faut faire et la fiche de chaque métier (732 codes APE).",
              surCarte: false,   // la carte ne dit pas « pour qui » (choix d'Axel, 2 novembre 2026)
@@ -202,8 +202,10 @@ if (!TVA) throw new Error(`SITE.tva doit valoir "franchise" ou "ht", pas « ${SI
 // la police du site : elle s'affichait « 1490 ». On met l'insécable ordinaire.
 const eur = (n) => `${n.toLocaleString("fr-FR").replace(/\u202f/g, "\u00a0")}\u00a0€${TVA.suffixe}`;
 for (const [id, f] of Object.entries(FORMULES)) {
-  // « 2 mois offerts » doit rester vrai : l'année coûte dix mois.
-  if (f.an !== f.mois * 10) throw new Error(`FORMULES.${id} : ${f.an} € par an n'est pas dix fois ${f.mois} € (« 2 mois offerts »).`);
+  // « N mois offerts » doit rester vrai : on compte les mois entiers que l'année épargne.
+  f.moisOfferts = Math.floor(12 - f.an / f.mois + 1e-9);
+  if (f.moisOfferts < 1) throw new Error(`FORMULES.${id} : ${f.an} € par an n'offre aucun mois sur ${f.mois} € par mois.`);
+  f.offre = f.moisOfferts === 1 ? "1 mois offert" : `${f.moisOfferts} mois offerts`;
   f.montant = eur(f.mois);                 // « 59 € »
   f.prix = `${eur(f.mois)} par mois`;      // « 59 € par mois »
   f.prixAn = `${eur(f.an)} par an`;        // « 590 € par an »
@@ -3539,7 +3541,7 @@ function pageAccueil(V, D, METIERS, ECRANS, C = null, NAF = null, SOURCES = [], 
     ] },
     { theme: "Prix et démarrage", questions: [
       ["Combien ça coûte ?",
-       `<p><strong>${prixListe} par mois selon la formule, ou à l'année avec deux mois offerts.</strong> Sans devis.</p>
+       `<p><strong>${prixListe} par mois selon la formule, ou à l'année avec ${(() => { const n = [...new Set(Object.values(FORMULES).map((f) => f.moisOfferts))].sort(); return n.length === 1 ? FORMULES.textes.offre : `${n[0]} à ${n[n.length - 1]} mois offerts`; })()}.</strong> Sans devis.</p>
         <ul>
           ${Object.values(FORMULES).map((f) => `<li><strong>${esc(f.l)}</strong> — ${esc(f.prixAn)}, ou ${esc(f.prix)} : ${esc(f.ouvre.replace(/^En plus : /, "en plus de la formule précédente, "))}</li>`).join("\n          ")}
         </ul>
@@ -4171,7 +4173,7 @@ function pageAbonnement(V) {
         <span class="etiq nom-offre${(f.carte || f.l).length > 55 ? " nom-offre-long" : ""}">0${k + 1} — ${esc(f.carte || f.l)}</span>
         <!-- L'année d'abord : en entreprise, la veille est une ligne de budget annuel. -->
         <p class="prix"><span class="grand">${esc(eur(f.an))}</span> <span class="etiq">par an</span></p>
-        <p class="offre-an"><span class="pastille-offre">2 mois offerts</span> ou <strong>${esc(f.prix)}</strong></p>
+        <p class="offre-an"><span class="pastille-offre">${esc(f.offre)}</span> ou <strong>${esc(f.prix)}</strong></p>
         ${f.surCarte === false ? "" : `<p class="pour">${esc(f.pour)}</p>`}
         <ul class="formule-donne">${f.donne.map((d) => `<li>${esc(d)}</li>`).join("")}</ul>
         <a class="bouton ${id === "complet" ? "bouton-accent" : "bouton-sobre"}" href="compte/paiement.html?formule=${id}&amp;periode=an">Abonnement annuel</a>
@@ -4597,7 +4599,7 @@ function pageMonCompte() {
 function pageSouscrire() {
   const donnees = {
     formules: Object.fromEntries(Object.entries(FORMULES).map(([id, f]) => [id, {
-      l: f.carte || f.l, court: f.l, an: eur(f.an), mois: eur(f.mois), montantAn: f.an, montantMois: f.mois }])),
+      l: f.carte || f.l, court: f.l, an: eur(f.an), mois: eur(f.mois), montantAn: f.an, montantMois: f.mois, offre: f.offre }])),
     liens: Object.fromEntries(Object.keys(FORMULES).map((id) => [id, { an: lienPaiement(id, "an"), mois: lienPaiement(id, "mois") }])),
     tva: SITE.tva, mention: TVA.mention, courriel: SITE.courriel, portail: lienPaiement("portail")
   };
@@ -4625,7 +4627,7 @@ function pageSouscrire() {
         <p class="paie-offre" id="paie-offre"></p>
         <div class="paie-periodes" role="radiogroup" aria-label="Durée">
           <label class="paie-periode"><input type="radio" name="paie-periode" value="an">
-            <span><strong>Annuel</strong><span class="precision" id="paie-prix-an"></span><span class="pastille-offre">2 mois offerts</span></span></label>
+            <span><strong>Annuel</strong><span class="precision" id="paie-prix-an"></span><span class="pastille-offre" id="paie-offert"></span></span></label>
           <label class="paie-periode"><input type="radio" name="paie-periode" value="mois">
             <span><strong>Mensuel</strong><span class="precision" id="paie-prix-mois"></span></span></label>
         </div>
