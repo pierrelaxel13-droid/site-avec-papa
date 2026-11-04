@@ -3939,20 +3939,6 @@ function pageDecouvrir(V, ECRANS, C, NAF, SOURCES) {
   </div>
 </section>
 
-<section class="section section-tein">
-  <div class="enveloppe">
-    <h2 class="titre-section">Ce que vous trouvez dans l'application</h2>
-    <p class="intro titre-section">${["", "Un écran", "Deux écrans", "Trois écrans", "Quatre écrans", "Cinq écrans", "Six écrans"][pieces.length] || `${pieces.length} écrans`}. Cliquez sur une capture pour la voir en grand.</p>
-    <ul class="pieces">
-      ${pieces.map((p) => `<li class="piece">
-        ${vignette(p)}
-        <h3>${esc(p.t)}</h3>
-        ${p.d ? `<p>${esc(p.d)}</p>` : ""}
-      </li>`).join("")}
-    </ul>
-  </div>
-</section>
-
 ${sectionSources(V)}<section class="section ne-fait-pas">
   <div class="enveloppe">
     <h2 class="titre-section">Ce que le site ne fait pas</h2>
