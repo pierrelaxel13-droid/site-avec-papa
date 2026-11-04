@@ -4249,3 +4249,4 @@ main .lecture, main .note-source, main li, main p {
 .reserve a { color: var(--accent-fonce); }
 .reserve.reserve-ok { border-left-color: var(--vert); }
 .rg-note { border-left-color: var(--accent); }
+.rail-item { padding-inline: .35rem; }
