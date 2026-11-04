@@ -1,7 +1,7 @@
 /* ==========================================================================
    Le plan ne montre que ce qui concerne l'entreprise — lu comme un outil
    --------------------------------------------------------------------------
-   « Ce qui vous concerne, et rien d'autre » : c'est la promesse. Ce test lit
+   « Ce qui vous concerne et rien d'autre » : c'est la promesse. Ce test lit
    les pages de la démonstration (Maçonnerie Vidal) COMME LES LIT UN OUTIL —
    une IA, un mode lecture, la source de la page —, c'est-à-dire sans tenir
    compte de l'attribut « hidden ». Hors du <template> et des volets repliés

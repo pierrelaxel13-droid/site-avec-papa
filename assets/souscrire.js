@@ -80,7 +80,7 @@
     if (this.getAttribute("aria-disabled") === "true") { e.preventDefault(); bouton(); }
   });
 
-  /* L'entreprise abonnée : il faut un compte, et une entreprise nommée. */
+  /* L'entreprise abonnée : il faut un compte et une entreprise nommée. */
   var compte = $("#paie-compte");
   var ici = "compte/paiement.html?formule=" + formule + "&periode=" + periode;
   function dire(html) { compte.innerHTML = html; bouton(); }

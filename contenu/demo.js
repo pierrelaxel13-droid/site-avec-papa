@@ -70,7 +70,7 @@ window.DEMO = {
 
   /* La démonstration consultant (demo/cabinet.html) : un cabinet fictif et
      ses clients fictifs. Maçonnerie Vidal est l'entreprise ci-dessus : ses
-     chiffres sont calculés depuis son registre, et c'est le seul espace qui
+     chiffres sont calculés depuis son registre et c'est le seul espace qui
      s'ouvre. Les autres montrent les autres cas : un client en retard, un
      client sans compte (à inviter), un client qui a coupé l'accès. */
   cabinet: {

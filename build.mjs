@@ -5,7 +5,7 @@
    Deux zones :
 
      public/   l'accueil qui montre les écrans, la tarification, la connexion
-     app/      l'application : tableau de bord, plan, relevé, registre, et les
+     app/      l'application : tableau de bord, plan, relevé, registre et les
                88 fiches de secteur
 
    Tout est engendré depuis assets/referentiel.js et contenu/. Rien n'est écrit
@@ -15,7 +15,7 @@
    L'application n'a pas de serveur. La « connexion » pose un jeton dans le
    navigateur et rien d'autre : ce n'est pas une sécurité, le contenu des pages
    de l'application est lisible par qui regarde la source. Les données sont un
-   jeu de démonstration. Les deux faits sont écrits sur les écrans concernés,
+   jeu de démonstration. Les deux faits sont écrits sur les écrans concernés
    et doivent y rester tant qu'un vrai service d'authentification n'est pas en
    place.
 
@@ -35,7 +35,7 @@ const SORTIE = resolve(RACINE, "_site");
 
 const SITE = {
   /* Le nom du PRODUIT, celui que voient clients et consultants. La société qui
-     l'édite est à part (societe), et n'apparaît que dans les pages légales :
+     l'édite est à part (societe) et n'apparaît que dans les pages légales :
      un consultant n'achète pas l'outil du cabinet d'un confrère. */
   nom: "Vigie",
   societe: "Pierrel & Co",       // l'éditeur — société en cours de création
@@ -58,7 +58,7 @@ const SITE = {
   tva: "franchise",
   /* L'identité légale de l'éditeur, pour les mentions légales, la politique de
      confidentialité et les CGV (legales.mjs). Vide = « [À COMPLÉTER] » visible
-     sur ces pages, et listé à chaque construction. */
+     sur ces pages et listé à chaque construction. */
   editeur: {
     denomination: "",          // une fois la société créée, ex. « Pierrel & Co SAS »
     forme: "",                 // ex. « SAS », « entreprise individuelle (micro-entreprise) »
@@ -130,11 +130,11 @@ const JOUR = { day: "numeric", month: "long", year: "numeric" };
 const dateFr = (iso) => new Date(iso + "T12:00:00Z")
   .toLocaleDateString("fr-FR", JOUR).replace(/^1 /, "1er ");
 
-/* --- Les trois formules, et ce que chacune ouvre ---------------------------- */
+/* --- Les trois formules et ce que chacune ouvre ---------------------------- */
 /* Grille du 28 octobre 2026 : 59, 99 et 149 € par mois, ou à l'année au prix
    de dix mois (« 2 mois offerts »), sans cadrage sur place. Les montants sont
    ici, en euros ; tout le reste (libellés, mention de TVA) en est tiré. Le rang décide : une page demande un
-   rang, la session en porte un. C'est la seule règle, et elle est appliquée
+   rang, la session en porte un. C'est la seule règle et elle est appliquée
    dans le navigateur — donc contournable. Elle décrit le produit, elle ne le
    protège pas. Les mêmes clés et les mêmes rangs sont dans assets/session.js. */
 /* Les liens de paiement Stripe, lus dans contenu/paiement.js par main(). Vide :
@@ -152,14 +152,14 @@ const paiementComplet = () => Object.keys(FORMULES).every((id) => lienPaiement(i
 const FORMULES = {
   textes:  { l: "Textes", carte: "État des lieux réglementaire", rang: 1, mois: 59, an: 590,
              pour: "Vous voulez savoir ce qui paraît pour votre métier.",
-             ouvre: "Les textes de votre métier, chacun avec ce qu'il faut faire, et la fiche de chaque métier (732 codes APE).",
+             ouvre: "Les textes de votre métier, chacun avec ce qu'il faut faire et la fiche de chaque métier (732 codes APE).",
              surCarte: false,   // la carte ne dit pas « pour qui » (choix d'Axel, 2 novembre 2026)
              donne: ["L'ensemble des textes applicables à votre société, par catégorie (santé, hygiène, sécurité, environnement, ressources humaines), en fonction des spécificités de votre structure",
                      "Les sources et les liens des textes",
                      "Les alertes : une alerte vous rappelle de prendre connaissance des nouveautés",
                      "Tableau de bord de suivi"] },
   suivi:   { l: "Textes et suivi", carte: "État des lieux réglementaire et plan d'actions", rang: 2, mois: 99, an: 990,
-             pour: "Vous voulez aussi savoir quoi revoir, et quand.",
+             pour: "Vous voulez aussi savoir quoi revoir et quand.",
              ouvre: "En plus : votre plan de veille, le tableau de bord, les alertes et les conseils de l'IA.",
              surCarte: false,
              donne: ["L'ensemble des textes applicables à votre société, par catégorie (santé, hygiène, sécurité, environnement, ressources humaines), en fonction des spécificités de votre structure",
@@ -206,7 +206,7 @@ for (const [id, f] of Object.entries(FORMULES)) {
 }
 
 /* --- Le manifeste : ce qui rend l'application installable ------------------- */
-/* Android veut du PNG en 192 et 512, et une icône « maskable » qu'il peut
+/* Android veut du PNG en 192 et 512 et une icône « maskable » qu'il peut
    rogner jusqu'à 20 % du bord sans manger le dessin. assets/icones/ est
    engendré depuis le sigle par outils/icones.mjs. */
 const MANIFESTE = JSON.stringify({
@@ -301,7 +301,7 @@ function bandeInstallation(a) {
       <div>
         <h2>Installer l'application</h2>
         <p class="intro">Posée sur l'écran d'accueil du téléphone, elle s'ouvre comme une
-        application, et marche sans réseau — sur un chantier, dans un entrepôt.</p>
+        application et marche sans réseau — sur un chantier, dans un entrepôt.</p>
         <p class="rangee" style="margin-top:var(--t4)">
           <button type="button" class="bouton bouton-accent" id="installer-appli" hidden>
             Installer maintenant
@@ -322,7 +322,7 @@ function bandeInstallation(a) {
     <p class="note-source" style="margin-top:var(--t5)">
       ${esc(SITE.nom)} n'est ni sur l'App Store ni sur Google Play : il n'y a pas
       d'application à télécharger, mais une application web que le navigateur installe
-      lui-même. Rien n'est transmis à une boutique, et il n'y a pas de compte à créer
+      lui-même. Rien n'est transmis à une boutique et il n'y a pas de compte à créer
       pour l'installer.
     </p>
   </div>
@@ -483,7 +483,7 @@ ${piedCourt ? "" : `
     <div class="pied-grille">
       <div class="pied-marque">
         <span class="marque">${motMarque()}</span>
-        <p>${esc(SITE.bareme)}, pour les PME : les textes qui vous concernent, et ce qu'il faut faire.</p>
+        <p>${esc(SITE.bareme)}, pour les PME : les textes qui vous concernent et ce qu'il faut faire.</p>
         <p class="pied-contact"><a href="mailto:${esc(SITE.courriel)}">${esc(SITE.courriel)}</a>${aTel() ? ` · ${lienTel()}` : ""}</p>
       </div>
       <nav aria-label="Le produit">
@@ -587,7 +587,7 @@ function perimetre(V, code) {
 /* --- Le plan d'une entreprise : LA source des chiffres ----------------------
    Code APE (sa division) + situations cochées. Tout ce qui compte les sujets
    d'une entreprise — en-tête, cartes, rubriques, sujets écartés, relevé —
-   part d'ici, et assets/entreprise.js refait le même calcul dans le
+   part d'ici et assets/entreprise.js refait le même calcul dans le
    navigateur (perimetre()) sur les mêmes données. */
 function planDe(V, ent) {
   const { base } = perimetre(V, ent.naf);
@@ -612,8 +612,8 @@ function phrasePlan(V, ent, plan) {
 /* --- Fait, ou pas fait ------------------------------------------------------
    Pour chaque texte qui demande un geste, le client dit s'il l'a fait. Le
    bouton vit dans « Ce que vous devez faire » ; le titre de la fiche porte la
-   marque « Fait » une fois coché, et la carte de la catégorie compte. Pour un
-   sujet du plan, c'est la revue qui est faite, et elle se refait à son rythme
+   marque « Fait » une fois coché et la carte de la catégorie compte. Pour un
+   sujet du plan, c'est la revue qui est faite et elle se refait à son rythme
    (« periode », en jours). C'est gardé dans ce navigateur (app.js). */
 /* objet : ce que le registre d'un vrai compte retiendra quand on coche. */
 function boutonFait(id, { periode = 0, libelle = "Marquer comme fait", objet = "" } = {}) {
@@ -646,7 +646,7 @@ function blocDomaine(C, LIENS, id, d, origine, lienSecteur = "", racine = "", fa
       <ul>${d.obligations.map((o) => `<li>${esc(o)}</li>`).join("")}</ul>
     </div>
     <div>
-      <span class="etiq">Les textes, et où les lire</span>
+      <span class="etiq">Les textes et où les lire</span>
       <ul class="textes-lies">${d.textes.map((ref) => {
         const L = lienDuTexte(C, LIENS, ref);
         return `<li>
@@ -713,7 +713,7 @@ function enTeteApp(D, titre, chapeau, lienNaf = "") {
 
 /* Un lien qui couvre toute la carte. Posé dans le <dd> et non autour du couple
    <dt>/<dd> : à l'intérieur d'une <dl>, un <div> n'admet que des <dt> et des
-   <dd>, et un <a> à cet endroit serait un balisage invalide. */
+   <dd> et un <a> à cet endroit serait un balisage invalide. */
 const lienCarte = (href, intitule) =>
   `<a class="lien-carte" href="${esc(href)}"><span class="cache-visuellement">${esc(intitule)}</span></a>`;
 
@@ -725,7 +725,7 @@ function appTableauBord(V, D, C, LIENS) {
 
   const fiche = ficheDeLEntreprise(V, D);
   const corps = enTeteApp(D, "Tableau de bord",
-    "Ce qui attend une décision, ce qui arrive, et ce qui est en retard.", fiche) + `
+    "Ce qui attend une décision, ce qui arrive et ce qui est en retard.", fiche) + `
 <!-- Le jeu d'essai : caché dans un vrai compte (assets/espace.js montre le vrai).
      4 novembre 2026 : la démonstration montre le MÊME tableau de bord qu'un
      compte — cinq carrés, prochaines revues, historiques. Les chiffres des
@@ -769,7 +769,7 @@ ${rubrique({ etiq: "Historiques", contenu: `
 }
 
 /* Une ligne de relevé s'ouvre sur ce qui la justifie : le domaine auquel elle
-   est rattachée, ce qu'il faut y tenir, et les sources officielles où vérifier.
+   est rattachée, ce qu'il faut y tenir et les sources officielles où vérifier.
    Sans cela, l'écran se regarde mais ne se consulte pas. */
 function ligneReleve(V, C, LIENS, t, racine = "") {
   const s = STATUTS[t.statut] || STATUTS.analyse;
@@ -857,7 +857,7 @@ function ligneRegistre(r) {
         ${champ("État", r.type === "action" ? (r.clos ? "Close" : "Ouverte") : "Faite")}
       </dl>
       <p class="note-source">Une ligne du registre ne se modifie pas après coup : une
-      correction s'ajoute à la suite, avec sa propre date, et celle-ci reste.</p>
+      correction s'ajoute à la suite, avec sa propre date et celle-ci reste.</p>
       <p class="rangee" style="margin-top:var(--t4)">
         <button type="button" class="bouton bouton-sobre imprimer-fiche">${imprimante} Enregistrer en PDF</button>
       </p>
@@ -868,12 +868,12 @@ function ligneRegistre(r) {
 
 /* --- Mon plan : le tableau des textes (3 novembre 2026, demandé par Axel) ---
    Une ligne par texte relevé qui touche le plan : sa date, sa catégorie, sa
-   référence avec le lien officiel, et les actions à déclencher (celles des
+   référence avec le lien officiel et les actions à déclencher (celles des
    sujets du plan auxquels il est rattaché, comme « Ce que vous devez faire »
    dans le relevé). La catégorie vient du classement du référentiel ; le
    social y est appelé « Ressources humaines ». Chaque ligne porte ses sujets
    (data-domaines) : assets/entreprise.js la montre ou la cache selon le plan
-   de l'entreprise, et n'y garde que la catégorie et les actions de ses sujets. */
+   de l'entreprise et n'y garde que la catégorie et les actions de ses sujets. */
 const CATEGORIES_TABLEAU = {
   "sante-securite": "Santé et sécurité", hygiene: "Hygiène", environnement: "Environnement",
   social: "Ressources humaines", metier: "Métier et gestion"
@@ -1046,7 +1046,7 @@ function tableauTextesPlan(V, C, LIENS, plan, JO) {
    la validation. Les textes sont ceux du plan (référentiel et relevé), les
    actions celles de leurs sujets (« Ce que vous devez faire »). Chaque ligne
    porte son sujet (data-domaines) : assets/plan-actions.js n'y garde que le
-   plan de l'entreprise, enregistre délai et responsable, et valide — au
+   plan de l'entreprise, enregistre délai et responsable et valide — au
    registre dans un compte. Formule « Textes et suivi » et au-dessus. */
 const cleCourte = (t) => { let h = 5381; for (const c of t) h = ((h * 33) ^ c.charCodeAt(0)) >>> 0; return h.toString(36); };
 function appActions(V, D, C, LIENS, JO = null) {
@@ -1367,7 +1367,7 @@ ${plan.ecartes.map((id) => blocPlan(id)).join("\n")}
 
   return page({
     titre: `Ma veille réglementaire | ${SITE.nom}`,
-    description: "Ce qui s'applique chez vous, et à quel rythme le revoir.",
+    description: "Ce qui s'applique chez vous et à quel rythme le revoir.",
     racine: "../", zone: "app", actif: "plan", corps, verrou: true, formule: "textes",
     donneesPlan: true, scripts: ["assets/applicable.js", "assets/export-tableaux.js"]
   });
@@ -1383,7 +1383,7 @@ ${plan.ecartes.map((id) => blocPlan(id)).join("\n")}
         relève outils/codes.mjs, donc de la base LEGI elle-même ;
      2. un texte européen — son numéro CELEX se déduit de sa référence
         (« Règlement (UE) 2016/679 » → 32016R0679) ;
-     3. le reste — une recherche nommée sur Légifrance, et la page le dit :
+     3. le reste — une recherche nommée sur Légifrance et la page le dit :
         « chercher ce texte », pas « voir le texte ».
 
    Ce qui n'est pas exact est annoncé comme tel. Un lien qui ment coûte plus
@@ -1442,7 +1442,7 @@ function lienDuTexte(C, LIENS, ref) {
              ou: "EUR-Lex", quoi: `le texte intégral (CELEX ${celex})`, direct: true };
   }
 
-  /* 4. Rien de déclaré : on le dit, et verifieLiens() l'aura déjà signalé. */
+  /* 4. Rien de déclaré : on le dit et verifieLiens() l'aura déjà signalé. */
   return { url: `https://www.legifrance.gouv.fr/search/all?tab_selection=all&searchField=ALL&query=${
              encodeURIComponent(ref)}`,
            ou: "Légifrance", quoi: `la recherche « ${ref} »`, direct: false, orphelin: true };
@@ -1455,7 +1455,7 @@ function hote(url) {
 
 /* Le mot sous le lien. Jamais « chercher » : ce serait rendre au client le
    travail qu'il nous paie à faire. Soit on lui donne le texte, soit on lui
-   donne le recueil officiel qui le contient, et on le dit. */
+   donne le recueil officiel qui le contient et on le dit. */
 const intituleDuLien = (L) => L.direct ? "Lire le texte officiel" : "Voir les textes officiels";
 
 /* --- Le texte des codes, mot pour mot ---------------------------------------
@@ -1512,7 +1512,7 @@ function ligneChangement(c, vers = "code/") {
 </li>`;
 }
 
-/* Les morceaux de code attachés à une référence, et de quoi en parler. */
+/* Les morceaux de code attachés à une référence et de quoi en parler. */
 function texteDuSite(C, ref) {
   if (!C || !C.perimetres) return null;
   const ids = C.perimetres[ref] || [];
@@ -1536,7 +1536,7 @@ function noteDeSource(C) {
   </p>`;
 }
 
-/* Une page par morceau : le texte en entier, et de quoi circuler dedans. */
+/* Une page par morceau : le texte en entier et de quoi circuler dedans. */
 function appMorceauDeCode(C, m, refs, precedent, suivant) {
   const intitule = m.chemin[m.chemin.length - 1];
   const dessus = m.chemin.slice(0, -1);
@@ -1562,7 +1562,7 @@ function appMorceauDeCode(C, m, refs, precedent, suivant) {
 </section>
 
 ${changes.length ? rubrique({ etiq: "Ce qui a changé ici", contenu: `
-  <p class="lecture">Depuis la relève précédente, et rien d’autre : c’est une
+  <p class="lecture">Depuis la relève précédente et rien d’autre : c’est une
   comparaison des deux versions, pas un commentaire.</p>
   <ul class="changements" style="margin-top:var(--t4)">${changes.map((c) => ligneChangement(c, "")).join("")}</ul>` }) : ""}
 
@@ -1635,9 +1635,9 @@ function listeDeTextes(V, C, LIENS, TEXTES, entrees) {
    il n'existe pas, elle sert le jeu d'essai — et le dit. Jamais l'un déguisé
    en l'autre. */
 /* Le conseil de l'IA, SOUS le texte officiel, jamais à sa place : ce qu'elle
-   propose, ses sources officielles contrôlées (outils/conseils.mjs), et ce
+   propose, ses sources officielles contrôlées (outils/conseils.mjs) et ce
    qu'il n'est pas. Rien s'il n'y en a pas, ou s'il a été écarté. */
-/* Le conseil de l'IA n'est jamais écrit dans la page : il est dans la base,
+/* Le conseil de l'IA n'est jamais écrit dans la page : il est dans la base
    et seuls les abonnés qui y ont droit le lisent (conseils_lire). Dans un
    compte, assets/espace.js remplit la place ; dans la démonstration, une
    phrase dit ce qui s'affiche ici — sans conseil inventé. */
@@ -1658,7 +1658,7 @@ function placeConseil(t) {
    textes (4 novembre 2026 : trois « Décision relative à une modification
    administrative d'autorisation de… » partageaient leur « Lu », leur
    « Applicable » et leurs actions). On ajoute alors une empreinte du titre
-   complet ; les titres courts gardent leur clé, et ce qui y est enregistré. */
+   complet ; les titres courts gardent leur clé et ce qui y est enregistré. */
 const cleJO = (t) => {
   if (t.id && !/^http/.test(t.id)) return `jo:${t.id}`;
   const s = slug(t.titre);   // slug() coupe à 70 caractères
@@ -1675,14 +1675,14 @@ function ligneJO(V, t, i, releveLe = "") {
   const actions = [...new Set(t.domaines.flatMap((d) =>
     (V.domaines[d.id] || {}).actions || []))].slice(0, 4);
   /* La date du texte vient de son titre quand il la porte ; la date d'archive
-     dit seulement quand nous l'avons vu passer. Les deux sont utiles, et ce ne
+     dit seulement quand nous l'avons vu passer. Les deux sont utiles et ce ne
      sont pas les mêmes. */
   const quand = t.dateTexte || t.date;
   const vu = t.vuLe || t.date;
   /* « Lesquels sont nouveaux ? » Ceux que la dernière relève a vus passer pour
      la première fois. Nous ne connaissons pas la date d'entrée en vigueur d'un
      texte qui vient de paraître — nous ne l'inventons donc pas, nous disons la
-     date qu'il porte, et nous marquons ce qui est arrivé depuis la dernière
+     date qu'il porte et nous marquons ce qui est arrivé depuis la dernière
      relève. */
   /* « Nouveau » se dit par personne, pas à la construction : un texte est
      nouveau pour qui ne l'a pas encore ouvert (assets/avis.js pose la marque). */
@@ -1750,7 +1750,7 @@ function ligneJO(V, t, i, releveLe = "") {
    nous publions le texte consolidé, nous connaissons la date d'entrée en
    vigueur de chacun de ses articles : la plus récente dit quand ce morceau de
    droit a bougé pour la dernière fois. Quand nous ne publions pas le texte,
-   nous ne savons pas, et la page le dit — elle n'invente pas une date. */
+   nous ne savons pas et la page le dit — elle n'invente pas une date. */
 function dateDuTexte(C, ref) {
   const T = texteDuSite(C, ref);
   if (!T) return null;
@@ -1801,7 +1801,7 @@ function tableauDeTextes(V, C, LIENS, TEXTES, entrees, racine = "", cherchable =
   const note = avecDate ? `<p class="note-source">
     La colonne « en vigueur depuis » donne la dernière évolution du texte, pour les
     ${avecDate} textes dont nous publions le contenu consolidé${neufs ? ` ; ${neufs} ${neufs > 1 ? "ont" : "a"} bougé à la dernière relève et porte${neufs > 1 ? "nt" : ""} la marque <span class="marque-neuf">Nouveau</span>` : " ; aucun n'a bougé à la dernière relève"}.
-    Pour les autres, nous n'avons pas encore la date, et nous ne l'inventons pas.
+    Pour les autres, nous n'avons pas encore la date et nous ne l'inventons pas.
   </p>` : "";
 
   const cartes = cartesCategories(familles.map((g) => {
@@ -1862,7 +1862,7 @@ function tableauDeTextes(V, C, LIENS, TEXTES, entrees, racine = "", cherchable =
 /* --- Les textes rangés par nature ------------------------------------------
    « Plus clair » veut dire : ne pas servir une liste unique où tout se vaut.
    Un texte qui sort relève de la santé-sécurité, de l'hygiène, du social, de
-   l'environnement, ou du métier. Le tableau le dit d'un coup d'œil, et dit ce
+   l'environnement, ou du métier. Le tableau le dit d'un coup d'œil et dit ce
    qu'il faut faire en premier ; les listes dessous donnent le détail. */
 function groupesParClassement(V, entrees, domaineDe) {
   const par = {};
@@ -1876,9 +1876,9 @@ function groupesParClassement(V, entrees, domaineDe) {
 }
 
 /* --- Les catégories, d'abord seules -----------------------------------------
-   « Une seule page avec les catégories, et quand on clique sur une, ce qui y
+   « Une seule page avec les catégories et quand on clique sur une, ce qui y
    appartient, seulement ça. » Les pages Relevé, Textes et Secteurs s'ouvrent
-   sur une carte par catégorie, et rien d'autre ; app.js n'affiche ensuite que
+   sur une carte par catégorie et rien d'autre ; app.js n'affiche ensuite que
    celle qu'on a choisie. Sans JavaScript, les cartes sont des ancres et tout
    reste lisible dessous.
 
@@ -1971,7 +1971,7 @@ function appReleve(V, D, JO, C, LIENS, SOURCES = []) {
     ? JO.rapport.filter((r) => r.souci && confirmees.some((c) => c.id === r.id)) : [];
 
   /* Une carte par famille : combien de textes, combien de nouveaux, le plus
-     récent, et ce qu'il faut faire en premier. C'est ce qu'on voit en
+     récent et ce qu'il faut faire en premier. C'est ce qu'on voit en
      arrivant ; les textes eux-mêmes viennent au clic, famille par famille. */
   const carteFamille = (g, prefixe, dateDe, domaineDe, neufDe) => {
     const liste = g.textes.slice().sort((a, b) => (dateDe(a) < dateDe(b) ? 1 : -1));
@@ -2109,7 +2109,7 @@ ${C ? rubrique({ etiq: "Ce qui a changé dans les codes", id: "codes-changements
     Aucun des ${C.morceaux.reduce((n, m) => n + m.articles.length, 0)} articles suivis n’a
     changé depuis la relève précédente. C’est une comparaison article par article, pas une
     absence d’information : le jour où un mot bouge, il apparaît ici, avec l’avant et
-    l’après, et part en alerte.</p>`}
+    l’après et part en alerte.</p>`}
   ${noteDeSource(C)}` }) : ""}`;
 
   return page({
@@ -2152,7 +2152,7 @@ function appSecteurs(V, METIERS, NAF) {
   /* On n'affiche plus 88 divisions mais les 732 codes APE, groupés par la
      division qui porte leur périmètre : une entreprise se reconnaît à son
      code, pas à sa division. Sans contenu/naf.js, on retombe sur les
-     divisions seules, et la page le dit. */
+     divisions seules et la page le dit. */
   const codes = NAF ? NAF.codes : [];
   const parDivision = {};
   codes.forEach((c) => { (parDivision[c.d] = parDivision[c.d] || []).push(c); });
@@ -2241,7 +2241,7 @@ function appSecteurs(V, METIERS, NAF) {
   return page({
     titre: `Trouvez votre code | ${SITE.nom}`,
     description: NAF
-      ? `Les ${codes.length} codes APE, et ce qui s'applique à chacun.`
+      ? `Les ${codes.length} codes APE et ce qui s'applique à chacun.`
       : "Les 88 divisions de la nomenclature NAF et leurs obligations.",
     racine: "../", zone: "app", actif: "secteurs", corps, verrou: true, formule: "textes"
   });
@@ -2250,7 +2250,7 @@ function appSecteurs(V, METIERS, NAF) {
 /* --- Une page par texte ---------------------------------------------------- */
 /* Le but : lire ce que le texte exige sans quitter le site. Ces fiches ne
    reproduisent pas le texte officiel — il est sur Légifrance, lui seul fait
-   foi, et une copie se périme en silence. Elles disent ce qu'il exige, en
+   foi et une copie se périme en silence. Elles disent ce qu'il exige, en
    français courant. Le lien vers la source reste, en second. */
 function appTexte(V, TEXTES, METIERS, C, LIENS, ref, fiche, domaines) {
   const T = texteDuSite(C, ref);
@@ -2302,7 +2302,7 @@ ${rubrique({ etiq: "Ce que ce texte exige", contenu: `
 
 ${rubrique({ etiq: "Où il s'applique", aplat: true, contenu: `
   <p class="lecture">Ce texte est rattaché à ${domaines.length} domaine${domaines.length > 1 ? "s" : ""}
-  de veille, et concerne ${secteurs.length} famille${secteurs.length > 1 ? "s" : ""} de métiers sur
+  de veille et concerne ${secteurs.length} famille${secteurs.length > 1 ? "s" : ""} de métiers sur
   ${V.divisions.length}.</p>
   <ul class="puces" style="margin-top:var(--t4)">
     ${domaines.map((id) => `<li><a href="../plan.html">
@@ -2317,7 +2317,7 @@ ${rubrique({ etiq: "Où il s'applique", aplat: true, contenu: `
   ${secteurs.length > 24 ? `<p class="note-source">… et ${secteurs.length - 24} autres.</p>` : ""}` : ""}` })}
 
 ${T && T.changements.length ? rubrique({ etiq: "Ce qui a changé", contenu: `
-  <p class="lecture">Depuis la relève précédente, dans ce texte, et rien d’autre. C’est
+  <p class="lecture">Depuis la relève précédente, dans ce texte et rien d’autre. C’est
   une comparaison des deux versions mot à mot : l’avant, l’après.</p>
   <ul class="changements" style="margin-top:var(--t4)">${T.changements.map((c) => ligneChangement(c, "../code/")).join("")}</ul>` }) : ""}
 
@@ -2355,14 +2355,14 @@ ${T ? rubrique({ etiq: "Le texte, mot pour mot", contenu: `
 ${rubrique({ etiq: T ? "Vérifier à la source" : "Lire le texte officiel", contenu: `
   <p class="lecture">${T
     ? `Le texte ci-dessus est relevé automatiquement sur la base officielle des codes
-       consolidés, et republié ici sous Licence Ouverte. En cas de doute ou de litige,
+       consolidés et republié ici sous Licence Ouverte. En cas de doute ou de litige,
        c’est la version publiée par l’État qui fait foi : voici où la retrouver.`
     : `La fiche ci-dessus est notre lecture du texte. Son texte intégral n’est pas
        encore publié sur le site : la base consolidée que notre robot sait relever ne
        couvre aujourd’hui que ${C && C.codes.length
          ? C.codes.map((x) => esc(x.titre)).join(", ")
          : "quelques codes"}. Pour celui-ci, le texte officiel et à jour est publié
-       par l’État — lui seul fait foi, et c’est à lui qu’il faut se référer en cas de
+       par l’État — lui seul fait foi et c’est à lui qu’il faut se référer en cas de
        doute ou de litige.`}</p>
   <p class="rangee" style="margin-top:var(--t4)">
     <a class="bouton bouton-accent" href="${esc(L.url)}" target="_blank" rel="noopener">
@@ -2382,7 +2382,7 @@ ${rubrique({ etiq: T ? "Vérifier à la source" : "Lire le texte officiel", cont
 
   return page({
     titre: `${ref} | ${SITE.nom}`,
-    description: `Ce qu'exige « ${ref} » : à qui ça s'applique, ce qu'il faut tenir, et où lire le texte officiel.`,
+    description: `Ce qu'exige « ${ref} » : à qui ça s'applique, ce qu'il faut tenir et où lire le texte officiel.`,
     racine: "../../", zone: "app", actif: "textes", corps, verrou: true, formule: "textes"
   });
 }
@@ -2391,7 +2391,7 @@ ${rubrique({ etiq: T ? "Vérifier à la source" : "Lire le texte officiel", cont
 function appTextes(V, TEXTES, parTexte, C, LIENS) {
   const refs = Object.keys(parTexte).sort((a, b) => a.localeCompare(b, "fr"));
   /* Un texte peut être cité par plusieurs domaines : on le range dans la
-     catégorie du premier qui le cite, et on nomme les autres sous son titre. */
+     catégorie du premier qui le cite et on nomme les autres sous son titre. */
   const entrees = refs.map((ref) => ({
     ref, id: parTexte[ref][0],
     domaine: parTexte[ref].map((id) => V.domaines[id].nom).join(" · ")
@@ -2421,7 +2421,7 @@ function appTextes(V, TEXTES, parTexte, C, LIENS) {
 <div class="enveloppe" data-unite="textes">
   ${tableaux.cartes}
   ${aSavoir("À savoir sur ces fiches", `<p class="lecture">
-    Chaque texte de référence a sa fiche : à qui il s'applique, ce qu'il exige, et le
+    Chaque texte de référence a sa fiche : à qui il s'applique, ce qu'il exige et le
     texte officiel lui-même quand nous savons le relever.${C ? ` <strong>${Object.keys(C.perimetres).filter((r) => (C.perimetres[r] || []).length).length} fiches
     portent le texte intégral</strong>, soit ${C.morceaux.reduce((n, m) => n + m.articles.length, 0)}
     articles de code, relevés le ${esc(dateFr(C.preleve))}.` : ""}</p>
@@ -2435,7 +2435,7 @@ function appTextes(V, TEXTES, parTexte, C, LIENS) {
 
   return page({
     titre: `Tous les textes | ${SITE.nom}`,
-    description: "Les textes de référence de la veille, et ce que chacun exige.",
+    description: "Les textes de référence de la veille et ce que chacun exige.",
     racine: "../", zone: "app", actif: "textes", corps, verrou: true, formule: "textes"
   });
 }
@@ -2449,7 +2449,7 @@ function appSecteur(V, PIEGES, METIERS, TEXTES, NAF, C, LIENS, d) {
   const rythme = groupes.length ? groupes[0].f.l : "—";
 
   // Tous les textes de référence du périmètre, mis à plat : c'est ce qu'on
-  // vient chercher sur une fiche de secteur, et ça ne doit pas être derrière
+  // vient chercher sur une fiche de secteur et ça ne doit pas être derrière
   // un dépliant ni derrière un lien sortant.
   const textes = [];
   base.forEach((id) => {
@@ -2492,7 +2492,7 @@ function appSecteur(V, PIEGES, METIERS, TEXTES, NAF, C, LIENS, d) {
 
 ${rubrique({ etiq: "Les textes qui s'appliquent", contenu: `
   <p class="lecture">${propres.length
-    ? `${propres.length} texte${propres.length > 1 ? "s" : ""} propre${propres.length > 1 ? "s" : ""} à ce métier, et ${socle.length} du socle commun à toute entreprise. Les premiers d'abord : ce sont eux qui vous distinguent.`
+    ? `${propres.length} texte${propres.length > 1 ? "s" : ""} propre${propres.length > 1 ? "s" : ""} à ce métier et ${socle.length} du socle commun à toute entreprise. Les premiers d'abord : ce sont eux qui vous distinguent.`
     : `Ce secteur n'a pas de texte qui lui soit propre : ce qui s'y applique, c'est le socle commun à toute entreprise, ${socle.length} textes.`}
   Pour chacun, ce qu'il exige et où le lire — sans quitter la page.</p>
 
@@ -2561,7 +2561,7 @@ ${p ? rubrique({ etiq: "Le terrain", contenu: `
 
 /* --- Réglages : mon entreprise et mes alertes ------------------------------- */
 /* Ce que le visiteur saisit ici ne part nulle part : c'est gardé dans son
-   navigateur, et c'est écrit sur la page. Le périmètre se recalcule dessus,
+   navigateur et c'est écrit sur la page. Le périmètre se recalcule dessus,
    exactement comme le simulateur de l'accueil — même données, même règle. */
 function appReglages(V, D, NAF, METIERS) {
   const parSection = V.sections.map((s) => ({
@@ -2701,7 +2701,7 @@ function appReglages(V, D, NAF, METIERS) {
               <label class="case">
                 <input type="checkbox" id="a-revues" checked>
                 <span><span class="intitule">Rappel des revues à faire</span>
-                <span class="aide">Avant chaque échéance de revue, et une seconde fois si elle est dépassée.</span></span>
+                <span class="aide">Avant chaque échéance de revue et une seconde fois si elle est dépassée.</span></span>
               </label>
               <label class="case">
                 <input type="checkbox" id="a-pdf" checked>
@@ -2742,9 +2742,9 @@ function appReglages(V, D, NAF, METIERS) {
 
 /* Un écran de l'application dans une maquette d'ordinateur portable.
    Deux fichiers quand ils existent : la capture claire et la capture sombre.
-   Celle qui ne correspond pas au thème est en display:none, et un navigateur
+   Celle qui ne correspond pas au thème est en display:none et un navigateur
    ne télécharge pas une image lazy qui n'est pas affichée. */
-/* Une capture ressemble à l'application : on clique dessus, et rien ne se
+/* Une capture ressemble à l'application : on clique dessus et rien ne se
    passait. Elle s'agrandit maintenant, en plein écran (app.js). Le bouton
    couvre tout l'écran dessiné ; sans JavaScript il n'est pas montré. */
 function agrandir(alt) {
@@ -2793,7 +2793,7 @@ function mobile(ECRANS, nom, alt) {
 /* À côté d'une capture : le texte, puis un bouton qui mène à une page à part.
    « En savoir plus sur le site » ne déplie plus rien sur l'accueil : il ouvre
    le-site.html, où il n'y a que ça (de même pour nous.html). L'accueil reste
-   court, et la page d'à côté se lit d'un bout à l'autre. */
+   court et la page d'à côté se lit d'un bout à l'autre. */
 function vitrine(ECRANS, { image, alt, titre, texte, bouton = "", lien = "" }) {
   return `<article class="vitrine" data-paraitre>
   ${portable(ECRANS, image, alt)}
@@ -2822,7 +2822,7 @@ function encartsDuSite(V, C, NAF, SOURCES) {
     { titre: "Ce que vous voyez pour chaque texte", lignes: [
       `<strong>Ce que vous devez faire</strong>, en premier, en liste et en français courant`,
       `Le <strong>texte entier</strong>, tel que publié, à côté de sa source — pas un résumé`,
-      `Sa date de parution, et la marque « Nouveau » tant que vous ne l'avez pas lu`,
+      `Sa date de parution et la marque « Nouveau » tant que vous ne l'avez pas lu`,
       `Un bouton <strong>Fait</strong> qui garde la date où vous l'avez traité`
     ] },
     { titre: "Seulement ce qui vous concerne", lignes: [
@@ -2869,7 +2869,7 @@ function encartsDeNous() {
 }
 
 /* Une page « En savoir plus » : le titre, une phrase, les quatre encarts en
-   deux et deux, et de quoi continuer. Rien d'autre. */
+   deux et deux et de quoi continuer. Rien d'autre. */
 function pageInfos({ titre, h1, sous, encarts, suite }) {
   const corps = `
 <section class="heros heros-court">
@@ -2899,7 +2899,7 @@ function pageInfos({ titre, h1, sous, encarts, suite }) {
    l'espace consultant — par société, les textes non lus, la conformité
    réglementaire et l'avancement du plan d'actions. Des sociétés sans nom
    (« Entreprise A »…) et des chiffres d'exemple : c'est une illustration,
-   pas une capture, et la légende le dit. */
+   pas une capture et la légende le dit. */
 function dessinVueConsultant() {
   // [nom, non lus, conformité %, actions %, en retard]
   const clients = [
@@ -3030,7 +3030,7 @@ function pageConsultants() {
       <p class="reserve"><strong>Nous ne démarchons pas vos clients.</strong> Ils vous appartiennent : nous ne les
         contactons pas et ne leur vendons rien en direct. Nous nous y engageons par écrit, dans le contrat consultant.</p>
       <p class="reserve"><strong>Leurs données ne sont qu'à eux et à vous.</strong> Chaque entreprise est isolée dans la
-        base : elle ne verra que ses données, et vous, que celles de vos clients.</p>
+        base : elle ne verra que ses données et vous, que celles de vos clients.</p>
     </div>
     <p class="note-source" style="text-align:center;margin-top:var(--t4)">L'espace consultant est ouvert : votre cabinet,
       la liste de vos clients, leur espace. La marque blanche (votre logo, vos couleurs) arrive ensuite. Le paiement en
@@ -3103,7 +3103,7 @@ function bandeAvis(AVIS) {
      d'elle-même au premier avis ajouté dans contenu/temoignages.js. */
   if (!AVIS.length) return "";
   const etoiles = (n) => `<span class="etoiles" aria-label="${n} sur 5">${"★".repeat(n)}${"☆".repeat(5 - n)}</span>`;
-  /* « Laisser votre avis » est écrit dans la bande elle-même, et revient
+  /* « Laisser votre avis » est écrit dans la bande elle-même et revient
      entre les avis : c'est ce qui défile en premier. */
   const appel = `<li class="avis-item avis-appel"><span class="bulle" aria-hidden="true">✎</span> <strong>Laisser votre avis</strong></li>`;
   const items = AVIS.length
@@ -3167,11 +3167,11 @@ function bandeAvis(AVIS) {
 const VITRINE_SECTEURS = ["43", "41", "10", "56", "47", "49", "52", "20", "25", "81", "86", "85"];
 
 /* --- La dernière collecte -----------------------------------------------------
-   « Le client voit que ça tourne, et si ça n'a pas tourné, il le voit aussi. »
+   « Le client voit que ça tourne et si ça n'a pas tourné, il le voit aussi. »
    L'heure vient de la dernière exécution RÉUSSIE du robot de relève, que la
    publication lit chez GitHub (variable COLLECTE_LE, posée par publie.yml) ;
    les chiffres, du relevé lui-même. Sans COLLECTE_LE (construction sur un
-   poste), on n'a que le jour du relevé, et on n'invente pas d'heure. La page
+   poste), on n'a que le jour du relevé et on n'invente pas d'heure. La page
    calcule ensuite l'âge : au-delà de 26 heures, elle l'affiche en alerte
    (assets/app.js, collecte()). Le lot 6 rendra la surveillance rigoureuse. */
 function blocCollecte(JO) {
@@ -3205,7 +3205,7 @@ function sectionSimulateur(V) {
   <div class="enveloppe">
     <h2 class="titre-section">Ce qui s'applique chez vous</h2>
     <p class="intro titre-section">Choisissez votre métier, cochez ce qui est vrai chez vous.
-    La liste se met à jour toute seule, et c'est le même calcul que dans l'application.</p>
+    La liste se met à jour toute seule et c'est le même calcul que dans l'application.</p>
 
     <div class="simulateur">
       <div class="reglages">
@@ -3324,17 +3324,17 @@ function pageAccueil(V, D, METIERS, ECRANS, C = null, NAF = null, SOURCES = [], 
       ["À quoi sert une veille réglementaire ?",
        `<p><strong>À savoir, avant qu'on vous le demande, quels textes s'appliquent chez vous et ce qu'ils vous obligent à faire.</strong></p>
         <p>Lois, décrets, arrêtés, normes : les règles qui encadrent une entreprise changent chaque semaine. Personne
-        ne peut tout lire, et pourtant c'est à vous de les appliquer. Lors d'un contrôle de l'inspection du travail,
+        ne peut tout lire et pourtant c'est à vous de les appliquer. Lors d'un contrôle de l'inspection du travail,
         après un accident, ou pendant un audit, la question est toujours la même : qu'est-ce que vous saviez, et
         qu'est-ce que vous avez fait ?</p>
         <p>Faire sa veille, c'est quatre gestes, toujours les mêmes :</p>
         <ul>
-          <li><strong>repérer</strong> les textes qui concernent votre métier, et seulement ceux-là ;</li>
+          <li><strong>repérer</strong> les textes qui concernent votre métier et seulement ceux-là ;</li>
           <li><strong>comprendre</strong> ce qu'ils changent chez vous ;</li>
           <li><strong>agir</strong> : mettre à jour un document, former quelqu'un, changer une consigne ;</li>
-          <li><strong>garder la trace</strong> de ce que vous avez fait, et de quand.</li>
+          <li><strong>garder la trace</strong> de ce que vous avez fait et de quand.</li>
         </ul>
-        <p>Le site fait le premier geste à votre place, vous prépare les deux suivants, et garde le dernier.</p>`],
+        <p>Le site fait le premier geste à votre place, vous prépare les deux suivants et garde le dernier.</p>`],
       ["D'où viennent les textes ?",
        `<p><strong>De ${confirmees.length} sources officielles, relues automatiquement toutes les heures.</strong></p>
         <p>Le Journal officiel en tête, puis les ministères, les autorités et les organismes publics :
@@ -3358,18 +3358,18 @@ function pageAccueil(V, D, METIERS, ECRANS, C = null, NAF = null, SOURCES = [], 
         ${SITE.premierEchange ? "lors du premier échange, Clément Pierrel peut la revoir avec vous." : "chaque sujet reste à vérifier pour votre cas."}</p>`],
       ["Que se passe-t-il quand un nouveau texte paraît ?",
        `<p><strong>Il arrive dans votre relevé, rangé dans son sujet, avec la marque « Nouveau ».</strong></p>
-        <p>Vous ouvrez sa fiche, et vous y trouvez trois choses, toujours dans cet ordre :</p>
+        <p>Vous ouvrez sa fiche et vous y trouvez trois choses, toujours dans cet ordre :</p>
         <ul>
           <li><strong>ce que vous devez faire</strong>, en liste et en français courant${gestesSst.length ? ` — pour un texte de
             santé-sécurité, par exemple : « ${esc(gestesSst[0])} », « ${esc(gestesSst[1] || "")} »` : ""} ;</li>
           <li><strong>le texte lui-même</strong>, tel qu'il a été publié, pas un résumé ;</li>
-          <li><strong>sa source</strong> : qui l'a publié, quand, et le lien direct.</li>
+          <li><strong>sa source</strong> : qui l'a publié, quand et le lien direct.</li>
         </ul>
         <p>Quand c'est traité, vous cochez « Fait » : la date est gardée. Avec la formule ${esc(FORMULES.complet.l)},
         elle va aussi au registre, prête à montrer à l'auditeur.</p>`],
       ["Est-ce que je reçois un courriel à chaque nouveauté ?",
        `<p><strong>Pas encore : l'envoi automatique par courriel n'est pas en place.</strong></p>
-        <p>Il suppose un serveur qui expédie les courriels, et le site n'en a pas encore. En attendant :</p>
+        <p>Il suppose un serveur qui expédie les courriels et le site n'en a pas encore. En attendant :</p>
         <ul>
           <li>le relevé se met à jour <strong>toutes les heures</strong>, tout seul ;</li>
           <li>ce qui vient d'arriver porte la marque <strong>« Nouveau »</strong> tant que vous ne l'avez pas lu ;</li>
@@ -3380,8 +3380,8 @@ function pageAccueil(V, D, METIERS, ECRANS, C = null, NAF = null, SOURCES = [], 
         serviront le jour où l'envoi sera branché.</p>`],
       ["Est-ce un conseil juridique ?",
        `<p><strong>Non.</strong></p>
-        <p>Le site vous dit ce qui s'applique à votre métier, ce qui paraît, et les gestes habituels à faire
-        pour chaque texte. Il ne tranche pas un point de droit, et il ne connaît pas les détails de votre
+        <p>Le site vous dit ce qui s'applique à votre métier, ce qui paraît et les gestes habituels à faire
+        pour chaque texte. Il ne tranche pas un point de droit et il ne connaît pas les détails de votre
         situation.</p>
         <p>Ce qu'un texte implique dans votre cas précis reste à valider par quelqu'un de compétent : un juriste,
         un avocat, ou votre organisation professionnelle. Et en cas de doute, c'est toujours la source
@@ -3394,7 +3394,7 @@ function pageAccueil(V, D, METIERS, ECRANS, C = null, NAF = null, SOURCES = [], 
           ${Object.values(FORMULES).map((f) => `<li><strong>${esc(f.l)}</strong> — ${esc(f.prixAn)}, ou ${esc(f.prix)} : ${esc(f.ouvre.replace(/^En plus : /, "en plus de la formule précédente, "))}</li>`).join("\n          ")}
         </ul>
         <p>Le détail de chaque formule est sur <a href="abonnement.html">la page des tarifs</a>. ${paiementComplet()
-        ? "Le paiement se fait en ligne, par Stripe, et se renouvelle chaque année ou chaque mois, selon votre choix."
+        ? "Le paiement se fait en ligne, par Stripe et se renouvelle chaque année ou chaque mois, selon votre choix."
         : "Le paiement en ligne n'est pas encore branché : pour l'instant, on s'abonne par courriel."}</p>`],
       ["Laquelle choisir ?",
        `<p><strong>Celle qui correspond à ce que vous devez montrer.</strong></p>
@@ -3402,25 +3402,25 @@ function pageAccueil(V, D, METIERS, ECRANS, C = null, NAF = null, SOURCES = [], 
           ${Object.values(FORMULES).map((f) => `<li>${esc(f.pour.replace(/\.$/, ""))} : <strong>${esc(f.l)}</strong> (${esc(f.prixAn)}, ou ${esc(f.prix)}).</li>`).join("\n          ")}
         </ul>
         <p>En cas de doute, commencez par la démonstration : vous voyez exactement les écrans que chaque formule
-        ouvre, et vous changez de formule d'un clic.</p>`],
+        ouvre et vous changez de formule d'un clic.</p>`],
       ["Mon métier est-il couvert ?",
        `<p><strong>Oui, quel qu'il soit : ${NAF ? `les ${NAF.codes.length} codes APE de la nomenclature officielle, rangés en ${V.divisions.length} familles de métiers` : `les ${V.divisions.length} familles de métiers de la nomenclature officielle`}.</strong></p>
         <p>Votre code APE figure sur votre extrait Kbis ou votre avis de situation Insee ; ses deux premiers
         chiffres sont ceux de votre famille de métiers (43.21A, par exemple, appartient à la famille 43).</p>
         <p>Choisissez-la dans <a href="#simulateur">l'outil en haut de page</a>, ou dans
-        <a href="metiers.html">la liste de tous les métiers</a> : vous voyez tout de suite les sujets à suivre,
+        <a href="metiers.html">la liste de tous les métiers</a> : vous voyez tout de suite les sujets à suivre
         et à quel rythme les revoir.</p>`],
       ["Peut-on essayer avant de s'abonner ?",
        `<p><strong>Oui, tout de suite, sans compte et sans mot de passe.</strong></p>
         <p>L'application est ouverte en démonstration, avec une entreprise et des textes d'essai. Vous choisissez
-        une formule, et vous voyez exactement les écrans qu'elle ouvre — ceux qu'elle n'ouvre pas vous le disent.
+        une formule et vous voyez exactement les écrans qu'elle ouvre — ceux qu'elle n'ouvre pas vous le disent.
         Vous pouvez en changer autant de fois que vous voulez.</p>
         <p><a href="abonnement.html#essayer">Essayer la démonstration</a>.</p>`],
       ["Comment on démarre ?",
        `<p><strong>En trois étapes.</strong></p>
         <ul>
           <li><strong>Regardez ce qui vous concerne</strong>, avec <a href="#simulateur">l'outil en haut de page</a> : c'est gratuit et sans inscription.</li>
-          <li><strong>Choisissez votre formule</strong> sur <a href="abonnement.html">la page des tarifs</a>, et écrivez-nous avec le bouton « Démarrer un abonnement ».</li>
+          <li><strong>Choisissez votre formule</strong> sur <a href="abonnement.html">la page des tarifs</a> et écrivez-nous avec le bouton « Démarrer un abonnement ».</li>
           <li><strong>Renseignez votre entreprise</strong> dans les réglages : votre métier et vos réponses. Votre veille se fait dessus, aussitôt.</li>
         </ul>
         <p>Vous préférez en parler d'abord ? ${SITE.premierEchange ? "Le premier échange, d'une heure, est sans engagement :" : "Écrivez-nous :"}
@@ -3436,15 +3436,15 @@ function pageAccueil(V, D, METIERS, ECRANS, C = null, NAF = null, SOURCES = [], 
           <li><strong>ISO 14001 et ISO 45001</strong> : identifier vos obligations (§ 6.1.3) et évaluer votre
             conformité, preuve à l'appui (§ 9.1.2) ;</li>
           <li><strong>MASE</strong> : connaître et suivre la réglementation de vos interventions ;</li>
-          <li><strong>Qualiopi</strong> : une veille légale et réglementaire, et son exploitation (indicateur 23).</li>
+          <li><strong>Qualiopi</strong> : une veille légale et réglementaire et son exploitation (indicateur 23).</li>
         </ul>
-        <p>Le site vous donne la liste de ce qui s'applique, les textes qui paraissent, et — avec la formule
+        <p>Le site vous donne la liste de ce qui s'applique, les textes qui paraissent et — avec la formule
         ${esc(FORMULES.complet.l)} — un registre daté de chaque revue et de chaque décision, qui s'imprime tel quel.
         Le site ne certifie pas : la décision reste à l'auditeur.</p>`],
       ["Où sont mes données ?",
        `<p><strong>Dans votre compte, dans une base de données hébergée en Irlande (Union européenne).</strong></p>
         <p>Votre entreprise, vos réponses, vos cases « Fait » et votre registre sont gardés dans votre compte :
-        vous les retrouvez sur l'ordinateur comme sur le téléphone, et vos collègues invités aussi. Chaque
+        vous les retrouvez sur l'ordinateur comme sur le téléphone et vos collègues invités aussi. Chaque
         entreprise ne voit que ses propres données. Le site ne pose ni cookie publicitaire ni mesure d'audience.</p>
         <p>La démonstration, elle, ne garde rien chez nous : ce que vous y faites reste dans votre navigateur.
         Le détail est dans la <a href="confidentialite.html">politique de confidentialité</a>.</p>`],
@@ -3456,12 +3456,12 @@ function pageAccueil(V, D, METIERS, ECRANS, C = null, NAF = null, SOURCES = [], 
           <li><strong>Android</strong> : dans Chrome, le menu, puis « Ajouter à l'écran d'accueil » ;</li>
           <li><strong>ordinateur</strong> : dans Chrome ou Edge, l'icône « Installer » de la barre d'adresse.</li>
         </ul>
-        <p>Elle s'ouvre alors comme une application, et marche même sans réseau — sur un chantier, dans un
+        <p>Elle s'ouvre alors comme une application et marche même sans réseau — sur un chantier, dans un
         entrepôt. Ce n'est pas une application de l'App Store : rien à télécharger, pas de compte à créer.</p>`],
       ["Et si une source officielle ne répond pas ?",
        `<p><strong>Rien n'est perdu.</strong></p>
         <p>Il arrive qu'un site public soit en panne ou lent. Le robot réessaie alors une seconde fois. Si la
-        source reste muette, les textes qu'elle avait déjà donnés restent affichés, et la relève suivante, une
+        source reste muette, les textes qu'elle avait déjà donnés restent affichés et la relève suivante, une
         heure plus tard, reprend là où elle en était.</p>
         <p>Les sources qu'on ne peut pas encore relever automatiquement sont citées, avec la raison, dans la
         réponse « D'où viennent les textes ? » ci-dessus. On ne fait pas comme si elles étaient suivies.</p>`],
@@ -3510,7 +3510,7 @@ ${bandeAvis(AVIS)}
         <span class="chiffre">${nbDomaines}</span>
         <p class="legende">Thèmes abordés</p>
         <p class="legende-detail">Santé et sécurité au travail, environnement, droit du travail et paie, fiscalité,
-        numérique et données personnelles, bâtiment et sécurité incendie, et les réglementations propres à chaque métier.</p>
+        numérique et données personnelles, bâtiment et sécurité incendie et les réglementations propres à chaque métier.</p>
       </div>
       <div class="rail-item" data-paraitre data-compte="${V.declencheurs.length}">
         <span class="chiffre">${V.declencheurs.length}</span>
@@ -3551,7 +3551,7 @@ ${bandeAvis(AVIS)}
       <li class="trait">
         <svg class="icone" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 12l2 2 4-5"/><circle cx="12" cy="12" r="9"/></svg>
         <div><h3>Réalisation de votre registre de conformité réglementaire</h3>
-        <p>Une synthèse des textes qui vous sont applicables, et de ceux qui sont appliqués dans votre société.</p></div>
+        <p>Une synthèse des textes qui vous sont applicables et de ceux qui sont appliqués dans votre société.</p></div>
       </li>
       <li class="trait">
         <svg class="icone" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h14v16l-7-3-7 3Z"/><path d="M9 9h6"/></svg>
@@ -3578,7 +3578,7 @@ ${bandeAvis(AVIS)}
       <li class="trait">
         <svg class="icone" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 12l2 2 4-5"/><circle cx="12" cy="12" r="9"/></svg>
         <div><h3>Réalisation de votre registre de conformité réglementaire</h3>
-        <p>Une synthèse des textes qui vous sont applicables, et de ceux qui sont appliqués dans votre société.</p></div>
+        <p>Une synthèse des textes qui vous sont applicables et de ceux qui sont appliqués dans votre société.</p></div>
       </li>
       <li class="trait">
         <svg class="icone" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h14v16l-7-3-7 3Z"/><path d="M9 9h6"/></svg>
@@ -3592,21 +3592,21 @@ ${bandeAvis(AVIS)}
       </li>
     </ul>
     <div class="normes-onglet">
-    <p class="normes-intro"><strong>Pour votre certification.</strong> Ce que la norme demande sur la réglementation, et ce que le
+    <p class="normes-intro"><strong>Pour votre certification.</strong> Ce que la norme demande sur la réglementation et ce que le
     site vous donne pour le montrer à l'auditeur.</p>
     <ul class="normes">
       ${[
         { n: "ISO 14001", t: "Environnement",
           demande: "Connaître vos obligations de conformité (§ 6.1.3) et évaluer votre conformité, en gardant la preuve (§ 9.1.2).",
-          donne: "La liste de ce qui s'applique chez vous, les textes qui paraissent, et chaque évaluation datée au registre." },
+          donne: "La liste de ce qui s'applique chez vous, les textes qui paraissent et chaque évaluation datée au registre." },
         { n: "ISO 45001", t: "Santé et sécurité au travail",
           demande: "Déterminer les exigences légales applicables (§ 6.1.3) et évaluer votre conformité, preuve à l'appui (§ 9.1.2).",
-          donne: "Les sujets santé-sécurité de votre métier, ce qu'il faut faire pour chaque texte, et la case « fait » datée." },
+          donne: "Les sujets santé-sécurité de votre métier, ce qu'il faut faire pour chaque texte et la case « fait » datée." },
         { n: "MASE", t: "Entreprises intervenantes",
-          demande: "Connaître et suivre la réglementation qui s'applique à vos interventions, et le montrer.",
-          donne: "La fiche de votre métier, ce qu'il faut faire pour chaque texte, et un registre qui s'imprime tel quel pour l'audit." },
+          demande: "Connaître et suivre la réglementation qui s'applique à vos interventions et le montrer.",
+          donne: "La fiche de votre métier, ce qu'il faut faire pour chaque texte et un registre qui s'imprime tel quel pour l'audit." },
         { n: "Qualiopi", t: "Organismes de formation",
-          demande: "Une veille légale et réglementaire sur la formation professionnelle, et son exploitation (indicateur 23).",
+          demande: "Une veille légale et réglementaire sur la formation professionnelle et son exploitation (indicateur 23).",
           donne: "Le sujet « Enseignement, formation et certification qualité » suivi à son rythme, revue après revue." }
       ].map((x) => `<li class="norme">
         <p class="norme-nom">${esc(x.n)} <span>${esc(x.t)}</span></p>
@@ -3641,7 +3641,7 @@ ${bandeAvis(AVIS)}
       <li class="trait">
         <svg class="icone" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 12l2 2 4-5"/><circle cx="12" cy="12" r="9"/></svg>
         <div><h3>Réalisation de votre registre de conformité réglementaire</h3>
-        <p>Une synthèse des textes qui vous sont applicables, et de ceux qui sont appliqués dans votre société.</p></div>
+        <p>Une synthèse des textes qui vous sont applicables et de ceux qui sont appliqués dans votre société.</p></div>
       </li>
       <li class="trait">
         <svg class="icone" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h14v16l-7-3-7 3Z"/><path d="M9 9h6"/></svg>
@@ -3718,7 +3718,7 @@ function pageContact() {
   <div class="enveloppe contact-page">
     <div class="contact-intro">
       <h1>Nous contacter</h1>
-      <p class="contact-texte">Contactez-nous, et notre équipe vous répondra dans les meilleurs délais.</p>
+      <p class="contact-texte">Contactez-nous et notre équipe vous répondra dans les meilleurs délais.</p>
       <ul class="contact-infos">
         <li><span class="contact-icone" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3.5 6.5 8.5 6 8.5-6"/></svg></span>
           <span><span class="contact-etiquette">Par courriel</span><a href="mailto:${esc(SITE.courriel)}">${esc(SITE.courriel)}</a></span></li>
@@ -3800,7 +3800,7 @@ function pageDecouvrir(V, ECRANS, C, NAF, SOURCES) {
     { t: "Mise à jour quotidienne des textes", i: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
       d: "Chaque jour, les nouveaux textes sont intégrés à votre veille." },
     { t: "Une veille réglementaire individualisée", i: '<path d="M4 5h16l-6 8v6l-4-2v-4z"/>',
-      d: `${nCodes || V.divisions.length} codes NAF, et des questions sur les spécificités de votre entreprise permettant d'individualiser votre veille réglementaire.` },
+      d: `${nCodes || V.divisions.length} codes NAF et des questions sur les spécificités de votre entreprise permettant d'individualiser votre veille réglementaire.` },
     { t: "Vos textes sous forme de synthèse", i: '<path d="M9 6h11M9 12h11M9 18h11"/><path d="m3.5 6 1 1 2-2M3.5 12l1 1 2-2M3.5 18l1 1 2-2"/>',
       d: "Chaque jour, votre synthèse est mise à jour avec les textes qui vous sont applicables." },
     { t: "Votre plan d'actions", i: '<rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4V3h6v1M9 10h6M9 14h6M9 18h3"/>',
@@ -3839,7 +3839,7 @@ function pageDecouvrir(V, ECRANS, C, NAF, SOURCES) {
   </svg>`;
 
   /* Le même dessin, en hauteur, pour un téléphone : les encadrés l'un sous
-     l'autre, et un texte lisible sans zoomer. */
+     l'autre et un texte lisible sans zoomer. */
   const dessinFicheTel = `<svg class="dessin" viewBox="0 0 360 560" role="img"
     aria-label="Schéma d'une fiche de texte : le titre, puis ce que vous devez faire avec le bouton Fait, puis le texte tel que publié, puis d'où vient le texte.">
     <rect class="d-carte" x="4" y="4" width="352" height="552" rx="18"/>
@@ -3949,7 +3949,7 @@ ${sectionSources(V)}<section class="section section-appel">
 
   return page({
     titre: `Présentation | ${SITE.nom}`,
-    description: "Du Journal officiel à la case « fait » : ce que le site va chercher, comment il trie, et ce que vous voyez.",
+    description: "Du Journal officiel à la case « fait » : ce que le site va chercher, comment il trie et ce que vous voyez.",
     zone: "public", actif: "decouvrir", corps, donneesPlan: true, attrsBody: ' data-page="presentation"'
   });
 }
@@ -3991,7 +3991,7 @@ function pageAbonnement(V) {
 ${SITE.offreConsultant ? (() => {
   // L'offre consultant (3 novembre 2026, demandé par Axel) : la même grille
   // que consultants.html. Pas de paiement en ligne pour elle : l'abonnement
-  // s'ouvre sur demande, et la carte le dit.
+  // s'ouvre sur demande et la carte le dit.
   const O = OFFRE_CONSULTANT, direct = FORMULES[O.equivalent];
   return `<section class="section section-tein" id="consultants">
   <div class="enveloppe">
@@ -4046,7 +4046,7 @@ const comptesFermes = () => `<p class="reserve" data-comptes-fermes hidden>
           Écrivez-nous à <a href="mailto:${esc(SITE.courriel)}">${esc(SITE.courriel)}</a>.
         </p>`;
 
-/* Les formulaires de compte : aucun champ ne porte de « name », et l'envoi est
+/* Les formulaires de compte : aucun champ ne porte de « name » et l'envoi est
    en « post ». Si le script ne tournait pas, le navigateur enverrait le
    formulaire lui-même : ainsi, rien — surtout pas un mot de passe — ne peut
    finir dans l'adresse de la page ni dans l'historique. */
@@ -4056,7 +4056,7 @@ const comptesFermes = () => `<p class="reserve" data-comptes-fermes hidden>
    dans l'application). Au téléphone, le formulaire seul. */
 function ecranAuth({ titre, sous, carte, pied = "", carteTitre = "Vos identifiants" }) {
   /* 4 novembre 2026 : sur le modèle des autres pages (Mon compte, Réglages) —
-     le titre à gauche, puis des cartes : le formulaire, et à côté ce que l'on
+     le titre à gauche, puis des cartes : le formulaire et à côté ce que l'on
      retrouve dans son espace. */
   return `
 <section class="section compte-page auth-uni">
@@ -4125,12 +4125,12 @@ function pageConnexion() {
     titre: `Connexion | ${SITE.nom}`,
     description: `Connexion à ${SITE.nom}, la veille réglementaire des PME.`,
     zone: "public", actif: "connexion", corps, scripts: ["assets/compte.js"], installation: false,
-    attrsBody: ' data-page="connexion"', piedCourt: true   // la connexion, et rien d'autre : seuls les liens légaux restent en bas
+    attrsBody: ' data-page="connexion"', piedCourt: true   // la connexion et rien d'autre : seuls les liens légaux restent en bas
   });
 }
 
 /* Créer son compte : l'adresse et un mot de passe. Supabase envoie un lien de
-   confirmation ; l'abonnement vient ensuite, et c'est lui qui ouvre l'espace. */
+   confirmation ; l'abonnement vient ensuite et c'est lui qui ouvre l'espace. */
 function pageCreer() {
   const corps = ecranAuth({
     titre: "Créer votre compte",
@@ -4160,7 +4160,7 @@ function pageCreer() {
         <div class="reserve" id="creer-envoye" tabindex="-1" hidden>
           <p><strong>Plus qu'une étape : ouvrez votre boîte de réception.</strong></p>
           <p>Un lien de confirmation vient de partir à <strong id="creer-adresse"></strong>.
-          Cliquez dessus : votre compte est alors actif, et vous arrivez dans votre espace.</p>
+          Cliquez dessus : votre compte est alors actif et vous arrivez dans votre espace.</p>
           <p>Rien reçu après quelques minutes ? Regardez dans les courriels indésirables.
           <span id="creer-renvoi"></span></p>
           <p>Cette adresse a déjà un compte ? <a href="../connexion.html">Connectez-vous</a>.</p>
@@ -4499,7 +4499,7 @@ function pageInvitation() {
 
 /* Mon cabinet (compte/cabinet.html) : la page du consultant. Ses clients,
    où ils en sont, en ajouter un, inviter son responsable, entrer chez lui.
-   La base ne lui donne que ses clients, et seulement ceux qui l'autorisent
+   La base ne lui donne que ses clients et seulement ceux qui l'autorisent
    (supabase/migrations/…_consultants.sql). */
 /* L'espace consultant (3 novembre 2026) : un tableau de bord de tous ses
    clients — par société, les textes non lus, le pourcentage de conformité
@@ -4592,7 +4592,7 @@ function pageCabinet() {
 /* La démonstration consultant (demo/cabinet.html) : la page « Mon cabinet »
    avec un cabinet et des clients fictifs (contenu/demo.js, DEMO.cabinet).
    Maçonnerie Vidal est l'entreprise du jeu d'essai : ses chiffres viennent de
-   son registre, et « Ouvrir son espace » entre dans la démonstration avec le
+   son registre et « Ouvrir son espace » entre dans la démonstration avec le
    bandeau consultant (assets/session.js). Rien n'y est enregistré. */
 function pageCabinetDemo(V, D) {
   const C = D.cabinet, E = D.entreprise, planVidal = planDe(V, E);
@@ -4798,7 +4798,7 @@ function donneesAvis(V, D, C, JO) {
     };
   });
   const avis = textes.concat(codes).sort((a, b) => (a.v < b.v ? 1 : a.v > b.v ? -1 : (a.d < b.d ? 1 : -1)));
-  /* La démonstration : le plan de Maçonnerie Vidal, et « depuis » une semaine
+  /* La démonstration : le plan de Maçonnerie Vidal et « depuis » une semaine
      avant la dernière relève, pour qu'il y ait quelque chose à montrer. */
   const fin = JO && JO.releve_le ? JO.releve_le : new Date().toISOString().slice(0, 10);
   const depuis = new Date(Date.parse(fin + "T00:00:00Z") - 7 * 86400000).toISOString().slice(0, 19) + "Z";
@@ -4857,7 +4857,7 @@ function verifie(V, PIEGES, METIERS, D, TEXTES) {
     if (inconnues.length) throw new Error(`${nom} rattachés à des divisions inexistantes : ${inconnues.join(", ")}.`);
   }
 
-  // Chaque référence citée doit avoir sa fiche, et chaque fiche doit se
+  // Chaque référence citée doit avoir sa fiche et chaque fiche doit se
   // rattacher à une référence : sans ces deux contrôles, un renommage dans le
   // référentiel laisserait des liens vers des pages inexistantes.
   const refs = [...new Set(Object.values(V.domaines).flatMap((d) => d.textes))];
@@ -5016,7 +5016,7 @@ async function main() {
   const TEXTES = await chargeFichier("contenu/textes.js", "TEXTES");
 
   // Le relevé officiel n'existe que si outils/jorf.mjs a tourné. Son absence
-  // n'empêche pas de construire : la page le dit, et montre le jeu d'essai.
+  // n'empêche pas de construire : la page le dit et montre le jeu d'essai.
   const cheminJO = resolve(RACINE, "contenu/veille-releve.json");
   const JO = existsSync(cheminJO) ? JSON.parse(await readFile(cheminJO, "utf8")) : null;
   /* Le texte des sources, en clair : un relevé fait avant le nouveau nettoyage
@@ -5097,7 +5097,7 @@ async function main() {
 
   // Le cache du service worker est nommé d'après l'empreinte de l'habillage.
   // Une empreinte stable évite de purger le cache pour rien ; une empreinte
-  // qui change purge tout, et c'est ce qui fait qu'une publication atteint
+  // qui change purge tout et c'est ce qui fait qu'une publication atteint
   // les visiteurs déjà venus.
   /* Tout ce que les pages chargent avec « ?v= » doit entrer dans l'empreinte :
      sans amorce.js ni les données des alertes, un changement de l'un d'eux
@@ -5128,14 +5128,14 @@ async function main() {
   await writeFile(join(SORTIE, "index.html"), pageAccueil(V, D, METIERS, ECRANS, C, NAF, SOURCES, AVIS, JO));
   await writeFile(join(SORTIE, "le-site.html"), pageInfos({
     titre: "Le site en détail", h1: "Le site en détail",
-    sous: "D'où viennent les textes, ce que vous voyez pour chacun, comment le tri se fait, et ce que vous gardez.",
+    sous: "D'où viennent les textes, ce que vous voyez pour chacun, comment le tri se fait et ce que vous gardez.",
     encarts: encartsDuSite(V, C, NAF, SOURCES),
     suite: `<a class="bouton bouton-accent" href="decouvrir.html">Comment ça marche, en dessins</a>
       <a class="bouton bouton-sobre" href="index.html#simulateur">Voir ce qui me concerne</a>`
   }));
   await writeFile(join(SORTIE, "nous.html"), pageInfos({
     titre: "Qui sommes-nous", h1: "Qui sommes-nous",
-    sous: `${esc(SITE.nom)}, la veille réglementaire des PME : qui l'a conçu, ce que vous achetez, et les audits qu'il prépare.`,
+    sous: `${esc(SITE.nom)}, la veille réglementaire des PME : qui l'a conçu, ce que vous achetez et les audits qu'il prépare.`,
     encarts: encartsDeNous(),
     suite: `<a class="bouton bouton-accent" href="mailto:${esc(SITE.courriel)}">${esc(SITE.courriel)}</a>
       ${lienTel("bouton bouton-sobre")}

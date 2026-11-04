@@ -22,7 +22,7 @@
    Quand une référence désigne une famille de textes — « arrêtés de
    vérifications périodiques », « conventions collectives » — il n'existe pas
    un texte unique à pointer. On envoie alors vers le recueil officiel de ces
-   textes, et la page le dit : « les textes », pas « le texte ». On n'invente
+   textes et la page le dit : « les textes », pas « le texte ». On n'invente
    jamais un identifiant pour faire joli : une adresse fausse coûte plus cher
    qu'une adresse large.
    ========================================================================== */

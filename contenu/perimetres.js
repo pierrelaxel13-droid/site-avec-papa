@@ -28,7 +28,7 @@
 
    CE DÉCOUPAGE EST UNE AIDE À LA LECTURE, PAS UN AVIS JURIDIQUE
    Dire que « ATEX » renvoie aux deux sections « Prévention des explosions »
-   est un choix de navigation. Il est à relire par Clément Pierrel, et les
+   est un choix de navigation. Il est à relire par Clément Pierrel et les
    pages le signalent.
    ========================================================================== */
 
@@ -47,7 +47,7 @@ window.PERIMETRES = [
     racines: ["Quatrième partie : Santé et sécurité au travail$"] },
 
   /* La fiche générale du code pointe le même périmètre : c'est celui que la
-     veille suit. Le reste du code n'est pas publié ici, et la fiche le dit. */
+     veille suit. Le reste du code n'est pas publié ici et la fiche le dit. */
   { ref: "Code du travail",
     code: "LEGITEXT000006072050",
     racines: ["Quatrième partie : Santé et sécurité au travail$"] },

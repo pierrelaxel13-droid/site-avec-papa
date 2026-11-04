@@ -18,7 +18,7 @@
    Les 88 divisions du référentiel. Leurs intitulés font les adresses des
    fiches de secteur : les changer casserait toutes les pages déjà publiées.
    Le robot vérifie seulement qu'aucune division n'a disparu de la
-   nomenclature, et le dit si c'est le cas.
+   nomenclature et le dit si c'est le cas.
 
    USAGE
      node outils/naf.mjs

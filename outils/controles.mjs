@@ -2,7 +2,7 @@
    Les contrôles de vraisemblance du robot de collecte
    --------------------------------------------------------------------------
    Appelés par outils/veille.mjs à la fin de chaque passage, avant d'écrire.
-   Ils comparent ce qui vient d'être relevé au passage précédent, et disent
+   Ils comparent ce qui vient d'être relevé au passage précédent et disent
    ce qui n'est pas normal — sans jamais inventer : une alerte dit ce qu'on a
    constaté, pas ce qu'on suppose.
 
@@ -67,7 +67,7 @@ export function controle({ rapport, propres, avant, sources, depuis, aujourdhui,
     }
   }
 
-  // Une chute de tout le relevé de plus de moitié : alerte, et on garde
+  // Une chute de tout le relevé de plus de moitié : alerte et on garde
   // tout ce qui était là, plutôt que de publier un relevé appauvri.
   if (avantFenetre.length >= 20 && propres.length < avantFenetre.length / 2) {
     const n = propres.length;

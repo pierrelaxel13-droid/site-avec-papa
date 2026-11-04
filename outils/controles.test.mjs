@@ -29,7 +29,7 @@ const niveaux = (r) => r.alertes.map((a) => a.niveau + ":" + a.source);
     propres: [texte("jorf", 1)], avant: [texte("cnil", 1), texte("cnil", 2)] }));
   ok(r.alertes.some((a) => a.source === "cnil" && /format a peut-être changé/.test(a.quoi)), "réponse vide après des textes : « format changé ? »");
 }
-// 4. Une chute de plus de moitié : alerte, et les textes sont gardés.
+// 4. Une chute de plus de moitié : alerte et les textes sont gardés.
 {
   const avant = [...Array(20)].map((_, i) => texte("cnil", i));
   const propres = avant.slice(0, 5);

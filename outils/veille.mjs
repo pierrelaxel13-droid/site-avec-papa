@@ -3,7 +3,7 @@
    Vigie — la relève
    --------------------------------------------------------------------------
    Va chercher ce qui paraît sur les sources officielles, en extrait ce qui
-   touche un domaine du référentiel, et écrit contenu/veille-releve.json, que
+   touche un domaine du référentiel et écrit contenu/veille-releve.json, que
    build.mjs publie dans l'application.
 
    LES SOURCES
@@ -15,7 +15,7 @@
    DEUX GENRES, QU'IL NE FAUT PAS CONFONDRE
      texte     — du droit : loi, décret, arrêté, règlement.
      actualite — un commentaire officiel : guide, avis, doctrine, alerte.
-   L'application les sépare, et la fiche le dit.
+   L'application les sépare et la fiche le dit.
 
    USAGE
      node outils/veille.mjs                 # les 7 derniers jours
@@ -78,12 +78,12 @@ async function charge(chemin, cle) {
 
 
 /* --- Réseau ---------------------------------------------------------------- */
-/* Un échec n'est jamais masqué : on remonte le code, et le programme continue
+/* Un échec n'est jamais masqué : on remonte le code et le programme continue
    avec les autres sources. Une source muette doit se voir dans le rapport. */
 /* Une source rate parfois une relève et revient à la suivante (l'Ineris a
    répondu 403 une fois le 26 octobre, l'AMF une autre fois). On réessaie donc
    une fois, quinze secondes plus tard, sur un échec passager : délai,
-   connexion coupée, 403, 429, 5xx. Pas plus, et toujours sous notre nom : un
+   connexion coupée, 403, 429, 5xx. Pas plus et toujours sous notre nom : un
    site qui refuse deux fois est noté comme tel. */
 const PASSAGER = /timeout|aborted|fetch failed|ECONNRESET|UND_ERR|HTTP (403|408|429|5\d\d)/i;
 async function recupere(url, delai = 20000, essai = 1) {
@@ -342,7 +342,7 @@ async function relevéDila(V, s, depuis) {
 }
 
 /* --- Trouver le vrai flux d'une source muette ------------------------------ */
-/* Une adresse de flux, ça se périme : un site change d'outil, et /rss devient
+/* Une adresse de flux, ça se périme : un site change d'outil et /rss devient
    /feed/. Plutôt que de deviner, on demande au site lui-même :
      1. les pistes connues (relevées dans la documentation de chaque site) ;
      2. les liens que ses pages déclarent : <link rel="alternate" type="…rss…">
@@ -578,14 +578,14 @@ async function main() {
       }
     }
     console.log(`\n${vivantes} source(s) sur ${SOURCES.length} exploitables.`);
-    console.log("Passer « confirme: true » dans contenu/sources.js pour celles-là, et seulement celles-là.");
+    console.log("Passer « confirme: true » dans contenu/sources.js pour celles-là et seulement celles-là.");
     return;
   }
 
   console.log(`Relève depuis le ${depuis}, sur ${SOURCES.length} sources.\n`);
   await chargeDejaVus();
   /* Le relevé précédent, repassé au tri d'aujourd'hui : ce que le tri écarte
-     désormais n'est pas « perdu », et ne doit être ni repris ni compté comme
+     désormais n'est pas « perdu » et ne doit être ni repris ni compté comme
      une chute par les contrôles (outils/controles.mjs). */
   const avantBrut = AVANT.length;
   AVANT = AVANT
@@ -617,7 +617,7 @@ async function main() {
     await ecrireBilan({ statut: "echouee", examines: SOURCES.length, retenus: 0, nouveaux: 0, rapport,
       alertes: [{ niveau: "grave", source: "", quoi: "Aucune entrée retenue, sur aucune source : rien n'a été écrit." }] });
     console.error("\nAucune entrée retenue : rien n'est écrit.\n" +
-      "Le fichier contenu/veille-releve.json n'est pas touché, et l'application\n" +
+      "Le fichier contenu/veille-releve.json n'est pas touché et l'application\n" +
       "continuera d'afficher « aucune relève ». C'est voulu : mieux vaut une page\n" +
       "qui dit ne rien savoir qu'une page qui affirme sans savoir.");
     process.exit(4);
@@ -637,7 +637,7 @@ async function main() {
 
   /* Une source qui a raté cette relève ne perd pas ses textes. Le 27 octobre
      à 5 h, le Journal officiel a coupé la connexion deux fois de suite : la
-     relève a réécrit le fichier sans lui, et 130 textes ont disparu du site
+     relève a réécrit le fichier sans lui et 130 textes ont disparu du site
      jusqu'à l'heure suivante. On reprend donc, pour chaque source muette, ses
      textes de la relève précédente encore dans la fenêtre — et le rapport le
      dit, la source reste signalée muette. */

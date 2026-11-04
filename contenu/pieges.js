@@ -2,7 +2,7 @@
    Pierrel & Co — les pièges du métier
    --------------------------------------------------------------------------
    Une entrée par division NAF. C'est le seul contenu du site qui ne se déduit
-   pas du référentiel : il vient du terrain, et c'est lui qui empêche les 88
+   pas du référentiel : il vient du terrain et c'est lui qui empêche les 88
    pages de se ressembler.
 
    Chaque entrée porte « valide: false » tant que Clément Pierrel ne l'a pas
@@ -19,7 +19,7 @@ window.PIEGES = {
   /* --- Agriculture ------------------------------------------------------- */
   "01": { valide: false, pieges: [
     { titre: "Le certificat expiré dans un tiroir",
-      texte: "Le Certiphyto se renouvelle, et son expiration ne prévient pas. Sans lui, l'achat comme l'application de produits phytopharmaceutiques devient irrégulier du jour au lendemain." },
+      texte: "Le Certiphyto se renouvelle et son expiration ne prévient pas. Sans lui, l'achat comme l'application de produits phytopharmaceutiques devient irrégulier du jour au lendemain." },
     { titre: "Le registre tenu de mémoire",
       texte: "Le registre des traitements se remplit le jour même, pas en fin de campagne. Reconstitué après coup, il ne vaut rien devant un contrôle." },
     { titre: "Le pulvérisateur jamais représenté",
@@ -39,7 +39,7 @@ window.PIEGES = {
   /* --- Construction -------------------------------------------------------- */
   "41": { valide: false, pieges: [
     { titre: "La décennale absente des devis",
-      texte: "L'assurance existe, mais ses références ne figurent ni sur les devis ni sur les factures. C'est une mention obligatoire, et son absence se voit au premier litige." }
+      texte: "L'assurance existe, mais ses références ne figurent ni sur les devis ni sur les factures. C'est une mention obligatoire et son absence se voit au premier litige." }
   ]},
   "42": { valide: false, pieges: [
     { titre: "Le plan de prévention oublié en coactivité",
@@ -47,7 +47,7 @@ window.PIEGES = {
   ]},
   "43": { valide: false, pieges: [
     { titre: "Le repérage amiante que personne n'a demandé",
-      texte: "Sur un bâtiment autorisé avant juillet 1997, le repérage avant travaux incombe au donneur d'ordre — mais c'est l'entreprise qui intervient qui se retrouve exposée, et mise en cause, s'il manque." },
+      texte: "Sur un bâtiment autorisé avant juillet 1997, le repérage avant travaux incombe au donneur d'ordre — mais c'est l'entreprise qui intervient qui se retrouve exposée et mise en cause, s'il manque." },
     { titre: "Les vérifications d'échafaudage non tracées",
       texte: "Le montage, la mise en service et les vérifications journalières se consignent. Sans registre, la conformité du matériel ne se prouve pas." },
     { titre: "Le sous-traitant jamais vérifié",
@@ -67,7 +67,7 @@ window.PIEGES = {
   /* --- Commerce de détail -------------------------------------------------- */
   "47": { valide: false, pieges: [
     { titre: "Le registre public d'accessibilité manquant",
-      texte: "Il est obligatoire et doit être mis à disposition du public. C'est l'un des premiers documents réclamés, et l'un des plus souvent absents." },
+      texte: "Il est obligatoire et doit être mis à disposition du public. C'est l'un des premiers documents réclamés et l'un des plus souvent absents." },
     { titre: "Le médiateur de la consommation non désigné",
       texte: "Vendre à des particuliers suppose d'avoir désigné un médiateur et d'en communiquer les coordonnées. L'oubli est massif chez les petits commerces." }
   ]},
@@ -77,7 +77,7 @@ window.PIEGES = {
     { titre: "La capacité professionnelle attachée à une personne",
       texte: "Le départ de la personne qui porte l'attestation de capacité met la licence en cause. La continuité se prépare avant, pas après." },
     { titre: "Les données du chronotachygraphe non déchargées",
-      texte: "Les téléchargements périodiques des données conducteur et véhicule, et leur conservation, sont contrôlés aussi sûrement que les temps eux-mêmes." }
+      texte: "Les téléchargements périodiques des données conducteur et véhicule et leur conservation, sont contrôlés aussi sûrement que les temps eux-mêmes." }
   ]},
 
   /* --- Hébergement et restauration ------------------------------------------ */
@@ -111,7 +111,7 @@ window.PIEGES = {
   /* --- Santé et médico-social -------------------------------------------------- */
   "86": { valide: false, pieges: [
     { titre: "Les données de santé hébergées n'importe où",
-      texte: "Un logiciel métier qui stocke des données de santé suppose un hébergeur certifié. La question ne se pose qu'au moment de l'audit, et il est alors tard pour changer de prestataire." },
+      texte: "Un logiciel métier qui stocke des données de santé suppose un hébergeur certifié. La question ne se pose qu'au moment de l'audit et il est alors tard pour changer de prestataire." },
     { titre: "Les DASRI sans bordereau",
       texte: "La filière des déchets d'activités de soins à risques infectieux se trace d'un bout à l'autre, enlèvement par enlèvement." }
   ]},
@@ -134,7 +134,7 @@ window.PIEGES = {
     { titre: "Les poussières de bois traitées comme de la saleté",
       texte: "Les poussières de bois dur sont classées cancérogènes. Elles relèvent du régime CMR : captage à la source, contrôle d'empoussièrement, suivi médical renforcé, traçabilité des expositions. Un simple coup de balai en fin de journée ne tient pas." },
     { titre: "L'aspiration dimensionnée une fois pour toutes",
-      texte: "Le réseau d'aspiration a été calculé pour l'atelier d'il y a dix ans. Deux machines ajoutées depuis, et les vitesses d'air ne sont plus atteintes nulle part. Personne ne s'en aperçoit tant qu'on ne mesure pas." },
+      texte: "Le réseau d'aspiration a été calculé pour l'atelier d'il y a dix ans. Deux machines ajoutées depuis et les vitesses d'air ne sont plus atteintes nulle part. Personne ne s'en aperçoit tant qu'on ne mesure pas." },
     { titre: "Les produits de finition oubliés du document unique",
       texte: "Vernis, colles et solvants sont des produits chimiques à part entière. Ils arrivent avec leurs fiches de données de sécurité, leur ventilation et leur risque incendie — rarement repris dans l'évaluation des risques." }
   ]},
@@ -142,13 +142,13 @@ window.PIEGES = {
   /* --- Industrie chimique -------------------------------------------------- */
   "20": { valide: false, pieges: [
     { titre: "Le seuil Seveso franchi sans s'en rendre compte",
-      texte: "Le classement dépend des quantités susceptibles d'être présentes, pas des quantités habituelles. Un stock de pointe, une livraison avancée, et l'établissement change de régime — avec un plan d'opération interne et une information du public à la clé." },
+      texte: "Le classement dépend des quantités susceptibles d'être présentes, pas des quantités habituelles. Un stock de pointe, une livraison avancée et l'établissement change de régime — avec un plan d'opération interne et une information du public à la clé." },
     { titre: "L'arrêté préfectoral jamais relu",
-      texte: "Les prescriptions de l'arrêté d'autorisation sont la vraie loi du site : rejets, mesures, fréquences, rapports. Elles se périment moins vite que la réglementation générale, mais elles se perdent dans un classeur, et l'inspection les connaît mieux que l'exploitant." },
+      texte: "Les prescriptions de l'arrêté d'autorisation sont la vraie loi du site : rejets, mesures, fréquences, rapports. Elles se périment moins vite que la réglementation générale, mais elles se perdent dans un classeur et l'inspection les connaît mieux que l'exploitant." },
     { titre: "Les fiches de données de sécurité périmées",
       texte: "Une FDS se met à jour quand le classement du produit change. Travailler avec la version de l'achat initial, c'est afficher des consignes et des EPI qui ne correspondent plus au produit livré." },
     { titre: "La sous-traitance d'arrêt sans plan de prévention",
-      texte: "Les arrêts techniques font entrer des dizaines d'entreprises extérieures en quelques jours. Le plan de prévention écrit et l'inspection commune préalable sont obligatoires, et c'est le premier point regardé après un accident." }
+      texte: "Les arrêts techniques font entrer des dizaines d'entreprises extérieures en quelques jours. Le plan de prévention écrit et l'inspection commune préalable sont obligatoires et c'est le premier point regardé après un accident." }
   ]},
 
   /* --- Caoutchouc et plastique ---------------------------------------------- */
@@ -174,7 +174,7 @@ window.PIEGES = {
   /* --- Métallurgie ---------------------------------------------------------- */
   "24": { valide: false, pieges: [
     { titre: "Les fumées de soudage selon le métal",
-      texte: "Souder de l'inox, c'est émettre du chrome hexavalent, cancérogène. Le même poste, la même torche, et un régime réglementaire entièrement différent du soudage de l'acier doux." },
+      texte: "Souder de l'inox, c'est émettre du chrome hexavalent, cancérogène. Le même poste, la même torche et un régime réglementaire entièrement différent du soudage de l'acier doux." },
     { titre: "Le bruit mesuré une fois, il y a longtemps",
       texte: "Le mesurage d'exposition sonore se refait quand le procédé change. Entre deux, les protections sont choisies sur une cartographie qui ne décrit plus l'atelier." },
     { titre: "Les appareils de levage et leurs accessoires",
@@ -194,7 +194,7 @@ window.PIEGES = {
   /* --- Machines et équipements ---------------------------------------------- */
   "28": { valide: false, pieges: [
     { titre: "Le dossier technique qui n'existe que dans les têtes",
-      texte: "La déclaration CE de conformité suppose un dossier technique constitué et conservé : analyse de risques, calculs, essais, notice. Il se reconstitue très mal après coup, et c'est la première pièce demandée en cas d'accident." },
+      texte: "La déclaration CE de conformité suppose un dossier technique constitué et conservé : analyse de risques, calculs, essais, notice. Il se reconstitue très mal après coup et c'est la première pièce demandée en cas d'accident." },
     { titre: "La notice d'instructions traduite à la va-vite",
       texte: "La notice doit être rédigée dans la langue du pays d'utilisation et couvrir le montage, l'usage, la maintenance et la mise hors service. Une traduction automatique du manuel anglais ne satisfait pas l'obligation." },
     { titre: "La quasi-machine livrée comme une machine",
@@ -246,7 +246,7 @@ window.PIEGES = {
     { titre: "L'entrepôt classé que personne n'a déclaré",
       texte: "Une surface de stockage de matières combustibles au-delà des seuils relève de la rubrique 1510, avec ses prescriptions de désenfumage, de cellules et de rétention. Beaucoup d'entrepôts loués passent en dessous du radar jusqu'au premier sinistre." },
     { titre: "Les chariots conduits avec une autorisation périmée",
-      texte: "L'autorisation de conduite se fonde sur un CACES ou un contrôle équivalent, une aptitude médicale et une connaissance des lieux. Les trois se périment, et pas à la même date." },
+      texte: "L'autorisation de conduite se fonde sur un CACES ou un contrôle équivalent, une aptitude médicale et une connaissance des lieux. Les trois se périment et pas à la même date." },
     { titre: "Le transport de marchandises dangereuses sans conseiller",
       texte: "Dès qu'on expédie, charge ou décharge des marchandises dangereuses au-delà des seuils, un conseiller à la sécurité est obligatoire, avec un rapport annuel. L'activité est souvent occasionnelle, donc invisible dans l'organigramme." }
   ]},
@@ -256,7 +256,7 @@ window.PIEGES = {
     { titre: "Le sous-traitant RGPD qui se croit responsable",
       texte: "Développer ou héberger pour un client fait de vous un sous-traitant au sens du règlement : contrat de sous-traitance, registre des traitements sous-traités, obligation d'alerte. Ce n'est pas le même jeu d'obligations que celui du client." },
     { titre: "Les sauvegardes jamais restaurées pour de vrai",
-      texte: "Une sauvegarde qu'on n'a jamais restaurée est une hypothèse. L'obligation de sécurité impose des mesures adaptées, et l'essai de restauration est ce qui transforme l'intention en preuve." },
+      texte: "Une sauvegarde qu'on n'a jamais restaurée est une hypothèse. L'obligation de sécurité impose des mesures adaptées et l'essai de restauration est ce qui transforme l'intention en preuve." },
     { titre: "L'accessibilité numérique oubliée des marchés publics",
       texte: "Livrer un site ou une application à un organisme public engage sur le référentiel d'accessibilité, avec déclaration et schéma pluriannuel. Cela se chiffre au cahier des charges, pas à la recette." }
   ]},
@@ -276,7 +276,7 @@ window.PIEGES = {
     { titre: "Les obligations transférées au siège sans les moyens",
       texte: "Le siège centralise la paie, les achats, la conformité — mais la responsabilité pénale reste sur l'établissement, sauf délégation de pouvoirs écrite, précise et assortie des moyens. Une note d'organisation n'est pas une délégation." },
     { titre: "La déclaration de performance extrapolée",
-      texte: "Les obligations de publication extra-financière dépendent de seuils de taille consolidés. Un groupe les franchit souvent un exercice avant de s'en apercevoir, et le premier rapport se prépare sur l'exercice écoulé." },
+      texte: "Les obligations de publication extra-financière dépendent de seuils de taille consolidés. Un groupe les franchit souvent un exercice avant de s'en apercevoir et le premier rapport se prépare sur l'exercice écoulé." },
     { titre: "Les conventions intra-groupe non formalisées",
       texte: "Les prestations entre sociétés du même groupe doivent être documentées et rémunérées à leur valeur. L'administration fiscale et le commissaire aux comptes regardent le même document, pour des raisons différentes." }
   ]},
@@ -286,7 +286,7 @@ window.PIEGES = {
     { titre: "L'assurance décennale souscrite trop étroite",
       texte: "La garantie doit couvrir les activités réellement exercées, telles qu'elles sont décrites au contrat. Une mission de maîtrise d'œuvre d'exécution exercée sous une attestation de conception laisse l'entreprise à découvert." },
     { titre: "L'accréditation confondue avec la compétence",
-      texte: "Un essai réalisé hors du périmètre d'accréditation reste un essai valable techniquement, mais il ne peut pas être présenté comme accrédité. La portée s'exprime ligne par ligne, et elle se vérifie." },
+      texte: "Un essai réalisé hors du périmètre d'accréditation reste un essai valable techniquement, mais il ne peut pas être présenté comme accrédité. La portée s'exprime ligne par ligne et elle se vérifie." },
     { titre: "L'indépendance du contrôleur entamée par le conseil",
       texte: "Conseiller puis contrôler le même ouvrage expose à un conflit d'intérêts qui disqualifie le rapport. La séparation se prouve par l'organisation, pas par la bonne foi." }
   ]},
@@ -294,9 +294,9 @@ window.PIEGES = {
   /* --- Intérim et placement -------------------------------------------------------- */
   "78": { valide: false, pieges: [
     { titre: "La garantie financière oubliée d'une année sur l'autre",
-      texte: "Exercer le travail temporaire suppose une garantie financière annuelle et une déclaration préalable. Son renouvellement tombe à date fixe, et son absence rend l'activité irrégulière immédiatement." },
+      texte: "Exercer le travail temporaire suppose une garantie financière annuelle et une déclaration préalable. Son renouvellement tombe à date fixe et son absence rend l'activité irrégulière immédiatement." },
     { titre: "Les postes à risques particuliers sans formation renforcée",
-      texte: "Un intérimaire affecté à un poste à risques particuliers reçoit une formation renforcée à la sécurité et un accueil adapté, à la charge de l'entreprise utilisatrice. La liste des postes concernés doit être écrite, et elle l'est rarement." },
+      texte: "Un intérimaire affecté à un poste à risques particuliers reçoit une formation renforcée à la sécurité et un accueil adapté, à la charge de l'entreprise utilisatrice. La liste des postes concernés doit être écrite et elle l'est rarement." },
     { titre: "L'égalité de traitement calculée au taux horaire seulement",
       texte: "La rémunération de l'intérimaire se compare à celle d'un salarié de même qualification de l'entreprise utilisatrice, primes et avantages compris. Le rappel porte sur les accessoires bien plus souvent que sur le salaire de base." }
   ]},
@@ -306,9 +306,9 @@ window.PIEGES = {
     { titre: "Le transfert des contrats de nettoyage ignoré",
       texte: "La convention collective de la propreté organise le transfert des salariés affectés à un marché repris. Chiffrer une reprise sans intégrer le personnel transféré, c'est se tromper de coût et créer un litige." },
     { titre: "Le Certiphyto de l'applicateur en espaces verts",
-      texte: "Appliquer des produits phytopharmaceutiques en prestation suppose un certificat individuel et un agrément de l'entreprise. Les restrictions d'usage dans les lieux publics s'y ajoutent, et elles changent souvent." },
+      texte: "Appliquer des produits phytopharmaceutiques en prestation suppose un certificat individuel et un agrément de l'entreprise. Les restrictions d'usage dans les lieux publics s'y ajoutent et elles changent souvent." },
     { titre: "Les produits d'entretien sans étiquetage de transvasement",
-      texte: "Un produit reconditionné dans un pulvérisateur garde ses obligations d'étiquetage. C'est le contenant anonyme sous l'évier qui fait l'accident, et le constat." }
+      texte: "Un produit reconditionné dans un pulvérisateur garde ses obligations d'étiquetage. C'est le contenant anonyme sous l'évier qui fait l'accident et le constat." }
   ]},
 
   /* --- Sport et loisirs -------------------------------------------------------------- */

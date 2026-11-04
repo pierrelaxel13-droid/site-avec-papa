@@ -55,7 +55,7 @@ export function pagesLegales({ page, SITE, FORMULES, TVA, esc, eur }) {
   /* --- Mentions légales ---------------------------------------------------- */
   const mentions = gabarit({
     fichier: "mentions-legales.html", titre: "Mentions légales", maj: "28 octobre 2026",
-    sous: `Qui édite ${SITE.nom}, qui l'héberge, et comment nous joindre.`,
+    sous: `Qui édite ${SITE.nom}, qui l'héberge et comment nous joindre.`,
     sections: [
       { t: "Éditeur du site", c: `
         <p>Le site et le service ${nom} sont édités par :</p>
@@ -96,14 +96,14 @@ export function pagesLegales({ page, SITE, FORMULES, TVA, esc, eur }) {
   /* --- Politique de confidentialité ----------------------------------------- */
   const confidentialite = gabarit({
     fichier: "confidentialite.html", titre: "Politique de confidentialité", maj: "4 novembre 2026",
-    sous: "Quelles données nous traitons, pourquoi, combien de temps, et comment exercer vos droits.",
+    sous: "Quelles données nous traitons, pourquoi, combien de temps et comment exercer vos droits.",
     sections: [
       { t: "En bref", c: `
         <ul>
           <li>Le site ne pose <strong>aucun cookie</strong> et ne mesure pas l'audience.</li>
           <li><strong>Dans votre compte</strong>, les données de votre entreprise — dont votre registre de
             preuves — sont conservées dans notre base de données, hébergée dans l'Union européenne, isolées de
-            celles des autres clients, et ne servent qu'à vous rendre le service.</li>
+            celles des autres clients et ne servent qu'à vous rendre le service.</li>
           <li><strong>Dans la démonstration</strong>, rien ne nous est envoyé : ce que vous y faites reste dans
             votre navigateur.</li>
           <li>Nous ne vendons, ne louons et n'exploitons commercialement aucune donnée. Nous ne les
@@ -125,21 +125,21 @@ export function pagesLegales({ page, SITE, FORMULES, TVA, esc, eur }) {
             votre navigateur uniquement (stockage local). Rien ne nous est envoyé ; vous l'effacez en vidant les
             données du site dans votre navigateur.</li>
           <li><strong>Vos courriels.</strong> Quand vous nous écrivez, nous utilisons votre message et votre
-            adresse pour vous répondre, et les conservons trois ans après notre dernier échange.</li>
+            adresse pour vous répondre et les conservons trois ans après notre dernier échange.</li>
         </ul>` },
       { t: "Votre compte et votre espace client", c: `
         <p>Les données suivantes sont traitées pour fournir le service souscrit (base légale : l'exécution
         du contrat) :</p>
         <ul>
           <li><strong>Compte :</strong> adresse électronique, mot de passe — conservé uniquement sous forme
-            d'empreinte chiffrée, jamais en clair —, date d'inscription et de dernière connexion, et l'entreprise
+            d'empreinte chiffrée, jamais en clair —, date d'inscription et de dernière connexion et l'entreprise
             ou le cabinet dont vous êtes membre, avec votre rôle.</li>
-          <li><strong>Entreprise :</strong> dénomination, activité (code NAF), effectif, implantation, et les
+          <li><strong>Entreprise :</strong> dénomination, activité (code NAF), effectif, implantation et les
             autres informations que vous renseignez dans vos réglages.</li>
           <li><strong>Conformité :</strong> votre plan de veille, vos réponses aux questions de situation, la
-            qualification de chaque texte, et votre registre de preuves — revues, décisions, actions, avec
+            qualification de chaque texte et votre registre de preuves — revues, décisions, actions, avec
             leur date et leur auteur.</li>
-          <li><strong>Facturation :</strong> formule, montants, factures, et l'identifiant de votre abonnement chez
+          <li><strong>Facturation :</strong> formule, montants, factures et l'identifiant de votre abonnement chez
             notre prestataire de paiement. Le paiement, par carte bancaire ou par prélèvement SEPA, est traité par ce
             prestataire : nous ne voyons jamais votre numéro de carte ni votre IBAN.</li>
           <li><strong>Contact :</strong> ce que vous écrivez dans le formulaire de contact (nom, entreprise, adresse
@@ -152,15 +152,15 @@ export function pagesLegales({ page, SITE, FORMULES, TVA, esc, eur }) {
         </ul>
         <p><strong>Les données de conformité sont sensibles</strong> : elles disent ce qui, chez vous, est fait
         et ce qui ne l'est pas. Elles sont isolées par entreprise — un utilisateur ne voit que celles de son
-        entreprise, et le cas échéant son consultant, si vous l'avez autorisé —, chiffrées en transit, et
+        entreprise et le cas échéant son consultant, si vous l'avez autorisé —, chiffrées en transit, et
         accessibles à l'éditeur uniquement pour le support que vous demandez ou la sécurité du service.</p>` },
       { t: "Nos prestataires", c: `
         <p>En place :</p>
         <ul>
-          <li>hébergement de la base de données et des comptes, et envoi des courriels de compte (confirmation
+          <li>hébergement de la base de données et des comptes et envoi des courriels de compte (confirmation
             de l'adresse, mot de passe oublié) — ${manque(E.hebergeurDonnees, "prestataire et région d'hébergement, dans l'Union européenne")} ;</li>
-          <li>hébergement du site public, et garde des sauvegardes de la base — ${esc(SITE.hebergeur.nom)}
-            (États-Unis). Les sauvegardes sont chiffrées (AES-256) avant de lui être confiées, et la clé ne lui
+          <li>hébergement du site public et garde des sauvegardes de la base — ${esc(SITE.hebergeur.nom)}
+            (États-Unis). Les sauvegardes sont chiffrées (AES-256) avant de lui être confiées et la clé ne lui
             est jamais donnée : il ne peut pas les lire. Il ne reçoit aucune autre donnée de votre espace client.</li>
         </ul>
         <p>Pour les conseils proposés par l'IA à côté des textes : Perplexity AI, Inc. (États-Unis). Il ne reçoit
@@ -189,13 +189,13 @@ export function pagesLegales({ page, SITE, FORMULES, TVA, esc, eur }) {
       { t: "Cookies", c: `
         <p>Aucun. Quand vous vous connectez à votre compte, votre session (un jeton de connexion, renouvelé
         toutes les heures) est gardée dans le stockage local de votre navigateur. C'est strictement nécessaire
-        pour rester connecté : elle ne sert à rien d'autre, n'appelle pas de consentement, et « Se déconnecter »
+        pour rester connecté : elle ne sert à rien d'autre, n'appelle pas de consentement et « Se déconnecter »
         l'efface. Votre mot de passe, lui, n'y est jamais gardé.</p>` },
       { t: "Vos droits", c: `
         <p>Vous pouvez demander l'accès à vos données, leur rectification, leur effacement, leur portabilité,
         la limitation de leur traitement, ou vous opposer à un traitement fondé sur notre intérêt légitime.</p>
         <p><strong>Sans nous écrire</strong>, depuis « Mon compte » : « Mes données personnelles » télécharge tout
-        ce que nous gardons sur vous (fichier JSON), et « Supprimer mon compte » efface votre compte, votre profil
+        ce que nous gardons sur vous (fichier JSON) et « Supprimer mon compte » efface votre compte, votre profil
         et vos accès. Les entrées que vous avez écrites dans le registre de votre entreprise restent, avec votre
         nom : c'est la preuve datée de l'entreprise, qui en est responsable. Votre adresse, votre nom et vos
         réglages se modifient au même endroit.</p>
@@ -232,12 +232,12 @@ export function pagesLegales({ page, SITE, FORMULES, TVA, esc, eur }) {
         <ul>${lignesFormules}</ul>
         <p>Les textes proviennent de sources officielles publiques (Journal officiel, Légifrance, EUR-Lex et
         autres sites publics cités). Ils sont relevés automatiquement, à intervalle régulier ; leur apparition
-        dans le Service suit leur publication avec un délai, et dépend de la disponibilité de ces sources.</p>` },
+        dans le Service suit leur publication avec un délai et dépend de la disponibilité de ces sources.</p>` },
       { t: "Nature du Service : un outil méthodologique", c: `
         <p class="legal-cle">Cet article est essentiel. Le Client reconnaît l'avoir lu et accepté.</p>
         <ol>
           <li><strong>Pas de conseil juridique.</strong> Le Service est un outil méthodologique d'organisation de
-            la veille. Il ne constitue pas une consultation juridique, ni un conseil juridique, et ne remplace pas
+            la veille. Il ne constitue pas une consultation juridique, ni un conseil juridique et ne remplace pas
             l'avis d'un professionnel du droit sur la situation particulière du Client.</li>
           <li><strong>Pas d'exhaustivité.</strong> La liste des sujets et des textes proposée est indicative. Elle
             repose sur une classification générale par activité et sur les informations fournies par le Client.
@@ -258,7 +258,7 @@ export function pagesLegales({ page, SITE, FORMULES, TVA, esc, eur }) {
       { t: "Souscription et accès", c: `
         <p>L'abonnement est souscrit en ligne, par le paiement de la formule choisie. Il donne accès à un espace
         client pour les utilisateurs désignés par le Client. Le Client fournit des informations exactes, garde ses
-        identifiants confidentiels, et répond de l'usage qui est fait de son espace.</p>` },
+        identifiants confidentiels et répond de l'usage qui est fait de son espace.</p>` },
       { t: "Prix", c: `
         <p>Les prix sont ceux affichés sur la page des tarifs au jour de la souscription, en euros.
         ${esc(TVA.mention)}.</p>
@@ -267,10 +267,10 @@ export function pagesLegales({ page, SITE, FORMULES, TVA, esc, eur }) {
       { t: "Paiement et facturation", c: `
         <p>L'abonnement annuel est payable d'avance pour douze mois ; l'abonnement mensuel, d'avance chaque mois.
         Le paiement se fait en ligne, par carte bancaire ou par prélèvement SEPA (le Client signe alors un mandat
-        de prélèvement en ligne), et il est traité par le prestataire de paiement de l'éditeur, Stripe. L'éditeur
+        de prélèvement en ligne) et il est traité par le prestataire de paiement de l'éditeur, Stripe. L'éditeur
         n'a jamais connaissance du numéro de carte ni de l'IBAN. Une facture est émise à chaque échéance.</p>
         <p>Tout retard de paiement entraîne de plein droit, sans rappel préalable, des pénalités de retard au taux
-        de trois fois le taux d'intérêt légal, et une indemnité forfaitaire pour frais de recouvrement de 40 €
+        de trois fois le taux d'intérêt légal et une indemnité forfaitaire pour frais de recouvrement de 40 €
         (article L. 441-10 du Code de commerce). Après une mise en demeure restée sans effet pendant
         ${decider} <em>proposition : 15 jours</em>, l'éditeur peut suspendre l'accès au Service.</p>` },
       { t: "Durée, renouvellement et résiliation", c: `
@@ -291,7 +291,7 @@ export function pagesLegales({ page, SITE, FORMULES, TVA, esc, eur }) {
         ses autres données, dans un format lisible et réutilisable (PDF et tableur). Passé le délai prévu par la
         <a href="confidentialite.html">politique de confidentialité</a>, les données sont supprimées.</p>` },
       { t: "Disponibilité", c: `
-        <p>L'éditeur s'efforce d'assurer l'accès au Service en continu, et le cas échéant d'informer le Client
+        <p>L'éditeur s'efforce d'assurer l'accès au Service en continu et le cas échéant d'informer le Client
         des interruptions prévues. Il est tenu à une obligation de moyens. Le Service affiche la date de la
         dernière collecte réussie des textes, pour que le Client sache s'il est à jour.</p>` },
       { t: "Limitation de responsabilité", c: `
@@ -303,14 +303,14 @@ export function pagesLegales({ page, SITE, FORMULES, TVA, esc, eur }) {
             décisions prises par le Client, ni de leurs suites ; d'un usage du Service non conforme aux présentes
             conditions.</li>
           <li>Il ne répond pas des dommages indirects, tels que la perte de chiffre d'affaires, de clientèle ou de
-            certification, les amendes, sanctions ou pénalités infligées au Client, et les conséquences d'un
+            certification, les amendes, sanctions ou pénalités infligées au Client et les conséquences d'un
             contrôle ou d'un audit.</li>
           <li>Sauf faute lourde ou dolosive, sa responsabilité est limitée, toutes causes confondues, au montant
             payé par le Client au titre du Service au cours des douze mois précédant le fait générateur.</li>
         </ol>` },
       { t: "Données et confidentialité", c: `
         <p>Les données du Client lui appartiennent. L'éditeur les traite uniquement pour fournir le Service, selon
-        la <a href="confidentialite.html">politique de confidentialité</a>, et les tient confidentielles. Pour les
+        la <a href="confidentialite.html">politique de confidentialité</a> et les tient confidentielles. Pour les
         données personnelles que le Client saisit, l'éditeur agit comme sous-traitant ; l'accord prévu par
         l'article 28 du RGPD est annexé aux présentes ${decider}
         <em>à rédiger avec l'avocat</em>.</p>` },
@@ -322,7 +322,7 @@ export function pagesLegales({ page, SITE, FORMULES, TVA, esc, eur }) {
         <p>Aucune partie n'est responsable d'un manquement causé par un événement de force majeure au sens de
         l'article 1218 du Code civil.</p>` },
       { t: "Modification des conditions", c: `
-        <p>L'éditeur peut modifier les présentes conditions ; il en informe le Client, et la nouvelle version
+        <p>L'éditeur peut modifier les présentes conditions ; il en informe le Client et la nouvelle version
         s'applique au renouvellement suivant.</p>` },
       { t: "Droit applicable et litiges", c: `
         <p>Les présentes conditions sont soumises au droit français. Les parties recherchent d'abord une solution

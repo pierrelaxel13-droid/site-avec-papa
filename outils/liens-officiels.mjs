@@ -2,10 +2,10 @@
    Les liens vers les sites officiels répondent-ils encore ?
    --------------------------------------------------------------------------
    Le site pointe vers des milliers de pages officielles (Légifrance, EUR-Lex,
-   INRS, CNIL…). Un ministère qui réorganise son site, et nos liens tombent sur
+   INRS, CNIL…). Un ministère qui réorganise son site et nos liens tombent sur
    une page d'erreur : c'est exactement le genre de défaut qui fait douter du
    reste. Ce script les teste tous, une fois par mois
-   (.github/workflows/liens-officiels.yml), et liste ceux qui sont morts.
+   (.github/workflows/liens-officiels.yml) et liste ceux qui sont morts.
 
    Trois verdicts, pour ne pas crier au loup :
      mort      404, 410, ou le site n'existe plus (adresse introuvable)
@@ -16,7 +16,7 @@
    Seuls les liens morts font échouer l'action — sauf ceux qui ne sont que
    dans le relevé : ils viennent du flux d'une source (avertissement).
 
-   Politesse : deux requêtes à la fois par site au plus, une pause entre deux,
+   Politesse : deux requêtes à la fois par site au plus, une pause entre deux
    et un nom de robot qui dit qui nous sommes.
 
    Usage : node build.mjs && node outils/liens-officiels.mjs [_site]
@@ -38,7 +38,7 @@ async function pages(d) {
   return out;
 }
 
-// Chaque lien extérieur, et les pages où il apparaît.
+// Chaque lien extérieur et les pages où il apparaît.
 const ou = new Map();
 for (const p of await pages(RACINE)) {
   const h = await readFile(p, "utf8");
@@ -114,7 +114,7 @@ const rapport = [
 console.log("\n" + rapport);
 if (process.env.GITHUB_STEP_SUMMARY) await appendFile(process.env.GITHUB_STEP_SUMMARY, rapport + "\n");
 /* Un lien mort qui n'est que dans le relevé vient du flux d'une source (la
-   douane a retiré sa page, par exemple) : nous n'y pouvons rien, et il partira
+   douane a retiré sa page, par exemple) : nous n'y pouvons rien et il partira
    avec le texte, au bout de 14 jours. Il est signalé, sans faire échouer
    l'action. Un lien mort ailleurs — fiches, référentiel, pages — est à nous. */
 const releve = (f) => /(^|\/)releve\.html$/.test(f);

@@ -3,7 +3,7 @@
    Vigie — le texte des codes, mot pour mot
    --------------------------------------------------------------------------
    Va chercher les codes consolidés, en découpe les morceaux déclarés dans
-   contenu/perimetres.js, et écrit contenu/codes.json, que build.mjs publie
+   contenu/perimetres.js et écrit contenu/codes.json, que build.mjs publie
    sur le site. Le client lit le texte chez nous ; il n'a plus à partir.
 
    LA SOURCE
@@ -12,7 +12,7 @@
    ministères sociaux, sur le registre npm : @socialgouv/legi-data, construite
    en interrogeant l'API Légifrance. Licence ouverte, donc republiable à
    condition de citer la source et la version — ce que fait chaque page.
-   Pas de compte, pas de clé, et le registre npm répond partout, y compris
+   Pas de compte, pas de clé et le registre npm répond partout, y compris
    depuis un environnement de développement fermé. C'est la seule source de
    texte intégral joignable d'ici : la DILA et Légifrance, elles, ne le sont
    que depuis les machines de construction (voir netlify.toml).
@@ -20,7 +20,7 @@
    CE QU'IL ÉCRIT
    contenu/codes.json : les codes suivis avec leur version, les morceaux
    découpés en pages lisibles, le texte de chaque article avec sa date d'entrée
-   en vigueur et les textes qui l'ont modifié, et — c'est le point — la liste
+   en vigueur et les textes qui l'ont modifié et — c'est le point — la liste
    des changements depuis la relève précédente.
 
    CE QUE ÇA CHANGE, EXACTEMENT
@@ -105,7 +105,7 @@ function nettoieHtml(brut) {
   /* Retirer une balise interdite laisse parfois un élément vide : il
      creuserait un trou dans le texte officiel sans rien dire. On le remplace
      par une espace, jamais par rien : sans elle, « diplômantes. » et « À
-     défaut » se colleraient, et la comparaison avec la relève précédente
+     défaut » se colleraient et la comparaison avec la relève précédente
      signalerait un changement qui n'a pas eu lieu. On repasse tant qu'il en
      reste, parce qu'un vide peut en cacher un autre. */
   const VIDE = /<(p|li|td|th|tr|strong|em|b|i|u|sup|sub)>(?:\s|<br>)*<\/\1>/gi;
@@ -269,7 +269,7 @@ async function telecharge() {
 
 /* --- La comparaison avec la relève précédente ------------------------------ */
 /* Un découpage mot à mot : on cherche le plus long début commun et la plus
-   longue fin commune, et on montre ce qui tient entre les deux. C'est ce que
+   longue fin commune et on montre ce qui tient entre les deux. C'est ce que
    lit le client : « avant ceci, maintenant cela ». */
 function difference(avant, apres) {
   const a = avant.split(" ");
@@ -326,7 +326,7 @@ function compare(ancien, nouveau) {
   return changements;
 }
 
-/* Une ligne par article : le fichier est suivi par git, et un changement de
+/* Une ligne par article : le fichier est suivi par git et un changement de
    texte doit se voir comme une ligne changée, pas comme un fichier réécrit. */
 function ecris(o) {
   const j = (x) => JSON.stringify(x);
@@ -356,7 +356,7 @@ async function main() {
   /* L'annuaire de tous les codes de la base LEGI, pas seulement des quatre
      dont on publie le texte : il donne l'identifiant officiel de chacun, donc
      l'adresse exacte de son texte sur Légifrance. C'est ce qui permet à une
-     fiche de pointer le texte lui-même, et non la page d'accueil d'un site. */
+     fiche de pointer le texte lui-même et non la page d'accueil d'un site. */
   let annuaire = [];
   try {
     annuaire = JSON.parse(await readFile(join(dossier, "index.json"), "utf8"))
@@ -410,7 +410,7 @@ async function main() {
       const pages = [];
       decoupe(r.n, r.chemin, pages);
       for (const page of pages) {
-        /* Le nom de la page dit ce qu'elle contient : le code, et la plage
+        /* Le nom de la page dit ce qu'elle contient : le code et la plage
            d'articles. « code-du-travail-r4412-1-a-r4412-159 » se lit ; un
            numéro d'ordre ne se lit pas. */
         const bornes = page.articles.map((a) => (a.data || {}).num || "");

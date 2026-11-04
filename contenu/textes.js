@@ -3,15 +3,15 @@
    --------------------------------------------------------------------------
    Une entrée par référence citée dans assets/referentiel.js, à la clé exacte
    de la référence. build.mjs vérifie que chaque clé correspond à une référence
-   connue, et dit combien de références n'ont pas encore de fiche.
+   connue et dit combien de références n'ont pas encore de fiche.
 
    CE QUE CES FICHES SONT, ET CE QU'ELLES NE SONT PAS
 
    Elles ne reproduisent pas le texte officiel. Le texte intégral et à jour est
-   sur Légifrance, et c'est là qu'il faut le lire : lui seul fait foi, et une
+   sur Légifrance et c'est là qu'il faut le lire : lui seul fait foi et une
    copie se périme en silence. Ce qui est écrit ici, c'est ce que le texte
    exige — en français courant, en quelques points, avec qui est concerné.
-   C'est ce qu'un dirigeant vient chercher, et c'est le travail du cabinet.
+   C'est ce qu'un dirigeant vient chercher et c'est le travail du cabinet.
 
    « valide: false » tant que Clément Pierrel ne l'a pas relue. Les fiches non
    validées s'affichent avec une mention explicite.
@@ -28,7 +28,7 @@ window.TEXTES = {
     qui: "Tout employeur, dès le premier salarié.",
     exige: [
       "Évaluer les risques de chaque poste et consigner le résultat dans le document unique, mis à jour au moins chaque année et à chaque changement notable.",
-      "Mettre en œuvre les actions de prévention qui en découlent, dans l'ordre : supprimer le risque, le réduire à la source, protéger collectivement, et seulement ensuite équiper individuellement.",
+      "Mettre en œuvre les actions de prévention qui en découlent, dans l'ordre : supprimer le risque, le réduire à la source, protéger collectivement et seulement ensuite équiper individuellement.",
       "Former chaque salarié à la sécurité de son poste, à l'embauche et à chaque changement.",
       "Tenir à jour la liste des postes à risques et organiser le suivi médical correspondant."
     ] },
@@ -55,10 +55,10 @@ window.TEXTES = {
     nature: "Code",
     qui: "Tout employeur.",
     exige: [
-      "Un contrat écrit pour tout ce qui n'est pas un CDI à temps plein, et les mentions obligatoires d'information du salarié.",
-      "Le respect des durées maximales de travail, des repos quotidien et hebdomadaire, et le décompte du temps de travail.",
+      "Un contrat écrit pour tout ce qui n'est pas un CDI à temps plein et les mentions obligatoires d'information du salarié.",
+      "Le respect des durées maximales de travail, des repos quotidien et hebdomadaire et le décompte du temps de travail.",
       "L'affichage obligatoire et la mise à disposition du règlement intérieur dès 50 salariés.",
-      "La mise en place du comité social et économique dès 11 salariés, et ses attributions élargies à 50."
+      "La mise en place du comité social et économique dès 11 salariés et ses attributions élargies à 50."
     ] },
 
   "Convention collective de branche (IDCC)": { valide: false,
@@ -77,13 +77,13 @@ window.TEXTES = {
     exige: [
       "Un dépôt sur la plateforme nationale et au greffe du conseil de prud'hommes : sans dépôt, l'accord n'entre pas en vigueur.",
       "Une publication en version anonymisée dans la base nationale.",
-      "Le respect des thèmes où l'accord d'entreprise prime, et de ceux où la branche reste verrouillée."
+      "Le respect des thèmes où l'accord d'entreprise prime et de ceux où la branche reste verrouillée."
     ] },
 
   /* ===== Paie, cotisations et protection sociale ========================== */
   "Code de la sécurité sociale": { valide: false,
     nature: "Code",
-    qui: "Tout employeur, et tout travailleur indépendant pour sa propre affiliation.",
+    qui: "Tout employeur et tout travailleur indépendant pour sa propre affiliation.",
     exige: [
       "La déclaration sociale nominative chaque mois, dans les délais, avec les données exactes de chaque salarié.",
       "Le calcul et le versement des cotisations aux bonnes échéances, selon l'effectif.",
@@ -94,7 +94,7 @@ window.TEXTES = {
     nature: "Doctrine opposable",
     qui: "Tout employeur.",
     exige: [
-      "C'est la doctrine que l'URSSAF applique en contrôle, et elle est opposable à l'administration : s'y conformer protège.",
+      "C'est la doctrine que l'URSSAF applique en contrôle et elle est opposable à l'administration : s'y conformer protège.",
       "Il change plusieurs fois par an — frais professionnels, avantages en nature, réductions de cotisations.",
       "Une pratique de paie conforme au BOSS de l'an dernier peut être redressée cette année."
     ] },
@@ -105,7 +105,7 @@ window.TEXTES = {
     exige: [
       "Chaque fin d'année, elles modifient les taux, les plafonds et les dispositifs d'exonération pour l'année suivante.",
       "Le plafond mensuel de la Sécurité sociale, qui sert de base à de nombreux calculs, y est fixé.",
-      "Les paramètres de paie doivent être repris au 1er janvier, et parfois en cours d'année."
+      "Les paramètres de paie doivent être repris au 1er janvier et parfois en cours d'année."
     ] },
 
   /* ===== Fiscalité, facturation et comptabilité =========================== */
@@ -134,7 +134,7 @@ window.TEXTES = {
     exige: [
       "Publiée fin décembre, elle modifie taux, crédits d'impôt, seuils et obligations déclaratives pour l'exercice qui s'ouvre.",
       "Des lois de finances rectificatives peuvent intervenir en cours d'année.",
-      "C'est le texte fiscal dont la veille est la plus prévisible dans son calendrier, et la plus lourde dans ses effets."
+      "C'est le texte fiscal dont la veille est la plus prévisible dans son calendrier et la plus lourde dans ses effets."
     ] },
 
   "Plan comptable général": { valide: false,
@@ -151,11 +151,11 @@ window.TEXTES = {
     nature: "Règlement européen",
     qui: "Toute entreprise qui traite des données personnelles — donc toute entreprise qui a des salariés ou des clients.",
     exige: [
-      "Tenir un registre des activités de traitement, et pouvoir le présenter.",
-      "Informer les personnes de ce qui est collecté, pourquoi, pour combien de temps, et de leurs droits.",
+      "Tenir un registre des activités de traitement et pouvoir le présenter.",
+      "Informer les personnes de ce qui est collecté, pourquoi, pour combien de temps et de leurs droits.",
       "Encadrer chaque sous-traitant par un contrat comportant les clauses imposées.",
-      "Notifier à la CNIL toute violation de données dans les 72 heures, et aux personnes concernées si le risque est élevé.",
-      "Définir des durées de conservation par finalité, et les appliquer réellement."
+      "Notifier à la CNIL toute violation de données dans les 72 heures et aux personnes concernées si le risque est élevé.",
+      "Définir des durées de conservation par finalité et les appliquer réellement."
     ] },
 
   "Loi Informatique et Libertés": { valide: false,
@@ -190,7 +190,7 @@ window.TEXTES = {
 
   "Référentiels et guides ANSSI": { valide: false,
     nature: "Référentiels techniques",
-    qui: "Toute entreprise, et obligatoirement les entités régulées.",
+    qui: "Toute entreprise et obligatoirement les entités régulées.",
     exige: [
       "Les guides d'hygiène informatique donnent les mesures de base attendues : mots de passe, sauvegardes testées, mises à jour, cloisonnement.",
       "Les référentiels de qualification encadrent le choix des prestataires de sécurité.",
@@ -209,7 +209,7 @@ window.TEXTES = {
 
   "Loi AGEC (économie circulaire)": { valide: false,
     nature: "Loi",
-    qui: "Les producteurs, importateurs et distributeurs de produits soumis à une filière, et tout détenteur de déchets.",
+    qui: "Les producteurs, importateurs et distributeurs de produits soumis à une filière et tout détenteur de déchets.",
     exige: [
       "Adhérer à un éco-organisme et déclarer les quantités mises sur le marché, pour chaque filière concernée.",
       "Informer le consommateur sur la réparabilité, le tri et la présence de substances.",
@@ -218,10 +218,10 @@ window.TEXTES = {
 
   "Obligations de tri dites « 5 flux »": { valide: false,
     nature: "Décret",
-    qui: "Toute entreprise produisant des déchets au-delà des seuils, et tout établissement regroupant plusieurs producteurs.",
+    qui: "Toute entreprise produisant des déchets au-delà des seuils et tout établissement regroupant plusieurs producteurs.",
     exige: [
       "Trier à la source le papier et le carton, le métal, le plastique, le verre et le bois — et les biodéchets, dont le tri est généralisé depuis 2024.",
-      "Obtenir du collecteur une attestation annuelle de valorisation, et la conserver.",
+      "Obtenir du collecteur une attestation annuelle de valorisation et la conserver.",
       "Les plâtres, les fractions minérales et les textiles s'ajoutent selon les cas : la liste s'allonge."
     ] },
 
@@ -231,8 +231,8 @@ window.TEXTES = {
     qui: "Tout exploitant d'une installation classée pour la protection de l'environnement.",
     exige: [
       "Obtenir le bon titre avant de démarrer : déclaration, enregistrement ou autorisation, selon la rubrique et les quantités.",
-      "Respecter les prescriptions attachées au régime, et déclarer tout changement notable d'exploitation.",
-      "Tenir les registres et les contrôles imposés, et les présenter à l'inspection.",
+      "Respecter les prescriptions attachées au régime et déclarer tout changement notable d'exploitation.",
+      "Tenir les registres et les contrôles imposés et les présenter à l'inspection.",
       "Prévoir et financer la remise en état du site à la cessation d'activité."
     ] },
 
@@ -256,10 +256,10 @@ window.TEXTES = {
 
   "Arrêté préfectoral propre au site": { valide: false,
     nature: "Acte individuel",
-    qui: "Les installations soumises à autorisation, et celles ayant reçu des prescriptions particulières.",
+    qui: "Les installations soumises à autorisation et celles ayant reçu des prescriptions particulières.",
     exige: [
       "C'est la vraie loi du site : rejets autorisés, mesures, fréquences, rapports, horaires, moyens de secours.",
-      "Il prime sur les textes généraux quand il est plus strict, et il est rarement relu après la mise en service.",
+      "Il prime sur les textes généraux quand il est plus strict et il est rarement relu après la mise en service.",
       "L'inspection le connaît mieux que l'exploitant : c'est le premier document sorti en contrôle."
     ] },
 
@@ -269,7 +269,7 @@ window.TEXTES = {
     qui: "Tout producteur et tout détenteur de déchets.",
     exige: [
       "Tenir un registre chronologique des déchets entrants et sortants, conservé trois ans au moins.",
-      "Remettre les déchets à un prestataire autorisé, et conserver la preuve de la filière.",
+      "Remettre les déchets à un prestataire autorisé et conserver la preuve de la filière.",
       "Émettre un bordereau pour les déchets dangereux, désormais par la plateforme nationale de traçabilité.",
       "La responsabilité du producteur ne s'éteint pas à la remise : elle court jusqu'à l'élimination finale."
     ] },
@@ -325,7 +325,7 @@ window.TEXTES = {
     nature: "Arrêtés",
     qui: "Les installations émettant des poussières, des solvants ou des gaz de combustion.",
     exige: [
-      "Des valeurs limites à l'émission, par cheminée et par polluant, et des mesures périodiques par un organisme agréé.",
+      "Des valeurs limites à l'émission, par cheminée et par polluant et des mesures périodiques par un organisme agréé.",
       "La surveillance des émissions diffuses, qui échappent aux points de mesure mais pas aux plaintes de voisinage.",
       "La tenue d'un registre des mesures et des incidents."
     ] },
@@ -369,7 +369,7 @@ window.TEXTES = {
 
   "Code de l'urbanisme": { valide: false,
     nature: "Code",
-    qui: "Tout maître d'ouvrage, et tout exploitant qui modifie son site.",
+    qui: "Tout maître d'ouvrage et tout exploitant qui modifie son site.",
     exige: [
       "L'autorisation préalable adaptée : déclaration, permis de construire, permis d'aménager.",
       "Le respect du plan local d'urbanisme, qui fixe l'implantation, les hauteurs, le stationnement et parfois l'aspect.",
@@ -387,11 +387,11 @@ window.TEXTES = {
 
   "DTU et normes NF applicables": { valide: false,
     nature: "Normes",
-    qui: "Les entreprises de bâtiment, et leurs assureurs.",
+    qui: "Les entreprises de bâtiment et leurs assureurs.",
     exige: [
       "Les règles de l'art d'exécution par ouvrage : supports, tolérances, mises en œuvre.",
       "Elles ne sont pas obligatoires en elles-mêmes, mais l'assurance décennale s'y réfère : s'en écarter sans technique validée expose.",
-      "Elles sont révisées régulièrement, et c'est la version en vigueur au marché qui compte."
+      "Elles sont révisées régulièrement et c'est la version en vigueur au marché qui compte."
     ] },
 
   "Code civil — garanties légales": { valide: false,
@@ -400,7 +400,7 @@ window.TEXTES = {
     exige: [
       "La garantie de parfait achèvement pendant un an, la garantie de bon fonctionnement pendant deux ans.",
       "La garantie décennale sur les désordres compromettant la solidité ou l'usage de l'ouvrage.",
-      "L'assurance correspondante doit être souscrite avant l'ouverture du chantier, et couvrir les activités réellement exercées."
+      "L'assurance correspondante doit être souscrite avant l'ouverture du chantier et couvrir les activités réellement exercées."
     ] },
 
   "Code du travail — chantiers de bâtiment et génie civil": { valide: false,
@@ -409,7 +409,7 @@ window.TEXTES = {
     exige: [
       "La déclaration préalable du chantier au-delà des seuils de durée et d'effectif.",
       "La désignation d'un coordonnateur sécurité dès que deux entreprises interviennent, même successivement.",
-      "Le plan particulier de sécurité pour chaque entreprise, et le collège interentreprises sur les grands chantiers.",
+      "Le plan particulier de sécurité pour chaque entreprise et le collège interentreprises sur les grands chantiers.",
       "Les installations d'hygiène sur le chantier, souvent le premier manquement relevé."
     ] },
 
@@ -437,7 +437,7 @@ window.TEXTES = {
     qui: "Toute entreprise dont les salariés peuvent être exposés, y compris en intervention d'entretien.",
     exige: [
       "Distinguer la sous-section 3 — retrait et encapsulage, qui impose la certification de l'entreprise — de la sous-section 4, interventions sur matériaux amiantés.",
-      "Évaluer l'empoussièrement, écrire un mode opératoire par processus, et le transmettre à l'inspection et au médecin du travail.",
+      "Évaluer l'empoussièrement, écrire un mode opératoire par processus et le transmettre à l'inspection et au médecin du travail.",
       "Former chaque intervenant selon sa fonction, avec recyclage périodique.",
       "Assurer le suivi médical renforcé et la traçabilité des expositions, qui se conserve des décennies."
     ] },
@@ -453,7 +453,7 @@ window.TEXTES = {
 
   "Arrêtés de formation et de certification": { valide: false,
     nature: "Arrêtés",
-    qui: "Les entreprises intervenant sur des matériaux amiantés, et leurs salariés.",
+    qui: "Les entreprises intervenant sur des matériaux amiantés et leurs salariés.",
     exige: [
       "La certification de l'entreprise par un organisme accrédité pour les travaux de retrait.",
       "Des durées et des contenus de formation fixés par fonction : opérateur, encadrant de chantier, encadrant technique.",
@@ -477,12 +477,12 @@ window.TEXTES = {
     exige: [
       "Des périodicités précises : six mois pour les appareils de levage de personnes, douze mois pour beaucoup d'autres.",
       "Une vérification à la mise en service, à la remise en service et après tout démontage.",
-      "Les accessoires de levage — élingues, crochets, palonniers — sont soumis au même régime, et c'est eux qu'on oublie."
+      "Les accessoires de levage — élingues, crochets, palonniers — sont soumis au même régime et c'est eux qu'on oublie."
     ] },
 
   "Règlement (UE) 2023/1230 sur les machines": { valide: false,
     nature: "Règlement européen",
-    qui: "Fabricants, importateurs et distributeurs de machines, et ceux qui en modifient substantiellement.",
+    qui: "Fabricants, importateurs et distributeurs de machines et ceux qui en modifient substantiellement.",
     exige: [
       "Il remplace la directive machines et s'applique directement, sans transposition, à compter de 2027.",
       "Dossier technique, déclaration de conformité, marquage et notice dans la langue du pays d'utilisation.",
@@ -495,7 +495,7 @@ window.TEXTES = {
     nature: "Règlement européen",
     qui: "Fabricants, importateurs et utilisateurs en aval de substances chimiques.",
     exige: [
-      "Obtenir du fournisseur la fiche de données de sécurité, et s'en servir pour écrire les consignes de poste.",
+      "Obtenir du fournisseur la fiche de données de sécurité et s'en servir pour écrire les consignes de poste.",
       "Vérifier que les usages pratiqués figurent dans les scénarios d'exposition annexés.",
       "Surveiller la liste des substances candidates et les autorisations : une substance utilisée depuis vingt ans peut devenir interdite.",
       "Informer le client de la présence d'une substance extrêmement préoccupante au-delà du seuil."
@@ -514,7 +514,7 @@ window.TEXTES = {
     nature: "Code",
     qui: "Tout employeur dont les salariés manipulent ou côtoient des produits chimiques.",
     exige: [
-      "Évaluer le risque chimique poste par poste, et tenir la liste des agents dangereux utilisés.",
+      "Évaluer le risque chimique poste par poste et tenir la liste des agents dangereux utilisés.",
       "Pour les agents cancérogènes, mutagènes ou toxiques pour la reproduction : substitution obligatoire si elle est techniquement possible, travail en vase clos sinon.",
       "Contrôler l'exposition par un organisme accrédité et respecter les valeurs limites.",
       "Assurer le suivi individuel renforcé et conserver la traçabilité des expositions."
@@ -534,7 +534,7 @@ window.TEXTES = {
     nature: "Code",
     qui: "Tout employeur dont l'activité peut produire une atmosphère explosive — poussières comprises.",
     exige: [
-      "Classer les emplacements en zones, et consigner le résultat dans un document relatif à la protection contre les explosions.",
+      "Classer les emplacements en zones et consigner le résultat dans un document relatif à la protection contre les explosions.",
       "N'utiliser dans ces zones que du matériel de la catégorie correspondante.",
       "Former le personnel et encadrer les travaux par points chauds par un permis de feu.",
       "Les poussières de bois, de farine ou de métal relèvent de ce régime autant que les gaz."
@@ -546,7 +546,7 @@ window.TEXTES = {
     exige: [
       "Des capacités de rétention dimensionnées, étanches et vérifiées.",
       "Des distances d'éloignement, une ventilation et des moyens de lutte contre l'incendie proportionnés.",
-      "La compatibilité des produits stockés ensemble, et la mise à la terre des équipements."
+      "La compatibilité des produits stockés ensemble et la mise à la terre des équipements."
     ] },
 
   /* ===== Industries extractives ========================================== */
@@ -582,7 +582,7 @@ window.TEXTES = {
     nature: "Code",
     qui: "Producteurs, fournisseurs, gestionnaires de réseau et gros consommateurs.",
     exige: [
-      "Les autorisations d'exploiter, et les obligations d'achat ou de complément de rémunération.",
+      "Les autorisations d'exploiter et les obligations d'achat ou de complément de rémunération.",
       "Les certificats d'économies d'énergie : obligation pour les obligés, ressource pour les autres.",
       "Les règles d'effacement et de capacité pour les sites raccordés en haute tension."
     ] },
@@ -613,7 +613,7 @@ window.TEXTES = {
       "Connaître son type et sa catégorie : ils déterminent tout le reste.",
       "Tenir le registre de sécurité, avec les vérifications périodiques des installations électriques, du désenfumage, des alarmes et des extincteurs.",
       "Organiser les exercices d'évacuation et la formation du personnel.",
-      "Passer devant la commission de sécurité à la périodicité de la catégorie, et lever les prescriptions."
+      "Passer devant la commission de sécurité à la périodicité de la catégorie et lever les prescriptions."
     ] },
 
   "Règles d'accessibilité des ERP": { valide: false,
@@ -659,8 +659,8 @@ window.TEXTES = {
     nature: "Code",
     qui: "Tout professionnel vendant à des particuliers.",
     exige: [
-      "L'information précontractuelle complète, et l'affichage des prix de manière visible et lisible.",
-      "La garantie légale de conformité de deux ans, et son information obligatoire.",
+      "L'information précontractuelle complète et l'affichage des prix de manière visible et lisible.",
+      "La garantie légale de conformité de deux ans et son information obligatoire.",
       "Le droit de rétractation de quatorze jours pour la vente à distance et hors établissement, avec le formulaire type.",
       "L'interdiction des pratiques commerciales trompeuses, qui couvre aussi les allégations environnementales."
     ] },
@@ -690,7 +690,7 @@ window.TEXTES = {
     qui: "Tout exploitant du secteur alimentaire.",
     exige: [
       "La traçabilité d'un pas en amont et d'un pas en aval, mobilisable immédiatement.",
-      "Le retrait et le rappel des produits non conformes, et l'information des autorités.",
+      "Le retrait et le rappel des produits non conformes et l'information des autorités.",
       "La responsabilité première de la sécurité des aliments pèse sur l'exploitant, pas sur le contrôle."
     ] },
 
@@ -699,8 +699,8 @@ window.TEXTES = {
     qui: "Tout établissement manipulant des denrées alimentaires.",
     exige: [
       "Un plan de maîtrise sanitaire fondé sur les principes HACCP, décrivant l'établissement réel et non un modèle.",
-      "La déclaration de l'établissement, et l'agrément sanitaire quand il est requis.",
-      "La formation du personnel à l'hygiène, et la chaîne du froid avec ses relevés.",
+      "La déclaration de l'établissement et l'agrément sanitaire quand il est requis.",
+      "La formation du personnel à l'hygiène et la chaîne du froid avec ses relevés.",
       "Des relevés trop réguliers, sans aucun écart, discréditent tout le dossier."
     ] },
 
@@ -710,12 +710,12 @@ window.TEXTES = {
     exige: [
       "Les mentions obligatoires : dénomination, ingrédients, quantité nette, date, conservation, origine quand elle est requise.",
       "La mise en évidence des quatorze allergènes, y compris en vente non préemballée et en restauration.",
-      "La déclaration nutritionnelle, et les règles de lisibilité, dont la hauteur minimale des caractères."
+      "La déclaration nutritionnelle et les règles de lisibilité, dont la hauteur minimale des caractères."
     ] },
 
   "Code rural et de la pêche maritime": { valide: false,
     nature: "Code",
-    qui: "Exploitants agricoles, et établissements manipulant des produits d'origine animale.",
+    qui: "Exploitants agricoles et établissements manipulant des produits d'origine animale.",
     exige: [
       "Les règles sanitaires animales et végétales, dont l'identification des animaux et les registres d'élevage.",
       "Les conditions d'agrément et de contrôle des établissements.",
@@ -727,7 +727,7 @@ window.TEXTES = {
     qui: "Les exploitants demandant des aides.",
     exige: [
       "La déclaration annuelle dans les délais, dont dépend l'ensemble des aides.",
-      "Le respect de la conditionnalité : bonnes conditions agricoles et environnementales, et exigences réglementaires.",
+      "Le respect de la conditionnalité : bonnes conditions agricoles et environnementales et exigences réglementaires.",
       "Les éco-régimes et leurs cahiers des charges, revus à chaque programmation."
     ] },
 
@@ -738,7 +738,7 @@ window.TEXTES = {
       "Le certificat individuel Certiphyto, à renouveler — son expiration ne prévient pas.",
       "L'agrément de l'entreprise pour l'application en prestation de service.",
       "Le registre des traitements, rempli le jour même : reconstitué après coup, il ne vaut rien.",
-      "Le contrôle périodique du pulvérisateur, et les distances de sécurité près des habitations et des points d'eau."
+      "Le contrôle périodique du pulvérisateur et les distances de sécurité près des habitations et des points d'eau."
     ] },
 
   /* ===== Douane et commerce international ================================ */
@@ -754,7 +754,7 @@ window.TEXTES = {
 
   "Code des douanes national": { valide: false,
     nature: "Code",
-    qui: "Les opérateurs du commerce extérieur, et les redevables des accises.",
+    qui: "Les opérateurs du commerce extérieur et les redevables des accises.",
     exige: [
       "Les droits d'accise sur les alcools, les tabacs et les produits énergétiques.",
       "Les pouvoirs de contrôle et le régime des sanctions douanières.",
@@ -773,7 +773,7 @@ window.TEXTES = {
   /* ===== Transport ======================================================= */
   "Code des transports": { valide: false,
     nature: "Code",
-    qui: "Les entreprises de transport pour compte d'autrui, et le compte propre selon les cas.",
+    qui: "Les entreprises de transport pour compte d'autrui et le compte propre selon les cas.",
     exige: [
       "L'inscription au registre des transporteurs : capacité professionnelle, capacité financière, honorabilité.",
       "La licence de transport et sa copie conforme à bord de chaque véhicule.",
@@ -795,7 +795,7 @@ window.TEXTES = {
     qui: "Tout acteur de la chaîne du transport de marchandises dangereuses, expéditeur et chargeur compris.",
     exige: [
       "Un conseiller à la sécurité désigné et un rapport annuel, dès que l'activité dépasse les seuils.",
-      "La formation de tout intervenant, et le certificat du conducteur selon les classes.",
+      "La formation de tout intervenant et le certificat du conducteur selon les classes.",
       "L'emballage, l'étiquetage, le document de transport et la signalisation conformes.",
       "L'accord est révisé tous les deux ans : la version applicable change au 1er janvier des années impaires."
     ] },
@@ -803,10 +803,10 @@ window.TEXTES = {
   /* ===== Santé et social ================================================= */
   "Code de la santé publique": { valide: false,
     nature: "Code",
-    qui: "Les établissements et professionnels de santé, et certains établissements recevant du public.",
+    qui: "Les établissements et professionnels de santé et certains établissements recevant du public.",
     exige: [
       "Les autorisations d'activité et leur renouvellement périodique.",
-      "Les règles de qualité et de sécurité des soins, et la gestion des événements indésirables graves.",
+      "Les règles de qualité et de sécurité des soins et la gestion des événements indésirables graves.",
       "Les obligations de vigilance sanitaire et la traçabilité des dispositifs."
     ] },
 
@@ -821,11 +821,11 @@ window.TEXTES = {
 
   "Référentiels d'évaluation nationaux": { valide: false,
     nature: "Référentiels de la Haute Autorité de santé",
-    qui: "Les établissements et services sociaux et médico-sociaux, et les établissements de santé.",
+    qui: "Les établissements et services sociaux et médico-sociaux et les établissements de santé.",
     exige: [
       "Une évaluation selon le référentiel national, par un organisme habilité, à périodicité fixée.",
       "Une préparation qui porte sur la pratique réelle, pas sur les procédures écrites.",
-      "Le plan d'amélioration qui en découle, et son suivi."
+      "Le plan d'amélioration qui en découle et son suivi."
     ] },
 
   "Règlement (UE) 2017/745 sur les dispositifs médicaux": { valide: false,
@@ -843,7 +843,7 @@ window.TEXTES = {
     qui: "Les établissements pharmaceutiques et leurs sous-traitants.",
     exige: [
       "Des locaux, des équipements et un personnel qualifiés, avec validation des procédés.",
-      "La libération des lots par un pharmacien responsable, et la traçabilité complète.",
+      "La libération des lots par un pharmacien responsable et la traçabilité complète.",
       "La gestion documentaire, les déviations, les changements et les auto-inspections."
     ] },
 
@@ -852,9 +852,9 @@ window.TEXTES = {
     nature: "Lois, décrets et arrêtés sectoriels",
     qui: "Les professions dont l'exercice est subordonné à un diplôme, un agrément ou une carte.",
     exige: [
-      "Un titre d'exercice valide, souvent à renouveler, et son affichage ou sa production sur demande.",
+      "Un titre d'exercice valide, souvent à renouveler et son affichage ou sa production sur demande.",
       "Une assurance de responsabilité civile professionnelle adaptée à l'activité réellement exercée.",
-      "Des conditions d'honorabilité vérifiées, et parfois une garantie financière."
+      "Des conditions d'honorabilité vérifiées et parfois une garantie financière."
     ] },
 
   "Codes de déontologie": { valide: false,
@@ -878,7 +878,7 @@ window.TEXTES = {
   /* ===== Finance et assurance ============================================ */
   "Code monétaire et financier": { valide: false,
     nature: "Code",
-    qui: "Les établissements financiers, les intermédiaires, et toute entreprise assujettie à la lutte anti-blanchiment.",
+    qui: "Les établissements financiers, les intermédiaires et toute entreprise assujettie à la lutte anti-blanchiment.",
     exige: [
       "L'agrément ou l'immatriculation préalable à l'exercice.",
       "Une classification des risques écrite, une vigilance proportionnée et la déclaration de soupçon.",
@@ -890,7 +890,7 @@ window.TEXTES = {
     qui: "Assureurs et intermédiaires d'assurance.",
     exige: [
       "L'immatriculation à l'ORIAS, renouvelée chaque année.",
-      "Le devoir de conseil formalisé, et la remise des documents d'information normalisés.",
+      "Le devoir de conseil formalisé et la remise des documents d'information normalisés.",
       "Les règles de gouvernance produit, qui imposent de définir le marché cible."
     ] },
 
@@ -898,7 +898,7 @@ window.TEXTES = {
     nature: "Règlements européens, positions de l'ACPR et de l'AMF",
     qui: "Les acteurs des secteurs bancaire, assurantiel et financier.",
     exige: [
-      "Les règlements s'appliquent directement, sans transposition, et changent vite.",
+      "Les règlements s'appliquent directement, sans transposition et changent vite.",
       "Les positions et recommandations des autorités disent comment elles contrôlent.",
       "Les obligations de publication extra-financière et de durabilité s'y ajoutent par paliers."
     ] },
@@ -910,7 +910,7 @@ window.TEXTES = {
     exige: [
       "La carte professionnelle délivrée par la chambre de commerce, renouvelée tous les trois ans.",
       "La garantie financière et l'assurance de responsabilité civile professionnelle.",
-      "Le mandat écrit, numéroté, préalable à toute action, et le registre des mandats.",
+      "Le mandat écrit, numéroté, préalable à toute action et le registre des mandats.",
       "La formation continue obligatoire, condition du renouvellement de la carte."
     ] },
 
@@ -984,10 +984,10 @@ window.TEXTES = {
   /* ===== Sécurité privée ================================================= */
   "Code de la sécurité intérieure": { valide: false,
     nature: "Code",
-    qui: "Les entreprises de sécurité privée, de surveillance et de transport de fonds, et les opérateurs de jeux.",
+    qui: "Les entreprises de sécurité privée, de surveillance et de transport de fonds et les opérateurs de jeux.",
     exige: [
-      "L'autorisation d'exercice délivrée par le CNAPS, et la carte professionnelle de chaque agent.",
-      "L'aptitude professionnelle et la moralité vérifiées, et la formation continue.",
+      "L'autorisation d'exercice délivrée par le CNAPS et la carte professionnelle de chaque agent.",
+      "L'aptitude professionnelle et la moralité vérifiées et la formation continue.",
       "L'exclusivité de l'objet social et le port de la tenue avec les mentions imposées."
     ] },
 
@@ -1014,7 +1014,7 @@ window.TEXTES = {
     nature: "Code",
     qui: "Les organismes de formation et les entreprises qui forment.",
     exige: [
-      "La déclaration d'activité auprès de la DREETS, et le bilan pédagogique et financier annuel.",
+      "La déclaration d'activité auprès de la DREETS et le bilan pédagogique et financier annuel.",
       "Les mentions obligatoires des conventions et contrats de formation.",
       "Le respect des règles de financement et de prise en charge."
     ] },
@@ -1034,7 +1034,7 @@ window.TEXTES = {
     qui: "Les employeurs d'artistes et de techniciens du spectacle.",
     exige: [
       "La licence d'entrepreneur de spectacles, devenue déclaration, à renouveler.",
-      "La présomption de salariat des artistes, et le contrat écrit.",
+      "La présomption de salariat des artistes et le contrat écrit.",
       "Le recours au guichet unique pour les employeurs occasionnels."
     ] },
 
@@ -1042,9 +1042,9 @@ window.TEXTES = {
     nature: "Code",
     qui: "Tout utilisateur d'œuvres, de marques, de dessins ou de brevets.",
     exige: [
-      "Obtenir l'autorisation avant toute reproduction ou représentation, et payer les droits dus aux sociétés de gestion.",
+      "Obtenir l'autorisation avant toute reproduction ou représentation et payer les droits dus aux sociétés de gestion.",
       "Encadrer par contrat la cession des droits des salariés et des prestataires — elle n'est jamais automatique pour le droit d'auteur.",
-      "Surveiller ses propres titres : une marque se renouvelle, et un usage non exploité se perd."
+      "Surveiller ses propres titres : une marque se renouvelle et un usage non exploité se perd."
     ] },
 
   "Réglementation des lieux de spectacle": { valide: false,
@@ -1062,7 +1062,7 @@ window.TEXTES = {
     exige: [
       "Le droit voisin des éditeurs de presse et la négociation de sa rémunération.",
       "La responsabilité des plateformes de partage sur les contenus protégés.",
-      "Les exceptions de fouille de textes et de données, et le droit d'opposition des titulaires."
+      "Les exceptions de fouille de textes et de données et le droit d'opposition des titulaires."
     ] },
 
   /* ===== Télécommunications et numérique ================================= */
@@ -1095,7 +1095,7 @@ window.TEXTES = {
 
   "Référentiel général d'amélioration de l'accessibilité (RGAA)": { valide: false,
     nature: "Arrêté",
-    qui: "Les organismes publics, et les entreprises au-delà d'un seuil de chiffre d'affaires.",
+    qui: "Les organismes publics et les entreprises au-delà d'un seuil de chiffre d'affaires.",
     exige: [
       "Une déclaration d'accessibilité publiée, avec le taux de conformité réel.",
       "Un schéma pluriannuel de mise en accessibilité et son plan d'action annuel.",
@@ -1135,7 +1135,7 @@ window.TEXTES = {
     qui: "Les établissements d'activités physiques et sportives et les éducateurs.",
     exige: [
       "La déclaration de l'établissement, avec l'attestation d'assurance.",
-      "La carte professionnelle de l'éducateur rémunéré, fondée sur un diplôme inscrit, et son renouvellement.",
+      "La carte professionnelle de l'éducateur rémunéré, fondée sur un diplôme inscrit et son renouvellement.",
       "L'affichage des diplômes, des tarifs et des garanties d'assurance.",
       "Les normes applicables aux équipements et aux aires de pratique."
     ] },
@@ -1155,7 +1155,7 @@ window.TEXTES = {
     exige: [
       "Le classement, facultatif mais déterminant pour la taxe de séjour et la communication.",
       "L'immatriculation des opérateurs de voyages et de séjours, avec garantie financière.",
-      "La déclaration en mairie des meublés de tourisme, et le numéro d'enregistrement là où il est exigé."
+      "La déclaration en mairie des meublés de tourisme et le numéro d'enregistrement là où il est exigé."
     ] },
 
   "Code général des collectivités territoriales (taxe de séjour)": { valide: false,
@@ -1181,8 +1181,8 @@ window.TEXTES = {
     nature: "Loi",
     qui: "Les associations déclarées.",
     exige: [
-      "La déclaration en préfecture, et la déclaration de toute modification des statuts ou des dirigeants dans les trois mois.",
-      "La tenue des assemblées prévues par les statuts, et leurs procès-verbaux.",
+      "La déclaration en préfecture et la déclaration de toute modification des statuts ou des dirigeants dans les trois mois.",
+      "La tenue des assemblées prévues par les statuts et leurs procès-verbaux.",
       "Les obligations comptables renforcées au-delà de certains seuils de subventions."
     ] },
 
@@ -1199,7 +1199,7 @@ window.TEXTES = {
     nature: "Décret",
     qui: "Toute association demandant une subvention publique ou un agrément.",
     exige: [
-      "La souscription du contrat, et son respect par les dirigeants et les membres.",
+      "La souscription du contrat et son respect par les dirigeants et les membres.",
       "L'information des membres de son contenu.",
       "Le manquement peut entraîner le retrait de la subvention et sa restitution."
     ] }

@@ -7,7 +7,7 @@
    1. Les paiements terminés des 7 derniers jours (Checkout Sessions) : chacun
       porte client_reference_id = l'identifiant de l'entreprise, posé par la
       page compte/paiement.html (assets/souscrire.js).
-   2. Leurs abonnements, et ceux déjà connus de la base : statut, formule,
+   2. Leurs abonnements et ceux déjà connus de la base : statut, formule,
       période, fin de période. Un abonnement résilié, impayé ou repris chez
       Stripe change donc ici aussi, au plus tard 15 minutes après.
    3. public.abonnements, une ligne par abonnement Stripe (stripe_abonnement).

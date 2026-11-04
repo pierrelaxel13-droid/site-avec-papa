@@ -48,7 +48,7 @@
     return document.body.getAttribute("data-racine") === "../../" ? "../" : "";
   }
 
-  /* --- L'état : depuis quand, et ce qui est déjà ouvert --------------------- */
+  /* --- L'état : depuis quand et ce qui est déjà ouvert --------------------- */
   /* quand : { clé: date et heure d'ouverture }, pour l'historique du tableau
      de bord (3 novembre 2026). Les textes ouverts avant n'ont pas de date. */
   var lus = { depuis: "", ids: [], quand: {} };
@@ -81,7 +81,7 @@
   }
 
   /* Le plan de l'entreprise : celui de ses réglages ; dans un compte sans
-     code APE, pas de filtre (le relevé montre tout, et le dit) ; dans la
+     code APE, pas de filtre (le relevé montre tout et le dit) ; dans la
      démonstration sans réglages, celui de Maçonnerie Vidal. */
   function plan() {
     var garde = M.lire("pco-entreprise");

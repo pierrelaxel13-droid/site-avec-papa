@@ -9,7 +9,7 @@
                           liens reçus par courriel (confirmation, nouveau mot
                           de passe, changement d'adresse)
 
-   Les mots de passe ne font que passer : ils partent à Supabase, et les
+   Les mots de passe ne font que passer : ils partent à Supabase et les
    champs sont vidés aussitôt.
    ========================================================================== */
 (function () {
@@ -290,7 +290,7 @@
       b.hidden = false;
     };
 
-    /* Le consultant de l'entreprise, et son accès (l'administrateur décide). */
+    /* Le consultant de l'entreprise et son accès (l'administrateur décide). */
     var sonConsultant = function (e) {
       var b = $("#entreprise-consultant");
       V.rpc("mon_consultant", { e: e.entreprise_id }).then(function (r) {
@@ -958,7 +958,7 @@
       return carte;
     };
 
-    /* Un cabinet de conseil : ses clients, ses comptes, et son abonnement
+    /* Un cabinet de conseil : ses clients, ses comptes et son abonnement
        consultant, ouvert ou fermé à la main tant que Stripe n'est pas là. */
     var carteCabinet = function (c) {
       var carte = el("article", "carte-connexion admin-entreprise");
@@ -1058,7 +1058,7 @@
       });
     };
 
-    /* Les conseils de l'IA : combien gardés, combien écartés, et ce que l'IA
+    /* Les conseils de l'IA : combien gardés, combien écartés et ce que l'IA
        dit « à revoir » — un texte qui ne concernerait pas son sujet. */
     var conseilsIA = function () {
       var ul = $("#admin-conseils");

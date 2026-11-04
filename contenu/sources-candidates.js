@@ -3,7 +3,7 @@
    --------------------------------------------------------------------------
    Des sources que le site ne relève pas encore. Le robot de relève les
    essaie en mode « découverte » (node outils/veille.mjs --decouvrir, lancé
-   à la main depuis l'onglet Actions) : il cherche leur flux, et écrit ce qu'il
+   à la main depuis l'onglet Actions) : il cherche leur flux et écrit ce qu'il
    trouve dans contenu/sources-decouverte.txt. Rien ici n'est publié sur le
    site : une source n'entre dans contenu/sources.js qu'après lecture du
    bilan, à la main, avec « confirme: true ».

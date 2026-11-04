@@ -3,7 +3,7 @@
    --------------------------------------------------------------------------
    Les écrans montrés sur la page d'accueil sont de vraies captures de
    l'application, pas des maquettes : elles ne peuvent donc pas mentir sur ce
-   que contient le produit, et elles se périment avec lui.
+   que contient le produit et elles se périment avec lui.
 
    À relancer après toute modification visible de l'application.
 
@@ -12,7 +12,7 @@
      node outils/captures.mjs
      node build.mjs        # l'accueil reprend les nouvelles captures
 
-   Playwright n'est pas une dépendance du site : il est installé à part, et le
+   Playwright n'est pas une dépendance du site : il est installé à part et le
    chemin de Chromium est passé par la variable CHROMIUM si besoin.
    ========================================================================== */
 

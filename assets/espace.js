@@ -5,7 +5,7 @@
    est caché (site.css, .espace-compte). Ce fichier montre le vrai à la place :
    - le tableau de bord : les revues à faire, les prochaines, les dernières
      traces du registre ;
-   - le registre : toutes les entrées, et la vérification de leur chaîne ;
+   - le registre : toutes les entrées et la vérification de leur chaîne ;
    - les dates de revue des cartes du plan ;
    - sans code APE : une phrase qui dit quoi faire, au lieu d'un plan inventé ;
    - une seule fois : reprendre les réglages faits dans ce navigateur avant
@@ -91,7 +91,7 @@
       (r.echeance ? "<div><dt class=\"etiq\">Échéance</dt><dd>" + echappe(jour(r.echeance)) + "</dd></div>" : "") +
       "<div><dt class=\"etiq\">N°</dt><dd>" + echappe(r.id) + "</dd></div>" +
       '</dl><p class="note-source">Une ligne du registre ne se modifie pas après coup : une ' +
-      "correction s'ajoute à la suite, avec sa propre date, et celle-ci reste.</p></div></details></li>";
+      "correction s'ajoute à la suite, avec sa propre date et celle-ci reste.</p></div></details></li>";
   }
   function annuleesDans(liste) {
     var a = {};
@@ -105,7 +105,7 @@
     var html = "";
     if (!plan) {
       html = rubrique("Pour commencer",
-        '<p class="lecture">Votre tableau de bord se remplit à partir de votre plan de veille, et votre plan se fait ' +
+        '<p class="lecture">Votre tableau de bord se remplit à partir de votre plan de veille et votre plan se fait ' +
         "à partir de votre code APE et de quelques questions sur votre situation.</p>" +
         '<p class="rangee" style="margin-top:var(--t4)"><a class="bouton bouton-accent" href="reglages.html">Renseigner mon entreprise</a></p>');
       plan = [];
@@ -196,7 +196,7 @@
       var l = r.donnees || [];
       if (!l.length) {
         $("#registre-etat").textContent = "Votre registre est vide pour l'instant. Il se remplit tout seul : chaque revue " +
-          "cochée « Faite » dans votre plan, et chaque changement de vos réglages, s'y inscrit, daté, avec son auteur.";
+          "cochée « Faite » dans votre plan et chaque changement de vos réglages, s'y inscrit, daté, avec son auteur.";
         return;
       }
       var a = annuleesDans(l);
@@ -252,7 +252,7 @@
     window.setTimeout(function () { URL.revokeObjectURL(a.href); }, 1000);
   }
 
-  /* --- Qualifier un texte du relevé, et en tirer une action ------------------------ */
+  /* --- Qualifier un texte du relevé et en tirer une action ------------------------ */
   function dansUnMois() { var d = new Date(); d.setDate(d.getDate() + 30); return d.toISOString().slice(0, 10); }
   function qualifier(bloc) {
     var cle = bloc.getAttribute("data-cle"), objet = bloc.getAttribute("data-objet");
@@ -311,7 +311,7 @@
     form.addEventListener("submit", function (e) {
       e.preventDefault();
       var quoi = $(".qa-objet", form).value.trim(), quand = $(".qa-echeance", form).value;
-      if (!quoi || !quand) { etat.textContent = "Dites ce qu'il faut faire, et pour quand."; return; }
+      if (!quoi || !quand) { etat.textContent = "Dites ce qu'il faut faire et pour quand."; return; }
       etat.textContent = "Enregistrement…";
       M.ouvrirAction(cle, quoi, quand).then(function (r) {
         if (r.ok) autre = false;
@@ -389,7 +389,7 @@
 
   /* --- Les conseils de l'IA, sous chaque texte du relevé --------------------
      Ils sont dans la base, pas dans la page : conseils_lire ne rend que ce que
-     la formule paie — rien en Textes, le conseil général en Textes et suivi,
+     la formule paie — rien en Textes, le conseil général en Textes et suivi
      et aussi celui du métier de l'entreprise en Veille complète. Tout est
      posé par textContent : rien de ce qui vient de l'IA n'est lu comme du HTML. */
   function bloc(classe, titre) {
@@ -418,7 +418,8 @@
     corps.className = "texte-ia";
     if (d.qui) corps.appendChild(para("", "Qui est concerné : " + d.qui));
     var ul = null;
-    String(c.texte || "").split("\n").forEach(function (l) {
+    // Règle d'écriture du site : jamais de virgule avant « et » (4 novembre 2026).
+    String(c.texte || "").replace(/,(\s+)et\b/g, "$1et").split("\n").forEach(function (l) {
       l = l.trim();
       if (!l) return;
       if (/^•\s*/.test(l)) {

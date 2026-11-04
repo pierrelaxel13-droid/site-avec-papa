@@ -1,9 +1,9 @@
 /* ==========================================================================
-   Vigie — mon entreprise, et mes alertes
+   Vigie — mon entreprise et mes alertes
    --------------------------------------------------------------------------
    Où c'est gardé, c'est assets/magasin.js qui le décide : dans la
    démonstration, dans le navigateur (rien n'est transmis) ; dans un vrai
-   compte, dans la base, et on le retrouve sur tous ses appareils.
+   compte, dans la base et on le retrouve sur tous ses appareils.
 
    Le calcul du périmètre est celui du simulateur de l'accueil, sur les mêmes
    données (assets/plan-data.js) : un métier décrit ici et décrit là-bas doit
@@ -51,7 +51,7 @@
 
   /* Une entreprise porte un code APE à cinq caractères — 4322B. Le périmètre
      de veille, lui, se calcule sur la division — 43. Les deux premiers
-     chiffres font le pont, et un ancien réglage qui ne gardait que la
+     chiffres font le pont et un ancien réglage qui ne gardait que la
      division continue de marcher. */
   function division(code) {
     return String(code || "").replace(/[^0-9A-Za-z]/g, "").slice(0, 2);
@@ -108,7 +108,7 @@
   /* --- « Mon plan » suit « Mon entreprise » ---------------------------------
      Les rubriques ne portent que les sujets du plan ; les autres attendent
      dans <template id="plan-reserve">. Quand le périmètre enregistré change,
-     on fait passer les blocs de l'un à l'autre, et la liste des sujets
+     on fait passer les blocs de l'un à l'autre et la liste des sujets
      écartés (le volet replié) suit. Sans réglages, la page reste sur le jeu
      d'essai et le dit. Sans JavaScript, elle montre le plan du jeu d'essai,
      posé à la construction. */
@@ -137,7 +137,7 @@
       })[0];
       if (suivant) hote.insertBefore(b, suivant); else hote.appendChild(b);
     });
-    // « À ce rythme » : les sujets présents, et eux seuls.
+    // « À ce rythme » : les sujets présents et eux seuls.
     $$("[data-groupe-frequence]").forEach(function (g) {
       var ul = g.querySelector(".dedans ul");
       if (!ul) return;
@@ -246,7 +246,7 @@
      démonstration), on refait le tri : un texte qui touche un sujet du plan
      va sous ce sujet, dans sa famille ; les autres, dans le volet replié
      « ne vous concernent pas ». Puis on recompte tout ce qui affiche un
-     nombre. Dans un compte sans code APE, tout est montré, et on le dit. */
+     nombre. Dans un compte sans code APE, tout est montré et on le dit. */
   var MOIS = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août",
               "septembre", "octobre", "novembre", "décembre"];
   function jourFr(iso) {
@@ -370,7 +370,7 @@
     var chiffres = $$("[data-champ]", form);
     var certifs = $$("[data-certif]", form);
     var siret = $("#e-siret"), siretAide = $("#e-siret-aide");
-    /* Un SIRET a 14 chiffres, et les neuf premiers (le SIREN) passent la clé
+    /* Un SIRET a 14 chiffres et les neuf premiers (le SIREN) passent la clé
        de Luhn. On le dit tout de suite, sans bloquer l'enregistrement. */
     function luhn(n) {
       var t = 0;
@@ -429,7 +429,7 @@
       var cherche = window.PCO_CHERCHE;
       if (!champ || !hote || !cherche) return;
 
-      /* Deux foins par code : son intitulé officiel, et les mots du métier
+      /* Deux foins par code : son intitulé officiel et les mots du métier
          portés par sa division — personne ne cherche « travaux d'installation
          d'équipements thermiques », on cherche « chauffagiste ». */
       var options = [].slice.call(champs.naf.options).map(function (o) {
@@ -484,7 +484,7 @@
       champ.addEventListener("input", proposer);
     }
 
-    /* Le code choisi relève d'une division : c'est elle qui porte le périmètre,
+    /* Le code choisi relève d'une division : c'est elle qui porte le périmètre
        et le client doit le voir écrit. */
     function direLaDivision() {
       var ligne = $("#e-division");

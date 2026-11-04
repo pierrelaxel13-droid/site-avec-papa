@@ -8,7 +8,7 @@
    pour le prix au mois. Ils commencent par https://buy.stripe.com/
 
    Tant qu'un lien est vide, le bouton correspondant ouvre un courriel. Dès qu'il est rempli, il ouvre la
-   page de paiement Stripe, et la page des tarifs dit que le paiement est en
+   page de paiement Stripe et la page des tarifs dit que le paiement est en
    ligne.
 
    « portail » : le lien de connexion du portail client de Stripe (Paramètres,

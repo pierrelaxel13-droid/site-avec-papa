@@ -7,7 +7,7 @@
      verify (le lien du courriel), user (GET, PUT), logout
      /rest/v1/rpc/<fonction>   exécutée sur une VRAIE base PostgreSQL, avec
                                le schéma de supabase/migrations et ses règles
-   Les courriels ne partent pas : ils sont rangés, et lisibles sur
+   Les courriels ne partent pas : ils sont rangés et lisibles sur
    GET /_courriels (le dernier lien de chacun se clique comme dans une boîte).
 
    Préparer la base une fois (PostgreSQL local, voir supabase/README.md) :

@@ -4,7 +4,7 @@
    Lancé par l'action « Relève », en dernier, même si le passage a échoué.
    Il lit le bilan laissé par outils/veille.mjs (releve-bilan.json) et
    l'inscrit dans la base : début, fin, statut (reussie / alerte / echouee),
-   sources interrogées, textes retenus, alertes, et le détail par source.
+   sources interrogées, textes retenus, alertes et le détail par source.
 
    Puis il regarde les 24 derniers passages : une source vérifiée muette à
    chacun d'eux (une journée) devient une alerte grave.

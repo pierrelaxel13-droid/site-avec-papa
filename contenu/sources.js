@@ -3,7 +3,7 @@
    --------------------------------------------------------------------------
    Le référentiel cite 89 sources officielles. Toutes ne se relèvent pas de la
    même façon : certaines publient un flux, d'autres non. Ce fichier déclare
-   celles que le robot sait aller chercher, et comment.
+   celles que le robot sait aller chercher et comment.
 
    « type » dit la méthode :
      dila  — les archives ouvertes de la DILA, un XML par texte, contenu
@@ -13,7 +13,7 @@
      ods   — une API de données ouvertes (Opendatasoft) ; « champs » dit
              quel champ donne le titre, la date, le lien et le corps.
 
-   « genre » dit ce qu'on reçoit, et il ne faut pas confondre les deux :
+   « genre » dit ce qu'on reçoit et il ne faut pas confondre les deux :
      texte      — du droit : une loi, un décret, un arrêté, un règlement.
      actualite  — un commentaire officiel : guide, avis, doctrine, alerte.
                   Cela compte pour la veille, mais ce n'est pas le droit.
@@ -25,9 +25,9 @@
    chaque site où est son flux ; le bilan est dans contenu/sources-decouverte.txt.
 
      19 répondent — elles portent « confirme: true ». Leur note « vu » dit
-        ce qu'elles ont donné, et d'où vient l'adresse. RappelConso, qui a
+        ce qu'elles ont donné et d'où vient l'adresse. RappelConso, qui a
         fermé son flux, est lu dans les données ouvertes de Bercy (type « ods »).
-      6 ne donnent rien, et la note dit pourquoi :
+      6 ne donnent rien et la note dit pourquoi :
         BOSS et URSSAF ferment la porte aux machines de GitHub ;
         l'ACPR répond 403 ; l'INRS et le BOAMP n'ont pas de flux ;
         le flux de l'ANSM répond mais reste vide (constaté le 26 octobre).

@@ -15,7 +15,7 @@
    Puis tout est effacé : l'entreprise (registre compris, journalisé dans
    prive.purges) et le compte. Même si l'essai échoue.
 
-   Sortie : une ligne « ok : » ou « ÉCHEC : » par vérification, et le résumé
+   Sortie : une ligne « ok : » ou « ÉCHEC : » par vérification et le résumé
    de l'action. Code de sortie 1 au moindre échec.
    ========================================================================== */
 import { createRequire } from "node:module";
@@ -99,7 +99,7 @@ async function essai() {
   const pret = (p) => p.waitForFunction(() => window.MAGASIN && window.MAGASIN.pret, null, { timeout: 30000 });
 
   try {
-    // 1. Connexion, et l'entreprise nommée dans « Mon compte ».
+    // 1. Connexion et l'entreprise nommée dans « Mon compte ».
     const p = await contexte({ width: 1440, height: 900 }, "light");
     await connecter(p);
     await p.waitForURL(/compte\/$/, { timeout: 30000 });
@@ -152,13 +152,13 @@ async function essai() {
     ok(sql(`select genre from public.registre where entreprise_id = ${litteral(e)} and cle = ${litteral(cle)} order by id desc limit 1`) === "correction",
       "décocher ajoute une correction ; rien n'est effacé");
 
-    // 6. Le registre, et le tableau de bord.
+    // 6. Le registre et le tableau de bord.
     await p.goto(SITE + "app/conformite.html"); await pret(p);
     await p.waitForFunction(() => /Registre intact/.test(document.querySelector("#registre-chaine")?.textContent || ""), null, { timeout: 30000 });
     ok(await p.locator("#registre-compte .ligne-registre").count() === 3, "registre : 3 entrées (plan, revue, correction), chaîne intacte");
     ok(sql(`select intact from public.verifier_registre(${litteral(e)})`) === "t", "la base confirme : chaîne d'empreintes intacte");
     await p.goto(SITE + "app/index.html"); await pret(p);
-    // Le tableau de bord (3 novembre 2026) : le tableau des textes, et les historiques.
+    // Le tableau de bord (3 novembre 2026) : le tableau des textes et les historiques.
     await p.waitForFunction(() => document.querySelectorAll("#bord-traces .ligne-registre").length > 0, null, { timeout: 30000 });
     ok((await p.locator(".tableau-bord > div").count()) === 5 && (await p.locator("#bord-traces .ligne-registre").count()) === 3,
       "tableau de bord : le tableau (publiés, applicables, lus, actions) et les 3 entrées du registre dans « Historiques »");
@@ -242,7 +242,7 @@ async function essai() {
     await pk.waitForURL(/app\/index\.html/, { timeout: 30000 });
     await pret(pk);
     ok((await pk.locator(".bandeau-consultant").innerText()).includes("Espace de « Client essai automatique »"),
-      "abonnement ouvert : il entre chez son client, et le bandeau le dit");
+      "abonnement ouvert : il entre chez son client et le bandeau le dit");
 
     // 8. Déconnexion.
     await p.goto(SITE + "compte/");

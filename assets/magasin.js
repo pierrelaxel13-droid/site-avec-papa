@@ -6,7 +6,7 @@
      part nulle part ;
    - /app/ (un vrai compte) : dans la base Supabase, par assets/vigie.js.
      Rien n'est gardé dans le navigateur : on retrouve tout sur un autre
-     appareil, et chaque case « Fait » est une entrée datée du registre.
+     appareil et chaque case « Fait » est une entrée datée du registre.
 
    Les clés : "pco-entreprise" (les réglages), "pco-alertes", "pco-faits"
    ({ clé: "AAAA-MM-JJ" }), "pco-lus" (les textes déjà ouverts, avis.js).

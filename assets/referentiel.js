@@ -176,7 +176,7 @@ window.VEILLE = (function () {
       actions: [
         "Mettre à jour le document unique (DUERP) et dater la mise à jour",
         "Vérifier que les formations et habilitations visées sont encore valables",
-        "Informer le CSE ou les salariés, et garder la trace de cette information",
+        "Informer le CSE ou les salariés et garder la trace de cette information",
         "Reprendre les consignes de poste si le texte change une façon de travailler"
       ],
       resume: "Obligation générale de sécurité de l'employeur : évaluation des risques, prévention, formation, suivi médical.",
@@ -275,7 +275,7 @@ window.VEILLE = (function () {
       actions: [
         "Vérifier si l'entreprise entre dans le champ (taille, secteur)",
         "Mettre à jour la liste des mesures techniques exigées et l'écart qui reste",
-        "Désigner qui déclare un incident, et sous quel délai"
+        "Désigner qui déclare un incident et sous quel délai"
       ],
       resume: "Sécurisation du SI, gestion des incidents, exigences de la directive NIS 2 pour les entités concernées.",
       textes: ["Directive (UE) 2022/2555 (NIS 2) et sa transposition", "Référentiels et guides ANSSI"],
@@ -486,7 +486,7 @@ window.VEILLE = (function () {
       famille: "sst", frequence: "hebdomadaire",
       classement: "sante-securite",
       actions: [
-        "Vérifier si l'opération exige un coordonnateur SPS, et à quel niveau",
+        "Vérifier si l'opération exige un coordonnateur SPS et à quel niveau",
         "Mettre à jour le PGC, le PPSPS ou le plan de prévention",
         "Reprendre l'inspection commune préalable avec les entreprises"
       ],
@@ -560,7 +560,7 @@ window.VEILLE = (function () {
       actions: [
         "Vérifier la déclaration UE de conformité et le marquage des produits visés",
         "Reprendre la notice et l'étiquetage dans la langue exigée",
-        "Contrôler la norme harmonisée appliquée, et sa version"
+        "Contrôler la norme harmonisée appliquée et sa version"
       ],
       resume: "Exigences essentielles applicables aux produits mis sur le marché, documentation technique, déclaration UE.",
       textes: ["Règlements et directives d'harmonisation de l'UE", "Normes harmonisées citées au JOUE", "Code de la consommation — conformité et sécurité"],
@@ -1183,7 +1183,7 @@ window.VEILLE = (function () {
   var etapes = [
     { n: "01", t: "Identifier les sources", d: "Déterminer les sources pertinentes pour l'activité : sites gouvernementaux, publications officielles, revues spécialisées, bulletins, fédérations. Prioriser l'officiel et le spécialisé, quitte à payer, plutôt que des flux non vérifiés." },
     { n: "02", t: "Collecter", d: "Relever les textes nouveaux ou modifiés, manuellement ou avec des outils : alertes e-mail, flux RSS, agrégateurs, plateformes de veille." },
-    { n: "03", t: "Analyser", d: "Qualifier l'applicabilité à l'entreprise, mesurer l'impact financier, juridique et opérationnel, et fixer le délai de mise en conformité." },
+    { n: "03", t: "Analyser", d: "Qualifier l'applicabilité à l'entreprise, mesurer l'impact financier, juridique et opérationnel et fixer le délai de mise en conformité." },
     { n: "04", t: "Diffuser", d: "Transmettre aux services concernés sous une forme exploitable : rapport, réunion, alerte, formation. Sans diffusion, la collecte ne sert à rien." },
     { n: "05", t: "Mettre en conformité", d: "Déclencher les actions : modification de processus, de produits, de contrats, formations, investissements. Nommer un responsable et une échéance." },
     { n: "06", t: "Surveiller en continu", d: "Rejouer le cycle à la fréquence retenue, contrôler que les actions ont bien été mises en œuvre et archiver les preuves." }

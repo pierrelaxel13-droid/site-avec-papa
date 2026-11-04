@@ -8,7 +8,7 @@
       démonstration, il reste dans le navigateur.
    2. Le filtre par catégorie : n'afficher que les textes d'une catégorie.
       Il cache par une classe, pas par « hidden » : « hidden » dit si le texte
-      est dans le plan (assets/entreprise.js), et les deux se combinent.
+      est dans le plan (assets/entreprise.js) et les deux se combinent.
    ========================================================================== */
 (function () {
   "use strict";

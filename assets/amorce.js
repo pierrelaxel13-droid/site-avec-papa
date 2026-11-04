@@ -7,7 +7,7 @@
    de s'exécuter ; elle ne vaut que si nous nous l'appliquons à nous-mêmes.
 
    Il doit rester chargé sans « defer » et avant le corps de la page : sinon
-   elle clignote en clair avant de passer au thème choisi, et les éléments qui
+   elle clignote en clair avant de passer au thème choisi et les éléments qui
    doivent apparaître en défilant sauteraient de visible à caché.
    ========================================================================== */
 

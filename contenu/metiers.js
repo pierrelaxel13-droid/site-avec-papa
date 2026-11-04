@@ -6,7 +6,7 @@
    cherche son activité sous ce nom-là.
 
    Cette table rattache à chaque division les mots que les gens emploient
-   réellement. Elle sert à deux choses : la recherche de l'index, et la ligne
+   réellement. Elle sert à deux choses : la recherche de l'index et la ligne
    « on dit aussi » de chaque page de secteur, qui aide autant le lecteur que
    les moteurs de recherche.
 

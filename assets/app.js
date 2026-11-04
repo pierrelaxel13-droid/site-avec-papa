@@ -157,9 +157,9 @@
   /* --- Bascules à deux segments --------------------------------------------- */
   /* --- Ouvrir une fiche la remonte en haut de l'écran -----------------------
      Les fiches sont longues. Cliquée en bas de l'écran, une fiche s'ouvrait
-     sous le pli : le client voyait le bas du texte, ou rien, et devait
+     sous le pli : le client voyait le bas du texte, ou rien et devait
      remonter à la main. On la ramène donc juste sous le bandeau, pour qu'elle
-     commence là où on lit. On ne bouge pas quand elle y est déjà, et on ne
+     commence là où on lit. On ne bouge pas quand elle y est déjà et on ne
      bouge jamais à la fermeture. */
   function remonterLesFiches() {
     var OUVRABLE = ".ligne-releve, .ligne-registre, .liste-echeances li, .famille-releve, .textes";
@@ -178,7 +178,7 @@
       var ecart = som.getBoundingClientRect().top - sousLeBandeau();
 
       /* Un titre de Journal officiel fait parfois quatre cents signes. Ouvert,
-         il remplit l'écran d'un téléphone à lui seul, et « ce qu'il faut
+         il remplit l'écran d'un téléphone à lui seul et « ce qu'il faut
          faire » tombe juste sous le pli — six pixels suffisent pour que le
          client ne le voie pas et croie qu'il n'y a rien. Dans ce cas on
          descend plus bas que le sommaire : le titre, il vient de le lire pour
@@ -196,7 +196,7 @@
   }
 
   /* --- Les catégories, puis seulement celle qu'on choisit -----------------
-     Les pages Relevé, Textes et Secteurs s'ouvrent sur leurs cartes, et rien
+     Les pages Relevé, Textes et Secteurs s'ouvrent sur leurs cartes et rien
      d'autre. Un clic sur une carte n'affiche plus que ce qui appartient à la
      catégorie : ni l'en-tête, ni les autres catégories, ni les explications.
      « Toutes les catégories », ou le retour du navigateur, ramène aux cartes.
@@ -245,7 +245,7 @@
 
       if (choisi) {
         /* On cache tout ce qui n'est pas sur le chemin de la catégorie : ses
-           voisines, et à chaque étage, les voisins de ce qui la contient. */
+           voisines et à chaque étage, les voisins de ce qui la contient. */
         for (var n = choisi.sec; n && n !== main && n.parentElement; n = n.parentElement) {
           [].forEach.call(n.parentElement.children, function (f) {
             if (f !== n && f !== retour) { f.classList.add("hors-vue"); caches.push(f); }
@@ -277,7 +277,7 @@
     });
     window.addEventListener("hashchange", afficher);
     /* Arrivée directe sur une catégorie : le navigateur descend tout seul
-       jusqu'à l'ancre après le chargement, et le bouton « Toutes les
+       jusqu'à l'ancre après le chargement et le bouton « Toutes les
        catégories » passe sous le bandeau. On remet la page en haut, après lui. */
     window.addEventListener("load", function () {
       if (racine.getAttribute("data-vue") !== "une") return;
@@ -310,9 +310,9 @@
      Chaque texte qui demande un geste porte un bouton « Marquer comme fait ».
      L'état est gardé avec sa date : dans le navigateur pour la démonstration,
      dans le registre de la base pour un vrai compte (assets/magasin.js). Le titre de la fiche
-     porte alors la marque « Fait », et la carte de la catégorie compte
+     porte alors la marque « Fait » et la carte de la catégorie compte
      « 3 faits sur 24 ». Une revue du plan se refait à son rythme : passé le
-     délai, elle redevient à faire, et le bouton le dit. */
+     délai, elle redevient à faire et le bouton le dit. */
   var CLE_FAITS = "pco-faits";
   function lireFaits() {
     if (window.MAGASIN) return window.MAGASIN.lire(CLE_FAITS) || {};
@@ -410,7 +410,7 @@
   }
 
   /* --- Une capture s'ouvre en grand --------------------------------------
-     Les captures ressemblent à l'application : on cliquait dessus, et rien.
+     Les captures ressemblent à l'application : on cliquait dessus et rien.
      Elles s'ouvrent maintenant en plein écran, dans le thème affiché. Échap,
      un clic sur l'image ou sur « Fermer » referment. */
   function captures() {
@@ -474,7 +474,7 @@
      n'y a pas d'autre façon honnête de le recevoir. Sans JavaScript (ou sans
      <dialog>), le bouton reste un lien qui ouvre la messagerie. */
   function avis() {
-    var boutons = $$("[data-avis]");   // le bouton, et la bande qui défile
+    var boutons = $$("[data-avis]");   // le bouton et la bande qui défile
     var d = $("#fenetre-avis");
     var f = $("#formulaire-avis");
     if (!boutons.length || !d || !f || typeof d.showModal !== "function") return;
@@ -520,9 +520,9 @@
     });
   }
 
-  /* --- La dernière collecte : son âge, et l'alerte si elle est vieille ------
+  /* --- La dernière collecte : son âge et l'alerte si elle est vieille ------
      L'heure est écrite dans la page à la publication ; ici, on dit « il y a
-     2 h », et au-delà de 26 h on le montre en alerte : un relevé qui ne
+     2 h » et au-delà de 26 h on le montre en alerte : un relevé qui ne
      tourne plus ne doit pas avoir l'air à jour. */
   function collecte() {
     $$("[data-collecte]").forEach(function (el) {
@@ -777,7 +777,7 @@
 
   /* --- Le code APE qu'on vient de choisir -----------------------------------
      On arrive sur la fiche depuis un code précis : c'est celui-là qu'on veut
-     voir, en haut, et pas la liste des vingt-trois autres. Elle reste repliée
+     voir, en haut et pas la liste des vingt-trois autres. Elle reste repliée
      en bas pour qui la cherche. Sans JavaScript, la fiche s'ouvre normalement
      et rien ne manque. */
   function codeChoisi() {
@@ -894,7 +894,7 @@
   }
 
   /* --- Enregistrer une fiche en PDF ------------------------------------------ */
-  /* Il n'y a pas de serveur pour fabriquer un PDF, et aucune bibliothèque n'est
+  /* Il n'y a pas de serveur pour fabriquer un PDF et aucune bibliothèque n'est
      chargée : c'est l'impression du navigateur qui s'en charge, « Enregistrer au
      format PDF » dans sa boîte d'impression. La feuille d'impression ne garde
      alors que la fiche demandée. */

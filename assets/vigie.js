@@ -178,9 +178,9 @@
   }
 
   /* L'arrivée par un lien reçu par courriel. Supabase renvoie sur la page
-     avec, après le « # », soit une session (access_token…, et type : signup,
+     avec, après le « # », soit une session (access_token… et type : signup,
      recovery, email_change), soit une erreur (error_code…), soit un message
-     (la première moitié d'un changement d'adresse). On lit, on range, et on
+     (la première moitié d'un changement d'adresse). On lit, on range et on
      efface l'adresse : un jeton ne doit pas traîner dans l'historique. */
   function arrivee() {
     var h = new URLSearchParams(window.location.hash.replace(/^#/, ""));
@@ -236,7 +236,7 @@
     });
   }
 
-  /* Où la personne connectée est membre, avec quel rôle, et le rang de ce que
+  /* Où la personne connectée est membre, avec quel rôle et le rang de ce que
      l'entreprise a payé (0 rien, 1 Textes, 2 Textes et suivi, 3 complète). */
   function mesEntreprises() {
     return rpc("mes_entreprises").then(function (r) {

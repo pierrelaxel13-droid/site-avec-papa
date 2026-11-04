@@ -3,7 +3,7 @@
    --------------------------------------------------------------------------
    Deux cas :
    - /demo/ : la démonstration. La « formule » choisie est rangée dans le
-     navigateur et retire un voile. Ce n'est PAS une sécurité, et ne doit
+     navigateur et retire un voile. Ce n'est PAS une sécurité et ne doit
      jamais être présenté comme telle : c'est une visite.
    - /app/  : l'espace d'un vrai compte. Sans session Supabase, on part à la
      connexion ; la formule est celle que l'entreprise a payée, lue dans la
@@ -60,7 +60,7 @@
   var verrou = document.getElementById("verrou");
   function ecrire(id, texte) { var el = document.getElementById(id); if (el) el.textContent = texte; }
 
-  /* --- Dans l'application : le voile, et ce qu'il dit ----------------------- */
+  /* --- Dans l'application : le voile et ce qu'il dit ----------------------- */
   function appliquer(active, compte) {
   if (verrou) {
     var exigee = document.body.getAttribute("data-formule") || "textes";
@@ -138,7 +138,7 @@
   }
   }
 
-  /* Le voile sans formule : ce qui manque, et où le régler. Rien de ce que
+  /* Le voile sans formule : ce qui manque et où le régler. Rien de ce que
      la formule ouvrirait (la cloche) ne reste visible. */
   function sansFormule(titre, texte, libelle, cible) {
     var parts = document.querySelectorAll("[data-exige]");
@@ -245,7 +245,7 @@
   }
 
   /* Chez un client, le consultant le voit en haut de chaque écran : de qui
-     est cet espace, et le chemin du retour vers son cabinet. */
+     est cet espace et le chemin du retour vers son cabinet. */
   /* 3 novembre 2026 : un sélecteur passe d'un client à l'autre sans repasser
      par l'espace consultant ; on reste sur le même écran. */
   function consultant(e, acces) {

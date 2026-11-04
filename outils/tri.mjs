@@ -1,5 +1,5 @@
 /* ==========================================================================
-   Le tri du robot : à quel sujet un texte se rattache, et ce qu'on écarte
+   Le tri du robot : à quel sujet un texte se rattache et ce qu'on écarte
    --------------------------------------------------------------------------
    Utilisé par outils/veille.mjs ; testé par outils/tri.test.mjs sur des
    titres réels. Le titre seul décide (voir plus bas pourquoi).
@@ -13,7 +13,7 @@ export const normalise = (s) => sansAccent(String(s)).toLowerCase().replace(/[�
    Première version : un mot-clé n'importe où dans le titre ou le corps. Sur
    une vraie journée du Journal officiel, ça retenait 13 625 entrées sur
    42 200 — autant dire tout. Parce que tout acte commence par « Vu le code du
-   travail ; Vu le code de la sécurité sociale », et qu'un nom de code dans les
+   travail ; Vu le code de la sécurité sociale » et qu'un nom de code dans les
    visas ne dit rien du sujet.
 
    Deuxième version, celle-ci, réglée sur une vraie relève :
@@ -27,7 +27,7 @@ export const normalise = (s) => sansAccent(String(s)).toLowerCase().replace(/[�
       spécialités pharmaceutiques, avis de concours : ce sont des décisions
       particulières, pas de la réglementation.
 
-   Sur la même journée : 234 textes retenus, et ils parlent d'empoussièrement
+   Sur la même journée : 234 textes retenus et ils parlent d'empoussièrement
    amiante, de cahiers des charges REP, de plafonds de sécurité sociale.
 
    Troisième passe, le 29 octobre 2026, sur un relevé de 172 textes où 90
@@ -100,7 +100,7 @@ export function rattache(V, titre, source = "") {
    Chaque mois, le Journal officiel publie un « Avis relatif à l'homologation
    et à l'annulation de normes » : la liste des normes NF, EN, ISO homologuées
    ou annulées. Son titre ne dit rien du sujet : on lit donc, pour lui seul,
-   chacune de ses lignes de normes, et on la rattache aux sujets par leurs
+   chacune de ses lignes de normes et on la rattache aux sujets par leurs
    mots-clés, plus quelques mots propres aux normes (MOTS_NORMES). Le texte
    des normes est payant chez l'AFNOR ; l'avis, lui, est public. */
 export const AVIS_NORMES = /homologation.*normes|normes.*homologation|annulation de normes/;
@@ -154,7 +154,7 @@ export function ficheAncienne(titre, date, dateArchive) {
 
 /* La date du texte, lue dans son titre — « Arrêté du 14 août 2012 ». Les
    archives datent de leur jour de parution, qui n'est pas celui du texte quand
-   il y est republié. Mieux vaut la vraie date, et dire quand on l'a vu. */
+   il y est republié. Mieux vaut la vraie date et dire quand on l'a vu. */
 const MOIS = ["janvier", "fevrier", "mars", "avril", "mai", "juin", "juillet",
               "aout", "septembre", "octobre", "novembre", "decembre"];
 

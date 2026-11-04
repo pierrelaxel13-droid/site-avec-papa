@@ -35,7 +35,7 @@ const q = envoye.corps.input;
 ok(q.includes(TEXTE.titre) && q.includes(TEXTE.lien) && q.includes("Les échafaudages roulants sont vérifiés"),
   "le robot donne le titre, le lien et le début du texte officiel");
 ok(q.includes("Le robot de veille l'a rangé dans : Santé et sécurité au travail") && q.includes("DUERP rédigé, daté et mis à jour"),
-  "… les sujets où il l'a rangé, et ce que le référentiel fait déjà suivre sur ces sujets");
+  "… les sujets où il l'a rangé et ce que le référentiel fait déjà suivre sur ces sujets");
 ok(q.includes("« Travaux de construction spécialisés » (code NAF 43)"), "pour la formule 3 : la famille de métiers, par son nom public");
 ok(!/@|Vidal|entreprise_id|denomination|SIRET/i.test(q) && !/Travaux de construction/.test(question(TEXTE, { V })),
   "aucune donnée de client ; sans métier, la question est générale");
@@ -112,7 +112,7 @@ ok(libre.garde && /^Les échafaudages/.test(libre.garde.texte) && libre.garde.de
 ok(officiel("https://entreprendre.service-public.fr/vosdroits/F123") && !officiel("http://www.inrs.fr/x") && !officiel("https://inrs.fr.evil.com/"),
   "un sous-domaine officiel passe ; le http et les faux domaines non");
 const sansSource = await controler({ texte: "Un conseil assez long pour être lu par quelqu'un, mais sans source.", sources: [{ url: "https://exemple.com" }] }, TEXTE, { verifier });
-ok(sansSource.ecarte === "aucune source officielle parmi celles citées" && sansSource.details.sources.proposees === 1, "une réponse sans source officielle est jetée, et le robot dit pourquoi");
+ok(sansSource.ecarte === "aucune source officielle parmi celles citées" && sansSource.details.sources.proposees === 1, "une réponse sans source officielle est jetée et le robot dit pourquoi");
 const mortes = await controler(r, TEXTE, { verifier: async () => false });
 ok(mortes.ecarte === "les sources officielles citées ne répondent pas" && mortes.details.sources.officielles === 3,
   "des sources officielles qui ne répondent pas : jetée, avec la raison");
@@ -123,7 +123,7 @@ ok(!!vide.ecarte, "une réponse vide est jetée");
 ok(nettoyer("Voir [la page](https://x.fr) [web:2], 3 points :") === "Voir la page, 3 points :", "nettoyer garde l'espace avant « : »");
 
 /* --- Qui paie : seulement pour un texte du plan d'un client en formule 2 ou 3 --- */
-// Un sujet que la maçonnerie (43) suit et pas la restauration (56), et l'inverse.
+// Un sujet que la maçonnerie (43) suit et pas la restauration (56) et l'inverse.
 const p43 = planClient(V, { division: "43" }), p56 = planClient(V, { division: "56" });
 const que43 = [...p43].find((id) => !p56.has(id)), que56 = [...p56].find((id) => !p43.has(id));
 const nul = Object.keys(V.domaines).find((id) => !p43.has(id) && !p56.has(id));
@@ -151,7 +151,7 @@ const clients = [{ division: "43", rang: 3, contexte: [] }];
 const personne = await traiter(releve, [], [], { V, cle: "k", demande, controle });
 ok(personne.sansClient && appels === 0 && personne.lignes.length === 0, "aucun client : aucune question, zéro centime");
 const sans = await traiter(releve, [], clients, { V, cle: "", demande, controle });
-ok(sans.sansCle && appels === 0 && sans.bilan.aDemander === 4, "sans clé : aucune question, et le passage dit combien attendent");
+ok(sans.sansCle && appels === 0 && sans.bilan.aDemander === 4, "sans clé : aucune question et le passage dit combien attendent");
 
 const p1 = await traiter(releve, [], clients, { V, cle: "k", plafond: 3, demande, controle, maintenant: "2026-10-31T10:00:00Z" });
 ok(appels === 3 && p1.bilan.gardes === 3 && p1.bilan.attente === 1 && p1.lignes.length === 3, "plafond par passage : 3 questions, 1 en attente");
@@ -177,7 +177,7 @@ appels = 0;
 const presque = await traiter(releve, [], clients, { V, cle: "k", demande, controle, depense: 4.99, budget: 5 });
 ok(appels === 2 && presque.bilan.budgetAtteint && presque.bilan.attente === 2,
   "à 4,99 $ sur 5 $ : on finit la question en cours, puis plus rien — le reste attend le mois suivant");
-ok(Math.abs(presque.bilan.depenseMois - 5.0022) < 1e-9 && presque.lignes.every((l) => l.cout === 0.0061), "chaque conseil garde son coût, et le total du mois est dit");
+ok(Math.abs(presque.bilan.depenseMois - 5.0022) < 1e-9 && presque.lignes.every((l) => l.cout === 0.0061), "chaque conseil garde son coût et le total du mois est dit");
 appels = 0;
 const plein = await traiter(releve, [], clients, { V, cle: "k", demande, controle, depense: 5, budget: 5 });
 ok(appels === 0 && plein.bilan.budgetAtteint && plein.lignes.length === 0, "plafond atteint : aucune question");

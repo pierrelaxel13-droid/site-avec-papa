@@ -19,12 +19,12 @@
 
    Le robot et l'IA travaillent ensemble :
    - le robot donne à Perplexity le début du texte officiel, les sujets où il
-     l'a rangé, et ce que le site fait déjà suivre sur ces sujets (le
+     l'a rangé et ce que le site fait déjà suivre sur ces sujets (le
      référentiel de Clément) : l'IA dit ce qui CHANGE, sans répéter ;
-   - l'IA répond en cases (concerne / qui / à faire / quand), et le robot
+   - l'IA répond en cases (concerne / qui / à faire / quand) et le robot
      contrôle chaque case : une date « quand » qui n'est pas écrite dans le
      texte officiel est retirée ; « ne concerne pas ce sujet » n'est pas
-     montré, et part « à revoir » dans l'administration, pour Clément — l'IA
+     montré et part « à revoir » dans l'administration, pour Clément — l'IA
      ne retire jamais un texte du relevé.
 
    Les garde-fous (docs/a-reprendre.md) :
@@ -37,7 +37,7 @@
      réponse sont retirés : seules les sources contrôlées s'affichent.
    - Affiché SOUS le texte officiel, avec « Proposé par l'IA, à vérifier » et
      « Ne constitue pas un conseil juridique ». Rien n'entre au registre.
-   - Plafond de questions par passage (10), et de dépense par mois (10 $,
+   - Plafond de questions par passage (10) et de dépense par mois (10 $,
      CONSEILS_BUDGET_MOIS) ; le coût réel est noté au journal et dans la base.
 
    Tests : node outils/conseils.test.mjs (sans réseau, réponses simulées).
@@ -70,11 +70,11 @@ export const officiel = (url) => {
 const API = "https://api.perplexity.ai/v1/agent";
 const EFFORT = "low";
 const CONSIGNE = [
-  "Tu aides une petite entreprise française à appliquer un texte réglementaire officiel. Un robot de veille te donne le texte, les sujets où il l'a rangé, et ce que l'entreprise suit déjà.",
-  "Appuie-toi d'abord sur le texte officiel fourni, puis uniquement sur des sources officielles, et cite-les. N'invente rien : si tu n'es pas sûr qu'une obligation existe, ne la mentionne pas.",
+  "Tu aides une petite entreprise française à appliquer un texte réglementaire officiel. Un robot de veille te donne le texte, les sujets où il l'a rangé et ce que l'entreprise suit déjà.",
+  "Appuie-toi d'abord sur le texte officiel fourni, puis uniquement sur des sources officielles et cite-les. N'invente rien : si tu n'es pas sûr qu'une obligation existe, ne la mentionne pas.",
   "Dis ce qui change pour l'entreprise ; ne répète pas ce qu'elle suit déjà, ne recopie pas le texte.",
   "Tu ne donnes pas de conseil juridique ; pas d'interprétation d'un cas particulier.",
-  "Réponds en français courant, 120 mots au plus, sans titre ni tableau, exactement sous cette forme :",
+  "Réponds en français courant, 120 mots au plus, sans titre ni tableau, sans jamais mettre de virgule avant « et », exactement sous cette forme :",
   "CONCERNE : oui, non ou incertain — le texte concerne-t-il vraiment les sujets où le robot l'a rangé ?",
   "QUI : une phrase sur les entreprises concernées.",
   "À FAIRE :",
@@ -90,7 +90,7 @@ export function referentiel(chemin = new URL("../assets/referentiel.js", import.
 }
 
 /* Le plan d'un client : comme planDe() de build.mjs et perimetre() du site —
-   les sujets de tous, ceux de sa division NAF, et ceux de ses situations. */
+   les sujets de tous, ceux de sa division NAF et ceux de ses situations. */
 export function planClient(V, c) {
   const plan = new Set();
   for (const id of [...V.transversaux, ...(V.parDivision[c.division] || [])]) if (V.domaines[id]) plan.add(id);
@@ -106,7 +106,7 @@ const court = (x, n) => {
   return s.length > n ? s.slice(0, n).replace(/\s+\S*$/, "") + "…" : s;
 };
 
-/* La question : tout ce que le robot sait, et qui est public. */
+/* La question : tout ce que le robot sait et qui est public. */
 export function question(t, { V = null, metier = "" } = {}) {
   const sujets = (t.domaines || []).map((d) => d.nom);
   const suivi = V ? (t.domaines || []).flatMap((d) =>
@@ -174,10 +174,10 @@ export async function demander(t, { cle, fetch: f = fetch, attendre = pause, V =
   const morceaux = sorties.filter((o) => o.type === "message")
     .flatMap((o) => o.content || []).filter((c) => c.type === "output_text");
   const texte = morceaux.map((c) => c.text || "").join("\n\n");
-  // Les sources : les résultats de recherche, et les liens cités dans le texte.
+  // Les sources : les résultats de recherche et les liens cités dans le texte.
   /* Les sources : les résultats de recherche, les pages que l'agent a ouvertes
      lui-même (« fetch_url_results », vu à l'essai du 3 novembre 2026 : sans
-     elles, une réponse bien sourcée était écartée faute de source), et les
+     elles, une réponse bien sourcée était écartée faute de source) et les
      liens cités dans le texte. Leur forme varie : on prend tout objet qui
      porte une adresse, à quelques niveaux de profondeur. */
   const adresses = (o, prof = 0, acc = []) => {
