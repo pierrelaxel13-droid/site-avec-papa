@@ -75,22 +75,23 @@
        d'accent plus claire et plus saturée que celle du clair — sur du
        quasi-noir, l'indigo du jour devient gris.
        3 novembre 2026 : fonds et cartes éclaircis d'un cran, à la demande
-       d'Axel (« légèrement plus clair »). */
+       d'Axel (« légèrement plus clair ») ; 4 novembre 2026 : encore un cran
+       (« c'est trop foncé »). */
     --accent:        #8E7CFF;
     --accent-fonce:  #A99BFF;
-    --accent-clair:  #2C2556;
+    --accent-clair:  #383068;
     --accent-filet:  #3A3175;
     --encre:         #EEF1F8;
     --encre-douce:   #A8B0C4;
-    --encre-tenue:   #828AA0;
-    --papier:        #161923;
-    --papier-tein:   #1C202D;
-    --papier-pale:   #191C27;
-    --carte:         #222736;
-    --carte-pale:    #282E3F;
-    --creme:         #201E30;
-    --filet:         #333A4E;
-    --filet-fort:    #485069;
+    --encre-tenue:   #959DB3;
+    --papier:        #22273A;
+    --papier-tein:   #292F44;
+    --papier-pale:   #252A3E;
+    --carte:         #2E3449;
+    --carte-pale:    #353C53;
+    --creme:         #2C2A42;
+    --filet:         #414962;
+    --filet-fort:    #58617D;
     --filet-controle:#8C94AB;
     --vert:          #4ADE94;
     --vert-fond:     #0D3326;
@@ -106,7 +107,7 @@
        dégradé du thème clair, traduit arrêt par arrêt, virait au brun verdâtre. */
     --degrade-heros: radial-gradient(118% 86% at 16% -8%, rgba(142, 124, 255, .26), transparent 58%),
                      radial-gradient(96% 76% at 88% 6%, rgba(72, 196, 180, .13), transparent 54%),
-                     linear-gradient(180deg, #1D2130 0%, #161923 100%);
+                     linear-gradient(180deg, #2A2F44 0%, #22273A 100%);
     --degrade-puce:  linear-gradient(135deg, #2C2560, #1E2C4E 55%, #2A2168);
     --fil-rail:      linear-gradient(180deg, #4A3F93, #2C5467 45%, #4A3F93);
     --ombre-1: 0 1px 2px rgba(0, 0, 0, .5), 0 10px 24px -16px rgba(0, 0, 0, .8);
@@ -125,19 +126,19 @@
      3 novembre 2026 : fonds et cartes éclaircis d'un cran. */
   --accent:        #8E7CFF;
   --accent-fonce:  #A99BFF;
-  --accent-clair:  #2C2556;
+  --accent-clair:  #383068;
   --accent-filet:  #3A3175;
   --encre:         #EEF1F8;
   --encre-douce:   #A8B0C4;
-  --encre-tenue:   #828AA0;
-  --papier:        #161923;
-  --papier-tein:   #1C202D;
-  --papier-pale:   #191C27;
-  --carte:         #222736;
-  --carte-pale:    #282E3F;
-  --creme:         #201E30;
-  --filet:         #333A4E;
-  --filet-fort:    #485069;
+  --encre-tenue:   #959DB3;
+  --papier:        #22273A;
+  --papier-tein:   #292F44;
+  --papier-pale:   #252A3E;
+  --carte:         #2E3449;
+  --carte-pale:    #353C53;
+  --creme:         #2C2A42;
+  --filet:         #414962;
+  --filet-fort:    #58617D;
   --filet-controle:#8C94AB;
   --vert:          #4ADE94;
   --vert-fond:     #0D3326;
@@ -151,7 +152,7 @@
      dégradé du thème clair, traduit arrêt par arrêt, virait au brun verdâtre. */
   --degrade-heros: radial-gradient(118% 86% at 16% -8%, rgba(142, 124, 255, .26), transparent 58%),
                    radial-gradient(96% 76% at 88% 6%, rgba(72, 196, 180, .13), transparent 54%),
-                   linear-gradient(180deg, #1D2130 0%, #161923 100%);
+                   linear-gradient(180deg, #2A2F44 0%, #22273A 100%);
   --degrade-puce:  linear-gradient(135deg, #2C2560, #1E2C4E 55%, #2A2168);
   --fil-rail:      linear-gradient(180deg, #4A3F93, #2C5467 45%, #4A3F93);
   --ombre-1: 0 1px 2px rgba(0, 0, 0, .5), 0 10px 24px -16px rgba(0, 0, 0, .8);
@@ -4018,3 +4019,119 @@ a.puce-fixe { text-decoration: none; color: inherit; }
 @media (max-width: 21.5rem) { .marque .marque-suite { display: none; } }
 /* Présentation : quatre captures, en 2 × 2 (4 novembre 2026). */
 @media (min-width: 48rem) { .pieces { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; } }
+
+/* ==========================================================================
+   Harmonisation de tout le site (4 novembre 2026, demande d'Axel)
+   --------------------------------------------------------------------------
+   Une seule échelle pour tout le site : une taille de titre de page, une de
+   titre de section, une de titre de carte ; des cartes aux mêmes arrondis,
+   marges et espacements ; des textes alignés à gauche, sans coupure de mots ;
+   et des pages qui occupent toute la largeur (Réglages, Mon compte, paiement,
+   pages légales). Ce bloc vient en dernier : il l'emporte sur les réglages
+   page par page posés plus haut.
+   ========================================================================== */
+:root {
+  --h1-site: clamp(1.9rem, 1.45rem + 1.4vw, 2.6rem);
+  --h2-site: clamp(1.4rem, 1.2rem + .7vw, 1.8rem);
+  --h3-site: 1.1rem;
+  --chapeau-site: clamp(1rem, .96rem + .25vw, 1.12rem);
+  --rayon-carte: 12px;
+  --marge-carte: clamp(1.15rem, 1rem + .5vw, 1.5rem);
+  --ecart-cartes: clamp(.9rem, .75rem + .5vw, 1.25rem);
+  --ombre-carte: 0 1px 2px rgba(16, 24, 40, .05);
+}
+
+/* --- Titres ---------------------------------------------------------------- */
+h1, .heros h1, .tete-app h1, .cs-tete h1, .compte-tete h1, .auth-tete h1,
+[data-page="reglages"] .tete-reglages h1, [data-page="compte"] .compte-tete h1, [data-page="admin"] h1 {
+  font-size: var(--h1-site); line-height: 1.15; letter-spacing: -.025em; font-weight: 700;
+}
+.heros h1 { max-width: 28ch; }
+h2, .titre-section { font-size: var(--h2-site); line-height: 1.2; letter-spacing: -.02em; }
+h3 { font-size: var(--h3-site); line-height: 1.35; letter-spacing: -.01em; }
+/* Les titres de carte (réglages, compte, cabinet, conformité) : la taille d'un h3. */
+.rg-tete h2, .cs-titre, [data-page="compte"] .carte-connexion h2, .carte-connexion h2,
+.ne-fait-pas .titre-section, [data-page="admin"] .titre-section { font-size: var(--h3-site); letter-spacing: -.01em; }
+.heros-sous, .tete-app .lecture, .rg-chapeau, .auth-tete p, .cs-tete .etat-compte {
+  font-size: var(--chapeau-site); line-height: 1.55;
+}
+.tete-app .lecture { max-width: 80ch; }
+.heros { padding-block: clamp(2.5rem, 1.6rem + 3vw, 4.5rem); }
+
+/* --- Textes : à gauche, sans mots coupés ------------------------------------ */
+.zone-public .trait p, .zone-public .raison p, .zone-public .norme p,
+.zone-public .faq-reponse p, .zone-public .faq-reponse li,
+.zone-public .lecture, .zone-public .reserve, .zone-public .piece p,
+.zone-public .legende li, .zone-public .formule-donne li, .zone-public .normes-intro,
+.zone-public .installation p, .zone-public .resultat .note-source,
+main .lecture, main .note-source, main li, main p {
+  text-align: left; hyphens: manual;
+}
+/* Ce qui est centré exprès le reste : en-têtes, étapes, titres de section. */
+.heros-texte, .heros-sous, .titre-section, .intro.titre-section,
+.zone-public .etape :is(h3, p), [data-page="presentation"] .heros .etape :is(h3, p),
+.zone-public .raisons-deux .raison p { text-align: center; }
+.formule-donne li { font-size: .95rem; line-height: 1.5; font-weight: 400; }
+.formule-donne li:first-child { font-weight: 500; }
+
+/* --- Cartes : mêmes arrondis, marges, ombre et espacements ------------------- */
+.formule, .piece, .etape, .rg-carte, .carte-connexion, .admin-entreprise, .cs-cadre,
+.raison, .trait, .norme, .compteurs > div, .faits > div, .reserve, .rg-note, .textes-attente {
+  border-radius: var(--rayon-carte);
+}
+.formule, .piece, .etape, .carte-connexion, .admin-entreprise, .raison, .trait, .norme,
+.compteurs > div, .faits > div {
+  box-shadow: var(--ombre-carte);
+}
+.formule, .carte-connexion, .admin-entreprise, .raison, .trait, .norme { padding: var(--marge-carte); }
+.compteurs > div, .faits > div { padding: clamp(1rem, .9rem + .4vw, 1.35rem) var(--marge-carte); }
+.formules, .pieces, .admin-grille, .raisons, .normes, .etapes, .compteurs, .faits, .rg-form, .rg-alertes {
+  gap: var(--ecart-cartes);
+}
+.compteurs .grand { font-size: clamp(1.6rem, 1.3rem + .9vw, 2.1rem); }
+.compteurs dt { font-size: .74rem; letter-spacing: .06em; }
+.reserve { padding: var(--marge-carte); }
+
+/* --- Pleine largeur --------------------------------------------------------- */
+/* Réglages : les cartes sur toute la largeur, deux par ligne au bureau. */
+.rg-form, .rg-danger, .rg-note { max-width: none; }
+@media (min-width: 72rem) {
+  #form-entreprise { grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: start; }
+  #form-entreprise > :nth-child(n+3) { grid-column: 1 / -1; }
+  #form-entreprise .rg-ligne { grid-template-columns: 12rem minmax(0, 1fr); }
+  .rg-cases { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .rg-alertes { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+/* Mon compte : l'en-tête et les cartes sur toute la largeur, en deux colonnes. */
+[data-page="compte"] .compte-tete, [data-page="compte"] .connexion-seule { max-width: none; }
+@media (min-width: 64rem) {
+  [data-page="compte"] #compte-principal { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--ecart-cartes); align-items: start; }
+  [data-page="compte"] #compte-principal > * + * { margin-top: 0; }
+  [data-page="compte"] #compte-principal > :not(.carte-connexion):not(div) { grid-column: 1 / -1; }
+  [data-page="compte"] #compte-principal > .rangee { grid-column: 1 / -1; }
+}
+/* Le paiement : récapitulatif et choix côte à côte. */
+#paiement.connexion-seule { max-width: none; }
+@media (min-width: 64rem) {
+  #paie-formulaire { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--ecart-cartes); align-items: start; }
+  #paie-formulaire > :not(.carte-connexion) { grid-column: 1 / -1; }
+}
+/* Pages légales : le sommaire à gauche, le texte sur le reste de la largeur. */
+.legal { max-width: none; }
+@media (min-width: 64rem) {
+  .legal { display: grid; grid-template-columns: 17rem minmax(0, 1fr); column-gap: clamp(2rem, 1rem + 3vw, 4rem); }
+  .legal > * { grid-column: 2; }
+  .legal > .legal-sommaire { grid-column: 1; grid-row: 1 / span 40; align-self: start; position: sticky; top: 6.5rem; }
+  .legal-sommaire ol { columns: 1 !important; display: block; }
+  .legal-sommaire li { margin: 0 0 .5rem; }
+}
+.legal-sommaire { border-radius: var(--rayon-carte); }
+.legal-article h2 { font-size: var(--h2-site); }
+.section-contact h1, [data-page="contact"] h1 { font-size: var(--h1-site); }
+/* Télécharger un tableau : en haut à droite du tableau. */
+.export-barre { justify-content: flex-end; }
+.export-barre .export-etat { order: -1; margin-right: auto; }
+
+/* Titres de rubrique (« Les textes de votre plan… ») : la taille d'un h2,
+   pas plus grand que le titre de la page. */
+.rubrique > .enveloppe > h2 { font-size: var(--h2-site); }

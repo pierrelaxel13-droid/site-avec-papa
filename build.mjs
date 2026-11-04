@@ -3500,10 +3500,6 @@ function pageAccueil(V, D, METIERS, ECRANS, C = null, NAF = null, SOURCES = [], 
       les domaines de la santé, de la sécurité, de l'hygiène, de l'environnement et des ressources humaines.
       Vigie réglementaire vous accompagne également dans la mise en conformité de votre société.
     </p>
-    <p class="gage">
-      ${sigle}
-      <span>${NAF ? `${NAF.codes.length} codes APE couverts` : `${V.divisions.length} familles de métiers couvertes`}</span>
-    </p>
     ${blocCollecte(JO)}
 
     <div class="heros-visuel">
