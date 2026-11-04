@@ -3525,7 +3525,7 @@ ${bandeAvis(AVIS)}
       </div>
       <div class="rail-item" data-paraitre data-compte="${nbDomaines}">
         <span class="chiffre">${nbDomaines}</span>
-        <p class="legende">sujets à suivre, chacun avec ses obligations, ses textes et ses sources</p>
+        <p class="legende">thèmes</p>
       </div>
       <div class="rail-item" data-paraitre data-compte="${V.declencheurs.length}">
         <span class="chiffre">${V.declencheurs.length}</span>
