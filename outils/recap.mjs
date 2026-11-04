@@ -161,7 +161,7 @@ async function envoyer({ cle, expediteur, a, sujet, html, texte, desinscrire }) 
 
 /* L'essai (RECAP_TEST_A=adresse) : un rappel d'exemple, avec des actions
    fictives, envoyé à une seule adresse. Ne lit ni n'écrit rien en base. */
-async function essai(a) {
+async function envoyerEssai(a) {
   const cle = process.env.BREVO_API_KEY || "", expediteur = process.env.RECAP_EXPEDITEUR || "";
   if (!cle || !expediteur) {
     console.log("::error::Envoi impossible : il manque le secret " + (!cle ? "BREVO_API_KEY" : "RECAP_EXPEDITEUR") + " (GitHub → Settings → Secrets and variables → Actions).");
@@ -179,7 +179,7 @@ async function essai(a) {
 }
 
 async function principal() {
-  if (process.env.RECAP_TEST_A) return essai(process.env.RECAP_TEST_A.trim());
+  if (process.env.RECAP_TEST_A) return envoyerEssai(process.env.RECAP_TEST_A.trim());
   const jour = process.env.RECAP_JOUR || new Date().toLocaleDateString("fr-CA", { timeZone: "Europe/Paris" });
   const essai = process.env.RECAP_ESSAI || "";
   const url = process.env.SUPABASE_DB_URL || "";
