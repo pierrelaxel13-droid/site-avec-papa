@@ -2648,7 +2648,7 @@ function appReglages(V, D, NAF, METIERS) {
         <div class="rg-ligne">
           <span class="rg-libelle">Certifications obtenues ou visées</span>
           <div class="rg-champ certifs">
-            ${["ISO 9001", "ISO 14001", "ISO 45001", "MASE", "Qualiopi"].map((c) => `<label class="certif">
+            ${["ISO 9001", "ISO 14001", "ISO 45001", "ISO 50001", "ISO 22000", "ISO/IEC 27001", "ISO 13485", "MASE", "Qualiopi"].map((c) => `<label class="certif">
               <input type="checkbox" data-certif="${esc(c)}"><span>${esc(c)}</span></label>`).join("")}
           </div>
         </div>
@@ -3531,7 +3531,10 @@ ${bandeAvis(AVIS)}
       </div>
       <div class="rail-item" data-paraitre>
         <span class="chiffre">ISO</span>
-        <p class="legende">Les certifications qui exigent une veille : ISO 14001, ISO 45001, MASE, Qualiopi</p>
+        <p class="legende">Les certifications qui exigent une veille</p>
+        <p class="legende-detail">ISO 9001 (qualité), ISO 14001 (environnement), ISO 45001 (santé et sécurité au travail),
+        ISO 50001 (énergie), ISO 22000 (sécurité des aliments), ISO/IEC 27001 (sécurité de l'information),
+        ISO 13485 (dispositifs médicaux), ainsi que MASE et Qualiopi.</p>
       </div>
     </div>
   </div>
