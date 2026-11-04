@@ -2956,8 +2956,7 @@ function pageConsultants() {
 <section class="heros heros-court">
   <div class="enveloppe">
     <div class="heros-texte"><h1>Livrez la veille réglementaire à vos clients, sous votre marque</h1></div>
-    <p class="heros-sous">Vous suivez des PME en QSE. ${esc(SITE.nom)} tient leur veille ; vous la livrez sous votre nom,
-      vous gagnez du temps sur chaque client, et vous ajoutez une ligne de revenu récurrente à votre facturation.</p>
+    <p class="heros-sous">Vous accompagnez des PME. ${esc(SITE.nom)} réglementaire est un outil pour vous aider.</p>
     <p class="rangee rangee-centre">
       <a class="bouton bouton-accent" href="compte/creer.html?type=cabinet">Créer mon compte consultant</a>
       <a class="bouton bouton-sobre" href="demo/cabinet.html">Voir la démonstration</a>
@@ -4360,6 +4359,35 @@ function pageMonCompte() {
             </div>
             <p class="rangee"><button type="submit" class="bouton bouton-sobre">Recevoir le lien de confirmation</button></p>
             <p class="etat-compte" id="etat-adresse" role="status"></p>
+          </form>
+        </details>
+
+        <!-- RGPD (4 novembre 2026) : chacun exerce ses droits lui-même. -->
+        <details class="ligne-reglage">
+          <summary><span>Mes données personnelles</span><span class="modifier">Télécharger</span></summary>
+          <div class="rgpd-bloc">
+            <p class="aide-bas">Tout ce que nous gardons sur vous : votre compte, vos entreprises et votre rôle,
+            les invitations que vous avez envoyées et les entrées de registre que vous avez écrites, dans un fichier
+            lisible (JSON). Le registre complet de votre entreprise s'exporte depuis « Registre et conformité
+            réglementaire ».</p>
+            <p class="rangee"><button type="button" class="bouton bouton-sobre" id="rgpd-exporter">Télécharger mes données</button></p>
+            <p class="etat-compte" id="etat-exporter" role="status"></p>
+          </div>
+        </details>
+
+        <details class="ligne-reglage">
+          <summary><span>Supprimer mon compte</span><span class="modifier">Supprimer</span></summary>
+          <form id="form-supprimer" method="post" novalidate class="rgpd-bloc">
+            <p class="aide-bas">Votre compte, votre profil et vos accès sont supprimés définitivement. Les entrées que
+            vous avez écrites dans le registre de votre entreprise restent, avec votre nom : c'est la preuve datée de
+            l'entreprise. Si vous êtes le seul administrateur d'une entreprise ou d'un cabinet où d'autres
+            travaillent, nommez d'abord un autre administrateur.</p>
+            <div class="champ">
+              <label for="s-courriel">Pour confirmer, saisissez votre adresse électronique</label>
+              <input type="email" id="s-courriel" autocomplete="off" inputmode="email" spellcheck="false" required>
+            </div>
+            <p class="rangee"><button type="submit" class="bouton bouton-sobre bouton-danger">Supprimer définitivement mon compte</button></p>
+            <p class="etat-compte" id="etat-supprimer" role="status"></p>
           </form>
         </details>
         </div>

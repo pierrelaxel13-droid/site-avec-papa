@@ -95,7 +95,7 @@ export function pagesLegales({ page, SITE, FORMULES, TVA, esc, eur }) {
 
   /* --- Politique de confidentialité ----------------------------------------- */
   const confidentialite = gabarit({
-    fichier: "confidentialite.html", titre: "Politique de confidentialité", maj: "3 novembre 2026",
+    fichier: "confidentialite.html", titre: "Politique de confidentialité", maj: "4 novembre 2026",
     sous: "Quelles données nous traitons, pourquoi, combien de temps, et comment exercer vos droits.",
     sections: [
       { t: "En bref", c: `
@@ -145,7 +145,8 @@ export function pagesLegales({ page, SITE, FORMULES, TVA, esc, eur }) {
           <li><strong>Contact :</strong> ce que vous écrivez dans le formulaire de contact (nom, entreprise, adresse
             électronique, téléphone si vous le donnez, message), pour vous répondre ; conservé 3 ans au plus, puis effacé.</li>
           <li><strong>Lecture :</strong> les textes du relevé que vous avez déjà ouverts, pour ne vous signaler
-            que les nouveaux.</li>
+            que les nouveaux. Si votre entreprise est suivie par un cabinet de conseil que vous avez autorisé, il
+            voit quels textes ont été lus dans l'entreprise, sans savoir par qui.</li>
           <li><strong>Sécurité :</strong> journaux de connexion, pour détecter et prévenir les accès frauduleux
             (base légale : notre intérêt légitime).</li>
         </ul>
@@ -192,8 +193,13 @@ export function pagesLegales({ page, SITE, FORMULES, TVA, esc, eur }) {
         l'efface. Votre mot de passe, lui, n'y est jamais gardé.</p>` },
       { t: "Vos droits", c: `
         <p>Vous pouvez demander l'accès à vos données, leur rectification, leur effacement, leur portabilité,
-        la limitation de leur traitement, ou vous opposer à un traitement fondé sur notre intérêt légitime.
-        Écrivez à ${contact} ; nous répondons dans le mois.</p>
+        la limitation de leur traitement, ou vous opposer à un traitement fondé sur notre intérêt légitime.</p>
+        <p><strong>Sans nous écrire</strong>, depuis « Mon compte » : « Mes données personnelles » télécharge tout
+        ce que nous gardons sur vous (fichier JSON), et « Supprimer mon compte » efface votre compte, votre profil
+        et vos accès. Les entrées que vous avez écrites dans le registre de votre entreprise restent, avec votre
+        nom : c'est la preuve datée de l'entreprise, qui en est responsable. Votre adresse, votre nom et vos
+        réglages se modifient au même endroit.</p>
+        <p>Pour toute autre demande, écrivez à ${contact} ; nous répondons dans le mois.</p>
         <p>Si vous estimez que vos droits ne sont pas respectés, vous pouvez saisir la CNIL
         (<a href="https://www.cnil.fr/fr/plaintes" target="_blank" rel="noopener">cnil.fr/fr/plaintes</a>).</p>` },
       { t: "Sécurité", c: `

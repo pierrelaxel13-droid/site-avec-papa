@@ -516,6 +516,37 @@
     $("#compte-sortir").addEventListener("click", function () {
       V.deconnecter().then(function () { window.location.href = vers("connexion.html"); });
     });
+
+    /* RGPD (4 novembre 2026) : télécharger ses données, supprimer son compte. */
+    var bExport = $("#rgpd-exporter");
+    if (bExport) bExport.addEventListener("click", function () {
+      var etatX = $("#etat-exporter");
+      bExport.disabled = true; dire(etatX, "Préparation…");
+      V.rpc("mes_donnees").then(function (r) {
+        bExport.disabled = false;
+        if (!r.ok) { dire(etatX, r.erreur); return; }
+        var fichier = new Blob([JSON.stringify(r.donnees, null, 2)], { type: "application/json" });
+        var a = document.createElement("a");
+        a.href = URL.createObjectURL(fichier);
+        a.download = "mes-donnees-vigie-" + new Date().toISOString().slice(0, 10) + ".json";
+        document.body.appendChild(a); a.click(); a.remove();
+        window.setTimeout(function () { URL.revokeObjectURL(a.href); }, 1000);
+        dire(etatX, "Le fichier est téléchargé.");
+      });
+    });
+    var fSuppr = $("#form-supprimer");
+    if (fSuppr) fSuppr.addEventListener("submit", function (e) {
+      e.preventDefault();
+      var etatS = $("#etat-supprimer"), saisie = $("#s-courriel").value.trim().toLowerCase();
+      var moi = ((V.utilisateur() || {}).courriel || "").toLowerCase();
+      if (!saisie || saisie !== moi) { dire(etatS, "Saisissez exactement votre adresse électronique : " + moi + "."); return; }
+      var b = fSuppr.querySelector("button[type=submit]");
+      b.disabled = true; dire(etatS, "Suppression…");
+      V.rpc("supprimer_mon_compte").then(function (r) {
+        if (!r.ok) { b.disabled = false; dire(etatS, r.erreur); return; }
+        V.deconnecter().then(function () { window.location.href = vers("index.html?compte=supprime"); });
+      });
+    });
   }
 
   /* --- La page d'invitation ---------------------------------------------------- */

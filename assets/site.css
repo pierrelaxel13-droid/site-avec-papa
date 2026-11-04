@@ -3954,3 +3954,8 @@ a.puce-fixe { text-decoration: none; color: inherit; }
 .dessin .d-barre-retard { fill: #D97706; }
 .dessin .d-chiffre { fill: var(--encre); font-size: 15px; font-weight: 700; }
 .dessin .d-chiffre-accent { fill: var(--accent-fonce); font-size: 15px; font-weight: 700; }
+/* RGPD dans « Mon compte » (4 novembre 2026). */
+.rgpd-bloc { padding: .25rem 0 .5rem; }
+.rgpd-bloc .aide-bas { margin: 0 0 .75rem; }
+.bouton-danger { color: var(--rouge); border-color: var(--rouge); }
+.bouton-danger:hover { background: var(--rouge-fond); }

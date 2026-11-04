@@ -868,6 +868,39 @@ select tests.ok((select jsonb_array_length(reglages -> 'lus' -> 'ids') from publ
   'la mémoire des textes lus tient 400 textes (elle s''arrêtait vers 100)');
 reset role;
 
+-- ---------------------------------------------------------------------------
+-- 17. RGPD : chacun télécharge ses données et supprime son compte (4 novembre 2026)
+-- ---------------------------------------------------------------------------
+insert into auth.users (id, email) values ('00000000-0000-0000-0000-0000000000d9', 'depart@test.fr');
+insert into public.membres_entreprise (entreprise_id, user_id, role)
+  values ('00000000-0000-0000-0000-00000000a000', '00000000-0000-0000-0000-0000000000d9', 'membre');
+select tests.qui('00000000-0000-0000-0000-0000000000a1', 'a_admin@test.fr');
+set local role authenticated;
+select tests.ok((select (d -> 'compte' ->> 'id') = '00000000-0000-0000-0000-0000000000a1'
+                        and (d -> 'entreprises')::text like '%Entreprise A%'
+                        and (d -> 'entreprises')::text not like '%Entreprise B%'
+                 from public.mes_donnees() d),
+  'chacun télécharge ses données (son compte, ses entreprises), et seulement les siennes');
+reset role;
+select tests.qui('00000000-0000-0000-0000-0000000000a1', 'a_admin@test.fr');
+set local role authenticated;
+select tests.refuse('select public.supprimer_mon_compte()',
+  'le seul administrateur d''une entreprise où d''autres travaillent ne supprime pas son compte sans passer la main');
+reset role;
+insert into public.entreprises (id, denomination) values ('00000000-0000-0000-0000-00000000d900', 'Entreprise seule (essai)');
+insert into public.membres_entreprise (entreprise_id, user_id, role)
+  values ('00000000-0000-0000-0000-00000000d900', '00000000-0000-0000-0000-0000000000d9', 'admin');
+select tests.qui('00000000-0000-0000-0000-0000000000d9', 'depart@test.fr');
+set local role authenticated;
+select public.supprimer_mon_compte();   -- seul admin de son entreprise, où il est seul : c'est permis
+reset role;
+select tests.ok(not exists (select 1 from auth.users where id = '00000000-0000-0000-0000-0000000000d9')
+                and not exists (select 1 from public.membres_entreprise where user_id = '00000000-0000-0000-0000-0000000000d9'),
+  'une personne supprime son compte elle-même, et ses rattachements avec');
+set local role anon;
+select tests.refuse('select public.mes_donnees()', 'sans connexion, aucune donnée');
+reset role;
+
 do $$ begin raise notice 'TOUS LES TESTS D''ISOLATION SONT PASSÉS'; end $$;
 
 rollback;
