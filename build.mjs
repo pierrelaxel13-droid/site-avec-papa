@@ -490,7 +490,7 @@ ${piedCourt ? "" : `
         <h2>Le produit</h2>
         <ul>
           <li><a href="${a("decouvrir.html")}">Présentation</a></li>
-          <li><a href="${a("abonnement.html")}">Abonnement et tarifs</a></li>
+          <li><a href="${a("abonnement.html")}">Nos offres</a></li>
           ${SITE.offreConsultant ? `<li><a href="${a("consultants.html")}">Offre consultants QSE</a></li>` : ""}
           <li><a href="${a("abonnement.html")}#essayer">Démonstration gratuite</a></li>
           ${lienPaiement("portail") ? `<li><a href="${esc(lienPaiement("portail"))}">Gérer mon abonnement</a></li>` : ""}
@@ -530,7 +530,7 @@ ${piedCourt ? "" : `
       <p class="pied-droits">© ${new Date().getFullYear()} ${esc(SITE.nom)}, édité par ${esc(SITE.societe)}. Ne constitue pas un conseil juridique.</p>
       <p class="pied-legal">
         <a href="${a("mentions-legales.html")}">Mentions légales</a>
-        <a href="${a("confidentialite.html")}">Confidentialité</a>
+        <a href="${a("confidentialite.html")}">Confidentialité et RGPD</a>
         <a href="${a("cgv.html")}">CGV</a>
         <a href="${a("contact.html")}">Contact</a>
       </p>
@@ -1026,7 +1026,7 @@ function tableauTextesPlan(V, C, LIENS, plan, JO) {
       <span class="precision" id="filtre-compte" role="status"></span>
     </div>
     <div class="defile-tableau">
-    <table class="tableau-plan tableau-textes-plan">
+    <table class="tableau-plan tableau-textes-plan" data-export="veille-reglementaire" data-titre-export="Ma veille réglementaire">
       <thead><tr><th scope="col">Date</th><th scope="col">Catégorie</th><th scope="col">Référence et lien</th><th scope="col">Lu</th><th scope="col">Applicable</th></tr></thead>
       <tbody>${toutes.map((x) => x.html(touche(x.ids))).join("\n")}</tbody>
     </table>
@@ -1126,7 +1126,7 @@ function appActions(V, D, C, LIENS, JO = null) {
       <span class="precision" id="pa-compte" role="status"></span>
     </div>
     <p class="note-source pa-lecture" hidden></p>
-    <table class="tableau-plan tableau-actions">
+    <table class="tableau-plan tableau-actions" data-export="plan-d-actions" data-titre-export="Plan d'actions">
       <thead><tr><th scope="col">Date du texte</th><th scope="col">Texte de référence</th><th scope="col">Action à mener</th>
         <th scope="col">Délai de réalisation</th><th scope="col">Responsable</th><th scope="col">Validation</th></tr></thead>
       <tbody>${lignes.join("\n")}</tbody>
@@ -1139,7 +1139,7 @@ function appActions(V, D, C, LIENS, JO = null) {
     titre: `Plan d'actions | ${SITE.nom}`,
     description: "Le plan d'actions de votre veille réglementaire.",
     racine: "../", zone: "app", actif: "actions", corps, verrou: true, formule: "suivi",
-    donneesPlan: true, scripts: ["assets/plan-actions.js"]
+    donneesPlan: true, scripts: ["assets/plan-actions.js", "assets/export-tableaux.js"]
   });
 }
 
@@ -1243,7 +1243,7 @@ function appConformite(V, D, C, LIENS, JO = null) {
       </select>
       <span class="precision" id="filtre-compte" role="status"></span>
     </div>
-    <table class="tableau-plan tableau-conformite tableau-textes-plan">
+    <table class="tableau-plan tableau-conformite tableau-textes-plan" data-export="registre-et-conformite" data-titre-export="Registre et conformité réglementaire">
       <thead><tr><th scope="col">Date de parution</th><th scope="col">Texte</th><th scope="col">Catégorie</th><th scope="col">Actions à déclencher</th><th scope="col">Évaluation</th><th scope="col">Preuve ou commentaire</th></tr></thead>
       <tbody>${lignes}</tbody>
     </table>
@@ -1275,7 +1275,7 @@ function appConformite(V, D, C, LIENS, JO = null) {
     titre: `Registre et conformité réglementaire | ${SITE.nom}`,
     description: "L'évaluation de conformité de l'entreprise, texte par texte, inscrite au registre.",
     racine: "../", zone: "app", actif: "conformite", corps, verrou: true, formule: "complet",
-    donneesPlan: true, scripts: ["assets/conformite.js", "assets/applicable.js"]
+    donneesPlan: true, scripts: ["assets/conformite.js", "assets/applicable.js", "assets/export-tableaux.js"]
   });
 }
 
@@ -1370,7 +1370,7 @@ ${plan.ecartes.map((id) => blocPlan(id)).join("\n")}
     titre: `Ma veille réglementaire | ${SITE.nom}`,
     description: "Ce qui s'applique chez vous, et à quel rythme le revoir.",
     racine: "../", zone: "app", actif: "plan", corps, verrou: true, formule: "textes",
-    donneesPlan: true, scripts: ["assets/applicable.js"]
+    donneesPlan: true, scripts: ["assets/applicable.js", "assets/export-tableaux.js"]
   });
 }
 
@@ -2669,6 +2669,19 @@ function appReglages(V, D, NAF, METIERS) {
         <button type="submit" class="bouton bouton-accent">Enregistrer</button>
       </div>
     </form>
+    <!-- Supprimer le compte (4 novembre 2026), dans un compte seulement : la
+         suppression elle-même se fait dans « Mon compte », avec confirmation. -->
+    <section class="rg-carte rg-danger" aria-labelledby="rg-t-supprimer" data-compte hidden>
+      <header class="rg-tete">
+        <h2 id="rg-t-supprimer">Supprimer le compte</h2>
+        <p>Votre compte, votre profil et vos accès sont supprimés définitivement. Téléchargez d'abord ce dont vous avez
+        besoin : vos tableaux (Excel ou PDF) et vos données personnelles.</p>
+      </header>
+      <div class="rg-ligne">
+        <span class="rg-libelle">Suppression définitive</span>
+        <div class="rg-champ"><a class="bouton bouton-sobre bouton-danger" href="../compte/#supprimer">Supprimer mon compte</a></div>
+      </div>
+    </section>
   </div>
 </section>
 
@@ -4375,7 +4388,7 @@ function pageMonCompte() {
           </div>
         </details>
 
-        <details class="ligne-reglage">
+        <details class="ligne-reglage" id="supprimer">
           <summary><span>Supprimer mon compte</span><span class="modifier">Supprimer</span></summary>
           <form id="form-supprimer" method="post" novalidate class="rgpd-bloc">
             <p class="aide-bas">Votre compte, votre profil et vos accès sont supprimés définitivement. Les entrées que

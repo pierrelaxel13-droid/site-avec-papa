@@ -534,6 +534,8 @@
         dire(etatX, "Le fichier est téléchargé.");
       });
     });
+    // Venu de Réglages (« Supprimer le compte ») : on ouvre la ligne directement.
+    if (window.location.hash === "#supprimer" && $("#supprimer")) { $("#supprimer").open = true; $("#supprimer").scrollIntoView(); }
     var fSuppr = $("#form-supprimer");
     if (fSuppr) fSuppr.addEventListener("submit", function (e) {
       e.preventDefault();
