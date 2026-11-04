@@ -519,7 +519,6 @@ ${piedCourt ? "" : `
       </nav>` : `<nav aria-label="Vigie">
         <h2>${esc(SITE.nom)}</h2>
         <ul>
-          <li><a href="${a("nous.html")}">Qui sommes-nous</a></li>
           <li><a href="${a("contact.html")}">Nous contacter</a></li>
           <li><a href="${a("connexion.html")}">Connexion</a></li>
         </ul>

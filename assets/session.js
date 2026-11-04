@@ -21,9 +21,9 @@
 
   // Mêmes clés et mêmes rangs que FORMULES dans build.mjs.
   var FORMULES = {
-    textes:  { l: "Textes", rang: 1 },
-    suivi:   { l: "Textes et suivi", rang: 2 },
-    complet: { l: "Veille complète", rang: 3 }
+    textes:  { l: "01 — État des lieux réglementaire", rang: 1 },
+    suivi:   { l: "02 — État des lieux réglementaire et plan d'actions", rang: 2 },
+    complet: { l: "03 — Veille complète", rang: 3 }
   };
   var CHEMIN = window.location.pathname;
   var DANS_APP = CHEMIN.indexOf("/app/") !== -1;
@@ -74,21 +74,29 @@
       if (active) {
         // Session ouverte, mais la formule n'ouvre pas cet écran : le dire
         // précisément vaut mieux que de redemander une connexion déjà faite.
+        // 4 novembre 2026 (demande d'Axel) : « Pour y avoir accès, changez
+        // d'abonnement », avec le bouton qui mène aux offres.
         var titre = document.getElementById("verrou-titre");
         var texte = document.getElementById("verrou-texte");
         var etiq = document.getElementById("verrou-etiq");
         var action = document.getElementById("verrou-action");
-        if (etiq) etiq.textContent = "Formule " + FORMULES[active].l;
-        if (titre) titre.textContent = "Cet écran fait partie de la formule " + FORMULES[exigee].l;
-        if (texte) {
-          texte.textContent = (compte ? "Votre formule est « " : "Votre démonstration est ouverte en « ") +
-            FORMULES[active].l + " », qui ne comprend pas cet écran. " +
-            (compte ? "Une formule plus complète l'ouvre : voyez la grille des tarifs."
-                    : "Changez de formule pour le voir, ou consultez la grille des tarifs.");
-        }
+        var tarifs = document.getElementById("verrou-tarifs");
+        var NOMS = { "actions.html": "Le plan d'actions", "conformite.html": "Le registre et conformité réglementaire",
+                     "registre.html": "Le registre et conformité réglementaire" };
+        var ecran = NOMS[CHEMIN.split("/").pop()] || "Cette page";
+        var ouvrent = Object.keys(FORMULES).filter(function (k) { return FORMULES[k].rang >= FORMULES[exigee].rang; })
+          .map(function (k) { return "« " + FORMULES[k].l + " »"; });
+        if (etiq) etiq.textContent = (compte ? "Votre abonnement : " : "Démonstration : ") + FORMULES[active].l;
+        if (titre) titre.textContent = "Pour y avoir accès, changez d'abonnement";
+        if (texte) texte.textContent = ecran + " n'est pas compris dans " + (compte ? "votre abonnement" : "la formule de démonstration choisie") +
+          " (« " + FORMULES[active].l + " »). " + (ouvrent.length > 1 ? "Les abonnements " + ouvrent.join(" et ") + " l'incluent." : "L'abonnement " + ouvrent[0] + " l'inclut.");
         if (action) {
-          action.textContent = compte ? "Mon compte" : "Changer de formule";
-          if (compte) action.href = racine + "compte/";
+          action.textContent = compte ? "Changer d'abonnement" : "Changer de formule";
+          action.href = compte ? racine + "abonnement.html" : racine + "abonnement.html#essayer";
+        }
+        if (tarifs) {
+          tarifs.textContent = compte ? "Retour au tableau de bord" : "Voir les offres";
+          tarifs.href = compte ? racine + "app/index.html" : racine + "abonnement.html";
         }
       }
     }
@@ -99,12 +107,12 @@
       if (demo && vrai) {
         demo.hidden = true; vrai.hidden = false;
         var fc = vrai.querySelector("[data-formule-compte]");
-        if (fc) fc.textContent = "Formule « " + FORMULES[active].l + " ».";
+        if (fc) fc.textContent = "Abonnement « " + FORMULES[active].l + " ».";
       }
     }
     var banniere = document.getElementById("formule-active");
     if (banniere && active) {
-      banniere.textContent = "Formule « " + FORMULES[active].l + " ».";
+      banniere.textContent = "Abonnement « " + FORMULES[active].l + " ».";
     }
 
     /* Les écrans qu'elle n'ouvre pas sont marqués dans le menu, plutôt que de
@@ -121,7 +129,7 @@
         var besoin = exige[fichier];
         if (besoin && FORMULES[active].rang < FORMULES[besoin].rang) {
           liens[i].classList.add("hors-formule");
-          liens[i].title = "Formule " + FORMULES[besoin].l;
+          liens[i].title = "Compris dans l'abonnement " + FORMULES[besoin].l;
         }
       }
     }
