@@ -6,8 +6,8 @@
   {
    "id": "jorf",
    "nom": "Journal officiel de la République française",
-   "entrees": 147410,
-   "retenus": 616,
+   "entrees": 155799,
+   "retenus": 641,
    "souci": null
   },
   {
@@ -62,8 +62,8 @@
   {
    "id": "bofip",
    "nom": "BOFiP — doctrine fiscale",
-   "entrees": 7,
-   "retenus": 0,
+   "entrees": 8,
+   "retenus": 1,
    "souci": null
   },
   {
@@ -167,7 +167,7 @@
   {
    "id": "ansm",
    "nom": "ANSM — informations de sécurité",
-   "entrees": 5,
+   "entrees": 0,
    "retenus": 0,
    "souci": null
   },
@@ -201,6 +201,81 @@
   }
  ],
  "textes": [
+  {
+   "source": "jorf",
+   "sourceNom": "Journal officiel de la République française",
+   "genre": "texte",
+   "id": "JORFARTI000055058477",
+   "titre": "Avis relatif à l'extension d'un accord conclu dans le cadre de la convention collective nationale des industries de carrières et de matériaux (ouvriers - employés, techniciens et agents de maîtrise, et cadres) - secteur tuiles et briques",
+   "nature": "Article",
+   "date": "2026-11-05",
+   "corps": "En application de l'article L. 2261-15 du code du travail, le ministre du travail et des solidarités envisage de prendre un arrêté tendant à rendre obligatoires, pour tous les employeurs et tous les salariés entrant dans son champ d'application, les stipulations de l'accord ci-après indiqué.\nCet accord pourra être consulté en direction régionale de l'économie, de l'emploi, du travail et des solidarités.\nDans un délai de quinze jours, les organisations et toute personne intéressée sont priées de faire connaître leurs observations et avis au sujet de la généralisation envisagée.\nLeurs communications devront être adressées au ministère du travail et des solidarités (DGT, bureau DS1), 14, avenue Duquesne, 75350 Paris SP 07.\nDans un délai d'un mois, les organisations professionnelles d'employeurs reconnues représentatives au niveau de l'accord peuvent s'opposer à son extension. L'opposition écrite et motivée est notifiée et déposée dans les conditions prévues par les articles L. 2231-5 et L. 2231-6 du code du travail.\nTexte dont l'extension est envisagée :\nAccord du 17 février 2026.\nDépôt :\nDirection générale du travail au ministère du travail et des solidarités.\nObjet :\nEmploi des jeunes, formation par l'alternance et développement des CQP.\nSignataires :\nUnion nationale des industries de carrières et matériaux de construction (UNICEM).\nFédération de l'industrie du béton (FIB).\nUnion Patronale de la Chaux.\nFédération française des tuiles et briques (FFTB).\nOrganisations syndicales de salariés intéressées rattachées à la CFDT et à la CFE-CGC.",
+   "nota": "",
+   "lien": "https://www.legifrance.gouv.fr/jorf/id/JORFARTI000055058477",
+   "domaines": [
+    {
+     "id": "extractive",
+     "nom": "Activités extractives et code minier",
+     "mots": [
+      "carrieres"
+     ]
+    }
+   ],
+   "morceaux": 1,
+   "dateTexte": "",
+   "vuLe": "2026-11-05",
+   "vuA": "2026-11-04T23:43:26Z"
+  },
+  {
+   "source": "jorf",
+   "sourceNom": "Journal officiel de la République française",
+   "genre": "texte",
+   "id": "JORFARTI000055057733",
+   "titre": "Décret n° 2026-1026 du 3 novembre 2026 révisant et complétant les tableaux des maladies professionnelles annexés au livre IV du code de la sécurité sociale",
+   "nature": "Article",
+   "date": "2026-11-05",
+   "corps": "L'annexe II du livre IV (partie réglementaire) du code de la sécurité sociale est ainsi modifiée :\n1° Dans le tableau n° 25 :\na) Dans l'intitulé, le mot : « MINERALES » est supprimé ;\nb) Dans la première colonne :\n\n- à la ligne intitulée : « A3. », après les mots : « - Sclérodermie systémique progressive » sont insérés les mots : « - Lupus érythémateux systémique » ;\n- les mots : « Affections dues à l'inhalation de poussières minérales renfermant des silicates cristallins (kaolin, talc) ou du graphite : » sont remplacés par les mots : « Affections dues à l'inhalation de poussières renfermant des silicates cristallins (kaolin, talc) ou du graphite : » ;\n\nc) Dans la troisième colonne, les mots : « Travaux exposant à l'inhalation de poussières minérales renfermant des silicates cristallins (kaolin, talc) ou du graphite, notamment : » sont remplacés par les mots : « Travaux exposant à l'inhalation de poussières renfermant des silicates cristallins (kaolin, talc) ou du graphite, notamment : » ;\n2° Après le tableau n° 25, il est inséré un tableau n° 25 ter ainsi rédigé :\n\n« Cancer broncho-pulmonaire primitif, provoqué par l'inhalation de poussières de silice cristalline\n\n«\n\nDESIGNATION DE LA MALADIE\n\nDELAI\nde prise en charge\n\nLISTE LIMITATIVE DES TRAVAUX\nsusceptibles de provoquer cette maladie\n\nCancer broncho-pulmonaire primitif\n\n40 ans\n(sous réserve d'une durée d'exposition de 10 ans)\n\nTravaux dans les chantiers et installations de forage, d'abattage, d'extraction et de transport de minerais ou de roches renfermant de la silice cristalline ;\nTravaux en chantiers de creusement de galeries et fonçage de puits ou de bures dans les mines ;\nConcassage, broyage, tamisage et manipulation de minerais ou de roches renfermant de la silice cristalline ;\nTaille et polissage de roches renfermant de la silice cristalline ;\nFabrication et manutention de produits abrasifs, de poudres à nettoyer ou autres produits renfermant de la silice cristalline ;\nTravaux de ponçage et sciage de matériaux renfermant de la silice cristalline ;\nExtraction, refente, taillage ; lissage et polissage de l'ardoise ;\nUtilisation de poudre d'ardoise (schiste en poudre) comme charge en caoutchouterie ou dans la préparation de mastic ou aggloméré ;\nFabrication de carborundum, de verre, de porcelaine, de faïence et autres produits céramiques et de produits réfractaires ;\nTravaux de fonderie exposant aux poussières de sables renfermant de la silice cristalline : décochage, ébarbage et dessablage ;\nTravaux de meulages, polissage, aiguisage effectués au moyen de meules renfermant de la silice cristalline ;\nTravaux de décapage ou de polissage réalisés au jet de sable contenant de la silice cristalline ;\nTravaux de construction, d'entretien et de démolition exposant à l'inhalation de poussières renfermant de la silice cristalline ;\nTravaux de calcination de terres à diatomées et utilisations des produits de cette calcination ;\nTravaux de polissage de prothèses dentaires.\n\n».\n\nLe ministre du travail et des solidarités et la ministre de la santé, des familles, de l'autonomie et des personnes handicapées sont chargés, chacun en ce qui le concerne, de l'exécution du présent décret, qui sera publié au Journal officiel de la République française.\n\nPublics concernés : personnes exposées aux risques professionnels mentionnés au tableau des maladies professionnelles n° 25 annexé au livre IV du code de la sécurité sociale, personnes atteintes d'un cancer broncho-pulmonaire primitif provoqué par l'inhalation de poussières de silice cristalline sous certaines conditions, employeurs, organismes de sécurité sociale, médecins.\n\nObjet : le décret modifie le tableau des maladies professionnelles n° 25 relatif aux « affections consécutives à l'inhalation de poussières minérales renfermant de la silice cristalline (quartz, cristobalite, tridymite), des silicates cristallins (kaolin, talc), du graphite ou de la houille ». Il supprime la mention « minérales » dans le titre du tableau et ajoute dans la colonne relative à la désignation des maladies dans le tableau des maladies professionnelles n° 25 le lupus érythémateux systémique. Il procède également, dans le même tableau, à la suppression de la mention « minérales » à la ligne relative aux affections dues à l'inhalation de poussières renfermant des silicates cristallins (kaolin, talc) ou du graphite, ainsi que dans la liste des travaux correspondante. Il crée un tableau 25 ter relatif au cancer broncho-pulmonaire primitif provoqué par l'inhalation de poussières de silice cristalline, indépendamment de la présence de silicose.\n\nEntrée en vigueur : le texte entre en vigueur le lendemain de sa publication.\n\nApplication : le présent décret est pris en application des articles L. 461-1 et L. 461-2 du code de la sécurité sociale.",
+   "nota": "",
+   "lien": "https://www.legifrance.gouv.fr/jorf/id/JORFARTI000055057733",
+   "domaines": [
+    {
+     "id": "paie",
+     "nom": "Paie, cotisations et protection sociale",
+     "mots": [
+      "securite sociale"
+     ]
+    }
+   ],
+   "morceaux": 3,
+   "dateTexte": "2026-11-03",
+   "vuLe": "2026-11-05",
+   "vuA": "2026-11-04T23:43:26Z"
+  },
+  {
+   "source": "jorf",
+   "sourceNom": "Journal officiel de la République française",
+   "genre": "texte",
+   "id": "JORFARTI000055057793",
+   "titre": "Décret n° 2026-1029 du 4 novembre 2026 relatif aux catégories d'agents de contrôle de la formation professionnelle",
+   "nature": "Article",
+   "date": "2026-11-05",
+   "corps": "Le chapitre I er du titre VI du livre III de la sixième partie de la partie du code du travail (partie réglementaire) est ainsi modifié :\n1° A l'intitulé de ce chapitre, le mot : « fonctionnaires » est remplacé par le mot : « agents » ;\n2° Au premier alinéa de l'article D. 6361-3, les mots : « de la fonction publique » sont supprimés.\n\nLe ministre du travail et des solidarités est chargé de l'exécution du présent décret, qui sera publié au Journal officiel de la République française.\n\nPublics concernés : agents de contrôle de la formation professionnelle.\n\nObjet : le présent décret procède au toilettage des dispositions règlementaires relatives aux agents de contrôle de la formation professionnelle, en cohérence avec les modifications de l'article L. 6361-5 du code du travail définissant les catégories de personnes pouvant exercer des fonctions de contrôle opérées par la loi n° 2026-534 du 25 juin 2026 relative à la lutte contre les fraudes sociales et fiscales.\n\nEntrée en vigueur : le texte entre en vigueur le lendemain de sa publication.\n\nApplication : le présent décret est pris en application de l'article L. 6361-5 du code du travail, dans sa rédaction issue de l'article 45 de la loi n° 2026-534 du 25 juin 2026 relative à la lutte contre les fraudes sociales et fiscales.",
+   "nota": "",
+   "lien": "https://www.legifrance.gouv.fr/jorf/id/JORFARTI000055057793",
+   "domaines": [
+    {
+     "id": "enseignement",
+     "nom": "Enseignement, formation et certification qualité",
+     "mots": [
+      "formation professionnelle"
+     ]
+    }
+   ],
+   "morceaux": 3,
+   "dateTexte": "2026-11-04",
+   "vuLe": "2026-11-05",
+   "vuA": "2026-11-04T23:43:26Z"
+  },
   {
    "source": "jorf",
    "sourceNom": "Journal officiel de la République française",
@@ -275,6 +350,30 @@
    "dateTexte": "2026-11-02",
    "vuLe": "2026-11-04",
    "vuA": "2026-11-04T01:25:39Z"
+  },
+  {
+   "source": "bofip",
+   "sourceNom": "BOFiP — doctrine fiscale",
+   "genre": "actualite",
+   "id": "https://bofip.impots.gouv.fr/bofip/15227-PGP.html/ACTU-2026-00169",
+   "titre": "IF - Actualisation des plafonds d’exonération de cotisation foncière des entreprises (CFE) pour 2027 dans les zones urbaines en difficulté",
+   "nature": "Publication officielle",
+   "date": "2026-11-04",
+   "corps": "IF - Actualisation des plafonds d’exonération de cotisation foncière des entreprises (CFE) pour 2027 dans les zones urbaines en difficulté (identifiant juridique ACTU-2026-00169; publié le 04/11/2026)",
+   "lien": "https://bofip.impots.gouv.fr/bofip/15227-PGP.html/ACTU-2026-00169",
+   "domaines": [
+    {
+     "id": "fiscal",
+     "nom": "Fiscalité, facturation et comptabilité",
+     "mots": [
+      "cotisation fonciere des entreprises"
+     ]
+    }
+   ],
+   "morceaux": 1,
+   "dateTexte": "",
+   "vuLe": "2026-11-04",
+   "vuA": "2026-11-04T23:43:26Z"
   },
   {
    "source": "travail",
