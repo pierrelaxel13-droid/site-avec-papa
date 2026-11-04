@@ -517,6 +517,30 @@
       V.deconnecter().then(function () { window.location.href = vers("connexion.html"); });
     });
 
+    /* Les e-mails (4 novembre 2026) : récapitulatif quotidien et rappels. */
+    var cRecap = $("#p-recap"), cRappels = $("#p-rappels");
+    if (cRecap && cRappels) {
+      var etatR = $("#etat-recap");
+      V.rpc("mon_recap").then(function (r) {
+        if (!r.ok || !r.donnees) return;
+        cRecap.checked = !!r.donnees.recap; cRappels.checked = r.donnees.rappels !== false;
+        cRecap.disabled = cRappels.disabled = false;
+      });
+      [[cRecap, "oui"], [cRappels, "rappels"]].forEach(function (x) {
+        x[0].addEventListener("change", function () {
+          var args = {}; args[x[1]] = x[0].checked;
+          x[0].disabled = true;
+          V.rpc("regler_recap", args).then(function (r) {
+            x[0].disabled = false;
+            if (!r.ok) { x[0].checked = !x[0].checked; dire(etatR, r.erreur || "Réglage non enregistré."); return; }
+            dire(etatR, x[1] === "oui"
+              ? (x[0].checked ? "C'est noté : vous recevrez le récapitulatif chaque matin." : "Récapitulatif quotidien arrêté.")
+              : (x[0].checked ? "Rappels des actions en retard activés." : "Rappels des actions en retard arrêtés."));
+          });
+        });
+      });
+    }
+
     /* RGPD (4 novembre 2026) : télécharger ses données, supprimer son compte. */
     var bExport = $("#rgpd-exporter");
     if (bExport) bExport.addEventListener("click", function () {

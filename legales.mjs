@@ -172,7 +172,9 @@ export function pagesLegales({ page, SITE, FORMULES, TVA, esc, eur }) {
         <p>Prévus, pas encore en place :</p>
         <ul>
           <li>paiement — Stripe Payments Europe Ltd (Irlande) ;</li>
-          <li>envoi des courriels du service (alertes) — Brevo (France).</li>
+          <li>envoi des courriels du service (le récapitulatif quotidien des textes, si vous l'avez demandé, et
+            les rappels des actions en retard, que vous pouvez couper dans Mon compte ou par le lien de chaque
+            courriel) — Brevo (France). Il reçoit votre adresse et le contenu du courriel, rien d'autre.</li>
         </ul>
         <p>Chaque prestataire est lié par un contrat qui encadre le traitement des données. Les transferts hors
         de l'Union européenne, s'il y en a, sont encadrés par les garanties prévues par le RGPD.</p>` },

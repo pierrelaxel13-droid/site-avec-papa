@@ -1,0 +1,46 @@
+# ==========================================================================
+# Vigie réglementaire — le récapitulatif quotidien et les rappels par e-mail
+# --------------------------------------------------------------------------
+# outils/recap.mjs, chaque matin après le relevé (5 h 42 UTC) :
+#   - à chaque compte qui l'a demandé dans Mon compte, les textes relevés ce
+#     jour-là qui touchent le plan de veille de son entreprise ;
+#   - aux membres des entreprises, le rappel des actions du plan d'actions
+#     dont le délai est dépassé (le premier jour, puis chaque semaine).
+#
+# Secrets (Settings → Secrets and variables → Actions) :
+#   BREVO_API_KEY     la clé d'API Brevo (Paramètres → SMTP et API → Clés API).
+#   RECAP_EXPEDITEUR  l'adresse d'expédition, validée chez Brevo
+#                     (par exemple veille@votre-domaine.fr).
+#   SUPABASE_DB_URL   déjà là (les robots du relevé s'en servent).
+# Tant que BREVO_API_KEY ou RECAP_EXPEDITEUR manque, le robot dit à qui il
+# aurait écrit et s'arrête sans échouer : rien ne part.
+# ==========================================================================
+name: Récapitulatif par e-mail
+
+on:
+  schedule:
+    - cron: "37 7 * * *"      # 7 h 37 UTC ≈ 8 h 37 ou 9 h 37 à Paris, après le relevé du matin
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: recap
+  cancel-in-progress: false
+
+jobs:
+  envoyer:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: 22
+      - name: Récapitulatif et rappels
+        env:
+          SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+          BREVO_API_KEY: ${{ secrets.BREVO_API_KEY }}
+          RECAP_EXPEDITEUR: ${{ secrets.RECAP_EXPEDITEUR }}
+        run: node outils/recap.mjs

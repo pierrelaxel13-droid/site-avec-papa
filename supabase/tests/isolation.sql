@@ -922,6 +922,24 @@ select tests.ok((public.admin_statistiques(30) -> 'jours' -> 29 ->> 'comptes')::
 select tests.ok((public.admin_statistiques(30))::text not like '%@test.fr%', 'sans aucune adresse de compte');
 reset role;
 
+-- ---- Récapitulatif quotidien et rappels (migration 19) -------------------
+select tests.qui('00000000-0000-0000-0000-0000000000a1', 'a_admin@test.fr');
+set local role authenticated;
+select tests.ok((public.mon_recap() ->> 'recap')::boolean = false and (public.mon_recap() ->> 'rappels')::boolean, 'par défaut : pas de récapitulatif, rappels actifs');
+select public.regler_recap(true, null);
+select tests.ok((public.mon_recap() ->> 'recap')::boolean, 'on demande le récapitulatif');
+select tests.refuse('select * from prive.recap_quotidien', 'la table des réglages ne se lit pas en direct');
+select tests.refuse('select prive.recap_destinataires()', 'ni la liste des destinataires');
+select tests.refuse($$select prive.rappels_a_envoyer(current_date)$$, 'ni les rappels à envoyer');
+reset role;
+select set_config('tests.jeton_recap', (select jeton::text from prive.recap_quotidien where user_id = '00000000-0000-0000-0000-0000000000a1'), true);
+set local role anon;
+select tests.refuse('select public.mon_recap() ->> ''recap''', 'un visiteur n''a pas de réglages') ;
+select tests.ok(not public.recap_desabonner('00000000-0000-0000-0000-000000000000'), 'un faux jeton ne désinscrit personne');
+select tests.ok(public.recap_desabonner(current_setting('tests.jeton_recap')::uuid), 'le lien de l''e-mail désinscrit sans connexion');
+reset role;
+select tests.ok(not (select actif from prive.recap_quotidien where user_id = '00000000-0000-0000-0000-0000000000a1'), 'et le récapitulatif est bien arrêté');
+
 do $$ begin raise notice 'TOUS LES TESTS D''ISOLATION SONT PASSÉS'; end $$;
 
 rollback;

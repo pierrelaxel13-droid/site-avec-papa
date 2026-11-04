@@ -29,6 +29,7 @@ import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { pagesLegales, champsLegauxManquants } from "./legales.mjs";
 import { texteBrut } from "./outils/tri.mjs";
+import { applicationDuTexte, CATEGORIES_TABLEAU } from "./outils/textes-communs.mjs";
 
 const RACINE = dirname(fileURLToPath(import.meta.url));
 const SORTIE = resolve(RACINE, "_site");
@@ -410,7 +411,7 @@ ${zone === "app" ? '<meta name="robots" content="noindex">' : ""}
 <script src="${a("assets/theme.js")}"></script>
 <script src="${a("assets/amorce.js")}"></script>
 </head>
-<body class="zone-${zone}" data-racine="${racine || "./"}" data-courriel="${esc(SITE.courriel)}" data-nom="${esc(SITE.nom)}"${zone === "app" || scripts.includes("assets/compte.js") || scripts.includes("assets/contact.js") ? ` data-supabase="${esc(SITE.supabase.url)}" data-supabase-cle="${esc(SITE.supabase.cle)}"` : ""}${formule ? ` data-formule="${esc(formule)}"` : ""}${attrsBody}>
+<body class="zone-${zone}" data-racine="${racine || "./"}" data-courriel="${esc(SITE.courriel)}" data-nom="${esc(SITE.nom)}"${zone === "app" || scripts.includes("assets/compte.js") || scripts.includes("assets/contact.js") || scripts.includes("assets/recap.js") ? ` data-supabase="${esc(SITE.supabase.url)}" data-supabase-cle="${esc(SITE.supabase.cle)}"` : ""}${formule ? ` data-formule="${esc(formule)}"` : ""}${attrsBody}>
 
 <a class="evitement" href="#contenu">Aller au contenu</a>
 
@@ -554,7 +555,7 @@ ${zone === "app" ? `<script src="${a("assets/vigie.js")}"></script>
 ${zone === "app" ? `<script src="${a("assets/avis-data.js")}"></script>
 <script src="${a("assets/entreprise.js")}"></script>
 <script src="${a("assets/avis.js")}"></script>` : ""}
-${zone !== "app" && (scripts.includes("assets/compte.js") || scripts.includes("assets/contact.js")) ? `<script src="${a("assets/vigie.js")}"></script>` : ""}
+${zone !== "app" && (scripts.includes("assets/compte.js") || scripts.includes("assets/contact.js") || scripts.includes("assets/recap.js")) ? `<script src="${a("assets/vigie.js")}"></script>` : ""}
 ${zone === "app" || verrou || actif === "abonnement" ? `<script src="${a("assets/session.js")}"></script>` : ""}
 ${zone === "app" ? `<script src="${a("assets/espace.js")}"></script>` : ""}
 ${scripts.map((f) => `<script src="${a(f)}"></script>`).join("\n")}
@@ -884,10 +885,6 @@ function ligneRegistre(r) {
    social y est appelé « Ressources humaines ». Chaque ligne porte ses sujets
    (data-domaines) : assets/entreprise.js la montre ou la cache selon le plan
    de l'entreprise et n'y garde que la catégorie et les actions de ses sujets. */
-const CATEGORIES_TABLEAU = {
-  "sante-securite": "Santé et sécurité", hygiene: "Hygiène", environnement: "Environnement",
-  social: "Ressources humaines", metier: "Métier et gestion"
-};
 function categorieTexte(V, ids) {
   const parCat = {};
   ids.forEach((id) => {
@@ -1007,27 +1004,6 @@ function analyseCode(V, m, vig, ids) {
    lue dans le texte officiel lui-même, jamais devinée. On cherche « entre en
    vigueur le… », « à compter du… », « prend effet le… » et « le lendemain de
    sa publication ». Rien de trouvé : on le dit. */
-const MOIS_FR = { janvier: 1, "février": 2, fevrier: 2, mars: 3, avril: 4, mai: 5, juin: 6, juillet: 7, "août": 8, aout: 8,
-  septembre: 9, octobre: 10, novembre: 11, "décembre": 12, decembre: 12 };
-function applicationDuTexte(t) {
-  const corps = `${t.corps || ""} ${t.nota || ""}`.replace(/\s+/g, " ");
-  if (t.genre !== "texte") return { etiquette: "—", classe: "" };
-  if (corps.trim().length < 40) return { etiquette: "Voir le texte officiel", classe: "" };
-  const re = new RegExp("(entre(?:nt)? en vigueur|prend(?:ront|ra|nent)? effet|sont applicables|est applicable|s.appliqu\\w*)[^.;]{0,120}?" +
-    "(?:le|à compter du|à partir du|au)\\s+(1\\s?er|\\d{1,2})\\s+(" + Object.keys(MOIS_FR).join("|") + ")\\s+(\\d{4})", "i");
-  const m = re.exec(corps);
-  if (m) {
-    const iso = `${m[4]}-${String(MOIS_FR[m[3].toLowerCase()]).padStart(2, "0")}-${String(parseInt(m[2], 10)).padStart(2, "0")}`;
-    return { iso, etiquette: dateFr(iso), classe: iso > new Date().toISOString().slice(0, 10) ? "app-venir" : "app-vigueur" };
-  }
-  if (/entre(?:nt)? en vigueur le lendemain de (?:sa|leur) publication/i.test(corps)) {
-    const d = new Date(`${t.dateTexte || t.date}T12:00:00Z`); d.setUTCDate(d.getUTCDate() + 1);
-    const iso = d.toISOString().slice(0, 10);
-    return { iso, etiquette: dateFr(iso), precision: "lendemain de la publication", classe: "app-vigueur" };
-  }
-  if (/en vigueur à (?:une|la) date fixée par/i.test(corps)) return { etiquette: "Date fixée par un texte à venir", classe: "app-venir" };
-  return { etiquette: "Non précisée dans le texte", classe: "" };
-}
 const celluleApplication = (a) => `<td data-titre="Application">${a.iso ? `<time datetime="${esc(a.iso)}">${esc(a.etiquette)}</time>` : `<span class="app-texte">${esc(a.etiquette)}</span>`}` +
   `${a.classe === "app-venir" ? '<span class="etat-date app-venir">À venir</span>' : a.classe === "app-vigueur" ? '<span class="etat-date app-vigueur">En vigueur</span>' : ""}` +
   `${a.precision ? `<span class="precision">${esc(a.precision)}</span>` : ""}</td>`;
@@ -1177,7 +1153,7 @@ function appActions(V, D, C, LIENS, JO = null) {
     textes.push({ ids, cle: cleJO(t), titre: String(t.titre).slice(0, 300), date: quand,
       dateHtml: `<time datetime="${esc(quand)}">${esc(dateFr(quand))}</time><span class="etat-date etat-recent">Parution récente</span>`,
       lien: `${l ? `<a href="${esc(l)}" target="_blank" rel="noopener">${esc(t.titre)}</a>` : esc(t.titre)}${l ? `<a class="lien-officiel" href="${esc(l)}" target="_blank" rel="noopener">${/legifrance\.gouv\.fr/.test(l) ? "Légifrance" : esc(t.sourceNom || "Voir chez la source")} ${sortant}</a>` : ""}`,
-      analyse: analyseJO(V, t, ids) });
+      analyse: analyseJO(V, t, ids), application: applicationDuTexte(t).iso || "" });
   });
   textes.sort((x, y) => (x.date !== y.date ? (x.date < y.date ? 1 : -1) : x.titre.localeCompare(y.titre, "fr")));
 
@@ -1191,7 +1167,7 @@ function appActions(V, D, C, LIENS, JO = null) {
         const dans = plan.liste.includes(id);
         // La base n'accepte que « lettres:[A-Za-z0-9_.:-]{1,160} » (registre.cle).
         const cle = `actions:${t.cle.replace(/[^A-Za-z0-9_.:-]/g, "-").slice(0, 140)}:${cleCourte(action)}`;
-        lignes.push(`<tr data-domaines="${esc(id)}" data-cle="${esc(cle)}" data-objet="${esc(`${action} — ${t.titre}`.slice(0, 480))}"${dans ? "" : " hidden"}>
+        lignes.push(`<tr data-domaines="${esc(id)}" data-cle="${esc(cle)}" data-objet="${esc(`${action} — ${t.titre}`.slice(0, 480))}"${t.application ? ` data-application="${esc(t.application)}"` : ""}${dans ? "" : " hidden"}>
       <td data-titre="Date du texte">${t.dateHtml}</td>
       <td data-titre="Texte de référence">${t.lien}${t.analyse || ""}</td>
       <td data-titre="Action à mener">${esc(action)}</td>
@@ -4518,7 +4494,7 @@ function pageMonCompte() {
         <section class="rg-carte compte-carte compte-reglages" aria-labelledby="cc-t-param">
           <header class="rg-tete">
             <h2 id="cc-t-param">Paramètres du compte</h2>
-            <p>Votre mot de passe, votre adresse, vos données personnelles.</p>
+            <p>Votre mot de passe, votre adresse, vos e-mails, vos données personnelles.</p>
           </header>
           <div class="compte-corps compte-lignes">
         <details class="ligne-reglage">
@@ -4548,6 +4524,19 @@ function pageMonCompte() {
             <p class="etat-compte" id="etat-adresse" role="status"></p>
           </form>
         </details>
+
+        <!-- Les e-mails (4 novembre 2026) : récapitulatif quotidien et rappels. -->
+        <div class="ligne-reglage ligne-bascule">
+          <label for="p-recap"><span class="lb-texte"><span>Récapitulatif quotidien par e-mail</span>
+            <span class="lb-aide">Chaque matin, les textes parus qui touchent votre plan de veille, présentés comme le tableau « Ma veille réglementaire ». Aucun e-mail les jours sans nouveau texte.</span></span>
+            <input type="checkbox" role="switch" id="p-recap" disabled></label>
+        </div>
+        <div class="ligne-reglage ligne-bascule">
+          <label for="p-rappels"><span class="lb-texte"><span>Rappels des actions en retard</span>
+            <span class="lb-aide">Un e-mail quand le délai d'une action du plan d'actions est dépassé, puis chaque semaine tant qu'elle n'est pas validée.</span></span>
+            <input type="checkbox" role="switch" id="p-rappels" disabled></label>
+        </div>
+        <p class="etat-compte" id="etat-recap" role="status"></p>
 
         <!-- RGPD (4 novembre 2026) : chacun exerce ses droits lui-même. -->
         <details class="ligne-reglage">
@@ -4992,6 +4981,26 @@ function pageAdmin() {
     racine: "../", zone: "public", corps, attrsBody: ' data-page="admin"', scripts: ["assets/compte.js", "assets/admin-stats.js"], installation: false, piedCourt: true });
 }
 
+/* --- Ne plus recevoir un e-mail (4 novembre 2026) ----------------------------
+   Le lien en bas du récapitulatif quotidien et des rappels : un clic suffit,
+   sans connexion (le jeton de l'e-mail). */
+function pageRecap() {
+  const corps = `
+<section class="section compte-page">
+  <div class="enveloppe" style="max-width:40rem">
+    <div class="carte-connexion recap-carte" id="recap" aria-live="polite">
+      <h1>Vos e-mails</h1>
+      <p id="recap-etat">Un instant…</p>
+      <p class="rangee" style="margin-top:var(--t4)">
+        <a class="bouton bouton-sobre" href="./">Régler mes e-mails dans Mon compte</a>
+      </p>
+    </div>
+  </div>
+</section>`;
+  return page({ titre: `Vos e-mails | ${SITE.nom}`, description: "Ne plus recevoir le récapitulatif quotidien ou les rappels.",
+    racine: "../", zone: "public", corps, scripts: ["assets/recap.js"], installation: false, piedCourt: true });
+}
+
 /* --- Les avis : de quoi alimenter la cloche ------------------------------- */
 /* Le relevé complet est engendré dans deux pages seulement ; la cloche, elle,
    vit sur tous les écrans. On en extrait donc le strict nécessaire — moins de
@@ -5393,6 +5402,7 @@ async function main() {
   await writeFile(join(SORTIE, "compte", "creer.html"), pageCreer());
   await writeFile(join(SORTIE, "compte", "oubli.html"), pageOubli());
   await writeFile(join(SORTIE, "compte", "admin.html"), pageAdmin());
+  await writeFile(join(SORTIE, "compte", "recap.html"), pageRecap());
   await writeFile(join(SORTIE, "compte", "paiement.html"), pageSouscrire());
   await writeFile(join(SORTIE, "compte", "cabinet.html"), pageCabinet());
   await writeFile(join(SORTIE, "compte", "invitation.html"), pageInvitation());

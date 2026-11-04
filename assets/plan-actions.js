@@ -43,7 +43,11 @@
     var etat = etatDe(a);
     tr.setAttribute("data-etat", etat);
     var delai = tr.querySelector(".pa-delai"), resp = tr.querySelector(".pa-resp");
-    if (document.activeElement !== delai) delai.value = a && a.echeance ? String(a.echeance).slice(0, 10) : "";
+    // Pas encore planifiée : le délai proposé est la date d'application du
+    // texte quand le texte en donne une ; sinon, il est à renseigner.
+    var propose = !a && tr.getAttribute("data-application") || "";
+    if (document.activeElement !== delai && !delai.getAttribute("data-touche")) delai.value = a && a.echeance ? String(a.echeance).slice(0, 10) : propose;
+    tr.classList.toggle("pa-propose", !!propose && delai.value === propose);
     if (document.activeElement !== resp) resp.value = a ? a.responsable || "" : "";
     var fini = etat === "faite";
     delai.disabled = resp.disabled = fini || lecture;
@@ -53,7 +57,8 @@
       ? "✓ Réalisée le " + jour(a.faite_le) + (a.par && a.par !== "vous" ? " par " + a.par : "")
       : etat === "retard" ? "En retard depuis le " + jour(a.echeance)
       : etat === "ouverte" ? "À réaliser pour le " + jour(a.echeance)
-      : "Pas encore planifiée";
+      : propose ? "Délai proposé : la date d'application du texte. Enregistrez pour le retenir."
+      : "Délai à renseigner";
   }
 
   function compter() {
@@ -92,6 +97,8 @@
       if (garde.responsable) resp.placeholder = garde.responsable;
       peindre(tr);
       var etat = tr.querySelector(".pa-etat");
+      // Une date saisie à la main n'est plus remplacée par la date proposée.
+      tr.querySelector(".pa-delai").addEventListener("input", function () { this.setAttribute("data-touche", "1"); tr.classList.remove("pa-propose"); });
       tr.querySelector(".pa-enregistrer").addEventListener("click", function () {
         var delai = tr.querySelector(".pa-delai").value;
         if (!delai) { etat.textContent = "Choisissez un délai de réalisation."; tr.querySelector(".pa-delai").focus(); return; }
