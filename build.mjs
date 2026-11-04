@@ -735,7 +735,7 @@ function appTableauBord(V, D, C, LIENS) {
 
 ${rubrique({ etiq: "Tableau de bord", contenu: `
   <dl class="compteurs compteurs-liens tableau-bord" id="bord-demo">
-    <div><dt class="etiq">Nouveaux textes</dt><dd><span class="grand" data-bord="nouveaux">—</span><span class="precision">pas encore ouverts</span>${lienCarte("plan.html", "Voir ma veille réglementaire")}</dd></div>
+    <div><dt class="etiq">Nouveaux textes</dt><dd><span class="grand" data-bord="nouveaux">—</span><span class="precision">non lus</span>${lienCarte("plan.html", "Voir ma veille réglementaire")}</dd></div>
     <div><dt class="etiq">Textes publiés</dt><dd><span class="grand" data-bord="publies">—</span><span class="precision">ces 14 derniers jours</span>${lienCarte("plan.html", "Voir ma veille réglementaire")}</dd></div>
     <div><dt class="etiq">Textes applicables</dt><dd><span class="grand" data-bord="applicables">—</span><span class="precision">touchent votre plan</span>${lienCarte("plan.html", "Voir ma veille réglementaire")}</dd></div>
     <div><dt class="etiq">Textes lus</dt><dd><span class="grand" data-bord="lus">—</span><span class="precision" data-bord="lus-sur"></span>${lienCarte("plan.html", "Voir ma veille réglementaire")}</dd></div>
@@ -4073,7 +4073,6 @@ function ecranAuth({ titre, sous, carte, pied = "" }) {
   <aside class="auth-marque" aria-hidden="true">
     <div class="auth-marque-corps">
       <p class="auth-marque-sur">Veille réglementaire</p>
-      <p class="auth-marque-titre">Les textes qui s'appliquent à votre entreprise, au même endroit.</p>
       <ul class="auth-points">
         <li>Les textes relevés sur les sources officielles : Journal officiel, Légifrance, ministères</li>
         <li>Votre veille classée par catégorie : santé et sécurité, environnement, ressources humaines</li>
@@ -4208,8 +4207,15 @@ function pageMonCompte() {
 <section class="section compte-page">
   <div class="enveloppe">
     <div class="compte-tete">
-      <h1>Mon compte</h1>
-      <p class="etat-compte" id="etat-compte" role="status">Un instant…</p>
+      <div>
+        <h1>Mon compte</h1>
+        <p class="compte-connecte">Connecté avec <span class="compte-adresse" id="compte-adresse"></span></p>
+        <p class="etat-compte" id="etat-compte" role="status">Un instant…</p>
+      </div>
+      <div class="compte-tete-actions">
+        <a class="bouton bouton-sobre" id="compte-admin" href="admin.html" hidden>Espace administrateur</a>
+        <button type="button" class="bouton bouton-sobre" id="compte-sortir">Se déconnecter</button>
+      </div>
     </div>
     <div class="connexion connexion-seule">
       ${comptesFermes()}
@@ -4236,29 +4242,28 @@ function pageMonCompte() {
       </form>
 
       <div id="compte-principal" data-formules="${esc(JSON.stringify(formules))}" hidden>
-        <div class="carte-connexion">
-          <p class="compte-connecte">Connecté avec <span class="compte-adresse" id="compte-adresse"></span></p>
-
+        <div class="compte-col">
+        <section class="rg-carte compte-carte" aria-labelledby="cc-t-espace">
+          <header class="rg-tete">
+            <h2 id="cc-t-espace">Votre espace</h2>
+            <p>L'entreprise ou le cabinet rattaché à votre compte.</p>
+          </header>
           <div id="compte-entreprise" hidden>
-            <p class="compte-entreprise"><strong id="entreprise-nom"></strong></p>
-            <p id="entreprise-role"></p>
-            <p id="entreprise-formule"></p>
-            <p class="rangee" style="margin-top:var(--t4)">
-              <a class="bouton bouton-accent bouton-large" id="entreprise-ouvrir" href="../app/" hidden>Ouvrir mon espace</a>
-              <a class="bouton bouton-accent bouton-large" id="entreprise-tarifs" href="../abonnement.html" hidden>Choisir ma formule</a>
-            </p>
-            <div class="compte-consultant" id="entreprise-consultant" hidden></div>
+            <div class="rg-ligne"><span class="rg-libelle">Entreprise</span><div class="rg-champ"><strong id="entreprise-nom"></strong></div></div>
+            <div class="rg-ligne"><span class="rg-libelle">Votre rôle</span><div class="rg-champ"><span id="entreprise-role"></span></div></div>
+            <div class="rg-ligne"><span class="rg-libelle">Formule</span><div class="rg-champ"><span id="entreprise-formule"></span></div></div>
+            <div class="compte-corps compte-consultant" id="entreprise-consultant" hidden></div>
+            <div class="compte-actions">
+              <a class="bouton bouton-accent" id="entreprise-ouvrir" href="../app/" hidden>Ouvrir mon espace</a>
+              <a class="bouton bouton-accent" id="entreprise-tarifs" href="../abonnement.html" hidden>Choisir ma formule</a>
+            </div>
           </div>
-
           <div id="compte-cabinet" hidden>
-            <p class="etiq" style="margin-top:var(--t4)">Votre cabinet</p>
-            <p class="compte-entreprise"><strong id="cabinet-nom"></strong></p>
-            <p id="cabinet-statut"></p>
-            <p class="rangee" style="margin-top:var(--t4)">
-              <a class="bouton bouton-accent bouton-large" href="cabinet.html">Ouvrir mon cabinet</a>
-            </p>
+            <div class="rg-ligne"><span class="rg-libelle">Cabinet</span><div class="rg-champ"><strong id="cabinet-nom"></strong></div></div>
+            <div class="rg-ligne"><span class="rg-libelle">Abonnement</span><div class="rg-champ"><span id="cabinet-statut"></span></div></div>
+            <div class="compte-actions"><a class="bouton bouton-accent" href="cabinet.html">Ouvrir l'espace consultant</a></div>
           </div>
-
+          <div class="compte-corps">
           <form id="form-entreprise" method="post" novalidate hidden>
             <p><strong>Dernière étape : qui êtes-vous ?</strong> <span id="e-explique"></span></p>
             <fieldset class="champ choix-type">
@@ -4277,10 +4282,15 @@ function pageMonCompte() {
             </p>
             <p class="etat-compte" id="etat-entreprise" role="status"></p>
           </form>
-        </div>
+          </div>
+        </section>
 
-        <div class="carte-connexion" id="compte-equipe" hidden>
-          <h2>Inviter un membre de votre équipe</h2>
+        <section class="rg-carte compte-carte" id="compte-equipe" aria-labelledby="cc-t-equipe" hidden>
+          <header class="rg-tete">
+            <h2 id="cc-t-equipe">Votre équipe</h2>
+            <p>Invitez un membre de votre équipe : il reçoit un lien pour créer son compte.</p>
+          </header>
+          <div class="compte-corps">
           <form id="form-inviter" class="form-inviter" method="post" novalidate hidden>
             <label class="cache-visuellement" for="i-courriel">Son adresse électronique</label>
             <input type="email" id="i-courriel" autocomplete="off" inputmode="email" spellcheck="false" required
@@ -4302,10 +4312,16 @@ function pageMonCompte() {
               <a class="bouton bouton-sobre" id="i-mail" href="#">Écrire le courriel</a>
             </p>
           </div>
+          </div>
+        </section>
         </div>
 
-        <div class="carte-connexion compte-reglages">
-          <h2>Paramètres du compte</h2>
+        <section class="rg-carte compte-carte compte-reglages" aria-labelledby="cc-t-param">
+          <header class="rg-tete">
+            <h2 id="cc-t-param">Paramètres du compte</h2>
+            <p>Votre mot de passe, votre adresse, vos données personnelles.</p>
+          </header>
+          <div class="compte-corps compte-lignes">
         <details class="ligne-reglage">
           <summary><span>Mot de passe</span><span class="modifier">Modifier</span></summary>
           <form id="form-motdepasse" method="post" novalidate>
@@ -4362,12 +4378,9 @@ function pageMonCompte() {
             <p class="etat-compte" id="etat-supprimer" role="status"></p>
           </form>
         </details>
-        </div>
-
-        <p class="rangee rangee-centre" style="margin-top:var(--t5)">
-          <a class="bouton bouton-sobre" id="compte-admin" href="admin.html" hidden>Espace administrateur</a>
-          <button type="button" class="bouton bouton-sobre" id="compte-sortir">Se déconnecter</button>
-        </p>
+          </div>
+        </section>
+      </div>
       </div>
     </div>
   </div>

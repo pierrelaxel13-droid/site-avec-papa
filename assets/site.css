@@ -4137,3 +4137,43 @@ main .lecture, main .note-source, main li, main p {
 .rubrique > .enveloppe > h2 { font-size: var(--h2-site); }
 .rail-item .legende-detail { margin: .4rem 0 0; max-width: 36ch; font-size: .85rem; line-height: 1.5; color: var(--encre-douce); }
 .rail-item, .rail-item .legende, .rail-item .legende-detail { text-align: center; margin-inline: auto; }
+
+/* --- Mon compte, harmonisé avec Réglages (4 novembre 2026) ----------------- */
+[data-page="compte"] .compte-page { padding-top: clamp(1.75rem, 1.2rem + 2vw, 3rem); }
+[data-page="compte"] .compte-tete { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end;
+  gap: 1rem; max-width: none; margin: 0 0 var(--t4); text-align: left; }
+[data-page="compte"] .compte-tete .compte-connecte { margin: .35rem 0 0; font-size: var(--chapeau-site); color: var(--encre-douce); }
+[data-page="compte"] .compte-tete .compte-connecte .compte-adresse { color: var(--encre); font-weight: 500; }
+.compte-tete-actions { display: flex; gap: .5rem; flex-wrap: wrap; }
+.compte-tete-actions .bouton, .compte-actions .bouton { padding: .55rem 1.1rem; font-size: .9rem; width: auto; }
+[data-page="compte"] #compte-principal { display: grid; gap: var(--ecart-cartes); align-items: start; }
+@media (min-width: 64rem) { [data-page="compte"] #compte-principal { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.compte-col { display: grid; gap: var(--ecart-cartes); align-content: start; }
+.compte-carte .rg-ligne { align-items: center; }
+.compte-carte .rg-libelle { padding-top: 0 !important; }
+.compte-corps { padding: 1rem 1.25rem; }
+.compte-corps:not(:has(> :not([hidden]))) { display: none; }
+.compte-actions { display: flex; gap: .5rem; flex-wrap: wrap; padding: .9rem 1.25rem 1.1rem; border-top: 1px solid var(--filet); }
+.compte-actions:not(:has(> :not([hidden]))) { display: none; }
+.compte-lignes { padding-block: .25rem; }
+.compte-lignes .ligne-reglage { border-bottom: 1px solid var(--filet); }
+.compte-lignes .ligne-reglage:last-child { border-bottom: 0; }
+.compte-lignes .ligne-reglage summary { display: flex; justify-content: space-between; align-items: center; padding: .85rem 0; cursor: pointer; font-size: .93rem; list-style: none; }
+.compte-lignes .ligne-reglage summary::-webkit-details-marker { display: none; }
+.compte-lignes .ligne-reglage .modifier { font-size: .85rem; color: var(--accent); }
+.compte-lignes .ligne-reglage[open] summary .modifier { color: var(--encre-douce); }
+.compte-lignes .ligne-reglage > form, .compte-lignes .ligne-reglage > div { padding: 0 0 1rem; }
+.compte-carte .champ label { font-size: .85rem; }
+.compte-carte input[type="email"], .compte-carte input[type="password"], .compte-carte input[type="text"] {
+  width: 100%; box-sizing: border-box; height: 2.5rem; padding: 0 .75rem; border: 1px solid var(--filet-fort);
+  border-radius: 8px; background: var(--papier); color: var(--encre); font: inherit; font-size: .92rem; }
+.compte-carte .bouton { padding: .5rem 1rem; font-size: .88rem; }
+.compte-carte .form-inviter { display: flex; gap: .5rem; }
+.compte-carte .form-inviter .bouton { flex: none; }
+[data-page="compte"] #compte-principal > .compte-reglages { grid-column: auto; }
+[data-page="compte"] #entreprise-ouvrir, [data-page="compte"] #entreprise-tarifs { width: auto; }
+[data-page="compte"] .compte-tete-actions .bouton { padding: .5rem 1rem; font-size: .88rem; }
+.compte-carte .rg-champ, .compte-carte .rg-champ span { color: var(--encre); }
+.compte-lignes .ligne-reglage { border-top: 0 !important; }
+[data-page="compte"] #compte-principal > section.compte-reglages { grid-column: auto; }
+[data-page="compte"] #entreprise-role, [data-page="compte"] #entreprise-formule, [data-page="compte"] #cabinet-statut { color: var(--encre); font-size: .95rem; }

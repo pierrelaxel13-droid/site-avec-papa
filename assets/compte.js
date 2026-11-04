@@ -234,16 +234,16 @@
         $("#form-entreprise").hidden = true;
         var e = r.entreprises[0];
         $("#entreprise-nom").textContent = e.denomination;
-        $("#entreprise-role").textContent = e.role === "admin" ? "Vous en êtes l'administrateur."
-          : e.role === "lecteur" ? "Vous y êtes en lecture seule." : "Vous en êtes membre.";
+        $("#entreprise-role").textContent = e.role === "admin" ? "Administrateur"
+          : e.role === "lecteur" ? "Lecture seule" : "Membre";
         var f = $("#entreprise-formule"), ouvrir = $("#entreprise-ouvrir"), tarifs = $("#entreprise-tarifs");
         if (e.rang > 0) {
-          f.textContent = "Formule « " + nomDuRang(e.rang) + " ».";
+          f.textContent = nomDuRang(e.rang);
           ouvrir.href = vers("app/index.html");
           ouvrir.onclick = function () { V.choisir(e.entreprise_id); };
           ouvrir.hidden = false; tarifs.hidden = true;
         } else {
-          f.textContent = "Pas encore d'abonnement : votre espace ouvrira avec lui.";
+          f.textContent = "Aucun abonnement pour l'instant : votre espace s'ouvre avec lui.";
           ouvrir.hidden = true; tarifs.hidden = false;
           // Une offre choisie avant de créer le compte : on y revient directement.
           try {
@@ -285,8 +285,8 @@
       if (!cab) { b.hidden = true; return; }
       $("#cabinet-nom").textContent = cab.nom;
       $("#cabinet-statut").textContent = cab.actif
-        ? "Abonnement consultant ouvert : vos clients ont la veille complète."
-        : "Abonnement consultant pas encore ouvert : votre page cabinet dit comment faire.";
+        ? "Ouvert : vos clients ont la veille complète"
+        : "Pas encore ouvert : l'espace consultant dit comment faire";
       b.hidden = false;
     };
 

@@ -127,7 +127,7 @@
       var c = window.PCO_AVIS ? window.PCO_AVIS.chiffres() : null;
       var nb = function (x) { return x == null ? "—" : x; };
       return '<dl class="compteurs compteurs-liens tableau-bord">' +
-        carre(false, "plan.html", "Nouveaux textes", nb(c && c.nouveaux), "pas encore ouverts", "Voir ma veille réglementaire") +
+        carre(false, "plan.html", "Nouveaux textes", nb(c && c.nouveaux), "non lus", "Voir ma veille réglementaire") +
         carre(false, "plan.html", "Textes publiés", nb(c && c.publies), "ces 14 derniers jours", "Voir ma veille réglementaire") +
         carre(false, "plan.html", "Textes applicables", nb(c && c.applicables), "touchent votre plan", "Voir ma veille réglementaire") +
         carre(false, "plan.html", "Textes lus", nb(c && c.lus), c ? "sur " + c.applicables + " applicables" : "", "Voir ma veille réglementaire") +
