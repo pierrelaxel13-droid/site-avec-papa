@@ -133,8 +133,8 @@ const dateFr = (iso) => new Date(iso + "T12:00:00Z")
   .toLocaleDateString("fr-FR", JOUR).replace(/^1 /, "1er ");
 
 /* --- Les trois formules et ce que chacune ouvre ---------------------------- */
-/* Grille du 4 novembre 2026 : 39, 99 et 149 € par mois ; à l'année, 410, 990
-   et 1490 € (« 1 mois offert » pour la première, « 2 mois offerts » ensuite), sans cadrage sur place. Les montants sont
+/* Grille du 4 novembre 2026 : 39, 59 et 149 € par mois ; à l'année, 410, 650
+   et 1490 € (« 1 mois offert » pour les deux premières, « 2 mois offerts » pour la troisième), sans cadrage sur place. Les montants sont
    ici, en euros ; tout le reste (libellés, mention de TVA) en est tiré. Le rang décide : une page demande un
    rang, la session en porte un. C'est la seule règle et elle est appliquée
    dans le navigateur — donc contournable. Elle décrit le produit, elle ne le
@@ -161,7 +161,7 @@ const FORMULES = {
                      "Les sources et les liens des textes",
                      "Les alertes : une alerte vous rappelle de prendre connaissance des nouveautés",
                      "Tableau de bord de suivi"] },
-  suivi:   { l: "Textes et suivi", carte: "État des lieux réglementaire et plan d'actions", rang: 2, mois: 99, an: 990,
+  suivi:   { l: "Textes et suivi", carte: "État des lieux réglementaire et plan d'actions", rang: 2, mois: 59, an: 650,
              pour: "Vous voulez aussi savoir quoi revoir et quand.",
              ouvre: "En plus : votre plan de veille, le tableau de bord, les alertes et les conseils de l'IA.",
              surCarte: false,
@@ -202,8 +202,8 @@ if (!TVA) throw new Error(`SITE.tva doit valoir "franchise" ou "ht", pas « ${SI
 // la police du site : elle s'affichait « 1490 ». On met l'insécable ordinaire.
 const eur = (n) => `${n.toLocaleString("fr-FR").replace(/\u202f/g, "\u00a0")}\u00a0€${TVA.suffixe}`;
 for (const [id, f] of Object.entries(FORMULES)) {
-  // « N mois offerts » doit rester vrai : on compte les mois entiers que l'année épargne.
-  f.moisOfferts = Math.floor(12 - f.an / f.mois + 1e-9);
+  // « N mois offerts » : les mois que l'année épargne, arrondis au mois le plus proche.
+  f.moisOfferts = Math.round(12 - f.an / f.mois);
   if (f.moisOfferts < 1) throw new Error(`FORMULES.${id} : ${f.an} € par an n'offre aucun mois sur ${f.mois} € par mois.`);
   f.offre = f.moisOfferts === 1 ? "1 mois offert" : `${f.moisOfferts} mois offerts`;
   f.montant = eur(f.mois);                 // « 59 € »
@@ -4925,6 +4925,36 @@ function pageAdmin() {
     <div id="admin-liste" data-formules="${esc(JSON.stringify(formules))}" hidden>
       <p class="aide-bas admin-rappel">Les registres, plans et réponses des clients n'apparaissent jamais ici :
       la base ne les donne pas à l'administrateur. Une formule « donnée par vous » ne touche jamais un abonnement payé chez Stripe.</p>
+      <section class="admin-stats" id="admin-stats" aria-labelledby="admin-stats-titre" hidden>
+        <div class="admin-stats-tete">
+          <h2 class="titre-section" id="admin-stats-titre">Fréquentation et abonnements</h2>
+          <div class="admin-periode" role="group" aria-label="Période">
+            <button type="button" data-jours="30" aria-pressed="false">30 jours</button>
+            <button type="button" data-jours="90" aria-pressed="true">90 jours</button>
+            <button type="button" data-jours="365" aria-pressed="false">1 an</button>
+          </div>
+        </div>
+        <dl class="admin-tuiles">
+          <div><dt>Connectés aujourd'hui</dt><dd id="st-auj">—</dd></div>
+          <div><dt>Comptes actifs sur 30 jours</dt><dd id="st-30">—</dd></div>
+          <div><dt>Abonnements actifs</dt><dd id="st-abos">—</dd></div>
+          <div><dt>Comptes créés</dt><dd id="st-comptes">—</dd></div>
+        </dl>
+        <div class="admin-graphes">
+          <figure class="admin-graphe carte-connexion">
+            <figcaption><strong>Connexions par jour</strong><span>Comptes différents connectés chaque jour</span></figcaption>
+            <div class="graphe" id="graphe-connexions"></div>
+          </figure>
+          <figure class="admin-graphe carte-connexion">
+            <figcaption><strong>Abonnements actifs</strong><span>Nombre d'abonnements en cours, jour après jour</span></figcaption>
+            <div class="graphe" id="graphe-abonnements"></div>
+          </figure>
+        </div>
+        <p class="aide-bas" id="st-formules"></p>
+        <details class="admin-chiffres"><summary>Voir les chiffres jour par jour</summary><div class="defile-tableau"><table class="tableau-plan" id="st-table"></table></div></details>
+        <p class="aide-bas">Les connexions sont comptées depuis le 4 novembre 2026 : avant, seule la dernière connexion de chaque compte était connue.
+        Un compte connecté plusieurs fois le même jour compte pour un.</p>
+      </section>
       <h2 class="titre-section">Les messages reçus</h2>
       <p class="aide-bas" id="admin-messages-etat">Ceux du formulaire de contact de l'accueil.</p>
       <div class="carte-connexion"><ul class="admin-comptes" id="admin-messages"></ul></div>
@@ -4959,7 +4989,7 @@ function pageAdmin() {
   </div>
 </section>`;
   return page({ titre: `Espace administrateur | ${SITE.nom}`, description: "Espace administrateur du service.",
-    racine: "../", zone: "public", corps, attrsBody: ' data-page="admin"', scripts: ["assets/compte.js"], installation: false, piedCourt: true });
+    racine: "../", zone: "public", corps, attrsBody: ' data-page="admin"', scripts: ["assets/compte.js", "assets/admin-stats.js"], installation: false, piedCourt: true });
 }
 
 /* --- Les avis : de quoi alimenter la cloche ------------------------------- */
