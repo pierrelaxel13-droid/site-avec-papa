@@ -4510,3 +4510,13 @@ details.analyse > summary:focus-visible { outline: 2px solid var(--accent); outl
   .tableau-textes-plan tr:has(input.lu:checked) { background: var(--vert-fond); border-color: var(--vert); box-shadow: inset 4px 0 0 var(--vert); }
   .tableau-textes-plan tr:has(input.lu:checked) td, .tableau-textes-plan tr:has(input.lu:checked) td:first-child { background: none; box-shadow: none; }
 }
+
+/* --- Plan d'actions : une action validée se teinte de vert, comme un texte
+   conforme ou lu (4 novembre 2026). */
+.tableau-actions tr[data-etat="faite"] td { background: var(--vert-fond); }
+.tableau-actions tr[data-etat="faite"] td:first-child { box-shadow: inset 4px 0 0 var(--vert); }
+.tableau-actions tr[data-etat="faite"] .pa-etat { color: var(--vert); font-weight: 700; }
+@media (max-width: 47.99rem) {
+  .tableau-actions tr[data-etat="faite"] { background: var(--vert-fond); border-color: var(--vert); box-shadow: inset 4px 0 0 var(--vert); }
+  .tableau-actions tr[data-etat="faite"] td, .tableau-actions tr[data-etat="faite"] td:first-child { background: none; box-shadow: none; }
+}
