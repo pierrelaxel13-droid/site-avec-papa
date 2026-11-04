@@ -954,15 +954,62 @@ function typeDuTexte(t) {
 }
 /* Ce que dit le texte : ses premières phrases utiles, sans les formules du
    Journal officiel (« Vous pouvez consulter… », « Rectificatif au… »). */
-function cequeDit(corps) {
-  const lignes = String(corps || "").split(/\n+/).map((x) => x.replace(/\s+/g, " ").trim()).filter((x) =>
+function cequeDit(corps, max = 1100) {
+  const lignes = String(corps || "").split(/\n+/).map((x) => x.replace(/\s+/g, " ").replace(/(\d) er\b/g, "$1er").trim()).filter((x) =>
     x.length > 2 && !/^(Vous pouvez consulter|Rectificatif au Journal|Le (?:présent|ministre).{0,60}chargés?.{0,40}exécution|Fait le|Pour le ministre|NOR\s*:|ELI\s*:)/i.test(x));
-  const puces = lignes.filter((x) => /^[-•–]\s+/.test(x)).map((x) => coupe(x.replace(/^[-•–]\s+/, "").replace(/[;.]$/, ""), 140)).slice(0, 3);
-  const phrases = lignes.filter((x) => !/^[-•–]\s+/.test(x)).join(" ").split(/(?<=[a-zà-ÿ0-9)»]\.)\s+(?=[A-ZÀÂÉÈÊÎÔÛÇ«])/).filter((x) => x.length > 25);
-  let resume = "";
-  for (const p of phrases) { if ((resume + " " + p).length > 420) break; resume = (resume + " " + p).trim(); }
-  if (!resume && phrases[0]) resume = coupe(phrases[0], 420);
-  return { resume, puces };
+  const puces = lignes.filter((x) => /^[-•–]\s+/.test(x)).map((x) => coupe(x.replace(/^[-•–]\s+/, "").replace(/[;.]$/, ""), 220)).slice(0, 8);
+  const phrases = lignes.filter((x) => !/^[-•–]\s+/.test(x) && !/^\d+°\s/.test(x)).join(" ").split(/(?<=[a-zà-ÿ0-9)»]\.)\s+(?=[A-ZÀÂÉÈÊÎÔÛÇ«])/).filter((x) => x.length > 25);
+  const paras = [];
+  let n = 0;
+  for (const p of phrases) { if (n + p.length > max) break; paras.push(p); n += p.length; }
+  if (!paras.length && phrases[0]) paras.push(coupe(phrases[0], max));
+  return { resume: paras.join(" "), paras, puces };
+}
+/* Les textes et articles qu'un texte cite (code du travail, articles L. 4121-1…). */
+const CODES_NOMMES = "du travail|de la sécurité sociale|de l'environnement|de la santé publique|de l'action sociale et des familles|rural et de la pêche maritime|de la construction et de l'habitation|de commerce|de la consommation|des transports|de l'urbanisme|civil|pénal|général des impôts|de la route|minier|de l'énergie|de la propriété intellectuelle|des relations entre le public et l'administration|de la défense|de l'éducation|du sport|du tourisme|de la commande publique|monétaire et financier|des assurances|de la mutualité|général des collectivités territoriales";
+function references(c, titre = "") {
+  const vus = new Set(), l = [];
+  const ajoute = (x, cle) => { const k = (cle || x).toLowerCase(); if (!vus.has(k)) { vus.add(k); l.push(x); } };
+  const reArt = new RegExp(`\\b(?:articles?|art\\.)\\s+((?:[LRD]\\.?\\s?)?\\d{1,4}(?:-\\d+){0,3})(?:\\s+(et|à)\\s+((?:[LRD]\\.?\\s?)?\\d{1,4}(?:-\\d+){0,3}))?\\s+(?:du|de la|de l')\\s+(code (?:${CODES_NOMMES}))`, "gi");
+  for (const m of String(c).matchAll(reArt))
+    ajoute(`${majuscule(m[4].trim())}, article${m[3] ? "s" : ""} ${m[1].replace(/\s/g, "")}${m[3] ? ` ${m[2]} ${m[3].replace(/\s/g, "")}` : ""}`);
+  // Lois, décrets, arrêtés : un seul par date (le plus précis), jamais le texte lui-même.
+  const soi = String(titre).replace(/^CELEX:\S+\s*/, "").slice(0, 80).toLowerCase();
+  const actes = {};
+  for (const m of String(c).matchAll(/\b(loi|décret|arrêté|ordonnance)\s+(?:(n°\s?[\d-]+)\s+)?du\s+(\d{1,2}(?:er)?\s+[a-zéû]+\s+\d{4})/gi)) {
+    const k = (m[1] + " " + m[3]).toLowerCase();
+    const texte = majuscule(m[0].replace(/\s+/g, " "));
+    if (soi.includes(m[0].replace(/\s+/g, " ").toLowerCase()) || (m[2] && soi.includes(m[2].toLowerCase()))) continue;
+    if (!actes[k] || texte.length > actes[k].length) actes[k] = texte;
+  }
+  Object.values(actes).forEach((x) => ajoute(x));
+  for (const m of String(c).matchAll(/\b(règlement|directive)\s+(?:d'exécution\s+|délégué\s+)?\((UE|CE)\)\s+(?:n°\s?)?(\d{2,4}\/\d{1,4})/gi))
+    ajoute(majuscule(m[0].replace(/\s+/g, " ")), `${m[1]} ${m[3]}`);
+  return l.slice(0, 8);
+}
+/* Les modifications qu'apporte un texte modificatif : « 1° Les mots… sont remplacés… ». */
+function modifications(c) {
+  return String(c).split(/\n+/).map((x) => x.replace(/\s+/g, " ").trim()).filter((x) => /^\d+°\s/.test(x))
+    .map((x) => coupe(x.replace(/^(\d+)°\s*/, "$1° ").replace(/(\d) er\b/g, "$1er"), 230)).slice(0, 6);
+}
+/* Pour un texte de référence : les sections de code que nous lisons article
+   par article (contenu/codes.json), leurs articles en vigueur et la dernière
+   évolution. */
+function sectionsDuTexte(ref) {
+  const C = CODES_LUS;
+  const ids = C && C.perimetres ? C.perimetres[ref] || [] : [];
+  const ms = ids.map((id) => C.morceaux.find((m) => m.id === id)).filter(Boolean);
+  if (!ms.length) return [];
+  const vig = (m) => m.articles.filter((x) => !x.etat || x.etat === "VIGUEUR");
+  const total = ms.reduce((n, m) => n + vig(m).length, 0);
+  const derniere = ms.flatMap((m) => vig(m).filter((x) => x.depuis).map((x) => ({ num: x.num, depuis: x.depuis })))
+    .sort((a, b) => (a.depuis < b.depuis ? 1 : -1))[0];
+  return [
+    ["Sections suivies", liste(ms.slice(0, 6).map((m) => `${m.chemin[m.chemin.length - 1] || m.codeTitre} : ${vig(m).length} article${vig(m).length > 1 ? "s" : ""} en vigueur`)
+      .concat(ms.length > 6 ? [`et ${ms.length - 6} autre${ms.length - 6 > 1 ? "s" : ""} section${ms.length - 6 > 1 ? "s" : ""}`] : []))],
+    ["Articles suivis", `${total} article${total > 1 ? "s" : ""} en vigueur, relus à chaque relevé`],
+    derniere ? ["Dernière évolution", `article ${esc(derniere.num)}, en vigueur depuis le ${esc(dateFr(derniere.depuis))}`] : null
+  ].filter(Boolean);
 }
 function analyseRef(V, ref, ids) {
   const f = FICHES[ref] || null;
@@ -972,6 +1019,7 @@ function analyseRef(V, ref, ids) {
     f.porte ? ["Porte sur", esc(f.porte)] : null,
     f.qui ? ["Qui est concerné", esc(f.qui)] : null,
     f.exige && f.exige.length ? ["Ce que prévoit le texte", liste(f.exige)] : null,
+    ...sectionsDuTexte(ref),
     f.valide === false ? ["Statut", "Fiche à faire relire par un consultant"] : null
   ]);
 }
@@ -989,15 +1037,23 @@ function analyseJO(V, t, ids) {
   const modifie = mm ? majuscule(mm[1].replace(/\s+susvisée?$/i, "").replace(/(\d) er\b/g, "$1er").trim()) : "";
   // Un texte qui ne fait que réécrire un autre (« … est ainsi modifié : les mots … ») : sa
   // lettre n'apprend rien ; l'objet et le texte modifié suffisent.
-  const dit = /est ainsi modifiée?\s*:/i.test(c.slice(0, 400)) && (objet || objetTitre) ? { resume: "", puces: [] } : cequeDit(c);
+  const modifs = modifications(c);
+  const dit = /est ainsi modifiée?\s*:/i.test(c.slice(0, 400)) && (objet || objetTitre) ? { resume: "", paras: [], puces: [] } : cequeDit(c);
   const type = typeDuTexte(t);
+  const cites = references(c, t.titre || "");
+  const signe = (/\bdu\s+(\d{1,2}(?:er)?\s+[a-zéû]+\s+\d{4})/i.exec(String(t.titre || "").replace(/^CELEX:\S+\s*/, "")) || [])[1] || "";
+  const source = String(t.sourceNom || "").split(" — ")[0];
+  const publie = t.dateTexte || t.date;
   return analyseCadre([
     type ? ["Nature", esc(type)] : null,
     objet || objetTitre ? ["Objet", esc(objet || objetTitre)] : null,
     publics ? ["Publics concernés", esc(publics)] : null,
-    dit.resume ? ["Ce que dit le texte", esc(dit.resume) + (dit.puces.length ? liste(dit.puces) : "")]
+    dit.paras.length ? ["Ce que dit le texte", dit.paras.map((p) => `<p>${esc(p)}</p>`).join("") + (dit.puces.length ? liste(dit.puces) : "")]
       : dit.puces.length ? ["Ce que dit le texte", liste(dit.puces)] : null,
     modifie ? ["Texte modifié", esc(modifie)] : null,
+    modifs.length ? ["Principales modifications", liste(modifs)] : null,
+    cites.length ? ["Textes et articles cités", liste(cites)] : null,
+    publie || source ? ["Publication", [signe ? `signé le ${esc(signe)}` : "", publie ? `publié le ${esc(dateFr(publie))}` : "", source ? `${/^(signé|publié)/.test(signe || publie) ? "" : ""}source : ${esc(source)}` : ""].filter(Boolean).join(" · ")] : null,
     !dit.resume && !dit.puces.length && !objet && !objetTitre ? ["À retenir", "Le relevé ne donne que le titre de ce texte : son contenu se lit à la source officielle, par le lien ci-dessus."] : null,
     t.genre === "texte" ? ["Application", esc(app.etiquette) + (app.precision ? ` (${esc(app.precision)})` : "")] : null
   ]);
@@ -1006,11 +1062,11 @@ function analyseCode(V, m, vig, ids) {
   const auj = new Date().toISOString().slice(0, 10);
   const recents = vig.filter((x) => x.depuis).sort((a, b) => (a.depuis < b.depuis ? 1 : -1)).slice(0, 3);
   const futurs = m.articles.filter((x) => x.depuis && x.depuis > auj);
-  // Ce que disent les articles : la première phrase des deux premiers.
-  const debuts = vig.slice(0, 2).map((x) => {
+  // Ce que disent les articles : la première phrase des cinq premiers.
+  const debuts = vig.slice(0, 5).map((x) => {
     const txt = texteBrut(x.html || "").replace(/\s+/g, " ").trim();
     const p = txt.split(/(?<=[a-zà-ÿ0-9)»]\.)\s+(?=[A-ZÀ-Ý])/)[0] || "";
-    return p ? `Article ${x.num} : ${coupe(p, 220)}` : "";
+    return p ? `Article ${x.num} : ${coupe(p, 320)}` : "";
   }).filter(Boolean);
   return analyseCadre([
     ["Section", esc(m.chemin.join(" › "))],
@@ -1248,6 +1304,7 @@ function appActions(V, D, C, LIENS, JO = null) {
 
 let TEXTES_CLES = [];
 let FICHES = {};   // contenu/textes.js, posé au chargement (analyse des textes de référence)
+let CODES_LUS = null;   // contenu/codes.json, posé au chargement (analyse des textes de référence)
 function appConformite(V, D, C, LIENS, JO = null) {
   const plan = planDe(V, D.entreprise);
   const parRef = {};
@@ -5438,6 +5495,7 @@ async function main() {
 
   const cheminCodes = resolve(RACINE, "contenu/codes.json");
   const C = existsSync(cheminCodes) ? JSON.parse(await readFile(cheminCodes, "utf8")) : null;
+  CODES_LUS = C;
   if (C) verifieCodes(TEXTES, C);
   verifieLiens(TEXTES, C, LIENS);
   verifie(V, PIEGES, METIERS, D, TEXTES);
