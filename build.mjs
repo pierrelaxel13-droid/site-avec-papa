@@ -3513,7 +3513,7 @@ function pageAccueil(V, D, METIERS, ECRANS, C = null, NAF = null, SOURCES = [], 
     ${blocCollecte(JO)}
 
     <div class="heros-visuel">
-      ${portable(ECRANS, "bord.png", "Le tableau de bord de l'application : revues en retard, textes à analyser, actions ouvertes.")}
+      ${portable(ECRANS, "bord.png", "Le tableau de bord de l'application : nouveaux textes, textes applicables, textes lus, actions à réaliser.")}
       ${mobile(ECRANS, "plan-tel.png", "Ma veille réglementaire sur téléphone.")}
     </div>
   </div>
@@ -3917,8 +3917,7 @@ function pageDecouvrir(V, ECRANS, C, NAF, SOURCES) {
   const pieces = [
     { img: "bord.png", t: "Tableaux de bord", d: "" },
     { img: "plan.png", t: "Ma veille réglementaire", d: "" },
-    { img: "registre.png", t: "Registre de preuves", d: "Les revues faites et les décisions prises, datées. C'est ce que demande un auditeur." },
-    { img: "secteurs.png", t: "Secteurs", d: `${nCodes ? `Les ${nCodes} codes APE, rangés en ${V.divisions.length} familles de métiers` : `Les ${V.divisions.length} familles de métiers`}, et ce qui s'applique à chacun.` },
+    { img: "actions.png", t: "Plan d'actions", d: "" },
     { img: "reglages.png", t: "Réglages", d: "Votre entreprise, ses chiffres, vos réponses, vos alertes. Le plan se refait dessus, aussitôt." }
   ];
   const vignette = (p) => {

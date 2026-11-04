@@ -42,8 +42,7 @@ const CHROME = process.env.CHROMIUM || "/opt/pw-browsers/chromium-1194/chrome-li
 const ECRANS = [
   { nom: "bord.png", url: "/demo/index.html" },
   { nom: "plan.png", url: "/demo/plan.html" },
-  { nom: "registre.png", url: "/demo/conformite.html" },
-  { nom: "secteurs.png", url: "/demo/secteurs.html" },
+  { nom: "actions.png", url: "/demo/actions.html" },
   { nom: "reglages.png", url: "/demo/reglages.html" }
 ];
 
