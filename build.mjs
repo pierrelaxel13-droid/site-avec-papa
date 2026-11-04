@@ -4930,6 +4930,7 @@ function pageNouveauClient(V, NAF, demo = null) {
         <ol class="nc-etapes">
           <li><strong>Vous créez l'accès</strong></li>
           <li><strong>Le client crée son compte</strong></li>
+          <li><strong>Vous pilotez</strong></li>
         </ol>
       </aside>
       <div class="rg-carte nc-fait" id="nc-fait" hidden>
