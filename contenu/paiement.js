@@ -44,6 +44,6 @@ window.PAIEMENT = {
   //         à l'année                 au mois
   textes:  { an: "", /* 410 €/an  */  mois: "" /* 39 €/mois  */ },
   suivi:   { an: "", /* 650 €/an  */  mois: "" /* 59 €/mois  */ },
-  complet: { an: "", /* 1 490 €/an */ mois: "" /* 149 €/mois */ },
+  complet: { an: "", /* 999 €/an */ mois: "" /* 89 €/mois */ },
   portail: ""    // Gérer ou résilier son abonnement
 };

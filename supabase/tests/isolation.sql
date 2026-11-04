@@ -901,6 +901,27 @@ set local role anon;
 select tests.refuse('select public.mes_donnees()', 'sans connexion, aucune donnée');
 reset role;
 
+-- ---- Statistiques de l'administrateur (migration 18) --------------------
+select tests.qui('00000000-0000-0000-0000-0000000000a1', 'a_admin@test.fr');
+set local role authenticated;
+select public.noter_connexion();
+select public.noter_connexion();
+select tests.refuse($$select public.admin_statistiques(30)$$, 'un client ne lit pas les statistiques');
+select tests.refuse('select * from prive.connexions', 'ni la table des connexions en direct');
+reset role;
+select tests.ok((select sessions from prive.connexions where user_id = '00000000-0000-0000-0000-0000000000a1'
+                  and jour = (now() at time zone 'Europe/Paris')::date) = 2, 'une connexion notée par jour, les sessions comptées');
+set local role anon;
+select tests.refuse('select public.noter_connexion()', 'un visiteur ne note pas de connexion');
+select tests.refuse('select public.admin_statistiques(30)', 'ni ne lit les statistiques');
+reset role;
+select tests.qui('00000000-0000-0000-0000-0000000000f1', 'axel@test.fr');
+set local role authenticated;
+select tests.ok(json_array_length(public.admin_statistiques(30) -> 'jours') = 30, 'l''administrateur lit 30 jours de statistiques');
+select tests.ok((public.admin_statistiques(30) -> 'jours' -> 29 ->> 'comptes')::int >= 1, 'avec les connexions du jour');
+select tests.ok((public.admin_statistiques(30))::text not like '%@test.fr%', 'sans aucune adresse de compte');
+reset role;
+
 do $$ begin raise notice 'TOUS LES TESTS D''ISOLATION SONT PASSÉS'; end $$;
 
 rollback;

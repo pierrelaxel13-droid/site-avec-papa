@@ -132,6 +132,9 @@ select 'null'`,
 select 'null'`,
   suis_administrateur: () => "select to_json(public.suis_administrateur())",
   admin_vue: () => "select public.admin_vue()",
+  admin_statistiques: (a) => `select public.admin_statistiques(${a.jours ? Number(a.jours) : 90})`,
+  noter_connexion: () => `select public.noter_connexion() \\g /dev/null
+select 'null'`,
   admin_abonnement: (a) => `select public.admin_abonnement(${litteral(a.entreprise)}, ${litteral(a.nouvelle_formule)}) \\g /dev/null
 select 'null'`,
   creer_entreprise: (a) => `select to_json(public.creer_entreprise(${litteral(a.denomination)}, ${litteral(a.naf)}, ${a.effectif ? Number(a.effectif) : "null"}))`

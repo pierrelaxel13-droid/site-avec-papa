@@ -302,4 +302,21 @@
     suisAdministrateur: suisAdministrateur, adminVue: adminVue, adminAbonnement: adminAbonnement,
     pageDuSite: pageDuSite
   };
+
+  /* Les statistiques de l'administrateur (4 novembre 2026) : une connexion
+     notée par compte, par jour et par navigateur — le jour seulement, rien
+     de ce qui est fait dans l'espace. */
+  if (BASE && CLE) {
+    session().then(function (s) {
+      if (!s || !s.utilisateur) return;
+      var jour = new Date().toLocaleDateString("fr-CA", { timeZone: "Europe/Paris" });
+      var cle = "vigie-connexion", deja = "";
+      try { deja = window.localStorage.getItem(cle) || ""; } catch (e) { deja = ""; }
+      var moi = (s.utilisateur.id || "") + "|" + jour;
+      if (deja === moi) return;
+      rpc("noter_connexion").then(function (r) {
+        if (r.ok) { try { window.localStorage.setItem(cle, moi); } catch (e) { /* sans effet */ } }
+      });
+    });
+  }
 })();
