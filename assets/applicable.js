@@ -12,6 +12,13 @@
    ========================================================================== */
 (function () {
   "use strict";
+  // Le texte d'une cellule, sans le volet « Analyse synthétique » : la recherche porte sur le titre du texte.
+  function texteSansAnalyse(td) {
+    if (!td) return "";
+    var c = td.cloneNode(true);
+    [].forEach.call(c.querySelectorAll(".analyse"), function (x) { x.remove(); });
+    return c.textContent;
+  }
   var M = window.MAGASIN;
   var table = document.querySelector(".tableau-textes-plan");
   if (!M || !table) return;
@@ -47,7 +54,7 @@
   function cherche(tr) {
     if (!rMot) return true;
     var mot = sansAccent(rMot.value.trim()), d = tr.getAttribute("data-date") || "";
-    if (mot && sansAccent((tr.querySelector('[data-titre="Texte"]') || tr.querySelector("td:nth-child(3)")).textContent).indexOf(mot) === -1) return false;
+    if (mot && sansAccent(texteSansAnalyse(tr.querySelector('[data-titre="Texte"]') || tr.querySelector("td:nth-child(3)"))).indexOf(mot) === -1) return false;
     if (rDu.value && (!d || d < rDu.value)) return false;
     if (rAu.value && (!d || d > rAu.value)) return false;
     if (rSrc.value && tr.getAttribute("data-source") !== rSrc.value) return false;

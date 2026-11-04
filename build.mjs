@@ -155,6 +155,7 @@ const FORMULES = {
              ouvre: "Les textes de votre métier, chacun avec ce qu'il faut faire et la fiche de chaque métier (732 codes APE).",
              surCarte: false,   // la carte ne dit pas « pour qui » (choix d'Axel, 2 novembre 2026)
              donne: ["L'ensemble des textes applicables à votre société, par catégorie (santé, hygiène, sécurité, environnement, ressources humaines), en fonction des spécificités de votre structure",
+                     "Une analyse synthétique de chaque texte",
                      "Les sources et les liens des textes",
                      "Les alertes : une alerte vous rappelle de prendre connaissance des nouveautés",
                      "Tableau de bord de suivi"] },
@@ -163,6 +164,7 @@ const FORMULES = {
              ouvre: "En plus : votre plan de veille, le tableau de bord, les alertes et les conseils de l'IA.",
              surCarte: false,
              donne: ["L'ensemble des textes applicables à votre société, par catégorie (santé, hygiène, sécurité, environnement, ressources humaines), en fonction des spécificités de votre structure",
+                     "Une analyse synthétique de chaque texte",
                      "Les sources et les liens des textes",
                      "Les alertes : une alerte vous rappelle de prendre connaissance des nouveautés",
                      "Préconisation des actions pour répondre aux nouvelles exigences",
@@ -932,6 +934,66 @@ function carresCategories() {
         <span class="etiq">${esc(CATEGORIES_TABLEAU[cl])}</span><span class="grand" data-n-cat="${cl}">0</span><span class="precision">texte(s)</span></button>`).join("")}
     </div>`;
 }
+/* L'analyse d'un texte (4 novembre 2026, demande d'Axel) : un volet
+   « Analyse du texte » sous chaque texte des tableaux (Ma veille
+   réglementaire, Plan d'actions, Registre et conformité). Rien n'y est
+   inventé : la fiche du texte de référence (contenu/textes.js), ou ce que
+   dit le texte officiel lui-même (objet, publics concernés, date
+   d'application), les thèmes de la veille qu'il touche et les points à
+   vérifier de ces thèmes. Dans un compte, le conseil de l'IA s'y ajoute
+   (formules Textes et suivi, et Veille complète). */
+function analyseCadre(lignes, extra = "") {
+  return `<details class="analyse"><summary>Analyse synthétique</summary><div class="analyse-corps">
+        <dl class="analyse-champs">${lignes.filter(Boolean).map(([t, v]) => `<div><dt>${esc(t)}</dt><dd>${v}</dd></div>`).join("")}</dl>${extra}
+        <p class="analyse-note">Analyse établie à partir du texte officiel et de votre plan de veille. Ne constitue pas un conseil juridique.</p>
+      </div></details>`;
+}
+function pointsAVerifier(V, ids, n = 3) {
+  const a = [...new Set(ids.flatMap((id) => (V.domaines[id] || {}).actions || []))].slice(0, n);
+  return a.length ? `<ul>${a.map((x) => `<li>${esc(x)}</li>`).join("")}</ul>` : "";
+}
+function analyseRef(V, ref, ids) {
+  const f = FICHES[ref] || null;
+  return analyseCadre([
+    f && f.qui ? ["Qui est concerné", esc(f.qui)] : null,
+    f && f.exige && f.exige.length ? ["Ce que le texte exige", `<ul>${f.exige.map((x) => `<li>${esc(x)}</li>`).join("")}</ul>`] : null,
+    !(f && f.exige && f.exige.length) ? ["Points à vérifier", pointsAVerifier(V, ids)] : null,
+    f && f.valide === false ? ["Statut", "Analyse à faire relire par un consultant"] : null
+  ]);
+}
+function analyseJO(V, t, ids) {
+  const c = String(t.corps || "").replace(/\r/g, "");
+  const ligneApres = (re) => { const m = re.exec(c); if (!m) return ""; const x = m[1].replace(/\s+/g, " ").trim().slice(0, 400); return x.charAt(0).toUpperCase() + x.slice(1); };
+  const objet = ligneApres(/(?:^|\n)\s*Objet\s*:\s*\n?\s*([^\n]{8,500})/i);
+  const publics = ligneApres(/Publics?\s+concernés?\s*:\s*([^\n]{5,400})/i);
+  const app = applicationDuTexte(t);
+  // Sans « Objet : » dans le texte, l'objet se lit dans son titre (« relatif à… », « modifiant… »).
+  const mt = /\b((?:relatif|relative|relatifs|relatives) (?:à|aux?)\b|portant\b|modifiant\b|fixant\b|pris pour l'application\b|abrogeant\b).*/i.exec(String(t.titre || ""));
+  const objetTitre = !objet && mt ? mt[0].charAt(0).toUpperCase() + mt[0].slice(1) : "";
+  const debut = !objet && !objetTitre && !publics && c.trim().length > 60 ? c.replace(/\s+/g, " ").trim().split(/(?<=\.)\s/)[0].slice(0, 200) : "";
+  return analyseCadre([
+    t.nature ? ["Nature", esc(t.nature)] : null,
+    objet ? ["Objet", esc(objet)] : null,
+    publics ? ["Publics concernés", esc(publics)] : null,
+    objetTitre ? ["Objet", esc(objetTitre.slice(0, 300))] : null,
+    debut ? ["En bref", `« ${esc(debut)}${debut.length >= 200 ? "…" : ""} »`] : null,
+    ["Application", esc(app.etiquette) + (app.precision ? ` (${esc(app.precision)})` : "")],
+    ["Points à vérifier", pointsAVerifier(V, ids, 2)]
+  ], t.id ? `<div class="place-conseil analyse-ia" data-conseil="${esc(t.id)}" data-compte hidden></div>` : "");
+}
+function analyseCode(V, m, vig, ids) {
+  const auj = new Date().toISOString().slice(0, 10);
+  const recents = vig.filter((x) => x.depuis).sort((a, b) => (a.depuis < b.depuis ? 1 : -1)).slice(0, 3);
+  const futurs = m.articles.filter((x) => x.depuis && x.depuis > auj);
+  return analyseCadre([
+    ["Section", esc(m.chemin.join(" › "))],
+    ["Articles en vigueur", `${vig.length} (articles ${esc(vig[0].num)} à ${esc(vig[vig.length - 1].num)})`],
+    recents.length ? ["Dernières évolutions", recents.map((x) => `article ${esc(x.num)} le ${esc(dateFr(x.depuis))}`).join(" · ")] : null,
+    futurs.length ? ["Modifications programmées", futurs.map((x) => `article ${esc(x.num)} au ${esc(dateFr(x.depuis))}`).join(" · ")] : null,
+    ["Points à vérifier", pointsAVerifier(V, ids)]
+  ]);
+}
+
 /* La date d'application d'un texte (4 novembre 2026, demande d'Axel) :
    lue dans le texte officiel lui-même, jamais devinée. On cherche « entre en
    vigueur le… », « à compter du… », « prend effet le… » et « le lendemain de
@@ -993,7 +1055,8 @@ function tableauTextesPlan(V, C, LIENS, plan, JO) {
       <td data-titre="Date">${q && q.depuis ? `<time datetime="${esc(q.depuis)}">${esc(dateFr(q.depuis))}</time><span class="etat-date">Dernière mise à jour</span>` : `<span class="etat-date etat-fond">Texte de référence</span>`}</td>
       <td data-titre="Catégorie">${categorie(ids)}</td>
       <td data-titre="Référence et lien"><a href="texte/${slug(ref)}.html">${esc(ref)}</a>
-        <a class="lien-officiel" href="${esc(L.url)}" target="_blank" rel="noopener">${esc(intituleDuLien(L))} ${sortant}</a></td>
+        <a class="lien-officiel" href="${esc(L.url)}" target="_blank" rel="noopener">${esc(intituleDuLien(L))} ${sortant}</a>
+        ${analyseRef(V, ref, ids)}</td>
       <td data-titre="Application"><span class="app-texte">En vigueur</span></td>
       <td data-titre="Lu"><label class="case-lu"><input type="checkbox" class="lu" aria-label="Texte lu"><span>Lu</span></label></td>
       <td data-titre="Applicable"><select class="applicable" aria-label="Ce texte est-il applicable ?"><option value="">À décider</option><option value="applicable">Oui</option><option value="sans_objet">Non</option></select><span class="precision applicable-etat"></span></td>
@@ -1010,7 +1073,8 @@ function tableauTextesPlan(V, C, LIENS, plan, JO) {
       <td data-titre="Date"><time datetime="${esc(quand)}">${esc(dateFr(quand))}</time><span class="etat-date etat-recent">Parution récente</span></td>
       <td data-titre="Catégorie">${categorie(ids)}</td>
       <td data-titre="Référence et lien"><span class="marque-neuf marque-nouveau" hidden>Nouveau texte</span>${lien ? `<a href="${esc(lien)}" target="_blank" rel="noopener">${esc(t.titre)}</a>` : esc(t.titre)}
-        ${lien ? `<a class="lien-officiel" href="${esc(lien)}" target="_blank" rel="noopener">${/legifrance\.gouv\.fr/.test(lien) ? "Légifrance" : esc(t.sourceNom || "Voir chez la source")} ${sortant}</a>` : ""}</td>
+        ${lien ? `<a class="lien-officiel" href="${esc(lien)}" target="_blank" rel="noopener">${/legifrance\.gouv\.fr/.test(lien) ? "Légifrance" : esc(t.sourceNom || "Voir chez la source")} ${sortant}</a>` : ""}
+        ${analyseJO(V, t, ids)}</td>
       ${celluleApplication(applicationDuTexte(t))}
       <td data-titre="Lu"><label class="case-lu"><input type="checkbox" class="lu" aria-label="Texte lu"><span>Lu</span></label></td>
       <td data-titre="Applicable"><select class="applicable" aria-label="Ce texte est-il applicable ?"><option value="">À décider</option><option value="applicable">Oui</option><option value="sans_objet">Non</option></select><span class="precision applicable-etat"></span></td>
@@ -1031,7 +1095,8 @@ function tableauTextesPlan(V, C, LIENS, plan, JO) {
       <td data-titre="Date">${tard ? `<time datetime="${esc(tard)}">${esc(dateFr(tard))}</time><span class="etat-date">Dernière mise à jour</span>` : `<span class="etat-date etat-fond">Texte de référence</span>`}</td>
       <td data-titre="Catégorie">${categorie(ids)}</td>
       <td data-titre="Référence et lien"><a href="code/${esc(m.id)}.html">${esc(nom)}</a>
-        <span class="precision">${esc(m.chemin[m.chemin.length - 1] || "")} · ${vig.length} article${vig.length > 1 ? "s" : ""} en vigueur</span></td>
+        <span class="precision">${esc(m.chemin[m.chemin.length - 1] || "")} · ${vig.length} article${vig.length > 1 ? "s" : ""} en vigueur</span>
+        ${analyseCode(V, m, vig, ids)}</td>
       ${(() => { const auj = new Date().toISOString().slice(0, 10); const fut = m.articles.filter((x) => x.depuis && x.depuis > auj).map((x) => x.depuis).sort()[0]; return fut ? celluleApplication({ iso: fut, etiquette: dateFr(fut), classe: "app-venir", precision: "modification programmée" }) : '<td data-titre="Application"><span class="app-texte">En vigueur</span></td>'; })()}
       <td data-titre="Lu"><label class="case-lu"><input type="checkbox" class="lu" aria-label="Texte lu"><span>Lu</span></label></td>
       <td data-titre="Applicable"><select class="applicable" aria-label="Ce texte est-il applicable ?"><option value="">À décider</option><option value="applicable">Oui</option><option value="sans_objet">Non</option></select><span class="precision applicable-etat"></span></td>
@@ -1092,7 +1157,8 @@ function appActions(V, D, C, LIENS, JO = null) {
     textes.push({ ids: parRef[ref], cle: `ref:${slug(ref)}`, titre: ref, date: (q && q.depuis) || "",
       dateHtml: q && q.depuis ? `<time datetime="${esc(q.depuis)}">${esc(dateFr(q.depuis))}</time><span class="etat-date">Dernière mise à jour</span>`
         : `<span class="etat-date etat-fond">Texte de référence</span>`,
-      lien: `<a href="texte/${slug(ref)}.html">${esc(ref)}</a><a class="lien-officiel" href="${esc(L.url)}" target="_blank" rel="noopener">${esc(intituleDuLien(L))} ${sortant}</a>` });
+      lien: `<a href="texte/${slug(ref)}.html">${esc(ref)}</a><a class="lien-officiel" href="${esc(L.url)}" target="_blank" rel="noopener">${esc(intituleDuLien(L))} ${sortant}</a>`,
+      analyse: analyseRef(V, ref, parRef[ref]) });
   });
   ((JO && JO.textes) || []).forEach((t) => {
     const ids = t.domaines.map((d) => d.id).filter((id) => V.domaines[id]);
@@ -1101,7 +1167,8 @@ function appActions(V, D, C, LIENS, JO = null) {
     const l = /^https?:\/\//i.test(t.lien || "") ? t.lien : "";
     textes.push({ ids, cle: cleJO(t), titre: String(t.titre).slice(0, 300), date: quand,
       dateHtml: `<time datetime="${esc(quand)}">${esc(dateFr(quand))}</time><span class="etat-date etat-recent">Parution récente</span>`,
-      lien: `${l ? `<a href="${esc(l)}" target="_blank" rel="noopener">${esc(t.titre)}</a>` : esc(t.titre)}${l ? `<a class="lien-officiel" href="${esc(l)}" target="_blank" rel="noopener">${/legifrance\.gouv\.fr/.test(l) ? "Légifrance" : esc(t.sourceNom || "Voir chez la source")} ${sortant}</a>` : ""}` });
+      lien: `${l ? `<a href="${esc(l)}" target="_blank" rel="noopener">${esc(t.titre)}</a>` : esc(t.titre)}${l ? `<a class="lien-officiel" href="${esc(l)}" target="_blank" rel="noopener">${/legifrance\.gouv\.fr/.test(l) ? "Légifrance" : esc(t.sourceNom || "Voir chez la source")} ${sortant}</a>` : ""}`,
+      analyse: analyseJO(V, t, ids) });
   });
   textes.sort((x, y) => (x.date !== y.date ? (x.date < y.date ? 1 : -1) : x.titre.localeCompare(y.titre, "fr")));
 
@@ -1117,7 +1184,7 @@ function appActions(V, D, C, LIENS, JO = null) {
         const cle = `actions:${t.cle.replace(/[^A-Za-z0-9_.:-]/g, "-").slice(0, 140)}:${cleCourte(action)}`;
         lignes.push(`<tr data-domaines="${esc(id)}" data-cle="${esc(cle)}" data-objet="${esc(`${action} — ${t.titre}`.slice(0, 480))}"${dans ? "" : " hidden"}>
       <td data-titre="Date du texte">${t.dateHtml}</td>
-      <td data-titre="Texte de référence">${t.lien}</td>
+      <td data-titre="Texte de référence">${t.lien}${t.analyse || ""}</td>
       <td data-titre="Action à mener">${esc(action)}</td>
       <td data-titre="Délai de réalisation"><input type="date" class="pa-delai" aria-label="Délai : ${esc(action)}"></td>
       <td data-titre="Responsable"><input type="text" class="pa-resp" maxlength="120" aria-label="Responsable : ${esc(action)}" placeholder="Nom"></td>
@@ -1174,6 +1241,7 @@ function appActions(V, D, C, LIENS, JO = null) {
 }
 
 let TEXTES_CLES = [];
+let FICHES = {};   // contenu/textes.js, posé au chargement (analyse des textes de référence)
 function appConformite(V, D, C, LIENS, JO = null) {
   const plan = planDe(V, D.entreprise);
   const parRef = {};
@@ -1199,7 +1267,8 @@ function appConformite(V, D, C, LIENS, JO = null) {
     entrees.push({ ids: parRef[ref], cle: `ref:${slug(ref)}`, objet: ref, ordre: 0, date: (dateDuTexte(C, ref) || {}).depuis || "", src: sourceDeLien(L.url),
       texte: `<a href="texte/${slug(ref)}.html">${esc(ref)}</a>
         <span class="precision">Texte de référence</span>
-        <a class="lien-officiel" href="${esc(L.url)}" target="_blank" rel="noopener">${esc(intituleDuLien(L))} ${sortant}</a>` });
+        <a class="lien-officiel" href="${esc(L.url)}" target="_blank" rel="noopener">${esc(intituleDuLien(L))} ${sortant}</a>
+        ${analyseRef(V, ref, parRef[ref])}` });
   });
   ((C && C.morceaux) || []).forEach((m) => {
     const refs = Object.keys(C.perimetres).filter((r) => (C.perimetres[r] || []).includes(m.id));
@@ -1210,7 +1279,8 @@ function appConformite(V, D, C, LIENS, JO = null) {
     const nom = `${m.codeTitre}, articles ${vig[0].num} à ${vig[vig.length - 1].num}`;
     entrees.push({ ids, cle: `code:${m.id}`, objet: nom, ordre: 1, date: tard, src: "Légifrance",
       texte: `<a href="code/${esc(m.id)}.html">${esc(nom)}</a>
-        <span class="precision">${esc(m.chemin[m.chemin.length - 1] || "")} · ${vig.length} article${vig.length > 1 ? "s" : ""} en vigueur${tard ? `, dernière évolution le ${esc(dateFr(tard))}` : ""}</span>` });
+        <span class="precision">${esc(m.chemin[m.chemin.length - 1] || "")} · ${vig.length} article${vig.length > 1 ? "s" : ""} en vigueur${tard ? `, dernière évolution le ${esc(dateFr(tard))}` : ""}</span>
+        ${analyseCode(V, m, vig, ids)}` });
   });
   ((JO && JO.textes) || []).forEach((t) => {
     const ids = uniques(t.domaines.map((d) => d.id));
@@ -1218,7 +1288,8 @@ function appConformite(V, D, C, LIENS, JO = null) {
     const lien = /^https?:\/\//i.test(t.lien || "") ? t.lien : "";
     entrees.push({ ids, cle: cleJO(t), objet: String(t.titre).slice(0, 480), ordre: 2, date: t.dateTexte || t.date, src: sourceDuReleve(t),
       texte: `${lien ? `<a href="${esc(lien)}" target="_blank" rel="noopener">${esc(t.titre)}</a>` : esc(t.titre)}
-        ${lien ? `<a class="lien-officiel" href="${esc(lien)}" target="_blank" rel="noopener">${/legifrance\.gouv\.fr/.test(lien) ? "Légifrance" : esc(t.sourceNom || "Voir chez la source")} ${sortant}</a>` : ""}` });
+        ${lien ? `<a class="lien-officiel" href="${esc(lien)}" target="_blank" rel="noopener">${/legifrance\.gouv\.fr/.test(lien) ? "Légifrance" : esc(t.sourceNom || "Voir chez la source")} ${sortant}</a>` : ""}
+        ${analyseJO(V, t, ids)}` });
   });
   entrees.sort((x, y) => ordreCat.indexOf(catDe(x.ids)) - ordreCat.indexOf(catDe(y.ids)) || x.ordre - y.ordre || x.objet.localeCompare(y.objet, "fr"));
   // Pour l'espace consultant : la liste des textes (clé et sujets), afin de
@@ -5091,6 +5162,7 @@ async function main() {
   const METIERS = await chargeFichier("contenu/metiers.js", "METIERS");
   const D = await chargeFichier("contenu/demo.js", "DEMO");
   const TEXTES = await chargeFichier("contenu/textes.js", "TEXTES");
+  FICHES = TEXTES || {};
 
   // Le relevé officiel n'existe que si outils/jorf.mjs a tourné. Son absence
   // n'empêche pas de construire : la page le dit et montre le jeu d'essai.

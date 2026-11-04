@@ -34,7 +34,7 @@
       return propre(morceaux.join(" "));
     }
     var copie = td.cloneNode(true);
-    [].forEach.call(copie.querySelectorAll("[hidden], .cat-secondaire, .cache-visuellement, svg, button"), function (x) { x.remove(); });
+    [].forEach.call(copie.querySelectorAll("[hidden], .cat-secondaire, .cache-visuellement, .analyse, svg, button"), function (x) { x.remove(); });
     // Le lien vers le texte officiel : son adresse, plus utile dans un tableur que « Lire le texte officiel ».
     [].forEach.call(copie.querySelectorAll("a.lien-officiel"), function (a) { a.textContent = a.href; });
     [].forEach.call(copie.querySelectorAll("li"), function (li) { li.textContent = "• " + li.textContent + " "; });

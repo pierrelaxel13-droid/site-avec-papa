@@ -4347,3 +4347,35 @@ main .lecture, main .note-source, main li, main p {
 .tableau-plan .app-texte { color: var(--encre-douce); font-size: .88rem; }
 .tableau-textes-plan td[data-titre="Application"] { white-space: nowrap; }
 @media (max-width: 47.99rem) { .tableau-textes-plan td[data-titre="Application"] { white-space: normal; } }
+
+/* --- Analyse synthétique de chaque texte (4 novembre 2026) ----------------- */
+details.analyse { margin-top: .5rem; }
+details.analyse > summary {
+  display: inline-flex; align-items: center; gap: .35rem; cursor: pointer; list-style: none;
+  font-size: .82rem; font-weight: 600; color: var(--accent); padding: .2rem .6rem;
+  border: 1px solid color-mix(in srgb, var(--accent) 35%, transparent); border-radius: 999px;
+  background: color-mix(in srgb, var(--accent) 7%, transparent);
+}
+details.analyse > summary::-webkit-details-marker { display: none; }
+details.analyse > summary::before { content: "+"; font-weight: 700; width: .8em; text-align: center; }
+details.analyse[open] > summary::before { content: "−"; }
+details.analyse > summary:hover { background: color-mix(in srgb, var(--accent) 14%, transparent); }
+details.analyse > summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.analyse-corps {
+  margin-top: .5rem; padding: .75rem .9rem; border-radius: 10px; font-size: .88rem; line-height: 1.45;
+  background: var(--carte, var(--papier)); border: 1px solid var(--filet, rgba(127,127,127,.25));
+  border-left: 3px solid var(--accent); max-width: 46rem; white-space: normal; text-align: left;
+}
+.analyse-champs { margin: 0; display: grid; gap: .45rem; }
+.analyse-champs > div { display: grid; grid-template-columns: 9.5rem 1fr; gap: .6rem; }
+.analyse-champs dt { font-weight: 600; color: var(--encre-douce); font-size: .8rem; text-transform: none; }
+.analyse-champs dd { margin: 0; color: var(--encre); }
+.analyse-champs ul { margin: 0; padding-left: 1.1rem; }
+.analyse-champs li { margin: .1rem 0; }
+.analyse-note { margin: .6rem 0 0; font-size: .76rem; color: var(--encre-tenue); }
+.analyse-ia:not([hidden]) { margin-top: .6rem; }
+@media (max-width: 47.99rem) {
+  .analyse-champs > div { grid-template-columns: 1fr; gap: .1rem; }
+  .analyse-corps { padding: .65rem .7rem; }
+}
+@media print { details.analyse { display: none; } }
