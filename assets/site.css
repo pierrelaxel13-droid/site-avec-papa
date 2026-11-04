@@ -4500,3 +4500,13 @@ details.analyse > summary:focus-visible { outline: 2px solid var(--accent); outl
 .tableau-actions tr.pa-propose .pa-delai { border-style: dashed; border-color: var(--accent); }
 .tableau-actions tr[data-etat="libre"]:not(.pa-propose) .pa-etat { color: var(--encre-douce); }
 [data-page="compte"] #etat-recap { margin: 0 0 .75rem; font-size: .88rem; font-weight: 500; color: var(--vert); }
+
+/* --- Ma veille réglementaire : un texte « Lu » se teinte de vert, comme un
+   texte conforme au registre (4 novembre 2026). */
+.tableau-textes-plan tr:has(input.lu:checked) td { background: var(--vert-fond); }
+.tableau-textes-plan tr:has(input.lu:checked) td:first-child { box-shadow: inset 4px 0 0 var(--vert); }
+.tableau-textes-plan tr:has(input.lu:checked) .case-lu { color: var(--vert); font-weight: 600; }
+@media (max-width: 47.99rem) {
+  .tableau-textes-plan tr:has(input.lu:checked) { background: var(--vert-fond); border-color: var(--vert); box-shadow: inset 4px 0 0 var(--vert); }
+  .tableau-textes-plan tr:has(input.lu:checked) td, .tableau-textes-plan tr:has(input.lu:checked) td:first-child { background: none; box-shadow: none; }
+}

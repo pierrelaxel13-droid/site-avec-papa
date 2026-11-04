@@ -940,63 +940,95 @@ function carresCategories() {
         <span class="etiq">${esc(CATEGORIES_TABLEAU[cl])}</span><span class="grand" data-n-cat="${cl}">0</span><span class="precision">texte(s)</span></button>`).join("")}
     </div>`;
 }
-/* L'analyse d'un texte (4 novembre 2026, demande d'Axel) : un volet
-   « Analyse du texte » sous chaque texte des tableaux (Ma veille
-   réglementaire, Plan d'actions, Registre et conformité). Rien n'y est
-   inventé : la fiche du texte de référence (contenu/textes.js), ou ce que
-   dit le texte officiel lui-même (objet, publics concernés, date
-   d'application), les thèmes de la veille qu'il touche et les points à
-   vérifier de ces thèmes. Dans un compte, le conseil de l'IA s'y ajoute
-   (formules Textes et suivi, et Veille complète). */
-function analyseCadre(lignes, extra = "") {
+/* L'analyse synthétique d'un texte (4 novembre 2026, demandes d'Axel) : un
+   volet sous chaque texte des tableaux (Ma veille réglementaire, Plan
+   d'actions, Registre et conformité). Elle dit ce qu'il faut retenir du
+   texte — sa nature, son objet, qui il vise, ce qu'il dit, ce qu'il
+   modifie, quand il s'applique — pour qu'on sache ce qu'il contient sans
+   l'ouvrir. Pas d'actions à entreprendre : elles sont dans le plan
+   d'actions. Rien n'y est inventé : tout est lu dans le texte officiel (ou
+   dans la fiche du texte de référence, contenu/textes.js). */
+function analyseCadre(lignes) {
   return `<details class="analyse"><summary>Analyse synthétique</summary><div class="analyse-corps">
-        <dl class="analyse-champs">${lignes.filter(Boolean).map(([t, v]) => `<div><dt>${esc(t)}</dt><dd>${v}</dd></div>`).join("")}</dl>${extra}
-        <p class="analyse-note">Analyse établie à partir du texte officiel et de votre plan de veille. Ne constitue pas un conseil juridique.</p>
+        <dl class="analyse-champs">${lignes.filter(Boolean).map(([t, v]) => `<div><dt>${esc(t)}</dt><dd>${v}</dd></div>`).join("")}</dl>
+        <p class="analyse-note">À retenir, lu dans le texte officiel. Seul le texte officiel fait foi ; ne constitue pas un conseil juridique.</p>
       </div></details>`;
 }
-function pointsAVerifier(V, ids, n = 3) {
-  const a = [...new Set(ids.flatMap((id) => (V.domaines[id] || {}).actions || []))].slice(0, n);
-  return a.length ? `<ul>${a.map((x) => `<li>${esc(x)}</li>`).join("")}</ul>` : "";
+const majuscule = (x) => (x ? x.charAt(0).toUpperCase() + x.slice(1) : "");
+const coupe = (x, n) => (x.length > n ? x.slice(0, n).replace(/\s+\S*$/, "") + "…" : x);
+const liste = (l) => `<ul>${l.map((x) => `<li>${esc(x)}</li>`).join("")}</ul>`;
+/* Le type d'un texte, lu dans son titre : « Décret », « Arrêté », « Avis »… */
+function typeDuTexte(t) {
+  const m = /^(Décret|Arrêté|Ordonnance|Loi|Décision|Directive|Règlement|Avis|Circulaire|Instruction|Délibération|Rectificatif|Recommandation|Communication)\b/i.exec(String(t.titre || "").replace(/^CELEX:\S+\s*/, ""));
+  if (m) return majuscule(m[1].toLowerCase()) + (/\((?:UE|CE|PESC|Euratom)\)/.test(t.titre) ? (/^(Décision|Directive|Recommandation|Communication)$/i.test(m[1]) ? " européenne" : " européen") : "");
+  return t.genre === "actualite" ? "Publication officielle" : t.nature && t.nature !== "Article" ? t.nature : "";
+}
+/* Ce que dit le texte : ses premières phrases utiles, sans les formules du
+   Journal officiel (« Vous pouvez consulter… », « Rectificatif au… »). */
+function cequeDit(corps) {
+  const lignes = String(corps || "").split(/\n+/).map((x) => x.replace(/\s+/g, " ").trim()).filter((x) =>
+    x.length > 2 && !/^(Vous pouvez consulter|Rectificatif au Journal|Le (?:présent|ministre).{0,60}chargés?.{0,40}exécution|Fait le|Pour le ministre|NOR\s*:|ELI\s*:)/i.test(x));
+  const puces = lignes.filter((x) => /^[-•–]\s+/.test(x)).map((x) => coupe(x.replace(/^[-•–]\s+/, "").replace(/[;.]$/, ""), 140)).slice(0, 3);
+  const phrases = lignes.filter((x) => !/^[-•–]\s+/.test(x)).join(" ").split(/(?<=[a-zà-ÿ0-9)»]\.)\s+(?=[A-ZÀÂÉÈÊÎÔÛÇ«])/).filter((x) => x.length > 25);
+  let resume = "";
+  for (const p of phrases) { if ((resume + " " + p).length > 420) break; resume = (resume + " " + p).trim(); }
+  if (!resume && phrases[0]) resume = coupe(phrases[0], 420);
+  return { resume, puces };
 }
 function analyseRef(V, ref, ids) {
   const f = FICHES[ref] || null;
+  if (!f) return analyseCadre([["À retenir", "La fiche de ce texte est en préparation : son contenu se lit à la source officielle, par le lien ci-dessus."]]);
   return analyseCadre([
-    f && f.qui ? ["Qui est concerné", esc(f.qui)] : null,
-    f && f.exige && f.exige.length ? ["Ce que le texte exige", `<ul>${f.exige.map((x) => `<li>${esc(x)}</li>`).join("")}</ul>`] : null,
-    !(f && f.exige && f.exige.length) ? ["Points à vérifier", pointsAVerifier(V, ids)] : null,
-    f && f.valide === false ? ["Statut", "Analyse à faire relire par un consultant"] : null
+    f.nature ? ["Nature", esc(f.nature)] : null,
+    f.porte ? ["Porte sur", esc(f.porte)] : null,
+    f.qui ? ["Qui est concerné", esc(f.qui)] : null,
+    f.exige && f.exige.length ? ["Ce que prévoit le texte", liste(f.exige)] : null,
+    f.valide === false ? ["Statut", "Fiche à faire relire par un consultant"] : null
   ]);
 }
 function analyseJO(V, t, ids) {
   const c = String(t.corps || "").replace(/\r/g, "");
-  const ligneApres = (re) => { const m = re.exec(c); if (!m) return ""; const x = m[1].replace(/\s+/g, " ").trim().slice(0, 400); return x.charAt(0).toUpperCase() + x.slice(1); };
+  const ligneApres = (re) => { const m = re.exec(c); return m ? majuscule(coupe(m[1].replace(/\s+/g, " ").trim(), 400)) : ""; };
   const objet = ligneApres(/(?:^|\n)\s*Objet\s*:\s*\n?\s*([^\n]{8,500})/i);
   const publics = ligneApres(/Publics?\s+concernés?\s*:\s*([^\n]{5,400})/i);
   const app = applicationDuTexte(t);
   // Sans « Objet : » dans le texte, l'objet se lit dans son titre (« relatif à… », « modifiant… »).
-  const mt = /\b((?:relatif|relative|relatifs|relatives) (?:à|aux?)\b|portant\b|modifiant\b|fixant\b|pris pour l'application\b|abrogeant\b).*/i.exec(String(t.titre || ""));
-  const objetTitre = !objet && mt ? mt[0].charAt(0).toUpperCase() + mt[0].slice(1) : "";
-  const debut = !objet && !objetTitre && !publics && c.trim().length > 60 ? c.replace(/\s+/g, " ").trim().split(/(?<=\.)\s/)[0].slice(0, 200) : "";
+  const mt = /\b((?:relatif|relative|relatifs|relatives) (?:à|aux?)\b|portant\b|modifiant\b|fixant\b|pris pour l'application\b|abrogeant\b|concernant\b).*/i.exec(String(t.titre || ""));
+  const objetTitre = !objet && mt ? majuscule(coupe(mt[0], 300)) : "";
+  // Ce qu'il modifie : « L'arrêté du … susvisé est ainsi modifié ».
+  const mm = /((?:l'|le |la )(?:article [^.:;]{1,40}? d[eu]s? |annexe [^.:;]{0,30}? d[eu]s? )?(?:arrêté|décret|ordonnance|loi|code|règlement)[^.:;]{0,120}?)\s+(?:susvisée?\s+)?(?:est|sont) ainsi modifiée?s?/i.exec(c);
+  const modifie = mm ? majuscule(mm[1].replace(/\s+susvisée?$/i, "").trim()) : "";
+  // Un texte qui ne fait que réécrire un autre (« … est ainsi modifié : les mots … ») : sa
+  // lettre n'apprend rien ; l'objet et le texte modifié suffisent.
+  const dit = /est ainsi modifiée?\s*:/i.test(c.slice(0, 400)) && (objet || objetTitre) ? { resume: "", puces: [] } : cequeDit(c);
+  const type = typeDuTexte(t);
   return analyseCadre([
-    t.nature ? ["Nature", esc(t.nature)] : null,
-    objet ? ["Objet", esc(objet)] : null,
+    type ? ["Nature", esc(type)] : null,
+    objet || objetTitre ? ["Objet", esc(objet || objetTitre)] : null,
     publics ? ["Publics concernés", esc(publics)] : null,
-    objetTitre ? ["Objet", esc(objetTitre.slice(0, 300))] : null,
-    debut ? ["En bref", `« ${esc(debut)}${debut.length >= 200 ? "…" : ""} »`] : null,
-    ["Application", esc(app.etiquette) + (app.precision ? ` (${esc(app.precision)})` : "")],
-    ["Points à vérifier", pointsAVerifier(V, ids, 2)]
-  ], t.id ? `<div class="place-conseil analyse-ia" data-conseil="${esc(t.id)}" data-compte hidden></div>` : "");
+    dit.resume ? ["Ce que dit le texte", esc(dit.resume) + (dit.puces.length ? liste(dit.puces) : "")]
+      : dit.puces.length ? ["Ce que dit le texte", liste(dit.puces)] : null,
+    modifie ? ["Texte modifié", esc(modifie)] : null,
+    !dit.resume && !dit.puces.length && !objet && !objetTitre ? ["À retenir", "Le relevé ne donne que le titre de ce texte : son contenu se lit à la source officielle, par le lien ci-dessus."] : null,
+    t.genre === "texte" ? ["Application", esc(app.etiquette) + (app.precision ? ` (${esc(app.precision)})` : "")] : null
+  ]);
 }
 function analyseCode(V, m, vig, ids) {
   const auj = new Date().toISOString().slice(0, 10);
   const recents = vig.filter((x) => x.depuis).sort((a, b) => (a.depuis < b.depuis ? 1 : -1)).slice(0, 3);
   const futurs = m.articles.filter((x) => x.depuis && x.depuis > auj);
+  // Ce que disent les articles : la première phrase des deux premiers.
+  const debuts = vig.slice(0, 2).map((x) => {
+    const txt = texteBrut(x.html || "").replace(/\s+/g, " ").trim();
+    const p = txt.split(/(?<=[a-zà-ÿ0-9)»]\.)\s+(?=[A-ZÀ-Ý])/)[0] || "";
+    return p ? `Article ${x.num} : ${coupe(p, 220)}` : "";
+  }).filter(Boolean);
   return analyseCadre([
     ["Section", esc(m.chemin.join(" › "))],
     ["Articles en vigueur", `${vig.length} (articles ${esc(vig[0].num)} à ${esc(vig[vig.length - 1].num)})`],
+    debuts.length ? ["Ce que disent les articles", liste(debuts)] : null,
     recents.length ? ["Dernières évolutions", recents.map((x) => `article ${esc(x.num)} le ${esc(dateFr(x.depuis))}`).join(" · ")] : null,
-    futurs.length ? ["Modifications programmées", futurs.map((x) => `article ${esc(x.num)} au ${esc(dateFr(x.depuis))}`).join(" · ")] : null,
-    ["Points à vérifier", pointsAVerifier(V, ids)]
+    futurs.length ? ["Modifications programmées", futurs.map((x) => `article ${esc(x.num)} au ${esc(dateFr(x.depuis))}`).join(" · ")] : null
   ]);
 }
 
