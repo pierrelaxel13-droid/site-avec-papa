@@ -4928,10 +4928,8 @@ function pageNouveauClient(V, NAF, demo = null) {
       <aside class="rg-carte nc-aide">
         <header class="rg-tete"><h2>Comment ça marche</h2></header>
         <ol class="nc-etapes">
-          <li><strong>Vous créez l'accès</strong> : l'espace du client existe tout de suite, à son nom.</li>
-          <li><strong>Vous l'envoyez</strong> : le lien d'invitation, par e-mail ou copié, valable 7 jours et utilisable une fois.</li>
-          <li><strong>Le client crée son compte</strong> avec cette adresse : il arrive dans sa veille réglementaire, son plan d'actions et son registre.</li>
-          <li><strong>Vous suivez tout</strong> depuis le tableau de bord de vos clients.</li>
+          <li><strong>Vous créez l'accès</strong></li>
+          <li><strong>Le client crée son compte</strong></li>
         </ol>
       </aside>
       <div class="rg-carte nc-fait" id="nc-fait" hidden>
