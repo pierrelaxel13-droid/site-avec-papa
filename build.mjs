@@ -5498,6 +5498,50 @@ async function main() {
     : "AUCUNE — lancer outils/veille.mjs (tourne toutes les heures dans .github/workflows/releve.yml)"}`);
   if (SITE.offreConsultant && !existsSync(join(SORTIE, "consultants.html")))
     throw new Error("SITE.offreConsultant est allumé, mais la page consultants.html n'existe pas : le bloc de l'accueil mènerait nulle part.");
+  // Le référencement (4 novembre 2026) : adresse canonique de chaque page
+  // publique, plan du site (sitemap.xml) et robots.txt pour les moteurs de
+  // recherche. L'application, la démonstration et les pages de compte ne
+  // sont pas à indexer.
+  {
+    const base = SITE.adresseWeb.replace(/\/?$/, "/");
+    const pages = [];
+    const parcourir = async (dossier) => {
+      for (const e of await readdir(join(SORTIE, dossier), { withFileTypes: true })) {
+        const rel = dossier ? `${dossier}/${e.name}` : e.name;
+        if (e.isDirectory()) { if (!/^(assets|app|demo)$/.test(rel)) await parcourir(rel); continue; }
+        if (!e.name.endsWith(".html")) continue;
+        let html = await readFile(join(SORTIE, rel), "utf8");
+        if (/http-equiv="refresh"/.test(html)) continue;
+        // Le nom complet dans l'onglet et dans les résultats de recherche.
+        html = html.replace(/(<title>[^<]*?)\| Vigie<\/title>/, "$1| Vigie réglementaire</title>")
+                   .replace(/<title>Vigie — /, "<title>Vigie réglementaire — ");
+        const prive = /^compte\//.test(rel) || rel === "connexion.html" || /name="robots"/.test(html);
+        if (prive) {
+          if (!/name="robots"/.test(html)) html = html.replace("<meta charset=\"utf-8\">", '<meta charset="utf-8">\n<meta name="robots" content="noindex">');
+        } else {
+          const url = base + (rel === "index.html" ? "" : rel);
+          html = html.replace("</title>", `</title>\n<link rel="canonical" href="${url}">\n<meta property="og:url" content="${url}">`);
+          pages.push(url);
+        }
+        await writeFile(join(SORTIE, rel), html);
+      }
+    };
+    await parcourir("");
+    const jour = new Date().toISOString().slice(0, 10);
+    await writeFile(join(SORTIE, "sitemap.xml"), `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+${pages.sort().map((u) => `  <url><loc>${esc(u)}</loc><lastmod>${jour}</lastmod>${u === base ? "<priority>1.0</priority>" : ""}</url>`).join("\n")}
+</urlset>
+`);
+    await writeFile(join(SORTIE, "robots.txt"), `User-agent: *
+Disallow: /app/
+Disallow: /demo/
+Disallow: /compte/
+
+Sitemap: ${base}sitemap.xml
+`);
+    console.log(`  référencement       ${pages.length} pages dans sitemap.xml`);
+  }
   const aCompleter = champsLegauxManquants(SITE);
   if (aCompleter.length) console.log(`  pages légales       À COMPLÉTER dans SITE.editeur : ${aCompleter.join(", ")}`);
   console.log(`\n_site/ prêt — ${(total / 1024).toFixed(1)} Ko, ` +
