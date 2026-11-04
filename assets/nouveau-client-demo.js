@@ -47,7 +47,8 @@
     var nom = $("#nc-nom").value.trim(), naf = ($("#nc-naf") || {}).value || "";
     var courriel = $("#nc-courriel").value.trim().toLowerCase(), etat = $("#nc-etat");
     if (!nom) { etat.textContent = "Entrez le nom de l'entreprise cliente."; $("#nc-nom").focus(); return; }
-    if (courriel && !valable(courriel)) { etat.textContent = "L'adresse e-mail est à vérifier."; $("#nc-courriel").focus(); return; }
+    if (!courriel) { etat.textContent = "Entrez l'e-mail de son responsable : il en a besoin pour créer son compte."; $("#nc-courriel").focus(); return; }
+    if (!valable(courriel)) { etat.textContent = "L'adresse e-mail est à vérifier."; $("#nc-courriel").focus(); return; }
     var l = lire(); l.push({ nom: nom, naf: naf, courriel: courriel }); garder(l);
     etat.textContent = "";
     form.hidden = true; document.querySelector(".nc-aide").hidden = true;

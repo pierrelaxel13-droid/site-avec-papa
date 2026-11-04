@@ -4697,3 +4697,11 @@ ol.etapes-carres p { margin: 0; color: var(--encre-douce); text-align: center; m
     text-align: center !important; margin-left: auto !important; margin-right: auto !important;
   }
 }
+
+/* --- Le rail de l'accueil : cinq chiffres sur une ligne (4 novembre 2026) -- */
+@media (min-width: 60rem) {
+  .rail { grid-template-columns: none; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); gap: var(--t3); }
+}
+@media (min-width: 48rem) and (max-width: 59.99rem) {
+  .rail-item:last-child:nth-child(odd) { grid-column: 1 / -1; }
+}

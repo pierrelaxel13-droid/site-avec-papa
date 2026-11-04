@@ -147,7 +147,7 @@
     var pas = function (t) {
       var p = Math.min(1, (t - debut) / duree);
       var e = 1 - Math.pow(1 - p, 3);
-      el.textContent = Math.round(cible * e) + suffixe;
+      el.textContent = Math.round(cible * e).toLocaleString("fr-FR") + suffixe;
       if (p < 1) requestAnimationFrame(pas);
     };
     el.textContent = "0" + suffixe;

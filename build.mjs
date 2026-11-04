@@ -3503,6 +3503,15 @@ function sectionSources(V, SOURCES = [], C = null) {
 }
 
 function pageAccueil(V, D, METIERS, ECRANS, C = null, NAF = null, SOURCES = [], AVIS = [], JO = null) {
+  /* Le nombre de textes suivis (4 novembre 2026, demande d'Axel) : recalculé à
+     chaque construction, donc après chaque relevé (releve.yml → publie.yml). */
+  const suivis = (() => {
+    const fiches = Object.keys(FICHES).length;
+    const normes = new Set(Object.values(NORMES).flat().map((x) => x.ref)).size;
+    const articles = CODES_LUS && CODES_LUS.morceaux ? CODES_LUS.morceaux.reduce((n, m) => n + m.articles.filter((x) => !x.etat || x.etat === "VIGUEUR").length, 0) : 0;
+    const publies = JO && JO.textes ? JO.textes.length : 0;
+    return { fiches, normes, articles, publies, depuis: JO && JO.depuis, total: fiches + normes + articles + publies };
+  })();
   const nbDomaines = Object.keys(V.domaines).length;
   const defaut = "43";                      // Travaux de construction spécialisés
   const divDefaut = V.divisions.filter((d) => d.c === defaut)[0] || V.divisions[0];
@@ -3718,6 +3727,14 @@ ${bandeAvis(AVIS)}
       <div class="rail-item" data-paraitre data-compte="${NAF ? NAF.codes.length : V.divisions.length}">
         <span class="chiffre">${NAF ? NAF.codes.length : V.divisions.length}</span>
         <p class="legende">${NAF ? "Codes APE disponibles" : "Familles de métiers disponibles"}</p>
+      </div>
+      <div class="rail-item" data-paraitre data-compte="${suivis.total}">
+        <span class="chiffre">${suivis.total.toLocaleString("fr-FR")}</span>
+        <p class="legende">Textes réglementaires et normatifs suivis</p>
+        <p class="legende-detail">${[suivis.articles ? `${suivis.articles.toLocaleString("fr-FR")} articles de codes en vigueur lus un à un` : "",
+          `${suivis.fiches} textes de référence`, suivis.normes ? `${suivis.normes} normes` : "",
+          suivis.publies ? `${suivis.publies} textes publiés retenus depuis le ${esc(dateFr(suivis.depuis))}` : ""].filter(Boolean).join(", ").replace(/, ([^,]*)$/, " et $1")}.
+        Mis à jour chaque jour avec les nouvelles publications.</p>
       </div>
       <div class="rail-item" data-paraitre data-compte="${nbDomaines}">
         <span class="chiffre">${nbDomaines}</span>
@@ -4945,8 +4962,8 @@ function pageNouveauClient(V, NAF, demo = null) {
             <select id="nc-naf"><option value="">À régler plus tard</option>${options}</select>
           </div>` : ""}
           <div class="nc-champ">
-            <label for="nc-courriel">E-mail de son responsable <span class="nc-facultatif">facultatif</span></label>
-            <input type="email" id="nc-courriel" autocomplete="off" inputmode="email" spellcheck="false" placeholder="prenom.nom@entreprise.fr">
+            <label for="nc-courriel">E-mail de son responsable</label>
+            <input type="email" id="nc-courriel" required autocomplete="off" inputmode="email" spellcheck="false" placeholder="prenom.nom@entreprise.fr">
           </div>
           <p class="etat-compte" id="nc-etat" role="status"></p>
           <button type="submit" class="bouton bouton-accent nc-envoyer">Créer l'accès</button>
