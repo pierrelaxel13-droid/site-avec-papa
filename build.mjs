@@ -3638,9 +3638,8 @@ ${bandeAvis(AVIS)}
       </li>
       <li class="trait">
         <svg class="icone" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 7v5l3 2"/><circle cx="12" cy="12" r="9"/></svg>
-        <div><h3>Une synthèse globale des textes qui vous sont applicables</h3>
-        <p>Seuls les textes qui vous concernent vous sont présentés. Les autres restent à part,
-        mais sont accessibles.</p></div>
+        <div><h3>Une synthèse globale des textes qui sont applicables à vos clients</h3>
+        <p>Seuls les textes qui concernent vos clients sont présentés.</p></div>
       </li>
       <li class="trait">
         <svg class="icone" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 12l2 2 4-5"/><circle cx="12" cy="12" r="9"/></svg>
