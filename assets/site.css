@@ -3971,34 +3971,29 @@ a.puce-fixe { text-decoration: none; color: inherit; }
 .export-bouton:hover { border-color: var(--accent); color: var(--accent-fonce); }
 .export-bouton:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 .export-etat { font-size: .8rem; color: var(--encre-douce); }
-.export-entete { display: none; }
+#export-imprime { display: none; }
 @media print {
-  body.export-impression > *:not(main), body.export-impression .bandeau, body.export-impression .pied,
-  body.export-impression .bandeau-demo, body.export-impression .avis { display: none !important; }
-  body.export-impression main > *:not(.export-cible):not(:has(.export-cible)) { display: none !important; }
-  body.export-impression .export-cible { display: block !important; padding: 0 !important; }
-  body.export-impression .export-cible > .enveloppe > *:not(.defile-tableau):not(table):not(.export-entete) { display: none !important; }
-  body.export-impression .export-cible .export-entete { display: block; margin: 0 0 8pt; }
-  body.export-impression .export-entete strong { display: block; font-size: 14pt; }
-  body.export-impression .export-entete span { font-size: 9pt; color: #555; }
-  body.export-impression .export-barre { display: none !important; }
-  body.export-impression table[data-export] { font-size: 8.5pt; width: 100%; border-collapse: collapse; }
-  body.export-impression table[data-export] th, body.export-impression table[data-export] td { border: 1px solid #ccc; padding: 3pt 4pt; vertical-align: top; }
-  body.export-impression table[data-export] tr.hors-filtre, body.export-impression table[data-export] tr[hidden] { display: none !important; }
-  body.export-impression table[data-export] select, body.export-impression table[data-export] input,
-  body.export-impression table[data-export] button { border: 0; background: none; font-size: 8.5pt; appearance: none; padding: 0; }
-  body.export-impression table[data-export] button { display: none; }
-  body.export-impression .defile-tableau { overflow: visible !important; margin: 0 !important; padding: 0 !important; }
-  body.export-impression table[data-export] * { font-size: 8.5pt !important; line-height: 1.3 !important; }
-  body.export-impression table[data-export] td, body.export-impression table[data-export] th { width: auto !important; min-width: 0 !important; }
-  body.export-impression table[data-export] ul { margin: 0; padding-left: 10pt; }
-  body.export-impression table[data-export] li { margin: 0; }
-  body.export-impression table[data-export] input::placeholder { color: transparent; }
-  body.export-impression table[data-export] tr { break-inside: avoid; }
-  body.export-impression table[data-export] a::after { content: none !important; }
-  body.export-impression table[data-export] .export-vide { visibility: hidden; }
-  body.export-impression table[data-export] thead { display: table-header-group; }
-  @page { size: A4 landscape; margin: 12mm; }
+  @page { size: A4 landscape; margin: 11mm 10mm 12mm; }
+  body.export-impression { background: #fff !important; }
+  body.export-impression > *:not(#export-imprime) { display: none !important; }
+  body.export-impression #export-imprime { display: block; color: #15152B; font: 8.6pt/1.35 Inter, "Segoe UI", Arial, sans-serif;
+    -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  #export-imprime .ei-tete { border-bottom: 2.5pt solid #4A2BE8; padding-bottom: 6pt; margin-bottom: 9pt; }
+  #export-imprime .ei-marque { margin: 0; font-size: 8pt; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: #4A2BE8; }
+  #export-imprime h1 { margin: 2pt 0 1pt; font-size: 16pt; line-height: 1.2; color: #15152B; }
+  #export-imprime .ei-infos { margin: 0; font-size: 8.5pt; color: #5E5E79; }
+  #export-imprime table { width: 100%; border-collapse: collapse; table-layout: auto; }
+  #export-imprime thead { display: table-header-group; }
+  #export-imprime th { background: #4A2BE8; color: #fff; text-align: left; font-weight: 600; font-size: 8pt;
+    padding: 5pt 6pt; border: 0; }
+  #export-imprime td { padding: 4.5pt 6pt; border-bottom: .6pt solid #E6E4F4; vertical-align: top; white-space: pre-line; }
+  #export-imprime tbody tr:nth-child(even) td { background: #F7F6FF; }
+  #export-imprime tr { break-inside: avoid; }
+  #export-imprime .ei-pastille { display: inline-block; padding: 1pt 6pt; border-radius: 8pt; font-weight: 600; font-size: 7.8pt; white-space: nowrap; }
+  #export-imprime .ei-vert { background: #E3F5EA; color: #11643A; }
+  #export-imprime .ei-rouge { background: #FDE8E8; color: #A11D1D; }
+  #export-imprime .ei-ambre { background: #FFF3DC; color: #8A5300; }
+  #export-imprime .ei-pied { margin-top: 10pt; padding-top: 5pt; border-top: .6pt solid #E6E4F4; font-size: 7.5pt; color: #5E5E79; }
 }
 .rg-danger { border-color: color-mix(in srgb, var(--rouge) 35%, var(--filet)); max-width: 52rem; margin-top: var(--t4); }
 .rg-danger .rg-tete h2 { color: var(--rouge); }
@@ -4379,3 +4374,21 @@ details.analyse > summary:focus-visible { outline: 2px solid var(--accent); outl
   .analyse-corps { padding: .65rem .7rem; }
 }
 @media print { details.analyse { display: none; } }
+
+/* --- Barre d'export v2 : icônes, envoi par e-mail (4 novembre 2026) ------- */
+.export-bouton { display: inline-flex; align-items: center; gap: .4rem; padding: .38rem .8rem; border-radius: 8px; font-weight: 600; }
+.export-bouton svg { width: 1rem; height: 1rem; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; flex: none; }
+.export-bouton-fort { background: var(--accent); border-color: var(--accent); color: #fff; }
+.export-bouton-fort:hover { background: var(--accent-fonce); border-color: var(--accent-fonce); color: #fff; }
+.export-envoi { margin: 0 0 .8rem auto; max-width: 34rem; padding: .8rem .9rem; border: 1px solid var(--filet); border-radius: 10px; background: var(--carte); }
+.export-envoi label { display: block; font-size: .82rem; font-weight: 600; margin-bottom: .3rem; }
+.export-envoi-ligne { display: flex; flex-wrap: wrap; gap: .5rem; align-items: center; }
+.export-envoi input { flex: 1 1 14rem; min-width: 0; padding: .45rem .6rem; border: 1px solid var(--filet-fort); border-radius: 8px; background: var(--papier); color: var(--encre); font: inherit; }
+.export-envoi input[aria-invalid="true"] { border-color: var(--rouge); }
+.export-envoi .bouton { padding: .45rem .9rem; }
+.export-aide { margin: .5rem 0 0; font-size: .78rem; color: var(--encre-douce); }
+@media (max-width: 47.99rem) {
+  .export-barre { justify-content: stretch; }
+  .export-barre .export-bouton { flex: 1 1 auto; justify-content: center; }
+  .export-barre .export-etat { flex-basis: 100%; }
+}
