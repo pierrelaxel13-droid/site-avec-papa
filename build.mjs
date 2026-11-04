@@ -3913,7 +3913,7 @@ function pageDecouvrir(V, ECRANS, C, NAF, SOURCES) {
     { img: "bord.png", t: "Tableaux de bord", d: "" },
     { img: "plan.png", t: "Ma veille réglementaire", d: "" },
     { img: "actions.png", t: "Plan d'actions", d: "" },
-    { img: "reglages.png", t: "Réglages", d: "" }
+    { img: "registre.png", t: "Registre et conformité réglementaire", d: "" }
   ];
   const vignette = (p) => {
     if (!p.img || !ECRANS.includes(p.img)) return `<div class="vignette vignette-vide">${icone('<circle cx="12" cy="12" r="3"/><path d="M12 3v3m0 12v3M3 12h3m12 0h3M5.6 5.6l2.1 2.1m8.6 8.6 2.1 2.1m0-12.8-2.1 2.1M7.7 16.3l-2.1 2.1"/>')}</div>`;
@@ -3939,18 +3939,21 @@ function pageDecouvrir(V, ECRANS, C, NAF, SOURCES) {
   </div>
 </section>
 
-${sectionSources(V)}<section class="section ne-fait-pas">
+<section class="section section-tein">
   <div class="enveloppe">
-    <h2 class="titre-section">Ce que le site ne fait pas</h2>
-    <div class="deux-colonnes" style="margin-top:var(--t5)">
-      <p class="reserve"><strong>Ce n'est pas un conseil juridique.</strong> La liste des textes qui
-        vous concernent n'est pas garantie complète. Chaque texte reste à vérifier à sa source,
-        et ce qu'il implique chez vous, à valider par quelqu'un de compétent.</p>
-      <p class="reserve"><strong>${manquantes.length} sources ne sont pas encore relevées.</strong>
-        ${esc(manquantes.map((x) => `${nomCourt(x)} (${x.pourquoi || "ne répond pas"})`).join(" · "))}.
-        Ce qui vient de là n'apparaît pas dans le relevé.</p>
-    </div>
-    <p class="rangee rangee-centre" style="margin-top:var(--t5)">
+    <ul class="pieces">
+      ${pieces.map((p) => `<li class="piece">
+        ${vignette(p)}
+        <h3>${esc(p.t)}</h3>
+        ${p.d ? `<p>${esc(p.d)}</p>` : ""}
+      </li>`).join("")}
+    </ul>
+  </div>
+</section>
+
+${sectionSources(V)}<section class="section section-appel">
+  <div class="enveloppe">
+    <p class="rangee rangee-centre">
       <a class="bouton bouton-accent" href="abonnement.html">Démarrer un abonnement</a>
       <a class="bouton bouton-sobre" href="connexion.html">Connexion</a>
     </p>

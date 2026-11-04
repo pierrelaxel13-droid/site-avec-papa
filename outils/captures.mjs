@@ -43,7 +43,8 @@ const ECRANS = [
   { nom: "bord.png", url: "/demo/index.html" },
   { nom: "plan.png", url: "/demo/plan.html" },
   { nom: "actions.png", url: "/demo/actions.html" },
-  { nom: "reglages.png", url: "/demo/reglages.html" }
+  { nom: "reglages.png", url: "/demo/reglages.html" },
+  { nom: "registre.png", url: "/demo/conformite.html" }
 ];
 
 // Le héros montre un téléphone à côté de l'ordinateur : il lui faut une vraie
