@@ -23,7 +23,7 @@ on:
   push:
     branches: [main]
   workflow_run:
-    workflows: ["Relève", "Fonds des textes en vigueur"]
+    workflows: ["Relève", "Fonds des textes en vigueur", "Installer Stripe"]
     types: [completed]
     branches: [main]
   workflow_dispatch:

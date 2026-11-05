@@ -1,0 +1,55 @@
+# Vigie — installer les paiements dans Stripe (5 novembre 2026)
+#
+# À lancer à la main (onglet Actions → « Installer Stripe » → Run workflow),
+# une fois le secret STRIPE_SETUP_KEY posé : une clé RESTREINTE (rk_…), en
+# écriture sur Produits, Prix, Liens de paiement et Portail client.
+# Crée (ou reprend) produits, prix, liens de paiement et portail client, puis
+# écrit les liens dans contenu/paiement.js ; « Publier le site » suit.
+# Sans risque à relancer : rien n'est créé deux fois.
+name: Installer Stripe
+
+on:
+  workflow_dispatch:
+    inputs:
+      tva:
+        description: "TVA calculée par Stripe Tax (« auto », à activer avant dans Stripe) ou rien"
+        required: false
+        default: ""
+
+permissions:
+  contents: write
+
+concurrency:
+  group: stripe-installation
+  cancel-in-progress: false
+
+jobs:
+  installer:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: 22
+      - name: Le robot, testé
+        run: node outils/stripe-installation.test.mjs
+      - name: Produits, prix, liens de paiement, portail client
+        env:
+          STRIPE_SETUP_KEY: ${{ secrets.STRIPE_SETUP_KEY }}
+          STRIPE_TVA: ${{ inputs.tva }}
+        run: node outils/stripe-installation.mjs
+      - name: Le site se construit avec
+        run: node build.mjs > /dev/null
+      - name: Commiter les liens
+        run: |
+          if [ -z "$(git status --porcelain contenu/paiement.js)" ]; then echo "Liens inchangés."; exit 0; fi
+          git config user.name  "Relève Pierrel & Co"
+          git config user.email "releve@users.noreply.github.com"
+          git add contenu/paiement.js
+          git commit -m "Paiements : liens Stripe installés"
+          for i in 1 2 3; do
+            if git pull --rebase origin main && git push; then exit 0; fi
+            sleep $((i * 5))
+          done
+          exit 1
