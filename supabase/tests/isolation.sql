@@ -940,6 +940,74 @@ select tests.ok(public.recap_desabonner(current_setting('tests.jeton_recap')::uu
 reset role;
 select tests.ok(not (select actif from prive.recap_quotidien where user_id = '00000000-0000-0000-0000-0000000000a1'), 'et le récapitulatif est bien arrêté');
 
+-- ---- Un droit inconnu ne vaut jamais oui (migration 22) ----------------
+-- L'administrateur de B, qui n'est rien dans A, essaie chaque porte de A.
+select tests.qui('00000000-0000-0000-0000-0000000000b1', 'b_admin@test.fr');
+set local role authenticated;
+select tests.ok(prive.est_admin('00000000-0000-0000-0000-00000000a000') = false, 'est_admin rend « non », jamais « inconnu », hors de son entreprise');
+select tests.ok(prive.peut_ecrire('00000000-0000-0000-0000-00000000a000') = false, 'peut_ecrire aussi');
+select tests.refuse($$select public.inviter('b_admin@test.fr', 'admin', '00000000-0000-0000-0000-00000000a000', null)$$, 'on ne s''invite pas dans l''entreprise d''un autre');
+select tests.refuse($$select public.espace_role('00000000-0000-0000-0000-00000000a000', '00000000-0000-0000-0000-0000000000a1', 'lecteur')$$, 'ni n''y change un rôle');
+select tests.refuse($$select public.espace_retirer('00000000-0000-0000-0000-00000000a000', '00000000-0000-0000-0000-0000000000a2')$$, 'ni n''en retire quelqu''un');
+select tests.refuse($$select public.espace_acces_consultant('00000000-0000-0000-0000-00000000a000', false)$$, 'ni n''y coupe l''accès du consultant');
+select tests.refuse($$select public.choisir_consultant('00000000-0000-0000-0000-00000000a000', null)$$, 'ni n''en change le consultant');
+reset role;
+
+-- ---- Mon compte : abonnement et factures (migration 21) -----------------
+update public.abonnements set fin_periode = '2027-01-15T00:00:00Z', stripe_abonnement = 'sub_essai_a'
+  where entreprise_id = '00000000-0000-0000-0000-00000000a000';
+-- Un PDF d'essai (« %PDF-1.4 » et assez d'octets) :
+select set_config('tests.pdf', encode(convert_to('%PDF-1.4' || repeat(' essai', 30), 'UTF8'), 'base64'), true);
+select tests.qui('00000000-0000-0000-0000-0000000000a1', 'a_admin@test.fr');
+set local role authenticated;
+select tests.refuse($$select public.admin_ajouter_facture('00000000-0000-0000-0000-00000000a000', null, 'F-1', current_date, 99, 'f.pdf', current_setting('tests.pdf'))$$,
+  'un client ne dépose pas de facture');
+reset role;
+select tests.qui('00000000-0000-0000-0000-0000000000f1', 'axel@test.fr');
+set local role authenticated;
+select set_config('tests.facture', public.admin_ajouter_facture('00000000-0000-0000-0000-00000000a000', null, 'F-2026-001', '2026-11-01', 107.88, 'facture-2026-001.pdf', current_setting('tests.pdf'))::text, true);
+select tests.refuse($$select public.admin_ajouter_facture('00000000-0000-0000-0000-00000000a000', null, 'F-X', current_date, null, 'x.pdf', encode(convert_to(repeat('pas un pdf ', 20), 'UTF8'), 'base64'))$$,
+  'un fichier qui n''est pas un PDF est refusé');
+select tests.ok(json_array_length(public.admin_factures('00000000-0000-0000-0000-00000000a000', null)) = 1, 'l''administrateur voit la facture déposée');
+reset role;
+select tests.qui('00000000-0000-0000-0000-0000000000a1', 'a_admin@test.fr');
+set local role authenticated;
+select tests.ok((select x -> 'abonnement' ->> 'formule' from json_array_elements(public.mon_abonnement() -> 'entreprises') x where x ->> 'id' = '00000000-0000-0000-0000-00000000a000') = 'complet', 'l''administrateur de A voit sa formule');
+select tests.ok((select x -> 'abonnement' ->> 'fin_periode' from json_array_elements(public.mon_abonnement() -> 'entreprises') x where x ->> 'id' = '00000000-0000-0000-0000-00000000a000') like '2027-01-15%', 'et la fin de la période en cours');
+select tests.ok((select json_array_length(x -> 'factures') from json_array_elements(public.mon_abonnement() -> 'entreprises') x where x ->> 'id' = '00000000-0000-0000-0000-00000000a000') = 1, 'et sa facture');
+select tests.ok((public.ma_facture(current_setting('tests.facture')::uuid) ->> 'nom') = 'facture-2026-001.pdf', 'il la télécharge');
+select tests.refuse('select * from prive.factures', 'la table des factures ne se lit pas en direct');
+select tests.refuse($$select public.admin_factures('00000000-0000-0000-0000-00000000b000', null)$$, 'ni la liste d''un autre');
+reset role;
+insert into public.membres_entreprise (entreprise_id, user_id, role)
+  values ('00000000-0000-0000-0000-00000000a000', '00000000-0000-0000-0000-0000000000a2', 'lecteur')
+  on conflict (entreprise_id, user_id) do update set role = 'lecteur';
+select tests.qui('00000000-0000-0000-0000-0000000000a2', 'a_lecteur@test.fr');
+set local role authenticated;
+select tests.ok((select (x -> 'abonnement' ->> 'formule') = 'complet' and (x -> 'factures')::text = 'null'
+                  from json_array_elements(public.mon_abonnement() -> 'entreprises') x
+                  where x ->> 'id' = '00000000-0000-0000-0000-00000000a000'), 'un lecteur de A voit la formule, pas les factures');
+select tests.refuse($$select public.ma_facture(current_setting('tests.facture')::uuid)$$, 'ni ne les télécharge');
+reset role;
+select tests.qui('00000000-0000-0000-0000-0000000000b1', 'b_admin@test.fr');
+set local role authenticated;
+select tests.refuse($$select public.ma_facture(current_setting('tests.facture')::uuid)$$, 'l''administrateur de B ne télécharge pas une facture de A');
+select tests.ok(public.mon_abonnement()::text not like '%F-2026-001%', 'ni ne la voit dans sa liste');
+reset role;
+select tests.qui('00000000-0000-0000-0000-0000000000c1', 'c_membre@test.fr');
+set local role authenticated;
+select tests.refuse($$select public.ma_facture(current_setting('tests.facture')::uuid)$$, 'le cabinet de A ne télécharge pas ses factures');
+reset role;
+set local role anon;
+select tests.refuse('select public.mon_abonnement()', 'un visiteur n''a pas d''abonnement à lire');
+select tests.refuse($$select public.ma_facture(current_setting('tests.facture')::uuid)$$, 'ni de facture');
+reset role;
+select tests.qui('00000000-0000-0000-0000-0000000000f1', 'axel@test.fr');
+set local role authenticated;
+select public.admin_supprimer_facture(current_setting('tests.facture')::uuid);
+select tests.ok(json_array_length(public.admin_factures('00000000-0000-0000-0000-00000000a000', null)) = 0, 'l''administrateur retire la facture');
+reset role;
+
 do $$ begin raise notice 'TOUS LES TESTS D''ISOLATION SONT PASSÉS'; end $$;
 
 rollback;
