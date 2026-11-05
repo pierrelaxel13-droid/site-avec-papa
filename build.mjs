@@ -39,7 +39,7 @@ const SITE = {
      l'édite est à part (societe) et n'apparaît que dans les pages légales :
      un consultant n'achète pas l'outil du cabinet d'un confrère. */
   nom: "Vigie",
-  societe: "Clément Pierrel (entreprise individuelle)",   // l'éditeur
+  societe: "Clément Pierrel",   // l'éditeur
   /* La caution métier : la personne, pas son cabinet. */
   concepteur: "Clément Pierrel",
   bareme: "Veille réglementaire par secteur",
