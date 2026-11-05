@@ -4796,3 +4796,9 @@ ol.etapes-carres p { margin: 0; color: var(--encre-douce); text-align: center; m
 .abo-bouton-resilier { color: var(--rouge); border-color: color-mix(in srgb, var(--rouge) 40%, var(--filet)); }
 @media (max-width: 47.99rem) { .abo-bouton-resilier { width: 100%; justify-content: center; } }
 .formule .sans-engagement { align-self: center; margin: 0; font-size: .82rem; color: var(--encre-douce); text-align: center; }
+
+/* --- Espace consultant : chiffres et notes centrés (5 novembre 2026) ------- */
+.cs-chiffres > div { text-align: center; }
+.cs-chiffres dt, .cs-chiffres dd { text-align: center; margin-inline: auto; }
+.cs-note { text-align: center; margin-inline: auto; max-width: 60rem; }
+.cs-page .compteurs > div, .cs-page .compteurs dt, .cs-page .compteurs dd { text-align: center; justify-content: center; align-items: center; }

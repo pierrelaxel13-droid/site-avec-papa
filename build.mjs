@@ -4584,7 +4584,7 @@ function pageMonCompte() {
         <section class="rg-carte compte-carte" id="compte-clients" aria-labelledby="cc-t-clients" hidden>
           <header class="rg-tete">
             <h2 id="cc-t-clients">Mes clients</h2>
-            <p>Les entreprises que votre cabinet suit : les créer et les retirer se fait ici ; leur suivi, dans le tableau de bord.</p>
+            <p>Les entreprises que votre cabinet accompagne : vous pouvez les créer et les supprimer.</p>
           </header>
           <div class="compte-corps">
             <ul class="mc-liste" id="mc-liste"></ul>
@@ -4908,7 +4908,7 @@ function pageCabinet(V, NAF, SOURCES) {
         <p><strong>Votre abonnement consultant n'est pas encore ouvert.</strong> Vous pouvez déjà créer l'espace
         de vos clients ; ils s'ouvrent avec l'abonnement.</p>
         <p class="rangee" style="margin-top:var(--t3)">
-          <a class="bouton bouton-accent" id="cabinet-demander" href="mailto:${esc(SITE.courriel)}">Demander l'ouverture</a>
+          <a class="bouton bouton-accent" id="cabinet-demander" href="mailto:${esc(SITE.courriel)}">S'abonner</a>
           <a class="bouton bouton-sobre" href="../abonnement.html#consultants">Voir les tarifs</a>
         </p>
       </div>
@@ -4932,11 +4932,11 @@ function pageCabinet(V, NAF, SOURCES) {
           <li data-etape="cabinet"><span class="cs-coche" aria-hidden="true"></span><div><strong>Créer votre cabinet</strong>
             <span class="cs-etape-detail" data-detail></span></div></li>
           <li data-etape="client"><span class="cs-coche" aria-hidden="true"></span><div><strong>Créer l'espace de votre premier client</strong>
-            <span class="cs-etape-detail" data-detail>Son nom suffit : <a href="nouveau-client.html">créer l'accès d'un client</a>.</span></div></li>
+            <span class="cs-etape-detail" data-detail><a href="nouveau-client.html">Créer un espace client</a>.</span></div></li>
           <li data-etape="plan"><span class="cs-coche" aria-hidden="true"></span><div><strong>Régler son plan de veille</strong>
             <span class="cs-etape-detail" data-detail>Ouvrez son espace, puis Réglages : son code APE et ses situations décident des textes suivis.</span></div></li>
-          <li data-etape="invite"><span class="cs-coche" aria-hidden="true"></span><div><strong>Inviter son responsable</strong>
-            <span class="cs-etape-detail" data-detail>Il crée son compte et voit tout ; il peut couper votre accès quand il veut.</span></div></li>
+          <li data-etape="invite"><span class="cs-coche" aria-hidden="true"></span><div><strong>Inviter votre client</strong>
+            <span class="cs-etape-detail" data-detail>Il crée son compte et a accès à son profil.</span></div></li>
           <li data-etape="abonnement"><span class="cs-coche" aria-hidden="true"></span><div><strong>Ouvrir votre abonnement consultant</strong>
             <span class="cs-etape-detail" data-detail>${O.paliers.map((p) => `${p.a ? `${p.de} à ${p.a}` : `${p.de} et plus`} clients : ${esc(eur(p.mois))} par client et par mois`).join(" · ")}.</span></div></li>
         </ol>
@@ -4959,8 +4959,8 @@ function pageCabinet(V, NAF, SOURCES) {
           <p class="aide-bas">Ou créez seulement son espace, avec son nom :</p>
           <ol class="etapes-cabinet">
             <li>Créez son espace ici.</li>
-            <li>Ouvrez-le pour régler son plan de veille (code APE, situations).</li>
-            <li>Invitez son responsable : il crée son compte et voit tout. Il peut couper votre accès quand il veut.</li>
+            <li>Créez-le pour définir son plan de veille réglementaire.</li>
+            <li>Invitez votre client et il définit son propre compte.</li>
           </ol>
           <div class="champ">
             <label for="cl-nom">Nom de l'entreprise cliente</label>
@@ -5097,7 +5097,7 @@ function pageCabinetDemo(V, D) {
       : "Aucune action ouverte.";
     const compte = c.membres
       ? `<p class="admin-details">${pl(c.membres, "personne de l'entreprise a", "personnes de l'entreprise ont")} un compte.</p>`
-      : `<p>Votre client n'a pas encore de compte : invitez son responsable.</p>
+      : `<p>Votre client n'a pas encore de compte : invitez votre client.</p>
         <p class="admin-details">Avec votre compte, vous créez ici son lien d'invitation, à copier ou à envoyer par courriel.</p>`;
     const ouvrir = c.vidal
       ? `<a class="bouton bouton-accent" href="index.html" data-demo-consultant="${esc(C.nom)}" data-demo-client="${esc(E.nom)}">Ouvrir son espace</a>`
@@ -5157,8 +5157,8 @@ function pageCabinetDemo(V, D) {
       <h3>Ajouter un client</h3>
       <ol class="etapes-cabinet">
         <li>Créez son espace ici.</li>
-        <li>Ouvrez-le pour régler son plan de veille (code APE, situations).</li>
-        <li>Invitez son responsable : il crée son compte et voit tout. Il peut couper votre accès quand il veut.</li>
+        <li>Créez-le pour définir son plan de veille réglementaire.</li>
+        <li>Invitez votre client et il définit son propre compte.</li>
       </ol>
       <p>Essayez-le dans la démonstration : rien n'est enregistré ni envoyé.</p>
       <p class="rangee" style="margin-top:var(--t4)">

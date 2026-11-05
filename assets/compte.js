@@ -331,7 +331,7 @@
       mesClients(cab);
       $("#cabinet-statut").textContent = cab.actif
         ? "Ouvert : vos clients ont la veille complète"
-        : "Pas encore ouvert : l'espace consultant dit comment faire";
+        : "Aucun abonnement en cours";
       b.hidden = false;
     };
 
@@ -892,7 +892,7 @@
       if (c.membres) {
         carte.appendChild(mk("p", "admin-details", pluriel(c.membres, "personne de l'entreprise a", "personnes de l'entreprise ont") + " un compte."));
       } else {
-        carte.appendChild(mk("p", "", "Votre client n'a pas encore de compte : invitez son responsable."));
+        carte.appendChild(mk("p", "", "Votre client n'a pas encore de compte : invitez votre client."));
         carte.appendChild(inviterClient(carte, c));
       }
       var rg = mk("p", "rangee"); rg.style.marginTop = "var(--t3)";
@@ -901,8 +901,6 @@
         ouvrir.href = vers("app/index.html");
         ouvrir.addEventListener("click", function () { V.choisir(c.id); });
         rg.appendChild(ouvrir);
-      } else {
-        rg.appendChild(mk("span", "admin-details", "Son espace s'ouvre avec votre abonnement."));
       }
       carte.appendChild(rg);
       return carte;
@@ -1038,7 +1036,7 @@
         }
         // Les premiers pas, cochés d'après les données du cabinet.
         var etapes = {
-          cabinet: [true, "« " + cabinet.nom + " » est créé ; vous en êtes le responsable du compte."],
+          cabinet: [true, "« " + cabinet.nom + " » est créé ; vous êtes le responsable du compte."],
           client: [cl.length > 0, cl.length ? pluriel(cl.length, "client créé", "clients créés") + "." : null],
           plan: [cl.some(function (c) { return !!c.naf; }), cl.length ? pluriel(cl.filter(function (c) { return !!c.naf; }).length, "client a son code APE", "clients ont leur code APE") + " sur " + cl.length + "." : null],
           invite: [cl.some(function (c) { return c.membres > 0; }), cl.some(function (c) { return c.membres > 0; }) ? pluriel(cl.filter(function (c) { return c.membres > 0; }).length, "client a un compte", "clients ont un compte") + "." : null],
@@ -1065,7 +1063,7 @@
       V.rpc("creer_entreprise_cliente", { cabinet: cabinet.id, denomination: nom }).then(function (r) {
         if (!r.ok) { dit.textContent = r.erreur; return; }
         $("#cl-nom").value = "";
-        dit.textContent = "L'espace de « " + nom + " » est créé. Ouvrez-le pour régler son plan, puis invitez son responsable.";
+        dit.textContent = "L'espace de « " + nom + " » est créé. Ouvrez-le pour régler son plan, puis invitez votre client.";
         chargerCabinet();
       });
     });
