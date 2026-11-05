@@ -43,7 +43,7 @@ const SITE = {
   /* La caution métier : la personne, pas son cabinet. */
   concepteur: "Clément Pierrel",
   bareme: "Veille réglementaire par secteur",
-  courriel: "contact@pierrel-co.fr",
+  courriel: "contact@vigie-reglementaire.fr",
   /* L'adresse publique du site : pour les liens de partage et l'aperçu sur les réseaux sociaux. */
   adresseWeb: "https://vigie-reglementaire.fr/",
   /* Le téléphone : vide tant qu'on n'a pas le vrai numéro. Vide, aucune ligne
