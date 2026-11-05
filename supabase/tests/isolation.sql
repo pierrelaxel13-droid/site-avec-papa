@@ -940,6 +940,17 @@ select tests.ok(public.recap_desabonner(current_setting('tests.jeton_recap')::uu
 reset role;
 select tests.ok(not (select actif from prive.recap_quotidien where user_id = '00000000-0000-0000-0000-0000000000a1'), 'et le récapitulatif est bien arrêté');
 
+-- ---- Personne ne devient administrateur du site depuis le site -----------
+select tests.qui('00000000-0000-0000-0000-0000000000b1', 'b_admin@test.fr');
+set local role authenticated;
+select tests.refuse($$insert into prive.administrateurs (user_id) values ('00000000-0000-0000-0000-0000000000b1')$$, 'un client ne s''ajoute pas administrateur du site');
+select tests.refuse('select * from prive.administrateurs', 'ni ne lit la liste des administrateurs');
+select tests.ok(not public.suis_administrateur(), 'et le site lui répond qu''il ne l''est pas');
+reset role;
+set local role anon;
+select tests.refuse($$insert into prive.administrateurs (user_id) values ('00000000-0000-0000-0000-0000000000e1')$$, 'un visiteur non plus');
+reset role;
+
 -- ---- Un droit inconnu ne vaut jamais oui (migration 22) ----------------
 -- L'administrateur de B, qui n'est rien dans A, essaie chaque porte de A.
 select tests.qui('00000000-0000-0000-0000-0000000000b1', 'b_admin@test.fr');
