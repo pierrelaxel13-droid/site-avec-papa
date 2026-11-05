@@ -4744,3 +4744,14 @@ ol.etapes-carres p { margin: 0; color: var(--encre-douce); text-align: center; m
   .abo-tete { flex-direction: column; gap: .2rem; align-items: flex-start; }
 }
 .ligne-reglage[hidden] { display: none !important; }
+
+/* --- Administration : les factures d'un client (5 novembre 2026) ----------- */
+.admin-factures { margin-top: 1rem; border-top: 1px solid var(--filet); padding-top: .75rem; }
+.admin-factures > summary { cursor: pointer; font-weight: 600; font-size: .93rem; color: var(--accent); }
+.admin-facture-form { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .75rem; margin-top: .75rem; padding: .9rem; border: 1px solid var(--filet); border-radius: var(--r1); background: var(--papier); }
+.admin-facture-champ { display: grid; gap: .3rem; font-size: .85rem; color: var(--encre-douce); }
+.admin-facture-champ input { font: inherit; font-size: .93rem; color: var(--encre); background: var(--carte); border: 1px solid var(--filet-fort); border-radius: var(--r1); padding: .55rem .7rem; min-height: 2.6rem; }
+.admin-facture-form .bouton { grid-column: 1 / -1; justify-self: start; }
+@media (max-width: 47.99rem) { .admin-facture-form { grid-template-columns: 1fr; } .admin-facture-form .bouton { width: 100%; justify-content: center; } }
+.admin-facture-form > * { min-width: 0; }
+.admin-facture-champ input[type="file"] { width: 100%; min-width: 0; padding: .45rem .5rem; font-size: .85rem; }

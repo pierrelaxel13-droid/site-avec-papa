@@ -980,6 +980,8 @@ select set_config('tests.facture', public.admin_ajouter_facture('00000000-0000-0
 select tests.refuse($$select public.admin_ajouter_facture('00000000-0000-0000-0000-00000000a000', null, 'F-X', current_date, null, 'x.pdf', encode(convert_to(repeat('pas un pdf ', 20), 'UTF8'), 'base64'))$$,
   'un fichier qui n''est pas un PDF est refusé');
 select tests.ok(json_array_length(public.admin_factures('00000000-0000-0000-0000-00000000a000', null)) = 1, 'l''administrateur voit la facture déposée');
+select tests.refuse($$select public.admin_ajouter_facture('00000000-0000-0000-0000-00000000a000', null, 'F-2026-001', current_date, null, 'bis.pdf', current_setting('tests.pdf'))$$,
+  'le même numéro ne se dépose pas deux fois pour le même client');
 reset role;
 select tests.qui('00000000-0000-0000-0000-0000000000a1', 'a_admin@test.fr');
 set local role authenticated;

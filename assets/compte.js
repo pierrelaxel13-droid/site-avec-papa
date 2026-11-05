@@ -1036,6 +1036,78 @@
       return li;
     };
 
+    /* Les factures d'une entreprise ou d'un cabinet (5 novembre 2026) : les
+       déposer (PDF, 2 Mo au plus), les voir, les retirer. Le client les trouve
+       dans Mon compte, « Mes factures » (son responsable du compte seulement). */
+    var blocFactures = function (entreprise, cabinet) {
+      var det = el("details", "admin-factures");
+      var sum = el("summary", "", "Factures");
+      det.appendChild(sum);
+      var liste = el("ul", "admin-comptes");
+      var dit = el("p", "etat-compte");
+      var f = el("form", "admin-facture-form");
+      var champ = function (libelle, input) {
+        var l = el("label", "admin-facture-champ"); l.appendChild(el("span", "", libelle)); l.appendChild(input); return l;
+      };
+      var num = el("input"); num.type = "text"; num.required = true; num.maxLength = 60; num.placeholder = "VR-2026-0001";
+      var jour = el("input"); jour.type = "date"; jour.required = true; jour.value = new Date().toISOString().slice(0, 10);
+      var montant = el("input"); montant.type = "number"; montant.min = "0"; montant.step = "0.01"; montant.placeholder = "facultatif";
+      var fichier = el("input"); fichier.type = "file"; fichier.accept = "application/pdf,.pdf"; fichier.required = true;
+      var ok = el("button", "bouton bouton-accent", "Déposer la facture"); ok.type = "submit";
+      f.appendChild(champ("Numéro", num)); f.appendChild(champ("Date", jour));
+      f.appendChild(champ("Montant TTC (€)", montant)); f.appendChild(champ("Fichier PDF (2 Mo au plus)", fichier));
+      f.appendChild(ok);
+      det.appendChild(liste); det.appendChild(f); det.appendChild(dit);
+      var lister = function () {
+        V.rpc("admin_factures", { entreprise: entreprise, cabinet: cabinet }).then(function (r) {
+          liste.textContent = "";
+          var l = (r.ok && r.donnees) || [];
+          sum.textContent = "Factures (" + l.length + ")";
+          if (!l.length) liste.appendChild(el("li", "admin-details", "Aucune facture déposée."));
+          l.forEach(function (x) {
+            var li = el("li", "admin-compte");
+            li.appendChild(el("span", "admin-courriel", "Facture " + x.numero));
+            li.appendChild(el("span", "admin-details", date(x.emise_le) + (x.montant_ttc != null ? " · " +
+              Number(x.montant_ttc).toLocaleString("fr-FR", { minimumFractionDigits: 2 }) + " € TTC" : "") + " · " + x.nom));
+            var sup = el("button", "lien-nu", "Retirer"); sup.type = "button";
+            sup.addEventListener("click", function () {
+              if (!window.confirm("Retirer la facture " + x.numero + " ? Le client ne la verra plus.")) return;
+              sup.disabled = true;
+              V.rpc("admin_supprimer_facture", { id: x.id }).then(function (r2) {
+                if (!r2.ok) { dit.textContent = r2.erreur; sup.disabled = false; return; }
+                dit.textContent = "Facture " + x.numero + " retirée."; lister();
+              });
+            });
+            li.appendChild(sup);
+            liste.appendChild(li);
+          });
+        });
+      };
+      det.addEventListener("toggle", function () { if (det.open) lister(); });
+      f.addEventListener("submit", function (ev) {
+        ev.preventDefault();
+        var fi = fichier.files && fichier.files[0];
+        if (!num.value.trim() || !jour.value || !fi) { dit.textContent = "Numéro, date et fichier PDF sont nécessaires."; return; }
+        if (!/\.pdf$/i.test(fi.name)) { dit.textContent = "Le fichier doit être un PDF."; return; }
+        if (fi.size > 2097152) { dit.textContent = "Le fichier dépasse 2 Mo."; return; }
+        ok.disabled = true; dit.textContent = "Envoi de la facture…";
+        var lecteur = new FileReader();
+        lecteur.onload = function () {
+          var b64 = String(lecteur.result).replace(/^data:[^,]*,/, "");
+          V.rpc("admin_ajouter_facture", { entreprise: entreprise, cabinet: cabinet, numero: num.value.trim(), emise_le: jour.value,
+            montant_ttc: montant.value === "" ? null : Number(montant.value), nom_fichier: fi.name.replace(/[\/\\]/g, "-"), contenu: b64 }).then(function (r) {
+            ok.disabled = false;
+            if (!r.ok) { dit.textContent = r.erreur || "La facture n'a pas pu être déposée."; return; }
+            dit.textContent = "Facture " + num.value.trim() + " déposée : le client la voit dans Mon compte.";
+            f.reset(); jour.value = new Date().toISOString().slice(0, 10); lister();
+          });
+        };
+        lecteur.onerror = function () { ok.disabled = false; dit.textContent = "Le fichier n'a pas pu être lu."; };
+        lecteur.readAsDataURL(fi);
+      });
+      return det;
+    };
+
     var carteEntreprise = function (e) {
       var carte = el("article", "carte-connexion admin-entreprise");
       carte.appendChild(el("h3", "", e.denomination));
@@ -1087,6 +1159,7 @@
           (m.derniere_connexion ? " · dernière connexion le " + date(m.derniere_connexion) : ""), m.confirme));
       });
       carte.appendChild(ul);
+      carte.appendChild(blocFactures(e.id, null));
       return carte;
     };
 
@@ -1125,6 +1198,7 @@
         ul.appendChild(ligneCompte(m.courriel, m.role === "admin" ? "responsable du compte du cabinet" : "utilisateur du cabinet", m.confirme));
       });
       carte.appendChild(ul);
+      carte.appendChild(blocFactures(null, c.id));
       return carte;
     };
 
