@@ -69,7 +69,7 @@ const SITE = {
     adresse: "76 avenue Marcel Roustant, résidence l'Aupierre, 13800 Istres",
     siret: "504 851 312 00067",
     tvaIntra: "FR 22504851312",
-    immatriculation: "Registre national des entreprises (RNE)",
+    immatriculation: "RCS Salon-de-Provence 504 851 312",
     directeurPublication: "Clément Pierrel",
     hebergeurDonnees: "Supabase, Inc. (États-Unis), base de données hébergée en Irlande (Union européenne)",
     tribunal: "les tribunaux compétents de Salon-de-Provence"
