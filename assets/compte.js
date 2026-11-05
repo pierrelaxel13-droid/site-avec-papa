@@ -1102,7 +1102,7 @@
       f.appendChild(champ("Numéro", num)); f.appendChild(champ("Date", jour));
       f.appendChild(champ("Montant TTC (€)", montant)); f.appendChild(champ("Fichier PDF (2 Mo au plus)", fichier));
       f.appendChild(ok);
-      det.appendChild(liste); det.appendChild(f); det.appendChild(dit);
+      det.appendChild(f); det.appendChild(dit); det.appendChild(liste);
       var lister = function () {
         V.rpc("admin_factures", { entreprise: entreprise, cabinet: cabinet }).then(function (r) {
           liste.textContent = "";
@@ -1110,7 +1110,7 @@
           sum.textContent = "Factures (" + l.length + ")";
           if (!l.length) liste.appendChild(el("li", "admin-details", "Aucune facture déposée."));
           l.forEach(function (x) {
-            var li = el("li", "admin-compte");
+            var li = el("li", "admin-compte admin-facture-ligne");
             li.appendChild(el("span", "admin-courriel", "Facture " + x.numero));
             li.appendChild(el("span", "admin-details", date(x.emise_le) + (x.montant_ttc != null ? " · " +
               Number(x.montant_ttc).toLocaleString("fr-FR", { minimumFractionDigits: 2 }) + " € TTC" : "") + " · " + x.nom));
@@ -1273,6 +1273,34 @@
         etatAd.textContent = message || (ents.length + " entreprise" + (ents.length > 1 ? "s" : "") + ", dont " +
           avec + " avec une formule ; " + nc + " cabinet" + (nc > 1 ? "s" : "") + " ; " +
           seuls.length + " compte" + (seuls.length > 1 ? "s" : "") + " sans entreprise.");
+        // « Déposer une facture » : la liste de tous les clients, entreprises et cabinets.
+        var choixDepot = $("#depot-client"), zone = $("#depot-zone");
+        if (choixDepot) {
+          var avant = choixDepot.value;
+          choixDepot.length = 1;
+          var ge = document.createElement("optgroup"); ge.label = "Entreprises";
+          ents.slice().sort(function (a, b) { return a.denomination.localeCompare(b.denomination, "fr"); })
+            .forEach(function (e) { ge.appendChild(new Option(e.denomination, "e:" + e.id)); });
+          var gc = document.createElement("optgroup"); gc.label = "Cabinets de consultants";
+          (d.cabinets || []).slice().sort(function (a, b) { return a.nom.localeCompare(b.nom, "fr"); })
+            .forEach(function (c) { gc.appendChild(new Option(c.nom, "c:" + c.id)); });
+          if (ge.children.length) choixDepot.appendChild(ge);
+          if (gc.children.length) choixDepot.appendChild(gc);
+          choixDepot.options[0].text = ge.children.length || gc.children.length
+            ? "Choisir une entreprise ou un cabinet…" : "Aucun client pour l'instant";
+          choixDepot.value = avant;
+          if (!choixDepot.hasAttribute("data-ecoute")) {
+            choixDepot.setAttribute("data-ecoute", "");
+            choixDepot.addEventListener("change", function () {
+              zone.textContent = "";
+              var v = choixDepot.value;
+              if (!v) return;
+              var bloc = blocFactures(v.charAt(0) === "e" ? v.slice(2) : null, v.charAt(0) === "c" ? v.slice(2) : null);
+              bloc.open = true;
+              zone.appendChild(bloc);
+            });
+          }
+        }
         var liste = $("#admin-entreprises"); liste.textContent = "";
         if (!ents.length) liste.appendChild(el("p", "", "Aucune entreprise pour l'instant."));
         ents.forEach(function (e) { liste.appendChild(carteEntreprise(e)); });

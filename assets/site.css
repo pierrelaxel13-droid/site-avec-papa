@@ -4775,3 +4775,18 @@ ol.etapes-carres p { margin: 0; color: var(--encre-douce); text-align: center; m
 #compte-clients .compte-actions { margin-top: 1rem; padding: 0; }
 #compte-clients .etat-compte:empty { display: none; }
 #compte-cabinet .compte-explique { margin: 1rem 1.25rem 0; }
+.admin-depot { margin: 0 0 2rem; }
+.admin-depot h2 { margin: 0 0 .3rem; font-size: 1.25rem; }
+.admin-depot-choix { max-width: 32rem; margin-top: .75rem; }
+.admin-depot-choix select { font: inherit; font-size: .95rem; color: var(--encre); background: var(--carte); border: 1px solid var(--filet-fort); border-radius: var(--r1); padding: .6rem .7rem; min-height: 2.8rem; }
+.admin-depot .admin-factures { border-top: 0; }
+.admin-depot .admin-factures > summary { display: none; }
+.admin-factures .admin-comptes { margin-top: 1rem; }
+.admin-facture-ligne { display: grid !important; grid-template-columns: minmax(0, 1fr) auto auto; column-gap: 1.25rem; align-items: center; }
+.admin-facture-ligne .admin-courriel { grid-column: 1; }
+.admin-facture-ligne .admin-details { grid-column: 1; }
+.admin-facture-ligne .lien-nu { grid-row: 1 / span 2; }
+@media (max-width: 47.99rem) { .admin-facture-ligne { grid-template-columns: 1fr 1fr; } .admin-facture-ligne .admin-courriel, .admin-facture-ligne .admin-details { grid-column: 1 / -1; } .admin-facture-ligne .lien-nu { grid-row: auto; } }
+.admin-facture-ligne .lien-nu:nth-last-child(2) { grid-column: 2; grid-row: 1 / span 2; }
+.admin-facture-ligne .lien-nu:last-child { grid-column: 3; grid-row: 1 / span 2; }
+@media (max-width: 47.99rem) { .admin-facture-ligne .lien-nu:nth-last-child(2) { grid-column: 1; grid-row: 3; } .admin-facture-ligne .lien-nu:last-child { grid-column: 2; grid-row: 3; justify-self: end; } }

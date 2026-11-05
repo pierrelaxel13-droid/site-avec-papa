@@ -5191,6 +5191,13 @@ function pageAdmin() {
     <div id="admin-liste" data-formules="${esc(JSON.stringify(formules))}" hidden>
       <p class="aide-bas admin-rappel">Les registres, plans et réponses des clients n'apparaissent jamais ici :
       la base ne les donne pas à l'administrateur. Une formule « donnée par vous » ne touche jamais un abonnement payé chez Stripe.</p>
+      <section class="carte-connexion admin-depot" aria-labelledby="admin-depot-titre">
+        <h2 id="admin-depot-titre">Déposer une facture</h2>
+        <p class="aide-bas">Choisissez le client : ses factures s'affichent, avec le formulaire de dépôt. Il les retrouve dans son Mon compte, « Mes factures ».</p>
+        <label class="admin-facture-champ admin-depot-choix" for="depot-client"><span>Client</span>
+          <select id="depot-client"><option value="">Choisir une entreprise ou un cabinet…</option></select></label>
+        <div id="depot-zone"></div>
+      </section>
       <section class="admin-stats" id="admin-stats" aria-labelledby="admin-stats-titre" hidden>
         <div class="admin-stats-tete">
           <h2 class="titre-section" id="admin-stats-titre">Fréquentation et abonnements</h2>
