@@ -41,9 +41,9 @@
    ========================================================================== */
 
 window.PAIEMENT = {
-  //         à l'année                 au mois
-  textes:  { an: "", /* 410 €/an  */  mois: "" /* 39 €/mois  */ },
-  suivi:   { an: "", /* 650 €/an  */  mois: "" /* 59 €/mois  */ },
-  complet: { an: "", /* 869 €/an */ mois: "" /* 79 €/mois */ },
-  portail: ""    // Gérer ou résilier son abonnement
+  //         à l'année · au mois (installés par outils/stripe-installation.mjs)
+  textes:  { an: "https://buy.stripe.com/cNieVd1ai5kPaGZ6LKfjG00", mois: "https://buy.stripe.com/dRm4gz6uCcNhbL3eecfjG01" },
+  suivi:   { an: "https://buy.stripe.com/aFa7sL9GOdRl9CV3zyfjG02", mois: "https://buy.stripe.com/00w8wP2emaF9g1j2vufjG03" },
+  complet: { an: "https://buy.stripe.com/eVqeVd4mu00v02lc64fjG04", mois: "https://buy.stripe.com/00w4gzg5c00vdTb3zyfjG05" },
+  portail: "https://billing.stripe.com/p/login/cNieVd1ai5kPaGZ6LKfjG00"    // Gérer ou résilier son abonnement
 };
