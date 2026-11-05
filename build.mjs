@@ -4676,8 +4676,8 @@ function pageMonCompte() {
           <form id="form-supprimer" method="post" novalidate class="rgpd-bloc">
             <p class="aide-bas">Votre compte, votre profil et vos accès sont supprimés définitivement. Les entrées que
             vous avez écrites dans le registre de votre entreprise restent, avec votre nom : c'est la preuve datée de
-            l'entreprise. Si vous êtes le seul administrateur d'une entreprise ou d'un cabinet où d'autres
-            travaillent, nommez d'abord un autre administrateur.</p>
+            l'entreprise. Si vous êtes le seul responsable du compte d'une entreprise ou d'un cabinet où d'autres
+            travaillent, nommez d'abord un autre responsable du compte.</p>
             <div class="champ">
               <label for="s-courriel">Pour confirmer, saisissez votre adresse électronique</label>
               <input type="email" id="s-courriel" autocomplete="off" inputmode="email" spellcheck="false" required>

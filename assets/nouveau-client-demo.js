@@ -55,7 +55,7 @@
     $("#nc-fait").hidden = false;
     $("#nc-fait-titre").textContent = "L'accès de « " + nom + " » est créé";
     $("#nc-fait-texte").textContent = (courriel
-      ? "Dans un vrai compte, vous envoyez ce lien à " + courriel + " : valable 7 jours, il ne sert qu'une fois. Il y crée son compte et devient l'administrateur de son espace."
+      ? "Dans un vrai compte, vous envoyez ce lien à " + courriel + " : valable 7 jours, il ne sert qu'une fois. Il y crée son compte et devient le responsable du compte de son entreprise."
       : "Dans un vrai compte, son espace serait prêt et vous inviteriez son responsable quand vous voulez.") +
       " Démonstration : rien n'a été créé ni envoyé.";
     $("#nc-lien-bloc").hidden = !courriel;

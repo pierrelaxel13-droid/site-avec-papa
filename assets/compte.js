@@ -90,7 +90,7 @@
   var CLE_INVITATION = "vigie-invitation";
   function invitationEnAttente() { try { return window.localStorage.getItem(CLE_INVITATION) || ""; } catch (e) { return ""; } }
   function oublierInvitation() { try { window.localStorage.removeItem(CLE_INVITATION); } catch (e) { /* rien */ } }
-  var ROLES = { admin: "administrateur", membre: "membre", lecteur: "lecteur" };
+  var ROLES = { admin: "responsable du compte", membre: "utilisateur", lecteur: "utilisateur en lecture seule" };
   // À l'écran, l'intitulé commence par une capitale (« Administrateur · depuis… »).
   function role(k) { var r = ROLES[k] || k; return r.charAt(0).toUpperCase() + r.slice(1); }
   var CLE_TYPE = "vigie-type";
@@ -234,8 +234,8 @@
         $("#form-entreprise").hidden = true;
         var e = r.entreprises[0];
         $("#entreprise-nom").textContent = e.denomination;
-        $("#entreprise-role").textContent = e.role === "admin" ? "Administrateur"
-          : e.role === "lecteur" ? "Lecture seule" : "Membre";
+        $("#entreprise-role").textContent = e.role === "admin" ? "Responsable du compte"
+          : e.role === "lecteur" ? "Lecture seule" : "Utilisateur";
         var f = $("#entreprise-formule"), ouvrir = $("#entreprise-ouvrir"), tarifs = $("#entreprise-tarifs");
         if (e.rang > 0) {
           f.textContent = nomDuRang(e.rang);
@@ -273,8 +273,8 @@
       var cabinet = ($('input[name="e-type"]:checked') || {}).value === "cabinet";
       $("#e-nom-l").textContent = cabinet ? "Nom de votre cabinet" : "Nom de l'entreprise";
       $("#e-explique").textContent = cabinet
-        ? "Vous y créerez l'espace de chacun de vos clients ; vous serez l'administrateur du cabinet."
-        : "C'est elle qui portera l'abonnement, le plan de veille et le registre ; vous en serez l'administrateur.";
+        ? "Vous y créerez l'espace de chacun de vos clients ; vous en serez le responsable du compte."
+        : "C'est elle qui portera l'abonnement, le plan de veille et le registre ; vous en serez le responsable du compte.";
     };
     var types = document.querySelectorAll('input[name="e-type"]');
     for (var t = 0; t < types.length; t++) types[t].addEventListener("change", typeChoisi);
@@ -675,7 +675,7 @@
           var p1 = mk("p");
           p1.appendChild(mk("strong", "", "Envoyez-lui ce lien."));
           p1.appendChild(document.createTextNode(" Valable 7 jours, il ne sert qu'une fois : " + adresse +
-            " y crée son compte et devient l'administrateur de « " + c.denomination + " »."));
+            " y crée son compte et devient le responsable du compte de « " + c.denomination + " »."));
           boite.appendChild(p1);
           var l = mk("input"); l.type = "text"; l.readOnly = true; l.value = adresseLien; l.setAttribute("aria-label", "Le lien d'invitation");
           boite.appendChild(l);
@@ -858,7 +858,7 @@
         }
         // Les premiers pas, cochés d'après les données du cabinet.
         var etapes = {
-          cabinet: [true, "« " + cabinet.nom + " » est créé ; vous en êtes l'administrateur."],
+          cabinet: [true, "« " + cabinet.nom + " » est créé ; vous en êtes le responsable du compte."],
           client: [cl.length > 0, cl.length ? pluriel(cl.length, "client créé", "clients créés") + "." : null],
           plan: [cl.some(function (c) { return !!c.naf; }), cl.length ? pluriel(cl.filter(function (c) { return !!c.naf; }).length, "client a son code APE", "clients ont leur code APE") + " sur " + cl.length + "." : null],
           invite: [cl.some(function (c) { return c.membres > 0; }), cl.some(function (c) { return c.membres > 0; }) ? pluriel(cl.filter(function (c) { return c.membres > 0; }).length, "client a un compte", "clients ont un compte") + "." : null],
@@ -996,7 +996,7 @@
 
       var ul = el("ul", "admin-comptes");
       (e.membres || []).forEach(function (m) {
-        var role = m.role === "admin" ? "Administrateur" : m.role === "lecteur" ? "Lecteur" : "Membre";
+        var role = m.role === "admin" ? "Responsable du compte" : m.role === "lecteur" ? "Lecture seule" : "Utilisateur";
         ul.appendChild(ligneCompte(m.courriel, role + " · depuis le " + date(m.depuis) +
           (m.derniere_connexion ? " · dernière connexion le " + date(m.derniere_connexion) : ""), m.confirme));
       });
@@ -1036,7 +1036,7 @@
       }
       var ul = el("ul", "admin-comptes");
       (c.membres || []).forEach(function (m) {
-        ul.appendChild(ligneCompte(m.courriel, m.role === "admin" ? "administrateur du cabinet" : "membre du cabinet", m.confirme));
+        ul.appendChild(ligneCompte(m.courriel, m.role === "admin" ? "responsable du compte du cabinet" : "utilisateur du cabinet", m.confirme));
       });
       carte.appendChild(ul);
       return carte;

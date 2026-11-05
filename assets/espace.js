@@ -264,7 +264,7 @@
       $$(".choix-qualif", bloc).forEach(function (b) { b.setAttribute("aria-pressed", q && q.statut === b.getAttribute("data-statut") ? "true" : "false"); });
       etat.textContent = !ecrit ? (M.espace && M.espace.rang < 2
           ? "Qualifier les textes fait partie de la formule « Textes et suivi »."
-          : "Vous êtes en lecture seule : l'administrateur ou un membre de votre entreprise décide.")
+          : "Vous êtes en lecture seule : le responsable du compte ou un utilisateur de votre entreprise décide.")
         : q ? "« " + STATUTS[q.statut] + " » — décidé le " + jour(q.le) + ", inscrit au registre." : "Pas encore décidé.";
       var ouvertes = M.actions().filter(function (a) { return a.cle === cle; });
       $(".qualifier-actions", bloc).innerHTML = ouvertes.map(function (a) {

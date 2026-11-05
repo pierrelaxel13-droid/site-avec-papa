@@ -88,7 +88,7 @@
     if (lecture) {
       var p = document.querySelector(".pa-lecture");
       p.textContent = M.espace.rang < 2 ? "Le plan d'actions n'est pas compris dans votre abonnement : pour y avoir accès, changez d'abonnement (02 ou 03)."
-        : "Vous êtes en lecture seule : l'administrateur ou un membre de votre entreprise planifie et valide.";
+        : "Vous êtes en lecture seule : le responsable du compte ou un utilisateur de votre entreprise planifie et valide.";
       p.hidden = false;
     }
     var garde = M.lire("pco-entreprise") || {};

@@ -127,7 +127,7 @@
       entreprise = liste.filter(function (e) { return e.role === "admin"; })[0] || null;
       if (!entreprise) {
         dire(liste.length
-          ? "<p>Seul l'administrateur de votre entreprise peut l'abonner.</p>"
+          ? "<p>Seul le responsable du compte de votre entreprise peut l'abonner.</p>"
           : '<p>Nommez d\'abord votre entreprise dans <a href="./">Mon compte</a>, puis revenez ici.</p>');
         return;
       }

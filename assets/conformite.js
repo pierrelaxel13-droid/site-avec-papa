@@ -93,7 +93,7 @@
       var p = document.querySelector(".conf-lecture");
       p.textContent = M.espace.rang < 3
         ? "L'évaluation de conformité fait partie de la formule « Veille complète »."
-        : "Vous êtes en lecture seule : l'administrateur ou un membre de votre entreprise évalue.";
+        : "Vous êtes en lecture seule : le responsable du compte ou un utilisateur de votre entreprise évalue.";
       p.hidden = false;
     }
     lignes.forEach(function (tr) {
