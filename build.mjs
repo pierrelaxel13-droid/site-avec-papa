@@ -4584,7 +4584,7 @@ function pageMonCompte() {
         <section class="rg-carte compte-carte" id="compte-clients" aria-labelledby="cc-t-clients" hidden>
           <header class="rg-tete">
             <h2 id="cc-t-clients">Mes clients</h2>
-            <p>Les entreprises que votre cabinet accompagne : vous pouvez les créer et les supprimer.</p>
+            <p>Les entreprises que votre cabinet accompagne : les créer et les supprimer.</p>
           </header>
           <div class="compte-corps">
             <ul class="mc-liste" id="mc-liste"></ul>
