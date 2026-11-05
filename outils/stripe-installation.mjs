@@ -6,7 +6,8 @@
    décrit à la main :
      1. un produit par formule (métadonnée « formule » = textes, suivi, complet),
         avec deux prix récurrents HT : à l'année et au mois (build.mjs, FORMULES) ;
-     2. un lien de paiement par prix : carte et prélèvement SEPA, codes promo
+     2. un lien de paiement par prix : les moyens de paiement activés dans Stripe
+        (carte, prélèvement SEPA…), codes promo
         acceptés, retour vers compte/paiement.html?merci=1 ;
      3. le portail client : factures, moyen de paiement, et résiliation « à la
         fin de la période payée » (mensuel : fin du mois ; annuel : pas de
@@ -103,7 +104,8 @@ export async function installer(stripe, { tva = "" } = {}) {
       if (!lien) {
         lien = await stripe("POST", "/v1/payment_links", {
           line_items: [{ price: prix.id, quantity: 1 }],
-          payment_method_types: ["card", "sepa_debit"],
+          // Pas de liste imposée : les moyens de paiement activés dans le tableau de bord
+          // Stripe (Paramètres → Moyens de paiement : carte, prélèvement SEPA…) s'appliquent.
           allow_promotion_codes: "true",
           billing_address_collection: "required",
           tax_id_collection: { enabled: "true" },

@@ -23,7 +23,7 @@ const srv = http.createServer((q, r) => {
         unit_amount: Number(p.get("unit_amount")), recurring: { interval: p.get("recurring[interval]") } });
       else if (u.pathname === "/v1/payment_links") {
         assert.equal(p.get("after_completion[redirect][url]"), "https://vigie-reglementaire.fr/compte/paiement.html?merci=1");
-        assert.equal(p.get("payment_method_types[1]"), "sepa_debit");
+        assert.equal(p.get("payment_method_types[0]"), null, "les moyens de paiement viennent du tableau de bord Stripe");
         base.payment_links.push(rep = { id: "plink_" + ++n, url: "https://buy.stripe.com/test_" + n, metadata: meta() });
       } else if (u.pathname.startsWith("/v1/billing_portal/configurations")) {
         assert.equal(p.get("features[subscription_cancel][mode]"), "at_period_end");
