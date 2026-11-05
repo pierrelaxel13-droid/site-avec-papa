@@ -4790,3 +4790,9 @@ ol.etapes-carres p { margin: 0; color: var(--encre-douce); text-align: center; m
 .admin-facture-ligne .lien-nu:nth-last-child(2) { grid-column: 2; grid-row: 1 / span 2; }
 .admin-facture-ligne .lien-nu:last-child { grid-column: 3; grid-row: 1 / span 2; }
 @media (max-width: 47.99rem) { .admin-facture-ligne .lien-nu:nth-last-child(2) { grid-column: 1; grid-row: 3; } .admin-facture-ligne .lien-nu:last-child { grid-column: 2; grid-row: 3; justify-self: end; } }
+.abo-resilier { margin-top: .75rem; display: flex; justify-content: space-between; align-items: center; gap: 1rem; flex-wrap: wrap; }
+.abo-resilier[hidden] { display: none; }
+.abo-resilier .precision { margin: 0; flex: 1 1 18rem; font-size: .84rem; }
+.abo-bouton-resilier { color: var(--rouge); border-color: color-mix(in srgb, var(--rouge) 40%, var(--filet)); }
+@media (max-width: 47.99rem) { .abo-bouton-resilier { width: 100%; justify-content: center; } }
+.formule .sans-engagement { align-self: center; margin: 0; font-size: .82rem; color: var(--encre-douce); text-align: center; }

@@ -626,6 +626,55 @@
             if (a.statut === "past_due") prel.textContent += " — le dernier paiement n'est pas passé";
           }
         }
+        /* Résilier (mensuel, à tout moment) ou ne pas renouveler (annuel), 5 novembre 2026.
+           Pour un abonnement payé chez Stripe, et pour le responsable du compte seulement.
+           Le geste se fait dans le portail client de Stripe (contenu/paiement.js, « portail ») ;
+           sans portail, un e-mail prêt à envoyer. Le robot (outils/stripe.mjs) relit la
+           résiliation et Mon compte la montre. */
+        var zr = $("#abo-resilier");
+        zr.textContent = ""; zr.hidden = true;
+        if (actif && !a.offert && esp.role === "admin") {
+          var portail = bloc.getAttribute("data-portail") || "";
+          var annuel = a.periode === "an", qui = (V.utilisateur() || {}).courriel || "";
+          var lien = function (texte, objet) {
+            var x = document.createElement("a");
+            x.className = "bouton bouton-sobre bouton-petit abo-bouton-resilier";
+            x.textContent = texte;
+            if (portail) {
+              x.href = portail + (qui ? (portail.indexOf("?") === -1 ? "?" : "&") + "prefilled_email=" + encodeURIComponent(qui) : "");
+              x.target = "_blank"; x.rel = "noopener";
+            } else {
+              var dest = document.body.getAttribute("data-courriel") || "";
+              x.href = "mailto:" + dest + "?subject=" + encodeURIComponent(objet + " — " + esp.nom) +
+                "&body=" + encodeURIComponent("Bonjour,\n\n" + objet + " de l'abonnement de « " + esp.nom + " » (" + (NOMS_ABO[a.formule] || a.formule) +
+                  ", " + (annuel ? "annuel" : "mensuel") + ").\nCompte : " + qui + "\n\nBien cordialement,");
+            }
+            return x;
+          };
+          var note = document.createElement("p"); note.className = "precision";
+          if (a.resiliation_prevue) {
+            note.textContent = "Résiliation enregistrée : votre abonnement s'arrête le " + jourAbo(a.fin_periode) +
+              ", sans nouveau prélèvement. Vous gardez tout votre accès jusqu'à cette date.";
+            zr.appendChild(note);
+            if (portail) zr.appendChild(lien("Annuler la résiliation", "Annulation de la résiliation"));
+          } else {
+            var b = lien(annuel ? "Ne pas renouveler mon abonnement" : "Résilier mon abonnement",
+              annuel ? "Non-renouvellement" : "Résiliation");
+            b.addEventListener("click", function (ev) {
+              var q = annuel
+                ? "Ne pas renouveler votre abonnement annuel ?\n\nIl reste actif jusqu'au " + jourAbo(a.fin_periode) + ", puis s'arrête sans nouveau prélèvement."
+                : "Résilier votre abonnement mensuel ?\n\nIl s'arrête à la fin du mois en cours, déjà payé (" + jourAbo(a.fin_periode) + "), sans nouveau prélèvement.";
+              if (!window.confirm(q + (portail ? "\n\nVous allez être dirigé vers notre espace de paiement sécurisé (Stripe) pour confirmer." : "\n\nUn e-mail de demande va s'ouvrir : envoyez-le pour confirmer."))) ev.preventDefault();
+            });
+            note.textContent = annuel
+              ? "Abonnement annuel : vous pouvez choisir de ne pas le renouveler. Il reste actif jusqu'au " + jourAbo(a.fin_periode) + ", puis s'arrête."
+              : "Abonnement mensuel : résiliable à tout moment. Il s'arrête à la fin du mois en cours, déjà payé ; aucun nouveau prélèvement.";
+            zr.appendChild(note);
+            zr.appendChild(b);
+          }
+          zr.hidden = false;
+        }
+
         var liste = $("#abo-liste");
         if (esp.factures) {
           $("#abo-factures").hidden = false;

@@ -57,7 +57,10 @@ export function ligneDe(abonnement, entreprise) {
     entreprise_id: entreprise || null,
     formule: f.formule, periode: f.periode,
     statut: String(abonnement.status || "inconnu"),
-    fin_periode: fin ? new Date(fin * 1000).toISOString() : null
+    fin_periode: fin ? new Date(fin * 1000).toISOString() : null,
+    // Résiliation demandée par le client (portail Stripe) : l'abonnement s'arrête à la fin
+    // de la période payée, sans nouveau prélèvement (5 novembre 2026, Mon compte).
+    resiliation_prevue: !!(abonnement.cancel_at_period_end || abonnement.cancel_at)
   };
 }
 
@@ -121,12 +124,13 @@ export async function synchroniser({ stripe, sql, jours = 7, maintenant = Date.n
   // 3. Écrire : une ligne par abonnement Stripe. Une entreprise inconnue est ignorée (et dite).
   if (lignes.length) {
     const r = sql(`with x as (select * from jsonb_to_recordset(:'j'::jsonb) as x(stripe_abonnement text, stripe_client text,
-        entreprise_id uuid, formule text, periode text, statut text, fin_periode timestamptz)),
+        entreprise_id uuid, formule text, periode text, statut text, fin_periode timestamptz, resiliation_prevue boolean)),
       ok as (select x.* from x join public.entreprises e on e.id = x.entreprise_id),
-      ecrits as (insert into public.abonnements (entreprise_id, formule, periode, statut, fin_periode, stripe_client, stripe_abonnement, maj_le)
-        select entreprise_id, formule, periode, statut, fin_periode, stripe_client, stripe_abonnement, now() from ok
+      ecrits as (insert into public.abonnements (entreprise_id, formule, periode, statut, fin_periode, resiliation_prevue, stripe_client, stripe_abonnement, maj_le)
+        select entreprise_id, formule, periode, statut, fin_periode, coalesce(resiliation_prevue, false), stripe_client, stripe_abonnement, now() from ok
         on conflict (stripe_abonnement) do update set formule = excluded.formule, periode = excluded.periode,
-          statut = excluded.statut, fin_periode = excluded.fin_periode, stripe_client = excluded.stripe_client, maj_le = now()
+          statut = excluded.statut, fin_periode = excluded.fin_periode, resiliation_prevue = excluded.resiliation_prevue,
+          stripe_client = excluded.stripe_client, maj_le = now()
         returning stripe_abonnement)
       select json_build_object('ecrits', (select count(*) from ecrits),
         'inconnues', (select coalesce(json_agg(stripe_abonnement), '[]') from x where not exists (select 1 from ok where ok.stripe_abonnement = x.stripe_abonnement)))`,

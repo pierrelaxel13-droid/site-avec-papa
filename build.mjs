@@ -4273,6 +4273,7 @@ function pageAbonnement(V) {
         <ul class="formule-donne">${f.donne.map((d) => `<li>${esc(d)}</li>`).join("")}</ul>
         <a class="bouton ${id === "complet" ? "bouton-accent" : "bouton-sobre"}" href="compte/paiement.html?formule=${id}&amp;periode=an">Abonnement annuel</a>
         <a class="lien-mois" href="compte/paiement.html?formule=${id}&amp;periode=mois">Abonnement mensuel</a>
+        <p class="sans-engagement">Sans engagement de durée</p>
       </article>`).join("\n      ")}
     </div>
 
@@ -4630,7 +4631,7 @@ function pageMonCompte() {
             <p>Votre mot de passe, votre adresse, vos e-mails, vos données personnelles.</p>
           </header>
           <div class="compte-corps compte-lignes">
-        <div class="abo-bloc" id="abo-bloc" hidden>
+        <div class="abo-bloc" id="abo-bloc" data-portail="${esc(lienPaiement("portail"))}" hidden>
           <div class="abo-tete">
             <span class="abo-libelle">Mon abonnement</span>
             <a class="lien-nu" id="abo-changer" href="../abonnement.html">Changer d'abonnement</a>
@@ -4640,6 +4641,7 @@ function pageMonCompte() {
             <div><dt>Fin de l'abonnement</dt><dd id="abo-fin">—</dd></div>
             <div><dt>Prochain prélèvement</dt><dd id="abo-prelevement">—</dd></div>
           </dl>
+          <div class="abo-resilier" id="abo-resilier" hidden></div>
           <div class="abo-factures" id="abo-factures" hidden>
             <p class="abo-libelle">Mes factures</p>
             <ul class="abo-liste" id="abo-liste"></ul>

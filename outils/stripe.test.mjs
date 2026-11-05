@@ -60,5 +60,10 @@ ok(ecrit.find((x) => x.stripe_abonnement === "sub_OLD").statut === "canceled", "
 ok(!ecrit.find((x) => x.stripe_abonnement === "sub_B"), "sub_B (sans entreprise, inconnu de la base) n'est pas écrit");
 ok(appels[0][1]["created[gte]"] === String(Math.floor(Date.parse("2026-11-03T12:00:00Z") / 1000) - 7 * 86400), "seulement les 7 derniers jours");
 
+// Résiliation demandée (portail client) : lue, pour Mon compte.
+ok(ligneDe({ ...abo("sub_9", "active", "Textes", "month", 1800000000), cancel_at_period_end: true }, null).resiliation_prevue === true, "résiliation demandée : lue");
+ok(ligneDe(abo("sub_8", "active", "Textes", "month", 1800000000), null).resiliation_prevue === false, "sans résiliation : non");
+
 console.log(`${n - ko}/${n} vérifications passées`);
 if (ko) process.exit(1);
+
