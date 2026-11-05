@@ -50,4 +50,10 @@ const t = r.textes[1];
 assert.equal(t.nature, "Décret"); assert.equal(t.articlesEnVigueur, 2); assert.equal(t.fonds, true);
 assert.equal(t.corps, "Article 1 : Premier article.\n\nArticle 2 : Deuxième article.");
 assert.equal(t.lien, "https://www.legifrance.gouv.fr/loda/id/LEGITEXT1");
+// Ce qui ne regarde pas une entreprise.
+const { exclusion } = await import("./fonds-legi.mjs");
+assert.ok(exclusion("Décret n° 2012-1 du 2 mai 2012 modifiant le décret n° 2001-1 relatif à la sécurité"));
+assert.ok(exclusion("Arrêté du 1er août 1990 fixant le statut particulier du corps des ingénieurs"));
+assert.ok(exclusion("Arrêté du 17 décembre 2013 portant fixation au titre de l'année 2014 du montant des cotisations"));
+assert.equal(exclusion("Arrêté du 14 janvier 2011 relatif aux prescriptions générales applicables aux installations classées"), "");
 console.log(`fonds-legi : ok (mot-clé d'essai « ${mot} »)`);

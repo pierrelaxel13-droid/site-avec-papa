@@ -43,8 +43,6 @@ jobs:
           ls -lh "$RUNNER_TEMP/legi.tar.gz"
 
       - name: Les textes en vigueur depuis 50 ans
-        env:
-          FONDS_EXEMPLES: "1"
         run: node outils/fonds-legi.mjs "$RUNNER_TEMP/legi.tar.gz" | tee "$RUNNER_TEMP/fonds.log"
 
       - name: Le site se construit avec

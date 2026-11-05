@@ -34,7 +34,16 @@
   /* La catégorie principale d'un texte (3 novembre 2026, « qu'il ne compte
      qu'une fois ») : celle de son premier sujet qui est dans le plan. Les
      autres pastilles de catégorie se cachent : une ligne, une catégorie. */
+  // La catégorie d'une ligne ne change qu'avec le plan : on la garde en mémoire.
+  var memoCat = typeof WeakMap === "function" ? new WeakMap() : null;
   function principale(tr) {
+    if (memoCat && memoCat.has(tr)) return memoCat.get(tr);
+    var c = principaleCalculee(tr);
+    if (memoCat) memoCat.set(tr, c);
+    return c;
+  }
+  window.addEventListener("pco-plan", function () { if (memoCat) memoCat = new WeakMap(); }, true);
+  function principaleCalculee(tr) {
     var spans = [].slice.call(tr.querySelectorAll(".categorie-texte[data-cat]"));
     var ids = (tr.getAttribute("data-domaines") || "").split(" "), cat = "";
     for (var i = 0; i < ids.length && !cat; i++) {
@@ -83,11 +92,10 @@
      chaque texte compté une fois, dans sa catégorie principale ; un clic filtre. */
   function carres() {
     var cat = filtre ? filtre.value : "";
+    var parCat = {};
+    lignes.forEach(function (tr) { if (!tr.hidden) { var c = principale(tr); parCat[c] = (parCat[c] || 0) + 1; } });
     [].forEach.call(document.querySelectorAll(".carre-categorie"), function (b) {
-      var c = b.getAttribute("data-filtre-cat"), n = 0;
-      lignes.forEach(function (tr) {
-        if (!tr.hidden && principale(tr) === c) n++;
-      });
+      var c = b.getAttribute("data-filtre-cat"), n = parCat[c] || 0;
       b.querySelector("[data-n-cat]").textContent = n;
       b.querySelector(".precision").textContent = "texte" + (n > 1 ? "s" : "");
       b.setAttribute("aria-pressed", cat === c ? "true" : "false");

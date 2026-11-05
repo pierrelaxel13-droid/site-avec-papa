@@ -135,6 +135,36 @@ export function lisArticle(xml, auj) {
   return { txts, num: nu(meta, "NUM"), corps };
 }
 
+/* Ce qui ne regarde pas une entreprise, lu dans le titre (4 novembre 2026). Le premier
+   passage a retenu 12 676 textes par leurs mots-clés ; beaucoup ne font que modifier un autre
+   texte (déjà consolidé), règlent la fonction publique ou l'administration elle-même, ne
+   valent que pour une année, une collectivité d'outre-mer ou un territoire. On les écarte. */
+const sansAccent = (x) => String(x).normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+export const EXCLUS = [
+  ["ne fait que modifier ou abroger un autre texte", /^(?:decret|arrete|loi|ordonnance)[^,]{0,60}? (?:modifiant|portant modification|completant|abrogeant|portant abrogation)\b/],
+  ["fonction publique", /fonctionnaires|fonction publique|\bcorps (?:de|des)\b|statut particulier|\bpersonnels? (?:de|des|du|enseignant|navigant|civils|militaires|non titulaires|techniques|administratifs)|agents (?:de l'etat|publics|titulaires|contractuels de l'etat|non titulaires|des)|emplois? (?:de direction|fonctionnels)|grille indiciaire|echelonnement indiciaire|indemnites? (?:susceptibles|de|d'|forfaitaire|speciale|horaire) .{0,40}(?:personnels|agents|fonctionnaires)|magistrats|militaires|gendarmerie|police nationale|sapeurs-pompiers professionnels|praticiens hospitaliers|enseignants-chercheurs|professeurs/],
+  ["organisation de l'administration", /traitement automatise|traitements automatises|fichier (?:national|central)|\bportant creation (?:d'un|d'une|du|de la|des) (?:traitement|service|commission|comite|conseil|observatoire|mission|centre|etablissement|direction|groupement|groupe|formation)|groupe d'experts|groupe de travail|organisation (?:de l'administration|des services|de la direction|du ministere)|attributions? (?:du|de la|des|de) (?:ministre|secretaire|competences)|delegation de (?:signature|pouvoir)|portant nomination|conseil d'administration|composition (?:et|du|de la)|\binstituant (?:un|une) (?:comite|commission|conseil)|ecole nationale|universit|academie|elections? des representants des (?:eleves|etudiants)|habilitant une|commission nationale de conciliation|commissions? administratives? paritaires?|emoluments|hopitaux|personnels? medica|conseil general de l'alimentation/],
+  ["ne vaut que pour une année ou une crise", /au titre de l'annee \d{4}|pour l'annee \d{4}|pour (?:la campagne|l'exercice) \d{4}|aide (?:temporaire|exceptionnelle)|fonds de solidarite|covid|autorisant provisoirement/],
+  ["outre-mer ou territoire", /polynesie|nouvelle-caledonie|wallis|saint-pierre-et-miquelon|terres australes|\bmayotte\b|saint-barthelemy|saint-martin|guyane|martinique|guadeloupe|la reunion|\bcorse\b|departement d(?:e|u|es) [a-z]|region (?:de|d') [a-z]/],
+  ["liste, agrément ou accord particulier", /fixant la liste des (?:organisations|etablissements)|habilitees a designer|portant agrement|portant habilitation|portant approbation (?:de la convention|du cahier|des statuts)|reconnaissance d'utilite publique|portant extension|accord (?:collectif|national)|convention collective|portant derogation/]
+];
+/* Un titre qui cite un code (« l'article L. 162-5 du code de la sécurité sociale ») ne
+   parle pas pour autant de ce que dit son nom : sans ce retrait, « sécurité sociale »
+   rangeait 1 635 textes de remboursement et de retraite dans « Paie », et « pêche maritime »
+   tout ce qui cite le code rural. On trie sur le titre sans les noms de codes. */
+const CODES = "de la securite sociale|rural et de la peche maritime|rural|de l'action sociale et des familles|de la sante publique|de l'environnement|du travail|de commerce|de la consommation|des transports|de l'urbanisme|civil|penal|general des impots|de la route|minier|de l'energie|de la propriete intellectuelle|de la construction et de l'habitation|de l'education|du sport|du tourisme|de la commande publique|monetaire et financier|des assurances|de la mutualite|general des collectivites territoriales|des douanes|forestier|de la defense|de la recherche|des postes et des communications electroniques|du patrimoine|de la voirie routiere|des pensions [a-z ]+|de l'organisation judiciaire|de procedure penale|de procedure civile|de justice administrative|de l'entree et du sejour des etrangers et du droit d'asile|du cinema et de l'image animee|des relations entre le public et l'administration|general de la propriete des personnes publiques|du domaine de l'etat";
+const RE_CODES = new RegExp(`\\bcode (?:${CODES})\\b`, "g");
+export const titrePourTri = (titre) => sansAccent(titre).replace(RE_CODES, " ");
+/* Des mots-clés bons pour le relevé du jour, trop larges sur cinquante ans de textes :
+   un texte qui ne touche un sujet que par eux n'y est pas rangé (sauf les cotisations,
+   qui regardent bien la paie). */
+const TROP_LARGES = new Set(["securite sociale", "action sociale et des familles", "importation", "exportation", "associations"]);
+export function sujetsDuFonds(V, titre) {
+  const t = titrePourTri(titre);
+  return rattache(V, t, "legi").filter((d) => !(d.mots || []).every((m) => TROP_LARGES.has(m)) || (d.id === "paie" && /cotisation/.test(t)));
+}
+export const exclusion = (titre) => { const x = sansAccent(titre); const e = EXCLUS.find(([, re]) => re.test(x)); return e ? e[0] : ""; };
+
 const ordreNum = (a) => String(a.num || "").replace(/\d+/g, (n) => n.padStart(6, "0"));
 
 export async function fonds(fichier, V, { auj = new Date().toISOString().slice(0, 10), ans = ANS } = {}) {
@@ -148,8 +178,10 @@ export async function fonds(fichier, V, { auj = new Date().toISOString().slice(0
     if (fiches <= 2 && process.env.FONDS_EXEMPLES) console.log(`--- exemple ${n}\n${xml.slice(0, 2500)}\n---`);
     const t = lisVersion(xml, auj, limite);
     if (!t) return;
-    const domaines = rattache(V, t.titre, "legi");
+    const domaines = sujetsDuFonds(V, t.titre);
     if (!domaines.length) { raison("hors de nos sujets"); return; }
+    const ex = exclusion(t.titre);
+    if (ex) { raison(ex); return; }
     raison("retenu");
     const avant = textes.get(t.id);
     if (!avant || t.date > avant.date) textes.set(t.id, { ...t, domaines, articles: [] });
