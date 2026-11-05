@@ -1,20 +1,20 @@
 {
  "licence": "Textes officiels de la République française — Licence Ouverte. Publications des autorités citées, reproduites avec leur source et leur date.",
- "releve_le": "2026-11-04",
- "depuis": "2026-10-21",
+ "releve_le": "2026-11-05",
+ "depuis": "2026-10-22",
  "rapport": [
   {
    "id": "jorf",
    "nom": "Journal officiel de la République française",
-   "entrees": 155799,
-   "retenus": 641,
+   "entrees": 140176,
+   "retenus": 581,
    "souci": null
   },
   {
    "id": "eurlex-l",
    "nom": "Journal officiel de l'Union européenne — série L",
    "entrees": 100,
-   "retenus": 19,
+   "retenus": 18,
    "souci": null
   },
   {
@@ -57,7 +57,7 @@
    "nom": "URSSAF — actualités employeurs",
    "entrees": 0,
    "retenus": 0,
-   "souci": "injoignable (fetch failed : ECONNRESET) — l'hôte refuse le robot, ou le réseau d'ici le bloque"
+   "souci": "injoignable (fetch failed : UND_ERR_SOCKET) — l'hôte refuse le robot, ou le réseau d'ici le bloque"
   },
   {
    "id": "bofip",
@@ -104,7 +104,7 @@
   {
    "id": "ademe",
    "nom": "ADEME — nouvelles publications",
-   "entrees": 86,
+   "entrees": 87,
    "retenus": 2,
    "souci": null
   },
@@ -132,7 +132,7 @@
   {
    "id": "entreprendre",
    "nom": "Entreprendre — service-public.fr",
-   "entrees": 237,
+   "entrees": 236,
    "retenus": 0,
    "souci": null
   },
@@ -160,14 +160,14 @@
   {
    "id": "has",
    "nom": "Haute Autorité de santé",
-   "entrees": 50,
-   "retenus": 1,
+   "entrees": 1,
+   "retenus": 0,
    "souci": null
   },
   {
    "id": "ansm",
    "nom": "ANSM — informations de sécurité",
-   "entrees": 0,
+   "entrees": 8,
    "retenus": 0,
    "souci": null
   },
@@ -182,7 +182,7 @@
    "id": "agriculture",
    "nom": "Ministère de l'Agriculture — actualités",
    "entrees": 30,
-   "retenus": 1,
+   "retenus": 2,
    "souci": null
   },
   {
@@ -277,6 +277,61 @@
    "vuA": "2026-11-04T23:43:26Z"
   },
   {
+   "source": "travail",
+   "sourceNom": "Ministère du Travail — actualités",
+   "genre": "actualite",
+   "id": "https://travail-emploi.gouv.fr/index-de-legalite-professionnelle-calcul-et-questionsreponses",
+   "titre": "Index de l’égalité professionnelle : calcul et questions/réponses",
+   "nature": "Publication officielle",
+   "date": "2026-11-05",
+   "corps": "Toutes les entreprises d’au moins 50 salariés doivent calculer et publier leur Index de l’égalité professionnelle entre les femmes et les hommes, chaque année au plus tard le 1er mars.",
+   "lien": "https://travail-emploi.gouv.fr/index-de-legalite-professionnelle-calcul-et-questionsreponses",
+   "domaines": [
+    {
+     "id": "social",
+     "nom": "Droit du travail et relations sociales",
+     "mots": [
+      "egalite professionnelle"
+     ]
+    }
+   ],
+   "morceaux": 1,
+   "dateTexte": "",
+   "vuLe": "2026-11-05",
+   "vuA": "2026-11-04T17:21:39Z"
+  },
+  {
+   "source": "agriculture",
+   "sourceNom": "Ministère de l'Agriculture — actualités",
+   "genre": "actualite",
+   "id": "https://agriculture.gouv.fr/produits-phytopharmaceutiques-autorisations-de-mise-sur-le-marche-dune-duree-maximale-de-120-jours",
+   "titre": "Produits phytopharmaceutiques : autorisations de mise sur le marché d'une durée maximale de 120 jours délivrées par le ministère dans des situations d'urgence phytosanitaire",
+   "nature": "Publication officielle",
+   "date": "2026-11-05",
+   "corps": "L'article 53 du règlement (CE) n°1107/2009 encadrant la mise sur le marché des produits phytopharmaceutiques permet aux États membres d'autoriser, en cas de circonstances particulières, la mise sur le marché de produits phytopharmaceutiques par voie de dérogation à la procédure standard d’autorisation lorsqu’il n’y a pas d’autre moyen raisonnable pour maîtriser un danger phytosanitaire. La période de validité de ces autorisations ne peut excéder 120 jours.",
+   "lien": "https://agriculture.gouv.fr/produits-phytopharmaceutiques-autorisations-de-mise-sur-le-marche-dune-duree-maximale-de-120-jours",
+   "domaines": [
+    {
+     "id": "produits_ce",
+     "nom": "Conformité des produits et marquage CE",
+     "mots": [
+      "mise sur le marche"
+     ]
+    },
+    {
+     "id": "agri",
+     "nom": "Agriculture, pêche et santé des végétaux et animaux",
+     "mots": [
+      "produits phytopharmaceutiques"
+     ]
+    }
+   ],
+   "morceaux": 1,
+   "dateTexte": "",
+   "vuLe": "2026-11-05",
+   "vuA": "2026-11-05T13:32:28Z"
+  },
+  {
    "source": "jorf",
    "sourceNom": "Journal officiel de la République française",
    "genre": "texte",
@@ -327,6 +382,30 @@
    "vuA": "2026-11-04T01:25:39Z"
   },
   {
+   "source": "eurlex-l",
+   "sourceNom": "Journal officiel de l'Union européenne — série L",
+   "genre": "texte",
+   "id": "https://eur-lex.europa.eu/./legal-content/AUTO/?uri=CELEX:32026D2495",
+   "titre": "CELEX:32026D2495: Décision d’exécution (UE) 2026/2495 du Conseil du 29 octobre 2026 modifiant la décision d’exécution (UE) 2024/1641 en ce qui concerne une prorogation de l’autorisation permettant à la Roumanie d’appliquer des mesures particulières dérogeant à l’article 26, paragraphe 1, point a), et à l’article 168 de la directive 2006/112/CE relative au système commun de taxe sur la valeur ajoutée",
+   "nature": "Texte officiel",
+   "date": "2026-11-04",
+   "corps": "",
+   "lien": "https://eur-lex.europa.eu/./legal-content/AUTO/?uri=CELEX:32026D2495",
+   "domaines": [
+    {
+     "id": "fiscal",
+     "nom": "Fiscalité, facturation et comptabilité",
+     "mots": [
+      "taxe sur la valeur ajoutee"
+     ]
+    }
+   ],
+   "morceaux": 0,
+   "dateTexte": "2026-10-29",
+   "vuLe": "2026-11-04",
+   "vuA": "2026-11-05T13:32:28Z"
+  },
+  {
    "source": "jorf",
    "sourceNom": "Journal officiel de la République française",
    "genre": "texte",
@@ -374,30 +453,6 @@
    "dateTexte": "",
    "vuLe": "2026-11-04",
    "vuA": "2026-11-04T23:43:26Z"
-  },
-  {
-   "source": "travail",
-   "sourceNom": "Ministère du Travail — actualités",
-   "genre": "actualite",
-   "id": "https://travail-emploi.gouv.fr/index-de-legalite-professionnelle-calcul-et-questionsreponses",
-   "titre": "Index de l’égalité professionnelle : calcul et questions/réponses",
-   "nature": "Publication officielle",
-   "date": "2026-11-04",
-   "corps": "Toutes les entreprises d’au moins 50 salariés doivent calculer et publier leur Index de l’égalité professionnelle entre les femmes et les hommes, chaque année au plus tard le 1er mars.",
-   "lien": "https://travail-emploi.gouv.fr/index-de-legalite-professionnelle-calcul-et-questionsreponses",
-   "domaines": [
-    {
-     "id": "social",
-     "nom": "Droit du travail et relations sociales",
-     "mots": [
-      "egalite professionnelle"
-     ]
-    }
-   ],
-   "morceaux": 1,
-   "dateTexte": "",
-   "vuLe": "2026-11-04",
-   "vuA": "2026-11-04T17:21:39Z"
   },
   {
    "source": "agriculture",
@@ -1043,30 +1098,6 @@
    "vuA": "2026-10-30T01:02:55Z"
   },
   {
-   "source": "has",
-   "sourceNom": "Haute Autorité de santé",
-   "genre": "actualite",
-   "id": "https://www.has-sante.fr/jcms/p_4586850/fr/chef-fe-du-service-scientifique-service-d-evaluation-des-medicaments-sem-cdi",
-   "titre": "Chef(fe) du service scientifique - Service d’Evaluation des Médicaments (SEM) - CDI",
-   "nature": "Publication officielle",
-   "date": "2026-10-30",
-   "corps": "La HAS recherche un Chef(fe) du service scientifique (H-F) dans le cadre d'un CDI.",
-   "lien": "https://www.has-sante.fr/jcms/p_4586850/fr/chef-fe-du-service-scientifique-service-d-evaluation-des-medicaments-sem-cdi",
-   "domaines": [
-    {
-     "id": "pharma",
-     "nom": "Produits de santé et dispositifs médicaux",
-     "mots": [
-      "medicaments"
-     ]
-    }
-   ],
-   "morceaux": 1,
-   "dateTexte": "",
-   "vuLe": "2026-10-30",
-   "vuA": "2026-10-30T19:25:59Z"
-  },
-  {
    "source": "eurlex-l",
    "sourceNom": "Journal officiel de l'Union européenne — série L",
    "genre": "texte",
@@ -1584,30 +1615,6 @@
    "source": "eurlex-l",
    "sourceNom": "Journal officiel de l'Union européenne — série L",
    "genre": "texte",
-   "id": "https://eur-lex.europa.eu/./legal-content/AUTO/?uri=CELEX:32026D2397",
-   "titre": "CELEX:32026D2397: Décision (PESC) 2026/2397 du Conseil du 26 octobre 2026 modifiant la décision 2010/573/PESC concernant des mesures restrictives à l’encontre des dirigeants de la région de Transnistrie (République de Moldavie)",
-   "nature": "Texte officiel",
-   "date": "2026-10-26",
-   "corps": "",
-   "lien": "https://eur-lex.europa.eu/./legal-content/AUTO/?uri=CELEX:32026D2397",
-   "domaines": [
-    {
-     "id": "douane",
-     "nom": "Douane et échanges internationaux",
-     "mots": [
-      "mesures restrictives"
-     ]
-    }
-   ],
-   "morceaux": 0,
-   "dateTexte": "2026-10-26",
-   "vuLe": "2026-10-26",
-   "vuA": "2026-10-26T00:00:00Z"
-  },
-  {
-   "source": "eurlex-l",
-   "sourceNom": "Journal officiel de l'Union européenne — série L",
-   "genre": "texte",
    "id": "https://eur-lex.europa.eu/./legal-content/AUTO/?uri=CELEX:32026R2359",
    "titre": "CELEX:32026R2359: Règlement (UE) 2026/2359 du Parlement européen et du Conseil du 7 octobre 2026 modifiant le règlement (CE) n° 883/2004 portant sur la coordination des systèmes de sécurité sociale et le règlement (CE) n° 987/2009 fixant les modalités d’application du règlement (CE) n° 883/2004 (Texte présentant de l’intérêt pour l’EEE et pour la Suisse)",
    "nature": "Texte officiel",
@@ -1699,30 +1706,6 @@
    ],
    "morceaux": 3,
    "dateTexte": "2026-10-15",
-   "vuLe": "2026-10-25",
-   "vuA": "2026-10-25T00:00:00Z"
-  },
-  {
-   "source": "eurlex-l",
-   "sourceNom": "Journal officiel de l'Union européenne — série L",
-   "genre": "texte",
-   "id": "https://eur-lex.europa.eu/./legal-content/AUTO/?uri=CELEX:32026R2345",
-   "titre": "CELEX:32026R2345: Règlement d’exécution (UE) 2026/2345 de la Commission du 23 octobre 2026 soumettant à enregistrement les importations d’un certain polychlorure de vinyle (PVC) originaire de la République populaire de Chine, de la République de Corée, du Mexique et de Taïwan en vue de permettre la perception de droits antidumping sur les importations soumises à enregistrement",
-   "nature": "Texte officiel",
-   "date": "2026-10-25",
-   "corps": "",
-   "lien": "https://eur-lex.europa.eu/./legal-content/AUTO/?uri=CELEX:32026R2345",
-   "domaines": [
-    {
-     "id": "douane",
-     "nom": "Douane et échanges internationaux",
-     "mots": [
-      "importation"
-     ]
-    }
-   ],
-   "morceaux": 0,
-   "dateTexte": "2026-10-23",
    "vuLe": "2026-10-25",
    "vuA": "2026-10-25T00:00:00Z"
   },
@@ -1850,81 +1833,6 @@
    "dateTexte": "2026-08-21",
    "vuLe": "2026-10-22",
    "vuA": "2026-10-22T00:00:00Z"
-  },
-  {
-   "source": "jorf",
-   "sourceNom": "Journal officiel de la République française",
-   "genre": "texte",
-   "id": "JORFARTI000055002504",
-   "titre": "Arrêté du 20 octobre 2026 modifiant l'arrêté du 23 novembre 2022 portant cahiers des charges des éco-organismes et des systèmes individuels de la filière à responsabilité élargie du producteur des textiles, chaussures et linge de maison (TLC)",
-   "nature": "Article",
-   "date": "2026-10-21",
-   "corps": "L'annexe I de l'arrêté du 23 novembre 2022 susvisé est modifiée selon les dispositions de l'annexe au présent arrêté.\n\nLe présent arrêté sera publié au Journal officiel de la République française.\n\nANNEXE\n\nLe cahier des charges des éco-organismes figurant en annexe I à l'arrêté ministériel du 23 novembre 2022 est modifié comme suit :\nAu paragraphe 2.2 intitulé « Modulations applicables », le sous-paragraphe 2.2.3.1 est remplacé par les dispositions suivantes :\n« 2.2.3.1. Pratiques industrielles et commerciales\n« Les contributions financières versées par les producteurs à l'éco-organisme sont modulées selon les pénalités associées à la durabilité liée aux pratiques industrielles et commerciales selon les montants définis dans le tableau suivant :\n«\n\nCondition d'application\n\nProduit dont le score D est inférieur ou égal à 0,8\n\nMontants des pénalités (en €)\n\nType de produit\n\nAnnée\n\n2026 et 2027\n\n2028\n\n2029\n\nÀ partir de 2030\n\nBoxer/Slip\n\n0,5\n\n1\n\n1,50\n\n2,00\n\nCaleçon\n\n0,5\n\n1\n\n1,50\n\n2,00\n\nChaussettes\n\n0,5\n\n1,00\n\n1,50\n\n2,00\n\nChemise\n\n6\n\n6,75\n\n7,50\n\n8,25\n\nJean\n\n9\n\n11,75\n\n14,50\n\n17,25\n\nJupe\n\n3\n\n3,50\n\n4,00\n\n4,50\n\nRobe\n\n7\n\n7,75\n\n8,50\n\n9,25\n\nMaillot de bain\n\n3\n\n3,50\n\n4,00\n\n4,50\n\nManteau/Veste\n\n12\n\n14,50\n\n17,00\n\n19,50\n\nPantalon\n\n7\n\n7,75\n\n8,50\n\n9,25\n\nPull\n\n6\n\n6,75\n\n7,50\n\n8,25\n\nT-shirt/Polo\n\n2\n\n2,50\n\n3,00\n\n3,50\n\n« Pour chaque produit énuméré dans le tableau ci-dessus, D correspond au coefficient établi à partir de deux critères : la largeur de gamme (G) et l'incitation à la réparation (R), pondéré chacun à 50 %. Chacun des deux critères s'exprime à travers un indice compris entre 0 et 1 et pouvant donc être exprimé en pourcentage (%).\n«\n\nFormule\n\nD = 0,67 + (1,45 − 0,67) ∗ (0,5 × G + 0,5 × R)\n\n« Les précisions sur les modalités de calcul de cette pénalité sont définies dans une note publiée sur le site du ministère chargé de l'environnement.\n« La méthodologie définie en application des articles D. 541-240 et suivants du code de l'environnement est réputé satisfaire aux modalités de calcul définies dans la note visée ci-dessus. »\n\nArrêté du 20 octobre 2026 modifiant l'arrêté du 23 novembre 2022 portant cahiers des charges des éco-organismes et des systèmes individuels de la filière à responsabilité élargie du producteur des textiles, chaussures et linge de maison (TLC)\nArrêté du 20 octobre 2026 modifiant l'arrêté du 23 novembre 2022 portant cahiers des charges des éco-organismes et des systèmes individuels de la filière à responsabilité élargie du producteur des textiles, chaussures et linge de maison (TLC)\n\nPublics concernés : les producteurs de textiles d'habillement, les organismes agréés pour assurer la gestion des déchets issus de ces produits.\n\nObjet : le présent arrêté modifie l'arrêté du 23 novembre 2022 portant cahiers des charges des éco-organismes, des systèmes individuels et des organismes coordonnateurs de la filière à responsabilité élargie du producteur des textiles, chaussures et linge de maison (TLC). Il vise à moduler les contributions financières versées par les producteurs en fonction de critères de performance environnementale liées aux pratiques industrielles et commerciales relevant de la mode ultra éphémère.\n\nEntrée en vigueur : les dispositions du présent arrêté entrent en vigueur le lendemain de sa publication.\n\nApplication : le présent arrêté est pris pour l'application de l'article L. 541-10-3 du code de l'environnement.\n\nArrêté du 20 octobre 2026 modifiant l'arrêté du 23 novembre 2022 portant cahiers des charges des éco-organismes et des systèmes individuels de la filière à responsabilité élargie du producteur des textiles, chaussures et linge de maison (TLC)",
-   "nota": "",
-   "lien": "https://www.legifrance.gouv.fr/jorf/id/JORFARTI000055002504",
-   "domaines": [
-    {
-     "id": "dechets",
-     "nom": "Déchets, REP et économie circulaire",
-     "mots": [
-      "eco-organisme"
-     ]
-    }
-   ],
-   "morceaux": 6,
-   "dateTexte": "2026-10-20",
-   "vuLe": "2026-10-21",
-   "vuA": "2026-10-21T00:00:00Z"
-  },
-  {
-   "source": "jorf",
-   "sourceNom": "Journal officiel de la République française",
-   "genre": "texte",
-   "id": "JORFARTI000055002921",
-   "titre": "Décret n° 2026-973 du 20 octobre 2026 modifiant l'article L. 136-1-1 du code de la sécurité sociale",
-   "nature": "Article",
-   "date": "2026-10-21",
-   "corps": "Au e du 4° du III de l'article L. 136-1-1 du code de la sécurité sociale :\n1° Les mots : « prévues au b du 19 ter de l'article 81 du code général des impôts, » sont remplacés par les mots : « fixées par décret » ;\n2° Les mots : « prévue au même c » sont remplacés par les mots : « fixée par décret ».\n\nLe ministre du travail et des solidarités, la ministre de la santé, des familles, de l'autonomie et des personnes handicapées et le ministre de l'action et des comptes publics sont chargés, chacun en ce qui le concerne, de l'exécution du présent décret, qui sera publié au Journal officiel de la République française.\n\nPublics concernés : salariés bénéficiant de la prise en charge par leur employeur de leurs frais de carburant (« prime carburant ») ; employeurs ; organismes chargés du recouvrement des cotisations et contributions sociales.\n\nObjet : tirer les conséquences de la décision n° 2026-327 L du 29 juillet 2026 par laquelle le Conseil constitutionnel a déclaré que présentent un caractère réglementaire certaines dispositions du e du 4° du III de l'article L. 136-1-1 du code de la sécurité sociale. Le décret modifie le niveau de norme nécessaire au pilotage de certains dispositifs du e du 4° du III de l'article L. 136-1-1 du code de la sécurité sociale. Les plafonds des exclusions d'assiette de la contribution sociale généralisée qu'il prévoyait sont désormais fixés par voie réglementaire. La mesure est opérée à droit constant, sous réserve du relèvement, par cet arrêté, de la limite applicable à la prise en charge des frais de carburant.\n\nEntrée en vigueur : le texte entre en vigueur le lendemain de sa publication.\n\nApplication : le présent décret est un texte autonome.",
-   "nota": "",
-   "lien": "https://www.legifrance.gouv.fr/jorf/id/JORFARTI000055002921",
-   "domaines": [
-    {
-     "id": "paie",
-     "nom": "Paie, cotisations et protection sociale",
-     "mots": [
-      "securite sociale"
-     ]
-    }
-   ],
-   "morceaux": 3,
-   "dateTexte": "2026-10-20",
-   "vuLe": "2026-10-21",
-   "vuA": "2026-10-21T00:00:00Z"
-  },
-  {
-   "source": "jorf",
-   "sourceNom": "Journal officiel de la République française",
-   "genre": "texte",
-   "id": "JORFARTI000055002934",
-   "titre": "Décret n° 2026-974 du 20 octobre 2026 fixant les plafonds prévus au e du 4° du III de l'article L. 136-1-1 du code de la sécurité sociale",
-   "nature": "Article",
-   "date": "2026-10-21",
-   "corps": "Les plafonds prévus au e du 4° du III de l'article L. 136-1-1 du code de la sécurité sociale sont fixés :\n\n- à 600 euros par an pour l'avantage résultant de la prise en charge par l'employeur des frais de carburant ou des frais exposés pour l'alimentation de véhicules électriques engagés par les salariés dans les conditions prévues à l'article L. 3261-3 du code du travail et des frais mentionnés à l'article L. 3261-3-1 du même code, dans la limite de 300 euros pour les frais de carburant.\n\nLorsque la prise en charge des frais mentionnés à l'article L. 3261-3-1 de ce code se cumule avec celle des frais prévus à l'article L. 3261-2 du même code, l'avantage résultant de ces deux prises en charge ne peut excéder le montant maximal entre 900 euros et le montant de l'avantage résultant de la prise en charge prévue à l'article L. 3261-2 du même code ;\n\n- à 310 euros par an, en l'absence de prise en charge prévue à l'article L. 3261-2 du même code, pour l'avantage résultant de la prise en charge, par une collectivité territoriale, par un établissement public de coopération intercommunale ou par l'opérateur France Travail, des frais de carburant ou d'alimentation de véhicules électriques engagés par les salariés pour leurs déplacements entre leur résidence habituelle et leur lieu de travail lorsque ceux-ci sont situés à une distance d'au moins trente kilomètres l'un de l'autre, ou pour leurs déplacements entre leur résidence habituelle et leur lieu de travail en tant que conducteur en covoiturage quelle que soit la distance.\n\nLe présent décret est applicable aux cotisations et contributions dues au titre des périodes d'activité courant à compter du 1 er octobre 2026.\nPar dérogation à l'article 1 er , pour les sommes versées jusqu'au 31 décembre 2026, les montants de 300 euros, 310 euros, 600 euros et 900 euros sont portés à 1 000 euros.\n\nLe ministre du travail et des solidarités, la ministre de la santé, des familles, de l'autonomie et des personnes handicapées et le ministre de l'action et des comptes publics sont chargés, chacun en ce qui le concerne, de l'exécution du présent décret, qui sera publié au Journal officiel de la République française.\n\nPublics concernés : salariés bénéficiant de la prise en charge par leur employeur de leurs frais de carburant (« prime carburant ») ; employeurs ; organismes chargés du recouvrement des cotisations et contributions sociales.\n\nObjet : le décret tire les conséquences du décret en Conseil d'Etat n° 2026-973 du 20 octobre 2026 par lequel le Gouvernement procède au déclassement, dans le cadre de la procédure prévue au second alinéa de l'article 37 de la Constitution, de certaines dispositions du e du 4° du III de l'article L. 136-1-1 du code de la sécurité sociale. Il fixe les limites d'exonération de contribution sociale généralisée des avantages résultant de la prise en charge par l'employeur des frais de carburant ou des frais exposés pour l'alimentation de véhicules électriques engagés par les salariés et des frais pris en charge au titre du forfait « mobilités durables » (FMD). Ces limites sont fixées à droit constant, sous réserve de leur relèvement temporaire à 1 000 euros pour les sommes versées jusqu'au 31 décembre 2026.\n\nEntrée en vigueur : le texte entre en vigueur le lendemain de sa publication. Il est applicable aux cotisations et contributions dues au titre des périodes d'activité courant à compter du 1 er octobre 2026.\n\nApplication : le présent décret est un texte autonome.",
-   "nota": "",
-   "lien": "https://www.legifrance.gouv.fr/jorf/id/JORFARTI000055002934",
-   "domaines": [
-    {
-     "id": "paie",
-     "nom": "Paie, cotisations et protection sociale",
-     "mots": [
-      "securite sociale"
-     ]
-    }
-   ],
-   "morceaux": 4,
-   "dateTexte": "2026-10-20",
-   "vuLe": "2026-10-21",
-   "vuA": "2026-10-21T00:00:00Z"
   }
  ]
 }
