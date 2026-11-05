@@ -4613,12 +4613,12 @@ function pageMonCompte() {
             <ul class="admin-comptes" id="equipe-invitations"></ul>
           </div>
           <div class="reserve reserve-ok" id="invitation-lien" hidden>
-            <p><strong>Envoyez-lui ce lien.</strong> Il est valable 7 jours et ne sert qu'une fois ; elle y créera
-            son compte avec l'adresse <b id="i-pour"></b>.</p>
+            <p><strong>Un e-mail d'invitation part à <b id="i-pour"></b> dans les minutes qui suivent.</strong>
+            Le lien ci-dessous est le même (valable 7 jours, une seule fois), si vous préférez aussi l'envoyer vous-même.</p>
             <input type="text" id="i-lien" readonly aria-label="Le lien d'invitation">
             <p class="rangee" style="margin-top:var(--t3)">
               <button type="button" class="bouton bouton-accent" id="i-copier">Copier le lien</button>
-              <a class="bouton bouton-sobre" id="i-mail" href="#">Écrire le courriel</a>
+              <a class="bouton bouton-sobre" id="i-mail" href="#">L'envoyer aussi depuis ma messagerie</a>
             </p>
           </div>
           </div>
@@ -5042,7 +5042,7 @@ function pageNouveauClient(V, NAF, demo = null) {
             <label for="nc-lien">Lien d'invitation</label>
             <div class="nc-lien-ligne"><input type="text" id="nc-lien" readonly>
               <button type="button" class="bouton bouton-sobre" id="nc-copier">Copier le lien</button></div>
-            <a class="bouton bouton-accent nc-envoyer" id="nc-courriel-lien" href="#">Écrire l'e-mail d'invitation</a>
+            <a class="bouton bouton-sobre nc-envoyer" id="nc-courriel-lien" href="#">L'envoyer aussi depuis ma messagerie</a>
           </div>
           <div class="nc-suite">
             <a class="bouton bouton-sobre" id="nc-ouvrir" href="../app/reglages.html">Ouvrir son espace</a>
@@ -5195,7 +5195,7 @@ function pageAdmin() {
       la base ne les donne pas à l'administrateur. Une formule « donnée par vous » ne touche jamais un abonnement payé chez Stripe.</p>
       <section class="carte-connexion admin-depot" aria-labelledby="admin-depot-titre">
         <h2 id="admin-depot-titre">Déposer une facture</h2>
-        <p class="aide-bas">Choisissez le client : ses factures s'affichent, avec le formulaire de dépôt. Il les retrouve dans son Mon compte, « Mes factures ».</p>
+        <p class="aide-bas">Choisissez le client : ses factures s'affichent, avec le formulaire de dépôt. Il les retrouve dans son Mon compte, « Mes factures », et reçoit un e-mail à chaque dépôt.</p>
         <label class="admin-facture-champ admin-depot-choix" for="depot-client"><span>Client</span>
           <select id="depot-client"><option value="">Choisir une entreprise ou un cabinet…</option></select></label>
         <div id="depot-zone"></div>

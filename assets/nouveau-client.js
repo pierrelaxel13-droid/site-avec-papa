@@ -47,7 +47,7 @@
         $("#nc-fait").hidden = false;
         $("#nc-fait-titre").textContent = "L'accès de « " + nom + " » est créé";
         $("#nc-fait-texte").textContent = lien
-          ? "Envoyez ce lien à " + courriel + " : valable 7 jours, il ne sert qu'une fois. Il y crée son compte et devient le responsable du compte de son entreprise."
+          ? "Un e-mail d'invitation part à " + courriel + " dans les minutes qui suivent : il y crée son compte et devient le responsable du compte de son entreprise. Le lien ci-dessous est le même (valable 7 jours, une seule fois), si vous préférez aussi l'envoyer vous-même."
           : (erreur ? "L'espace est créé, mais l'invitation n'a pas pu l'être : " + erreur + " Vous pourrez inviter son responsable depuis le tableau de bord."
                     : "Son espace est prêt. Invitez son responsable quand vous voulez, depuis le tableau de bord.") +
             (naf ? "" : " Pensez à régler son code APE dans son espace (Réglages).");

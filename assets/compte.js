@@ -853,16 +853,16 @@
           var adresseLien = V.pageDuSite("compte/invitation.html") + "#jeton=" + encodeURIComponent(r.donnees);
           var boite = mk("div", "reserve reserve-ok");
           var p1 = mk("p");
-          p1.appendChild(mk("strong", "", "Envoyez-lui ce lien."));
-          p1.appendChild(document.createTextNode(" Valable 7 jours, il ne sert qu'une fois : " + adresse +
-            " y crée son compte et devient le responsable du compte de « " + c.denomination + " »."));
+          p1.appendChild(mk("strong", "", "Un e-mail d'invitation part à " + adresse + " dans les minutes qui suivent."));
+          p1.appendChild(document.createTextNode(" Il y crée son compte et devient le responsable du compte de « " + c.denomination +
+            " ». Le lien ci-dessous est le même (valable 7 jours, une seule fois), si vous préférez aussi l'envoyer vous-même."));
           boite.appendChild(p1);
           var l = mk("input"); l.type = "text"; l.readOnly = true; l.value = adresseLien; l.setAttribute("aria-label", "Le lien d'invitation");
           boite.appendChild(l);
           var rg = mk("p", "rangee"); rg.style.marginTop = "var(--t3)";
           var cp = mk("button", "bouton bouton-accent", "Copier le lien"); cp.type = "button";
           cp.addEventListener("click", function () { copier(l, cp); });
-          var mail = mk("a", "bouton bouton-sobre", "Écrire le courriel");
+          var mail = mk("a", "bouton bouton-sobre", "L'envoyer aussi depuis ma messagerie");
           mail.href = "mailto:" + encodeURIComponent(adresse) +
             "?subject=" + encodeURIComponent("Votre espace de veille réglementaire « " + c.denomination + " »") +
             "&body=" + encodeURIComponent("Bonjour,\n\n" + cabinet.nom + " a ouvert l'espace de « " + c.denomination +
@@ -1207,7 +1207,7 @@
             montant_ttc: montant.value === "" ? null : Number(montant.value), nom_fichier: fi.name.replace(/[\/\\]/g, "-"), contenu: b64 }).then(function (r) {
             ok.disabled = false;
             if (!r.ok) { dit.textContent = r.erreur || "La facture n'a pas pu être déposée."; return; }
-            dit.textContent = "Facture " + num.value.trim() + " déposée : le client la voit dans Mon compte.";
+            dit.textContent = "Facture " + num.value.trim() + " déposée : le client la voit dans Mon compte et reçoit un e-mail pour le prévenir.";
             f.reset(); jour.value = new Date().toISOString().slice(0, 10); lister();
           });
         };

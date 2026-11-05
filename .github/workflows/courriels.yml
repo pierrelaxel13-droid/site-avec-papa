@@ -1,0 +1,37 @@
+# Vigie — les e-mails automatiques (5 novembre 2026)
+#
+# Envoie par Brevo les e-mails que la base a mis en file : invitations
+# (client d'un consultant, collègue, membre d'un cabinet) et « nouvelle
+# facture disponible » (outils/courriels.mjs, migration 25).
+# Toutes les 10 minutes ; GitHub peut décaler un passage de quelques minutes.
+#
+# Secrets : SUPABASE_DB_URL, BREVO_API_KEY, RECAP_EXPEDITEUR (voir recap.yml).
+name: E-mails automatiques
+
+on:
+  schedule:
+    - cron: "*/10 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: courriels
+  cancel-in-progress: false
+
+jobs:
+  envoyer:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: 22
+      - name: Envoyer les e-mails en attente
+        env:
+          SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+          BREVO_API_KEY: ${{ secrets.BREVO_API_KEY }}
+          RECAP_EXPEDITEUR: ${{ secrets.RECAP_EXPEDITEUR }}
+        run: node outils/courriels.mjs

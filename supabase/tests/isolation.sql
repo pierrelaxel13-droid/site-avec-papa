@@ -1044,6 +1044,29 @@ select tests.ok(not exists (select 1 from public.entreprises where id = '0000000
 select tests.ok((select consultant_id is null and not acces_consultant from public.entreprises where id = '00000000-0000-0000-0000-00000000a000'), 'A garde son espace, sans le cabinet');
 select tests.ok((select count(*) from public.registre where entreprise_id = '00000000-0000-0000-0000-00000000a000') > 0, 'et tout son registre');
 
+-- ---- Les e-mails automatiques (migration 25) ---------------------------
+select tests.qui('00000000-0000-0000-0000-0000000000b1', 'b_admin@test.fr');
+set local role authenticated;
+select set_config('tests.jeton_courriel', public.inviter('nouvelle.collegue@test.fr', 'membre', '00000000-0000-0000-0000-00000000b000', null), true);
+select tests.refuse('select * from prive.courriels', 'la file des e-mails ne se lit pas depuis le site');
+select tests.refuse('select prive.courriels_a_envoyer()', 'ni par sa fonction');
+select tests.refuse('select prive.courriel_fait(1, true)', 'ni ne se marque envoyée');
+reset role;
+set local role anon;
+select tests.refuse('select * from prive.courriels', 'un visiteur non plus');
+reset role;
+select tests.ok((select (donnees ->> 'jeton') = current_setting('tests.jeton_courriel') and donnees ->> 'espace' = 'Entreprise B (essai)'
+                   and donnees ->> 'par' = 'b_admin@test.fr'
+                 from prive.courriels where genre = 'invitation' and destinataire = 'nouvelle.collegue@test.fr'), 'l''invitation met son e-mail en file, avec son lien');
+select prive.courriel_fait((select id from prive.courriels where destinataire = 'nouvelle.collegue@test.fr'), true);
+select tests.ok((select envoye_le is not null and not (donnees ? 'jeton') from prive.courriels where destinataire = 'nouvelle.collegue@test.fr'),
+  'une fois envoyé, le jeton en clair est effacé');
+insert into prive.factures (entreprise_id, numero, emise_le, montant_ttc, nom_fichier, contenu)
+  values ('00000000-0000-0000-0000-00000000b000', 'F-COURRIEL-1', current_date, 12.00, 'f.pdf', decode(current_setting('tests.pdf'), 'base64'));
+select tests.ok((select count(*) from prive.courriels where genre = 'facture' and donnees ->> 'numero' = 'F-COURRIEL-1') = 1
+                and exists (select 1 from prive.courriels where genre = 'facture' and donnees ->> 'numero' = 'F-COURRIEL-1' and destinataire = 'b_admin@test.fr'),
+  'une facture déposée prévient le responsable du compte, lui seul');
+
 do $$ begin raise notice 'TOUS LES TESTS D''ISOLATION SONT PASSÉS'; end $$;
 
 rollback;
