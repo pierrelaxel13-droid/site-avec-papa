@@ -39,7 +39,7 @@ const SITE = {
      l'édite est à part (societe) et n'apparaît que dans les pages légales :
      un consultant n'achète pas l'outil du cabinet d'un confrère. */
   nom: "Vigie",
-  societe: "Pierrel & Co",       // l'éditeur — société en cours de création
+  societe: "Clément Pierrel (entreprise individuelle)",   // l'éditeur
   /* La caution métier : la personne, pas son cabinet. */
   concepteur: "Clément Pierrel",
   bareme: "Veille réglementaire par secteur",
@@ -63,15 +63,16 @@ const SITE = {
      confidentialité et les CGV (legales.mjs). Vide = « [À COMPLÉTER] » visible
      sur ces pages et listé à chaque construction. */
   editeur: {
-    denomination: "",          // une fois la société créée, ex. « Pierrel & Co SAS »
-    forme: "",                 // ex. « SAS », « entreprise individuelle (micro-entreprise) »
-    capital: "",               // pour une société, ex. « 1 000 € »
-    adresse: "",               // siège social complet
-    siret: "",
-    immatriculation: "",       // ex. « RCS Salon-de-Provence » ou « Registre national des entreprises »
-    directeurPublication: "",  // le représentant légal
+    denomination: "Clément Pierrel",
+    forme: "entreprise individuelle",
+    capital: "",
+    adresse: "76 avenue Marcel Roustant, Résident l'Auierre, 13800 Istres",
+    siret: "504 851 312 00067",
+    tvaIntra: "FR 22 504851312",   // clé calculée sur le SIREN (12 + 3 × (SIREN mod 97)) mod 97
+    immatriculation: "Registre national des entreprises (RNE)",
+    directeurPublication: "Clément Pierrel",
     hebergeurDonnees: "Supabase, Inc. (États-Unis), base de données hébergée en Irlande (Union européenne)",
-    tribunal: ""               // ex. « le tribunal de commerce d'Aix-en-Provence », avec l'avocat
+    tribunal: "les tribunaux compétents de Salon-de-Provence"
   },
   /* L'offre consultant : la page consultants.html, le bloc « Vous êtes
      consultant QSE ? » de l'accueil et le lien du pied. Allumée depuis que le
