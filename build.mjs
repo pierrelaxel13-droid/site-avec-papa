@@ -4793,8 +4793,12 @@ function pageSouscrire() {
           <li><span class="paie-icone" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10 12 4l9 6M5 10v8M9.5 10v8M14.5 10v8M19 10v8M3 20h18"/></svg></span>
             <span><strong>Prélèvement SEPA</strong><span class="precision">Avec l'IBAN de l'entreprise ; le mandat se signe en ligne.</span></span></li>
         </ul>
-        <p class="precision">Vous choisissez l'un ou l'autre à l'étape suivante, sur la page sécurisée de notre prestataire de paiement, Stripe.
-        Vos coordonnées bancaires ne passent jamais par ce site.</p>
+        <p class="precision mentions-paiement">Paiement sécurisé par Stripe Payments Europe, Ltd., établissement agréé par la Banque
+        centrale d'Irlande. Vos coordonnées bancaires sont saisies et conservées par Stripe (norme PCI DSS) : ${esc(SITE.nom)} n'y a
+        jamais accès. Prix hors taxes, TVA de 20 % en sus ; une facture est émise à chaque échéance. Le prélèvement SEPA repose
+        sur un mandat signé en ligne. Abonnement soumis à nos <a href="../cgv.html">conditions générales de vente</a> ; vos données
+        sont traitées selon notre <a href="../confidentialite.html">politique de confidentialité</a>.
+        <a href="../mentions-legales.html">Mentions légales</a>.</p>
       </div>
 
       <div class="carte-connexion">
