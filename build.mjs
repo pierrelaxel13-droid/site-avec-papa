@@ -4282,7 +4282,7 @@ function pageAbonnement(V) {
 
     ${paiementComplet() ? `<p class="reserve reserve-ok" style="margin-top:var(--t5)">
       <strong>Paiement en ligne, sécurisé par Stripe.</strong>
-      Par carte bancaire ou par prélèvement SEPA, chaque année ou chaque mois.
+      Par carte bancaire, chaque année ou chaque mois.
       Vos coordonnées bancaires ne passent jamais par ce site.
       ${lienPaiement("portail") ? `Vous pouvez <a href="${esc(lienPaiement("portail"))}">gérer ou résilier votre abonnement</a> à tout moment.` : ""}
     </p>` : ""}
@@ -4732,11 +4732,11 @@ function pageMonCompte() {
 }
 
 /* --- Le paiement (3 novembre 2026, demandé par Axel) -------------------------
-   Derrière chaque bouton « S'abonner » : le récapitulatif de l'offre, les deux
-   moyens de paiement (carte bancaire, prélèvement SEPA), le compte et
+   Derrière chaque bouton « S'abonner » : le récapitulatif de l'offre,
+   le moyen de paiement (carte bancaire), le compte et
    l'entreprise auxquels l'abonnement se rattache, l'acceptation des CGV.
-   Puis la page de paiement de Stripe, où le client choisit carte ou
-   prélèvement : ses coordonnées bancaires ne passent jamais par ce site.
+   Puis la page de paiement de Stripe, où le client saisit sa carte :
+   ses coordonnées bancaires ne passent jamais par ce site.
    L'identifiant de l'entreprise part avec (client_reference_id) : le robot
    outils/stripe.mjs s'en sert pour ouvrir la formule dans la base. */
 function pageSouscrire() {
@@ -4760,7 +4760,7 @@ function pageSouscrire() {
       <div class="carte-connexion" id="paie-merci" hidden>
         <h2>Merci, votre paiement est enregistré</h2>
         <p>Votre formule s'ouvre dans les minutes qui suivent, dès que Stripe nous confirme le paiement.
-        Par prélèvement SEPA, la confirmation peut prendre quelques jours ouvrés. Vous recevez la facture par courriel.</p>
+        Vous recevez la facture par courriel.</p>
         <p class="rangee" style="margin-top:var(--t4)"><a class="bouton bouton-accent" href="./">Mon compte</a></p>
       </div>
 
@@ -4791,13 +4791,11 @@ function pageSouscrire() {
         <ul class="paie-moyens">
           <li><span class="paie-icone" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5.5" width="18" height="13" rx="2"/><path d="M3 10h18M7 15h3"/></svg></span>
             <span><strong>Carte bancaire</strong><span class="precision">CB, Visa, Mastercard. Débitée à chaque échéance.</span></span></li>
-          <li><span class="paie-icone" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10 12 4l9 6M5 10v8M9.5 10v8M14.5 10v8M19 10v8M3 20h18"/></svg></span>
-            <span><strong>Prélèvement SEPA</strong><span class="precision">Avec l'IBAN de l'entreprise ; le mandat se signe en ligne.</span></span></li>
         </ul>
         <p class="precision mentions-paiement">Paiement sécurisé par Stripe Payments Europe, Ltd., établissement agréé par la Banque
         centrale d'Irlande. Vos coordonnées bancaires sont saisies et conservées par Stripe (norme PCI DSS) : Vigie réglementaire n'y a
-        jamais accès. Prix hors taxes, TVA de 20 % en sus ; une facture est émise à chaque échéance. Le prélèvement SEPA repose
-        sur un mandat signé en ligne. Abonnement soumis à nos <a href="../cgv.html">conditions générales de vente</a> ; vos données
+        jamais accès. Prix hors taxes, TVA de 20 % en sus ; une facture est émise à chaque échéance.
+        Abonnement soumis à nos <a href="../cgv.html">conditions générales de vente</a> ; vos données
         sont traitées selon notre <a href="../confidentialite.html">politique de confidentialité</a>.
         <a href="../mentions-legales.html">Mentions légales</a>.</p>
       </div>
@@ -4819,7 +4817,7 @@ function pageSouscrire() {
     </div>
   </div>
 </section>`;
-  return page({ titre: `Votre abonnement | ${SITE.nom}`, description: "Paiement de l'abonnement, par carte ou par prélèvement.",
+  return page({ titre: `Votre abonnement | ${SITE.nom}`, description: "Paiement de l'abonnement par carte bancaire.",
     racine: "../", zone: "public", corps, attrsBody: ' data-page="compte"', scripts: ["assets/compte.js", "assets/souscrire.js"],
     installation: false, piedCourt: true });
 }
