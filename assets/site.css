@@ -4718,3 +4718,28 @@ ol.etapes-carres p { margin: 0; color: var(--encre-douce); text-align: center; m
   .rail-item .legende { margin-top: .35rem !important; }
   .rail-item .legende-detail { margin-top: .3rem !important; }
 }
+
+/* --- Mon compte : mon abonnement et mes factures (5 novembre 2026) --------- */
+.abo-bloc { padding: 1rem 0 1.1rem; border-bottom: 1px solid var(--filet); }
+.abo-tete { display: flex; justify-content: space-between; align-items: baseline; gap: 1rem; margin-bottom: .6rem; }
+.abo-libelle { margin: 0; font-weight: 600; font-size: .93rem; color: var(--encre); }
+.abo-tete .lien-nu { font-size: .85rem; }
+.abo-infos { margin: 0; display: grid; gap: .5rem; padding: .85rem 1rem; background: var(--papier); border: 1px solid var(--filet); border-radius: var(--r1); }
+.abo-infos > div { display: grid; grid-template-columns: minmax(9rem, 13rem) minmax(0, 1fr); gap: .75rem; align-items: baseline; }
+.abo-infos dt { color: var(--encre-douce); font-size: .85rem; }
+.abo-infos dd { margin: 0; font-size: .93rem; color: var(--encre); font-weight: 600; }
+.abo-factures { margin-top: 1rem; }
+.abo-factures .abo-libelle { margin-bottom: .5rem; }
+.abo-liste { list-style: none; margin: 0; padding: 0; border: 1px solid var(--filet); border-radius: var(--r1); }
+.abo-liste li { display: flex; justify-content: space-between; align-items: center; gap: .75rem; padding: .65rem .9rem; }
+.abo-liste li + li { border-top: 1px solid var(--filet); }
+.abo-facture { display: grid; gap: .1rem; min-width: 0; }
+.abo-facture strong { font-size: .9rem; }
+.abo-facture .precision { font-size: .82rem; }
+.bouton-petit { padding: .4rem .85rem; font-size: .82rem; min-height: 0; white-space: nowrap; }
+@media (max-width: 47.99rem) {
+  .abo-infos > div { grid-template-columns: 1fr; gap: .1rem; }
+  .abo-liste li { flex-direction: column; align-items: stretch; text-align: left; }
+  .abo-liste .bouton-petit { width: 100%; justify-content: center; }
+  .abo-tete { flex-direction: column; gap: .2rem; align-items: flex-start; }
+}

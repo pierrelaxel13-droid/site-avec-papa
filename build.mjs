@@ -4617,6 +4617,24 @@ function pageMonCompte() {
             <p>Votre mot de passe, votre adresse, vos e-mails, vos données personnelles.</p>
           </header>
           <div class="compte-corps compte-lignes">
+        <div class="abo-bloc" id="abo-bloc" hidden>
+          <div class="abo-tete">
+            <span class="abo-libelle">Mon abonnement</span>
+            <a class="lien-nu" id="abo-changer" href="../abonnement.html">Changer d'abonnement</a>
+          </div>
+          <dl class="abo-infos">
+            <div><dt>Abonnement souscrit</dt><dd id="abo-formule">—</dd></div>
+            <div><dt>Fin de l'abonnement</dt><dd id="abo-fin">—</dd></div>
+            <div><dt>Prochain prélèvement</dt><dd id="abo-prelevement">—</dd></div>
+          </dl>
+          <div class="abo-factures" id="abo-factures" hidden>
+            <p class="abo-libelle">Mes factures</p>
+            <ul class="abo-liste" id="abo-liste"></ul>
+            <p class="precision" id="abo-aucune" hidden>Aucune facture pour l'instant : elles apparaîtront ici dès leur émission.</p>
+          </div>
+          <p class="etat-compte" id="etat-abo" role="status"></p>
+        </div>
+
         <details class="ligne-reglage">
           <summary><span>Mot de passe</span><span class="modifier">Modifier</span></summary>
           <form id="form-motdepasse" method="post" novalidate>

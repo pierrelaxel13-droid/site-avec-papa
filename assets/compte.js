@@ -518,6 +518,85 @@
     });
 
     /* Les e-mails (4 novembre 2026) : récapitulatif quotidien et rappels. */
+    /* --- Mon abonnement et mes factures (5 novembre 2026) --------------------
+       Le type d'abonnement, la fin, le prochain prélèvement (lus chez Stripe par
+       outils/stripe.mjs) et les factures déposées par l'administrateur du site.
+       Les factures ne sont montrées qu'au responsable du compte (la base ne les
+       donne qu'à lui). */
+    var bloc = $("#abo-bloc");
+    if (bloc) {
+      var NOMS_ABO = { textes: "01 — État des lieux réglementaire", suivi: "02 — État des lieux réglementaire et plan d'actions",
+                       complet: "03 — Veille complète", consultant: "Offre consultant" };
+      var jourAbo = function (iso) {
+        return iso ? new Date(iso).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" }) : "";
+      };
+      var euros = function (n) { return Number(n).toLocaleString("fr-FR", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " € TTC"; };
+      var telecharger = function (id, bouton) {
+        var avant = bouton.textContent;
+        bouton.disabled = true; bouton.textContent = "Téléchargement…";
+        V.rpc("ma_facture", { id: id }).then(function (r) {
+          bouton.disabled = false; bouton.textContent = avant;
+          if (!r.ok || !r.donnees) { $("#etat-abo").textContent = (r && r.erreur) || "La facture n'a pas pu être téléchargée."; return; }
+          var bin = atob(r.donnees.contenu), octets = new Uint8Array(bin.length);
+          for (var i = 0; i < bin.length; i++) octets[i] = bin.charCodeAt(i);
+          var url = URL.createObjectURL(new Blob([octets], { type: "application/pdf" }));
+          var a = document.createElement("a");
+          a.href = url; a.download = r.donnees.nom || "facture.pdf";
+          document.body.appendChild(a); a.click(); a.remove();
+          setTimeout(function () { URL.revokeObjectURL(url); }, 4000);
+        });
+      };
+      V.rpc("mon_abonnement").then(function (r) {
+        if (!r.ok || !r.donnees) return;
+        var d = r.donnees, esp = (d.entreprises || [])[0] || (d.cabinets || [])[0];
+        if (!esp) return;
+        var a = esp.abonnement, actif = a && /^(active|trialing|past_due|offert)$/.test(a.statut);
+        var formule = $("#abo-formule"), fin = $("#abo-fin"), prel = $("#abo-prelevement");
+        if (esp.par_cabinet && !actif) {
+          formule.textContent = "03 — Veille complète, comprise dans l'abonnement de votre cabinet consultant";
+          fin.textContent = "Selon l'abonnement de votre cabinet"; prel.textContent = "Aucun : c'est votre cabinet qui est abonné";
+        } else if (!actif) {
+          formule.textContent = a && a.statut === "canceled" ? (NOMS_ABO[a.formule] || a.formule) + " — résilié" : "Aucun abonnement en cours";
+          fin.textContent = a && a.fin_periode ? "Terminé le " + jourAbo(a.fin_periode) : "—";
+          prel.textContent = "Aucun";
+        } else {
+          formule.textContent = (NOMS_ABO[a.formule] || a.formule) + (a.periode === "an" ? " · paiement annuel" : " · paiement mensuel") +
+            (a.statut === "trialing" ? " (période d'essai)" : "");
+          if (a.offert) {
+            fin.textContent = a.fin_periode ? jourAbo(a.fin_periode) : "Sans date de fin";
+            prel.textContent = "Aucun : abonnement ouvert par nos soins";
+          } else if (a.resiliation_prevue) {
+            fin.textContent = jourAbo(a.fin_periode) + " (résiliation demandée)";
+            prel.textContent = "Aucun : l'abonnement s'arrête à cette date";
+          } else {
+            fin.textContent = a.fin_periode ? "Aucune : reconduction automatique le " + jourAbo(a.fin_periode) : "Aucune : reconduction automatique";
+            prel.textContent = a.fin_periode ? jourAbo(a.fin_periode) : "—";
+            if (a.statut === "past_due") prel.textContent += " — le dernier paiement n'est pas passé";
+          }
+        }
+        var liste = $("#abo-liste");
+        if (esp.factures) {
+          $("#abo-factures").hidden = false;
+          $("#abo-aucune").hidden = esp.factures.length > 0;
+          liste.textContent = "";
+          esp.factures.forEach(function (f) {
+            var li = document.createElement("li");
+            var txt = document.createElement("span");
+            txt.className = "abo-facture";
+            var n = document.createElement("strong"); n.textContent = "Facture " + f.numero; txt.appendChild(n);
+            var p = document.createElement("span"); p.className = "precision";
+            p.textContent = jourAbo(f.emise_le) + (f.montant_ttc != null ? " · " + euros(f.montant_ttc) : "");
+            txt.appendChild(p);
+            var b = document.createElement("button");
+            b.type = "button"; b.className = "bouton bouton-sobre bouton-petit"; b.textContent = "Télécharger (PDF)";
+            b.addEventListener("click", function () { telecharger(f.id, b); });
+            li.appendChild(txt); li.appendChild(b); liste.appendChild(li);
+          });
+        }
+        bloc.hidden = false;
+      });
+    }
+
     var cRecap = $("#p-recap"), cRappels = $("#p-rappels");
     if (cRecap && cRappels) {
       var etatR = $("#etat-recap");
