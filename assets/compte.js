@@ -1114,6 +1114,21 @@
             li.appendChild(el("span", "admin-courriel", "Facture " + x.numero));
             li.appendChild(el("span", "admin-details", date(x.emise_le) + (x.montant_ttc != null ? " · " +
               Number(x.montant_ttc).toLocaleString("fr-FR", { minimumFractionDigits: 2 }) + " € TTC" : "") + " · " + x.nom));
+            var tel = el("button", "lien-nu", "Télécharger (PDF)"); tel.type = "button";
+            tel.addEventListener("click", function () {
+              tel.disabled = true;
+              V.rpc("ma_facture", { id: x.id }).then(function (r3) {
+                tel.disabled = false;
+                if (!r3.ok || !r3.donnees) { dit.textContent = (r3 && r3.erreur) || "La facture n'a pas pu être téléchargée."; return; }
+                var bin = atob(r3.donnees.contenu), oct = new Uint8Array(bin.length);
+                for (var i = 0; i < bin.length; i++) oct[i] = bin.charCodeAt(i);
+                var url = URL.createObjectURL(new Blob([oct], { type: "application/pdf" }));
+                var a = document.createElement("a"); a.href = url; a.download = r3.donnees.nom || "facture.pdf";
+                document.body.appendChild(a); a.click(); a.remove();
+                setTimeout(function () { URL.revokeObjectURL(url); }, 4000);
+              });
+            });
+            li.appendChild(tel);
             var sup = el("button", "lien-nu", "Retirer"); sup.type = "button";
             sup.addEventListener("click", function () {
               if (!window.confirm("Retirer la facture " + x.numero + " ? Le client ne la verra plus.")) return;
