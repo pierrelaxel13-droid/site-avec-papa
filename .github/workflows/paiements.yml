@@ -38,6 +38,6 @@ jobs:
           node-version: 22
       - name: Stripe → la base
         env:
-          STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
+          STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY || secrets.CLAUDE_STRIPE }}
           SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
         run: node outils/stripe.mjs

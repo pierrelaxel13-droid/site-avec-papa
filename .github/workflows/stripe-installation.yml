@@ -36,7 +36,7 @@ jobs:
         run: node outils/stripe-installation.test.mjs
       - name: Produits, prix, liens de paiement, portail client
         env:
-          STRIPE_SETUP_KEY: ${{ secrets.STRIPE_SETUP_KEY }}
+          STRIPE_SETUP_KEY: ${{ secrets.STRIPE_SETUP_KEY || secrets.CLAUDE_STRIPE }}
           STRIPE_TVA: ${{ inputs.tva }}
         run: node outils/stripe-installation.mjs
       - name: Le site se construit avec
