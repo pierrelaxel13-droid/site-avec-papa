@@ -104,7 +104,7 @@
   {
    "id": "ademe",
    "nom": "ADEME — nouvelles publications",
-   "entrees": 86,
+   "entrees": 87,
    "retenus": 2,
    "souci": null
   },
@@ -160,14 +160,14 @@
   {
    "id": "has",
    "nom": "Haute Autorité de santé",
-   "entrees": 50,
-   "retenus": 1,
+   "entrees": 1,
+   "retenus": 0,
    "souci": null
   },
   {
    "id": "ansm",
    "nom": "ANSM — informations de sécurité",
-   "entrees": 0,
+   "entrees": 8,
    "retenus": 0,
    "souci": null
   },
@@ -182,7 +182,7 @@
    "id": "agriculture",
    "nom": "Ministère de l'Agriculture — actualités",
    "entrees": 30,
-   "retenus": 1,
+   "retenus": 2,
    "souci": null
   },
   {
@@ -277,6 +277,61 @@
    "vuA": "2026-11-04T23:43:26Z"
   },
   {
+   "source": "travail",
+   "sourceNom": "Ministère du Travail — actualités",
+   "genre": "actualite",
+   "id": "https://travail-emploi.gouv.fr/index-de-legalite-professionnelle-calcul-et-questionsreponses",
+   "titre": "Index de l’égalité professionnelle : calcul et questions/réponses",
+   "nature": "Publication officielle",
+   "date": "2026-11-05",
+   "corps": "Toutes les entreprises d’au moins 50 salariés doivent calculer et publier leur Index de l’égalité professionnelle entre les femmes et les hommes, chaque année au plus tard le 1er mars.",
+   "lien": "https://travail-emploi.gouv.fr/index-de-legalite-professionnelle-calcul-et-questionsreponses",
+   "domaines": [
+    {
+     "id": "social",
+     "nom": "Droit du travail et relations sociales",
+     "mots": [
+      "egalite professionnelle"
+     ]
+    }
+   ],
+   "morceaux": 1,
+   "dateTexte": "",
+   "vuLe": "2026-11-05",
+   "vuA": "2026-11-04T17:21:39Z"
+  },
+  {
+   "source": "agriculture",
+   "sourceNom": "Ministère de l'Agriculture — actualités",
+   "genre": "actualite",
+   "id": "https://agriculture.gouv.fr/produits-phytopharmaceutiques-autorisations-de-mise-sur-le-marche-dune-duree-maximale-de-120-jours",
+   "titre": "Produits phytopharmaceutiques : autorisations de mise sur le marché d'une durée maximale de 120 jours délivrées par le ministère dans des situations d'urgence phytosanitaire",
+   "nature": "Publication officielle",
+   "date": "2026-11-05",
+   "corps": "L'article 53 du règlement (CE) n°1107/2009 encadrant la mise sur le marché des produits phytopharmaceutiques permet aux États membres d'autoriser, en cas de circonstances particulières, la mise sur le marché de produits phytopharmaceutiques par voie de dérogation à la procédure standard d’autorisation lorsqu’il n’y a pas d’autre moyen raisonnable pour maîtriser un danger phytosanitaire. La période de validité de ces autorisations ne peut excéder 120 jours.",
+   "lien": "https://agriculture.gouv.fr/produits-phytopharmaceutiques-autorisations-de-mise-sur-le-marche-dune-duree-maximale-de-120-jours",
+   "domaines": [
+    {
+     "id": "produits_ce",
+     "nom": "Conformité des produits et marquage CE",
+     "mots": [
+      "mise sur le marche"
+     ]
+    },
+    {
+     "id": "agri",
+     "nom": "Agriculture, pêche et santé des végétaux et animaux",
+     "mots": [
+      "produits phytopharmaceutiques"
+     ]
+    }
+   ],
+   "morceaux": 1,
+   "dateTexte": "",
+   "vuLe": "2026-11-05",
+   "vuA": "2026-11-05T13:32:28Z"
+  },
+  {
    "source": "jorf",
    "sourceNom": "Journal officiel de la République française",
    "genre": "texte",
@@ -325,6 +380,30 @@
    "dateTexte": "",
    "vuLe": "2026-11-04",
    "vuA": "2026-11-04T01:25:39Z"
+  },
+  {
+   "source": "eurlex-l",
+   "sourceNom": "Journal officiel de l'Union européenne — série L",
+   "genre": "texte",
+   "id": "https://eur-lex.europa.eu/./legal-content/AUTO/?uri=CELEX:32026D2495",
+   "titre": "CELEX:32026D2495: Décision d’exécution (UE) 2026/2495 du Conseil du 29 octobre 2026 modifiant la décision d’exécution (UE) 2024/1641 en ce qui concerne une prorogation de l’autorisation permettant à la Roumanie d’appliquer des mesures particulières dérogeant à l’article 26, paragraphe 1, point a), et à l’article 168 de la directive 2006/112/CE relative au système commun de taxe sur la valeur ajoutée",
+   "nature": "Texte officiel",
+   "date": "2026-11-04",
+   "corps": "",
+   "lien": "https://eur-lex.europa.eu/./legal-content/AUTO/?uri=CELEX:32026D2495",
+   "domaines": [
+    {
+     "id": "fiscal",
+     "nom": "Fiscalité, facturation et comptabilité",
+     "mots": [
+      "taxe sur la valeur ajoutee"
+     ]
+    }
+   ],
+   "morceaux": 0,
+   "dateTexte": "2026-10-29",
+   "vuLe": "2026-11-04",
+   "vuA": "2026-11-05T13:32:28Z"
   },
   {
    "source": "jorf",
@@ -376,30 +455,6 @@
    "vuA": "2026-11-04T23:43:26Z"
   },
   {
-   "source": "travail",
-   "sourceNom": "Ministère du Travail — actualités",
-   "genre": "actualite",
-   "id": "https://travail-emploi.gouv.fr/index-de-legalite-professionnelle-calcul-et-questionsreponses",
-   "titre": "Index de l’égalité professionnelle : calcul et questions/réponses",
-   "nature": "Publication officielle",
-   "date": "2026-11-04",
-   "corps": "Toutes les entreprises d’au moins 50 salariés doivent calculer et publier leur Index de l’égalité professionnelle entre les femmes et les hommes, chaque année au plus tard le 1er mars.",
-   "lien": "https://travail-emploi.gouv.fr/index-de-legalite-professionnelle-calcul-et-questionsreponses",
-   "domaines": [
-    {
-     "id": "social",
-     "nom": "Droit du travail et relations sociales",
-     "mots": [
-      "egalite professionnelle"
-     ]
-    }
-   ],
-   "morceaux": 1,
-   "dateTexte": "",
-   "vuLe": "2026-11-04",
-   "vuA": "2026-11-04T17:21:39Z"
-  },
-  {
    "source": "agriculture",
    "sourceNom": "Ministère de l'Agriculture — actualités",
    "genre": "actualite",
@@ -446,30 +501,6 @@
    "dateTexte": "",
    "vuLe": "2026-11-04",
    "vuA": "2026-11-04T13:18:15Z"
-  },
-  {
-   "source": "eurlex-l",
-   "sourceNom": "Journal officiel de l'Union européenne — série L",
-   "genre": "texte",
-   "id": "https://eur-lex.europa.eu/./legal-content/AUTO/?uri=OJ:L_202602495",
-   "titre": "OJ:L_202602495: Décision d’exécution (UE) 2026/2495 du Conseil du 29 octobre 2026 modifiant la décision d’exécution (UE) 2024/1641 en ce qui concerne une prorogation de l’autorisation permettant à la Roumanie d’appliquer des mesures particulières dérogeant à l’article 26, paragraphe 1, point a), et à l’article 168 de la directive 2006/112/CE relative au système commun de taxe sur la valeur ajoutée",
-   "nature": "Texte officiel",
-   "date": "2026-11-04",
-   "corps": "",
-   "lien": "https://eur-lex.europa.eu/./legal-content/AUTO/?uri=OJ:L_202602495",
-   "domaines": [
-    {
-     "id": "fiscal",
-     "nom": "Fiscalité, facturation et comptabilité",
-     "mots": [
-      "taxe sur la valeur ajoutee"
-     ]
-    }
-   ],
-   "morceaux": 0,
-   "dateTexte": "2026-10-29",
-   "vuLe": "2026-11-04",
-   "vuA": "2026-11-05T06:50:06Z"
   },
   {
    "source": "travail",
@@ -1065,30 +1096,6 @@
    "dateTexte": "",
    "vuLe": "2026-10-30",
    "vuA": "2026-10-30T01:02:55Z"
-  },
-  {
-   "source": "has",
-   "sourceNom": "Haute Autorité de santé",
-   "genre": "actualite",
-   "id": "https://www.has-sante.fr/jcms/p_4586850/fr/chef-fe-du-service-scientifique-service-d-evaluation-des-medicaments-sem-cdi",
-   "titre": "Chef(fe) du service scientifique - Service d’Evaluation des Médicaments (SEM) - CDI",
-   "nature": "Publication officielle",
-   "date": "2026-10-30",
-   "corps": "La HAS recherche un Chef(fe) du service scientifique (H-F) dans le cadre d'un CDI.",
-   "lien": "https://www.has-sante.fr/jcms/p_4586850/fr/chef-fe-du-service-scientifique-service-d-evaluation-des-medicaments-sem-cdi",
-   "domaines": [
-    {
-     "id": "pharma",
-     "nom": "Produits de santé et dispositifs médicaux",
-     "mots": [
-      "medicaments"
-     ]
-    }
-   ],
-   "morceaux": 1,
-   "dateTexte": "",
-   "vuLe": "2026-10-30",
-   "vuA": "2026-10-30T19:25:59Z"
   },
   {
    "source": "eurlex-l",
