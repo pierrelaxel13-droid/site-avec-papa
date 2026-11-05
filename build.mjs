@@ -4555,8 +4555,8 @@ function pageMonCompte() {
           <div id="compte-cabinet" hidden>
             <div class="rg-ligne"><span class="rg-libelle">Cabinet</span><div class="rg-champ"><strong id="cabinet-nom"></strong></div></div>
             <div class="rg-ligne"><span class="rg-libelle">Abonnement</span><div class="rg-champ"><span id="cabinet-statut"></span></div></div>
-            <div class="compte-actions"><a class="bouton bouton-accent" href="cabinet.html">Ouvrir l'espace consultant</a>
-              <a class="bouton bouton-sobre" href="nouveau-client.html">Créer l'accès d'un client</a></div>
+            <p class="compte-explique">Ici, votre compte : vos clients, votre abonnement, vos factures. Le suivi de vos clients (textes, actions, conformité) se fait dans l'espace consultant.</p>
+            <div class="compte-actions"><a class="bouton bouton-accent" href="cabinet.html">Tableau de bord de mes clients</a></div>
           </div>
           <div class="compte-corps">
           <form id="form-entreprise" method="post" novalidate hidden>
@@ -4577,6 +4577,19 @@ function pageMonCompte() {
             </p>
             <p class="etat-compte" id="etat-entreprise" role="status"></p>
           </form>
+          </div>
+        </section>
+
+        <section class="rg-carte compte-carte" id="compte-clients" aria-labelledby="cc-t-clients" hidden>
+          <header class="rg-tete">
+            <h2 id="cc-t-clients">Mes clients</h2>
+            <p>Les entreprises que votre cabinet suit : les créer et les retirer se fait ici ; leur suivi, dans le tableau de bord.</p>
+          </header>
+          <div class="compte-corps">
+            <ul class="mc-liste" id="mc-liste"></ul>
+            <p class="precision" id="mc-aucun" hidden>Aucun client pour l'instant.</p>
+            <p class="etat-compte" id="etat-clients" role="status"></p>
+            <div class="compte-actions"><a class="bouton bouton-accent" href="nouveau-client.html">Créer l'accès d'un client</a></div>
           </div>
         </section>
 
@@ -4873,12 +4886,12 @@ function pageCabinet(V, NAF, SOURCES) {
   <div class="enveloppe">
     <div class="cs-tete">
       <div>
-        <p class="cs-sur">Espace consultant</p>
+        <p class="cs-sur">Espace consultant · tableau de bord de mes clients</p>
         <h1 id="cabinet-titre">Mon cabinet</h1>
         <p class="etat-compte" id="cabinet-etat" role="status">Chargement…</p>
       </div>
       <p class="rangee cs-tete-boutons"><a class="bouton bouton-accent" href="nouveau-client.html">Créer l'accès d'un client</a>
-      <a class="bouton bouton-sobre" href="./">Mon compte</a></p>
+      <a class="bouton bouton-sobre" href="./" title="Mes clients, mon abonnement, mes factures, mon mot de passe">Mon compte</a></p>
     </div>
     ${comptesFermes()}
     <div class="connexion connexion-seule" id="cabinet-aucun" hidden>

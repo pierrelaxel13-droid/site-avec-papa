@@ -280,10 +280,55 @@
     for (var t = 0; t < types.length; t++) types[t].addEventListener("change", typeChoisi);
 
     /* Votre cabinet (consultants) : un lien vers sa page. */
+    /* « Mes clients » (5 novembre 2026) : la liste des entreprises du cabinet, et
+       les retirer. Sans compte créé, l'espace vide est supprimé ; avec un compte,
+       le client est seulement détaché et garde tout (cabinet_retirer_client). */
+    var mesClients = function (cab) {
+      var carte = $("#compte-clients"), ul = $("#mc-liste"), dit = $("#etat-clients");
+      if (!carte) return;
+      V.rpc("cabinet_vue", { c: cab.cabinet_id }).then(function (r) {
+        if (!r.ok || !r.donnees) return;
+        var l = (r.donnees.clients || []).slice().sort(function (a, b) { return a.denomination.localeCompare(b.denomination, "fr"); });
+        ul.textContent = "";
+        $("#mc-aucun").hidden = l.length > 0;
+        l.forEach(function (x) {
+          var li = document.createElement("li");
+          var t = document.createElement("div"); t.className = "mc-texte";
+          var n = document.createElement("strong"); n.textContent = x.denomination; t.appendChild(n);
+          var d = document.createElement("span"); d.className = "precision";
+          d.textContent = (x.naf ? "Code APE " + x.naf + " · " : "") +
+            (x.membres > 0 ? "Compte créé" : "En attente : le client n'a pas encore créé son compte");
+          t.appendChild(d);
+          li.appendChild(t);
+          if (cab.role === "admin") {
+            var b = document.createElement("button");
+            b.type = "button"; b.className = "bouton bouton-sobre bouton-petit mc-retirer"; b.textContent = "Supprimer";
+            b.addEventListener("click", function () {
+              var q = x.membres > 0
+                ? "Retirer « " + x.denomination + " » de vos clients ?\n\nSon espace lui appartient : il le garde, avec son plan et son registre, mais votre cabinet n'y aura plus accès."
+                : "Supprimer « " + x.denomination + " » ?\n\nLe client n'a pas encore créé son compte : son espace et son invitation seront supprimés.";
+              if (!window.confirm(q)) return;
+              b.disabled = true; dit.textContent = "Un instant…";
+              V.rpc("cabinet_retirer_client", { c: cab.cabinet_id, e: x.id }).then(function (r2) {
+                if (!r2.ok) { b.disabled = false; dit.textContent = r2.erreur; return; }
+                dit.textContent = r2.donnees === "supprime" ? "« " + x.denomination + " » est supprimé."
+                  : "« " + x.denomination + " » ne fait plus partie de vos clients ; il garde son espace.";
+                mesClients(cab);
+              });
+            });
+            li.appendChild(b);
+          }
+          ul.appendChild(li);
+        });
+        carte.hidden = false;
+      });
+    };
+
     var montrerCabinet = function (cab) {
       var b = $("#compte-cabinet");
       if (!cab) { b.hidden = true; return; }
       $("#cabinet-nom").textContent = cab.nom;
+      mesClients(cab);
       $("#cabinet-statut").textContent = cab.actif
         ? "Ouvert : vos clients ont la veille complète"
         : "Pas encore ouvert : l'espace consultant dit comment faire";

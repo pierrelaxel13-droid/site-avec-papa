@@ -1021,6 +1021,29 @@ select public.admin_supprimer_facture(current_setting('tests.facture')::uuid);
 select tests.ok(json_array_length(public.admin_factures('00000000-0000-0000-0000-00000000a000', null)) = 0, 'l''administrateur retire la facture');
 reset role;
 
+-- ---- Un consultant retire un client (migration 24) ----------------------
+update public.membres_consultant set role = 'admin'
+  where consultant_id = '00000000-0000-0000-0000-00000000c000' and user_id = '00000000-0000-0000-0000-0000000000c1';
+insert into public.entreprises (id, denomination, naf, consultant_id, acces_consultant)
+  values ('00000000-0000-0000-0000-00000000e000', 'Client E sans compte (essai)', '43', '00000000-0000-0000-0000-00000000c000', true);
+select tests.qui('00000000-0000-0000-0000-0000000000c2', 'c_lecteur@test.fr');
+set local role authenticated;
+select tests.refuse($$select public.cabinet_retirer_client('00000000-0000-0000-0000-00000000c000', '00000000-0000-0000-0000-00000000e000')$$, 'un utilisateur en lecture seule du cabinet ne retire pas de client');
+reset role;
+select tests.qui('00000000-0000-0000-0000-0000000000b1', 'b_admin@test.fr');
+set local role authenticated;
+select tests.refuse($$select public.cabinet_retirer_client('00000000-0000-0000-0000-00000000c000', '00000000-0000-0000-0000-00000000a000')$$, 'un autre compte non plus');
+reset role;
+select tests.qui('00000000-0000-0000-0000-0000000000c1', 'c_membre@test.fr');
+set local role authenticated;
+select tests.ok(public.cabinet_retirer_client('00000000-0000-0000-0000-00000000c000', '00000000-0000-0000-0000-00000000e000') = 'supprime', 'un client sans compte : son espace vide est supprimé');
+select tests.ok(public.cabinet_retirer_client('00000000-0000-0000-0000-00000000c000', '00000000-0000-0000-0000-00000000a000') = 'detache', 'un client avec un compte : il est seulement détaché');
+select tests.refuse($$select public.cabinet_retirer_client('00000000-0000-0000-0000-00000000c000', '00000000-0000-0000-0000-00000000b000')$$, 'on ne retire pas une entreprise que le cabinet ne suit pas');
+reset role;
+select tests.ok(not exists (select 1 from public.entreprises where id = '00000000-0000-0000-0000-00000000e000'), 'l''espace vide n''existe plus');
+select tests.ok((select consultant_id is null and not acces_consultant from public.entreprises where id = '00000000-0000-0000-0000-00000000a000'), 'A garde son espace, sans le cabinet');
+select tests.ok((select count(*) from public.registre where entreprise_id = '00000000-0000-0000-0000-00000000a000') > 0, 'et tout son registre');
+
 do $$ begin raise notice 'TOUS LES TESTS D''ISOLATION SONT PASSÉS'; end $$;
 
 rollback;

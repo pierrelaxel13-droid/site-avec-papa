@@ -4755,3 +4755,23 @@ ol.etapes-carres p { margin: 0; color: var(--encre-douce); text-align: center; m
 @media (max-width: 47.99rem) { .admin-facture-form { grid-template-columns: 1fr; } .admin-facture-form .bouton { width: 100%; justify-content: center; } }
 .admin-facture-form > * { min-width: 0; }
 .admin-facture-champ input[type="file"] { width: 100%; min-width: 0; padding: .45rem .5rem; font-size: .85rem; }
+
+/* --- Mon compte du consultant : mes clients (5 novembre 2026) -------------- */
+.compte-explique { margin: .75rem 0 0; padding: .7rem .9rem; border-radius: var(--r1); background: var(--papier); border: 1px solid var(--filet); font-size: .88rem; color: var(--encre-douce); }
+.mc-liste { list-style: none; margin: 0; padding: 0; border: 1px solid var(--filet); border-radius: var(--r1); }
+.mc-liste:empty { display: none; }
+.mc-liste li { display: flex; justify-content: space-between; align-items: center; gap: .75rem; padding: .7rem .9rem; }
+.mc-liste li + li { border-top: 1px solid var(--filet); }
+.mc-texte { display: grid; gap: .1rem; min-width: 0; }
+.mc-texte strong { font-size: .93rem; }
+.mc-texte .precision { font-size: .82rem; }
+.mc-retirer { color: var(--rouge); border-color: color-mix(in srgb, var(--rouge) 40%, var(--filet)); }
+@media (max-width: 47.99rem) {
+  .mc-liste li { flex-direction: column; align-items: stretch; }
+  .mc-retirer { width: 100%; justify-content: center; }
+}
+.abo-liste:empty { display: none; }
+#abo-aucune { margin: 0; font-size: .85rem; }
+#compte-clients .compte-actions { margin-top: 1rem; padding: 0; }
+#compte-clients .etat-compte:empty { display: none; }
+#compte-cabinet .compte-explique { margin: 1rem 1.25rem 0; }
