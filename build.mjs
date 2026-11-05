@@ -1397,7 +1397,8 @@ function appConformite(V, D, C, LIENS, JO = null) {
         ${lien ? `<a class="lien-officiel" href="${esc(lien)}" target="_blank" rel="noopener">${/legifrance\.gouv\.fr/.test(lien) ? "Légifrance" : esc(t.sourceNom || "Voir chez la source")} ${sortant}</a>` : ""}
         ${analyseJO(V, t, ids)}` });
   });
-  entrees.sort((x, y) => ordreCat.indexOf(catDe(x.ids)) - ordreCat.indexOf(catDe(y.ids)) || x.ordre - y.ordre || x.objet.localeCompare(y.objet, "fr"));
+  // Du plus récent au plus ancien (5 novembre 2026, demande d'Axel) ; sans date, à la fin.
+  entrees.sort((x, y) => (x.date !== y.date ? (x.date < y.date ? 1 : -1) : x.ordre - y.ordre || x.objet.localeCompare(y.objet, "fr")));
   // Pour l'espace consultant : la liste des textes (clé et sujets), afin de
   // compter chez chaque client ses textes non lus et sa part de conformes.
   TEXTES_CLES = entrees.map((e) => [e.cle, e.ids.join(" ")]);
