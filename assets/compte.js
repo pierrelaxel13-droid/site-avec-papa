@@ -526,7 +526,7 @@
     var bloc = $("#abo-bloc");
     if (bloc) {
       var NOMS_ABO = { textes: "01 — État des lieux réglementaire", suivi: "02 — État des lieux réglementaire et plan d'actions",
-                       complet: "03 — Veille complète", consultant: "Offre consultant" };
+                       complet: "03 — Veille complète", consultant: "Offre consultant QSE" };
       var jourAbo = function (iso) {
         return iso ? new Date(iso).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" }) : "";
       };
@@ -551,6 +551,13 @@
         var d = r.donnees, esp = (d.entreprises || [])[0] || (d.cabinets || [])[0];
         if (!esp) return;
         var a = esp.abonnement, actif = a && /^(active|trialing|past_due|offert)$/.test(a.statut);
+        // Un cabinet consultant : son offre est sur la page consultants ; et le récapitulatif
+        // et les rappels ne concernent que le plan d'une entreprise, qu'il n'a pas.
+        if (!(d.entreprises || []).length) {
+          $("#abo-changer").href = vers("consultants.html");
+          [].forEach.call(document.querySelectorAll(".ligne-bascule"), function (x) { x.hidden = true; });
+          var er = $("#etat-recap"); if (er) er.hidden = true;
+        }
         var formule = $("#abo-formule"), fin = $("#abo-fin"), prel = $("#abo-prelevement");
         if (esp.par_cabinet && !actif) {
           formule.textContent = "03 — Veille complète, comprise dans l'abonnement de votre cabinet consultant";

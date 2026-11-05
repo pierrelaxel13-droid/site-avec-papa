@@ -4743,3 +4743,4 @@ ol.etapes-carres p { margin: 0; color: var(--encre-douce); text-align: center; m
   .abo-liste .bouton-petit { width: 100%; justify-content: center; }
   .abo-tete { flex-direction: column; gap: .2rem; align-items: flex-start; }
 }
+.ligne-reglage[hidden] { display: none !important; }
