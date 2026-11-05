@@ -66,9 +66,9 @@ const SITE = {
     denomination: "Clément Pierrel",
     forme: "entreprise individuelle",
     capital: "",
-    adresse: "76 avenue Marcel Roustant, Résident l'Auierre, 13800 Istres",
+    adresse: "76 avenue Marcel Roustant, résidence l'Aupierre, 13800 Istres",
     siret: "504 851 312 00067",
-    tvaIntra: "FR 22 504851312",   // clé calculée sur le SIREN (12 + 3 × (SIREN mod 97)) mod 97
+    tvaIntra: "FR 22504851312",
     immatriculation: "Registre national des entreprises (RNE)",
     directeurPublication: "Clément Pierrel",
     hebergeurDonnees: "Supabase, Inc. (États-Unis), base de données hébergée en Irlande (Union européenne)",
