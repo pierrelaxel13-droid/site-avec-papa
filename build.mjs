@@ -335,8 +335,7 @@ function bandeInstallation(a) {
     <p class="note-source" style="margin-top:var(--t5)">
       ${esc(SITE.nom)} n'est ni sur l'App Store ni sur Google Play : il n'y a pas
       d'application à télécharger, mais une application web que le navigateur installe
-      lui-même. Rien n'est transmis à une boutique et il n'y a pas de compte à créer
-      pour l'installer.
+      lui-même.
     </p>
   </div>
 </section>`;
