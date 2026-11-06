@@ -146,8 +146,8 @@
       if (r.ok && r.donnees && r.donnees.url) { window.location.href = r.donnees.url; return; }
       if (r.ok && r.donnees && r.donnees.changement) { changerFormule(b, r.donnees); return; }
       if (r.absente) { window.location.href = lien; return; }
-      bouton(); $("#paie-dit").textContent = r.erreur;
-    });
+      bouton(); $("#paie-dit").textContent = r.erreur || "La demande n'a pas abouti. Réessayez dans un instant.";
+    }, function () { b.removeAttribute("data-attente"); bouton(); $("#paie-dit").textContent = "La demande n'a pas abouti. Réessayez dans un instant."; });
   });
 
   /* Déjà abonné (6 novembre 2026) : on change la formule de l'abonnement en cours, chez Stripe,
@@ -166,12 +166,25 @@
     V.fonction("changer", { entreprise: entreprise.entreprise_id, formule: formule, periode: periode }).then(function (r) {
       b.removeAttribute("data-attente"); bouton();
       if (!r.ok) { dit.textContent = r.erreur; return; }
-      dit.textContent = "";
-      var m = document.createElement("p"); m.className = "reserve";
-      m.appendChild(document.createTextNode("C'est fait : votre abonnement est maintenant « " + F.l + " » (" + (periode === "an" ? "annuel" : "mensuel") + "). "));
-      var a2 = document.createElement("a"); a2.href = "./"; a2.textContent = "Voir Mon compte"; m.appendChild(a2);
-      dit.appendChild(m);
-    });
+      // Le changement est pris en compte : on le dit en grand, à la place du formulaire.
+      var carte = $("#paie-merci");
+      carte.textContent = "";
+      var h = document.createElement("h2"); h.textContent = "Votre changement d'abonnement est pris en compte";
+      var p1 = document.createElement("p");
+      p1.textContent = "Votre abonnement est maintenant « " + F.l + " », " + (periode === "an" ? "annuel" : "mensuel") +
+        ". L'accès aux pages de cette formule est ouvert dès maintenant.";
+      var p2 = document.createElement("p"); p2.className = "precision";
+      p2.textContent = essai
+        ? "Vous êtes dans votre mois d'essai gratuit : rien n'est facturé aujourd'hui ; le nouveau prix s'applique à la fin de l'essai."
+        : "La différence de prix est calculée au prorata ; la facture sera à disposition dans votre espace compte.";
+      var p3 = document.createElement("p"); p3.className = "rangee"; p3.style.marginTop = "var(--t4)";
+      var a2 = document.createElement("a"); a2.className = "bouton bouton-accent"; a2.href = "./"; a2.textContent = "Mon compte";
+      p3.appendChild(a2);
+      [h, p1, p2, p3].forEach(function (x) { carte.appendChild(x); });
+      $("#paie-formulaire").hidden = true; carte.hidden = false;
+      carte.setAttribute("tabindex", "-1"); carte.focus();
+      if (carte.scrollIntoView) carte.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, function () { b.removeAttribute("data-attente"); bouton(); dit.textContent = "Le changement n'a pas pu être fait. Réessayez dans un instant."; });
   }
 
   /* L'entreprise abonnée : il faut un compte et une entreprise nommée. */
@@ -190,7 +203,9 @@
     courriel = (V.utilisateur() || {}).courriel || "";
     V.mesEntreprises().then(function (m) {
       var liste = m.ok ? m.entreprises : [];
-      entreprise = liste.filter(function (e) { return e.role === "admin"; })[0] || null;
+      // L'entreprise dont on est responsable ; s'il y en a plusieurs, celle qui est déjà abonnée d'abord.
+      entreprise = liste.filter(function (e) { return e.role === "admin"; })
+        .sort(function (x, y) { return (Number(y.rang) || 0) - (Number(x.rang) || 0); })[0] || null;
       if (!entreprise) {
         dire(liste.length
           ? "<p>Seul le responsable du compte de votre entreprise peut l'abonner.</p>"

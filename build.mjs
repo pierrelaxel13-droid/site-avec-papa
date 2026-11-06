@@ -5739,9 +5739,10 @@ async function main() {
   /* Tout ce que les pages chargent avec « ?v= » doit entrer dans l'empreinte :
      sans amorce.js ni les données des alertes, un changement de l'un d'eux
      restait servi dans son ancienne version. */
-  const habillage = ["site.css", "polices.css", "app.js", "theme.js", "amorce.js",
-                     "session.js", "entreprise.js", "avis.js", "referentiel.js", "compte.js", "vigie.js",
-                     "magasin.js", "espace.js"];
+  /* 6 novembre 2026 : TOUS les scripts et feuilles de style d'assets/. La liste écrite à la
+     main oubliait souscrire.js (et d'autres) : une correction de la page d'abonnement restait
+     servie dans son ancienne version, même après un rechargement forcé. */
+  const habillage = (await readdir(join(SORTIE, "assets"))).filter((f) => /\.(js|css)$/.test(f)).sort();
   const empreinte = createHash("sha256");
   for (const f of habillage) empreinte.update(await readFile(join(SORTIE, "assets", f)));
   empreinte.update(plan);
