@@ -156,6 +156,20 @@ async function paiement(qui: { id: string; courriel: string }, d: Record<string,
   }
   if (!choisi) throw new Refus("Ce tarif n'est pas encore en ligne : écrivez-nous.", 503);
 
+  // Le texte sous le bouton de paiement Stripe : total TTC et « dont TVA 20 % » (prix TTC, TVA incluse).
+  let centimes = Number(choisi.unit_amount) * quantite;
+  if (choisi.billing_scheme === "tiered") {
+    const t = await stripe("GET", `/v1/prices/${choisi.id}`, { "expand[]": "tiers" });
+    const palier = (t.tiers || []).find((x: Record<string, any>) => x.up_to === null || quantite <= x.up_to) || {};
+    centimes = Number(palier.unit_amount) * quantite + Number(palier.flat_amount || 0);
+  }
+  const eur = (c: number) => (c / 100).toLocaleString("fr-FR", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " €";
+  const par = periode === "an" ? "par an" : "par mois";
+  const texte = Number.isFinite(centimes) && centimes > 0
+    ? `Total ${eur(centimes)} TTC ${par}, dont TVA 20 % : ${eur(centimes - Math.round(centimes / 1.2))}. ` +
+      `Rien à payer aujourd'hui : 1er mois d'essai gratuit ; en résiliant depuis Mon compte avant sa fin, vous ne payez rien.`
+    : "Prix TTC, dont TVA 20 %. Rien à payer aujourd'hui : 1er mois d'essai gratuit.";
+
   // Le client Stripe, avec l'adresse : c'est elle qui fait apparaître la TVA dès l'ouverture de la page.
   const client = {
     name: esp.nom, email: qui.courriel, preferred_locales: ["fr"],
@@ -190,6 +204,7 @@ async function paiement(qui: { id: string; courriel: string }, d: Record<string,
     tax_id_collection: { enabled: "true" },
     ...remise,
     payment_method_collection: "always",
+    custom_text: { submit: { message: texte } },
     subscription_data: { trial_period_days: ESSAI_JOURS, metadata: { formule, periode, [esp.colonne]: esp.id } },
     metadata: { formule, periode, [esp.colonne]: esp.id },
     success_url: retour + "?merci=1&session={CHECKOUT_SESSION_ID}",
