@@ -4277,7 +4277,9 @@ function pageAbonnement(V) {
         <span class="etiq nom-offre${(f.carte || f.l).length > 55 ? " nom-offre-long" : ""}">0${k + 1} — ${esc(f.carte || f.l)}</span>
         <!-- L'année d'abord : en entreprise, la veille est une ligne de budget annuel. -->
         <p class="prix"><span class="grand">${esc(eur(f.an))}</span> <span class="etiq">par an</span></p>
+        <p class="engagement-an">Engagement sur un an</p>
         <p class="offre-an"><span class="pastille-offre">${esc(f.offre)}</span> ou <strong>${esc(f.prix)}</strong></p>
+        <p class="engagement-mois">Mensuel : sans engagement de durée</p>
         ${mentionTVA()}
         ${f.surCarte === false ? "" : `<p class="pour">${esc(f.pour)}</p>`}
         <ul class="formule-donne">${f.donne.map((d) => `<li>${esc(d)}</li>`).join("")}</ul>
@@ -4807,9 +4809,9 @@ function pageSouscrire() {
         <p class="paie-offre" id="paie-offre"></p>
         <div class="paie-periodes" role="radiogroup" aria-label="Durée">
           <label class="paie-periode"><input type="radio" name="paie-periode" value="an">
-            <span><strong>Annuel</strong><span class="precision" id="paie-prix-an"></span><span class="pastille-offre" id="paie-offert"></span></span></label>
+            <span><strong>Annuel</strong><span class="precision">Engagement sur un an</span><span class="precision" id="paie-prix-an"></span><span class="pastille-offre" id="paie-offert"></span></span></label>
           <label class="paie-periode"><input type="radio" name="paie-periode" value="mois">
-            <span><strong>Mensuel</strong><span class="precision" id="paie-prix-mois"></span></span></label>
+            <span><strong>Mensuel</strong><span class="precision">Sans engagement de durée</span><span class="precision" id="paie-prix-mois"></span></span></label>
         </div>
         <dl class="paie-total" id="paie-total"></dl>
         <form class="paie-promo" id="paie-promo" novalidate>

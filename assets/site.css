@@ -4829,3 +4829,7 @@ ol.etapes-carres p { margin: 0; color: var(--encre-douce); text-align: center; m
 
 /* Sous chaque prix : « (TVA applicable à 20 %) » (6 novembre 2026). */
 .mention-tva { margin: .15rem 0 .4rem; font-size: .8rem; color: var(--encre-tenue); }
+
+/* Sous le prix annuel : « Engagement sur un an » (6 novembre 2026). */
+.engagement-an { margin: -.2rem 0 .5rem; font-size: .82rem; font-weight: 600; color: var(--encre-douce); }
+.engagement-mois { margin: .1rem 0 0; font-size: .82rem; font-weight: 600; color: var(--encre-douce); }
