@@ -315,7 +315,7 @@
           }
           if (!(x.membres > 0) && x.acces && cab.role !== "lecteur") {
             var cc = document.createElement("button");
-            cc.type = "button"; cc.className = "bouton bouton-sobre bouton-petit"; cc.textContent = "Créer le compte client";
+            cc.type = "button"; cc.className = "bouton bouton-sobre bouton-petit"; cc.textContent = "Inviter mon client";
             cc.setAttribute("aria-expanded", "false");
             cc.addEventListener("click", function () {
               var deja = li.nextElementSibling && li.nextElementSibling.classList.contains("mc-creer") ? li.nextElementSibling : null;
@@ -1116,7 +1116,7 @@
         var retard = cl.filter(function (c) { return c.actions_en_retard; }).length;
         etatCab.textContent = message || (cl.length
           ? pluriel(cl.length, "client", "clients") + (retard ? " — " + retard + " avec des actions en retard." : ", aucun en retard.")
-          : "Pas encore de client : ajoutez le premier ci-dessous.");
+          : "Pas encore de client : créez le premier avec « Créer l'accès d'un client ».");
         var inactif = $("#cabinet-inactif");
         inactif.hidden = !!cabinet.actif;
         if (!cabinet.actif && !$("#cabinet-demander").hasAttribute("data-en-ligne")) {
@@ -1124,13 +1124,15 @@
             "&body=" + encodeURIComponent("Bonjour,\n\nPouvez-vous ouvrir l'abonnement consultant du cabinet « " + cabinet.nom +
               " » ?\nCompte : " + ((V.utilisateur() || {}).courriel || "") + "\n");
         }
-        var liste = $("#cabinet-clients"); liste.textContent = "";
-        cl.forEach(function (c) { liste.appendChild(carteClient(c)); });
+        // « Gérer vos clients » est retiré de cette page (6 novembre 2026) : la liste et
+        // l'invitation sont dans Mon compte, « Mes clients ».
+        var liste = $("#cabinet-clients");
+        if (liste) { liste.textContent = ""; cl.forEach(function (c) { liste.appendChild(carteClient(c)); }); }
         tableauBord(cl);
         // Le tableau de bord s'affiche dès le début, même vide.
         $("#cabinet-vos-clients").hidden = false;
         if (!cl.length) {
-          var vide = mk("tr"), tv = mk("td", "cs-vide-ligne", "Aucun client pour l'instant : créez l'espace du premier dans « Ajouter un client », plus bas.");
+          var vide = mk("tr"), tv = mk("td", "cs-vide-ligne", "Aucun client pour l'instant : créez le premier avec « Créer l'accès d'un client ».");
           tv.colSpan = 5; vide.appendChild(tv); $("#cs-lignes").appendChild(vide);
         }
         // Les premiers pas, cochés d'après les données du cabinet.
@@ -1156,7 +1158,7 @@
       });
     };
 
-    $("#form-client").addEventListener("submit", function (ev) {
+    if ($("#form-client")) $("#form-client").addEventListener("submit", function (ev) {
       ev.preventDefault();
       var nom = $("#cl-nom").value.trim(), dit = $("#etat-client");
       if (!nom) { dit.textContent = "Entrez le nom de l'entreprise cliente."; return; }

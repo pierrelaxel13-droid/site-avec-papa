@@ -5048,27 +5048,6 @@ function pageCabinet(V, NAF, SOURCES) {
         ouverts. Conformité : la part des textes du plan évalués « conforme ». Plan d'actions : les actions
         réalisées sur les actions engagées. Un client qui a coupé votre accès n'affiche aucun chiffre.</p>
       </section>
-      <section class="cs-bloc" aria-labelledby="cs-t-gerer">
-        <h2 id="cs-t-gerer" class="cs-titre">Gérer vos clients</h2>
-        <div class="admin-grille" id="cabinet-clients"></div>
-        <form class="carte-connexion cs-ajout" id="form-client" method="post" novalidate>
-          <h3>Ajouter un client</h3>
-          <p class="cs-ajout-lien">Pour créer en une fois son espace, son code APE et l'invitation de son responsable :
-          <a class="bouton bouton-accent" href="nouveau-client.html">Créer l'accès d'un client</a></p>
-          <p class="aide-bas">Ou créez seulement son espace, avec son nom :</p>
-          <ol class="etapes-cabinet">
-            <li>Créez son espace ici.</li>
-            <li>Créez-le pour définir son plan de veille réglementaire.</li>
-            <li>Invitez votre client et il définit son propre compte.</li>
-          </ol>
-          <div class="champ">
-            <label for="cl-nom">Nom de l'entreprise cliente</label>
-            <input type="text" id="cl-nom" autocomplete="off" maxlength="200" required>
-          </div>
-          <p class="rangee"><button type="submit" class="bouton bouton-accent">Créer son espace</button></p>
-          <p class="etat-compte" id="etat-client" role="status"></p>
-        </form>
-      </section>
     </div>
   </div>
 </section>`;
@@ -5248,22 +5227,6 @@ function pageCabinetDemo(V, D) {
       <p class="cs-note">Démonstration : les chiffres des sociétés autres que ${esc(E.nom)} sont fictifs. Textes non lus : les textes
       du plan de veille qu'aucune personne de la société n'a encore ouverts. Conformité : la part des textes du plan évalués
       « conforme ». Plan d'actions : les actions réalisées sur les actions engagées.</p>
-    </section>
-    <section class="cs-bloc" aria-labelledby="cs-t-gerer">
-    <h2 id="cs-t-gerer" class="cs-titre">Gérer vos clients</h2>
-    <div class="admin-grille">${clients.map(carte).join("")}</div>
-    <div class="carte-connexion cs-ajout">
-      <h3>Ajouter un client</h3>
-      <ol class="etapes-cabinet">
-        <li>Créez son espace ici.</li>
-        <li>Créez-le pour définir son plan de veille réglementaire.</li>
-        <li>Invitez votre client et il définit son propre compte.</li>
-      </ol>
-      <p>Essayez-le dans la démonstration : rien n'est enregistré ni envoyé.</p>
-      <p class="rangee" style="margin-top:var(--t4)">
-        <a class="bouton bouton-accent" href="nouveau-client.html">Créer l'accès d'un client</a>
-      </p>
-    </div>
     </section>
   </div>
 </section>`;
