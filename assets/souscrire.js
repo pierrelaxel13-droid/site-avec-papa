@@ -43,7 +43,6 @@
     var ttc = function (n) { return D.tva === "ht" ? " · " + eur(n * 1.2) + " TTC" : ""; };
     $("#paie-prix-an").textContent = F.an + " par an" + ttc(F.montantAn);
     $("#paie-prix-mois").textContent = F.mois + " par mois" + ttc(F.montantMois);
-    $("#paie-offert").textContent = F.offre || "";
     [].forEach.call(document.querySelectorAll('input[name="paie-periode"]'), function (r) { r.checked = r.value === periode; });
     var montant = periode === "an" ? F.montantAn : F.montantMois;
     var par = periode === "an" ? " par an" : " par mois";

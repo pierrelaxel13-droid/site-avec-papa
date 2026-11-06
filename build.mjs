@@ -3672,7 +3672,7 @@ function pageAccueil(V, D, METIERS, ECRANS, C = null, NAF = null, SOURCES = [], 
     ] },
     { theme: "Prix et démarrage", questions: [
       ["Combien ça coûte ?",
-       `<p><strong>${prixListe} par mois selon la formule, ou à l'année avec ${(() => { const n = [...new Set(Object.values(FORMULES).map((f) => f.moisOfferts))].sort(); return n.length === 1 ? FORMULES.textes.offre : `${n[0]} à ${n[n.length - 1]} mois économisés`; })()}. Le premier mois est gratuit.</strong> Sans devis.</p>
+       `<p><strong>${prixListe} par mois selon la formule, ou à l'année. Le premier mois est gratuit.</strong> Sans devis.</p>
         <ul>
           ${Object.values(FORMULES).map((f) => `<li><strong>${esc(f.l)}</strong> — ${esc(f.prixAn)}, ou ${esc(f.prix)} : ${esc(f.ouvre.replace(/^En plus : /, "en plus de la formule précédente, "))}</li>`).join("\n          ")}
         </ul>
@@ -4308,7 +4308,7 @@ function pageAbonnement(V) {
         <p class="prix"><span class="grand">${esc(eur(f.an))}</span> <span class="etiq">par an</span></p>
         <p class="engagement-an">Engagement sur un an</p>
         <p class="essai-gratuit">1<sup>er</sup> mois d'essai gratuit</p>
-        <p class="offre-an"><span class="pastille-offre">${esc(f.offre)}</span> ou <strong>${esc(f.prix)}</strong></p>
+        <p class="offre-an">ou <strong>${esc(f.prix)}</strong></p>
         <p class="engagement-mois">Mensuel : sans engagement de durée</p>
         ${mentionTVA()}
         ${f.surCarte === false ? "" : `<p class="pour">${esc(f.pour)}</p>`}
@@ -4813,7 +4813,7 @@ function carteMoyensPaiement() {
 function pageSouscrire() {
   const donnees = {
     formules: Object.fromEntries(Object.entries(FORMULES).map(([id, f]) => [id, {
-      l: f.carte || f.l, court: f.l, an: eur(f.an), mois: eur(f.mois), montantAn: f.an, montantMois: f.mois, offre: f.offre }])),
+      l: f.carte || f.l, court: f.l, an: eur(f.an), mois: eur(f.mois), montantAn: f.an, montantMois: f.mois }])),
     liens: Object.fromEntries(Object.keys(FORMULES).map((id) => [id, { an: lienPaiement(id, "an"), mois: lienPaiement(id, "mois") }])),
     tva: SITE.tva, mention: TVA.mention, courriel: SITE.courriel, portail: lienPaiement("portail"), essai: 30
   };
@@ -4841,7 +4841,7 @@ function pageSouscrire() {
         <p class="paie-offre" id="paie-offre"></p>
         <div class="paie-periodes" role="radiogroup" aria-label="Durée">
           <label class="paie-periode"><input type="radio" name="paie-periode" value="an">
-            <span><strong>Annuel</strong><span class="precision">Engagement sur un an</span><span class="precision" id="paie-prix-an"></span><span class="pastille-offre" id="paie-offert"></span></span></label>
+            <span><strong>Annuel</strong><span class="precision">Engagement sur un an</span><span class="precision" id="paie-prix-an"></span></span></label>
           <label class="paie-periode"><input type="radio" name="paie-periode" value="mois">
             <span><strong>Mensuel</strong><span class="precision">Sans engagement de durée</span><span class="precision" id="paie-prix-mois"></span></span></label>
         </div>
