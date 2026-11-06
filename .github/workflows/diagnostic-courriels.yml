@@ -39,6 +39,13 @@ jobs:
                    to_char(cree_le at time zone 'Europe/Paris', 'DD/MM HH24:MI') as mis_en_file,
                    coalesce(to_char(envoye_le at time zone 'Europe/Paris', 'DD/MM HH24:MI'), 'NON ENVOYÉ') as envoye, essais, erreur
             from prive.courriels order by id desc limit 15"
+          echo "Les 6 derniers comptes créés (confirmation d'adresse) :"
+          psql "$SUPABASE_DB_URL" -q -c "
+            select left(email, 1) || '…@' || split_part(email, '@', 2) as compte,
+                   to_char(created_at at time zone 'Europe/Paris', 'DD/MM HH24:MI') as cree,
+                   coalesce(to_char(confirmation_sent_at at time zone 'Europe/Paris', 'DD/MM HH24:MI'), '—') as lien_envoye,
+                   coalesce(to_char(email_confirmed_at at time zone 'Europe/Paris', 'DD/MM HH24:MI'), 'PAS CONFIRMÉ') as confirme
+            from auth.users where email not like 'essai-auto-%' order by created_at desc limit 6"
           psql "$SUPABASE_DB_URL" -tA -c "select 'Réveil immédiat (pg_net) : ' || case when to_regnamespace('net') is not null then 'branché' else 'ABSENT' end"
       - name: Le journal de Brevo et l'expéditeur
         run: node outils/diagnostic-courriels.mjs
