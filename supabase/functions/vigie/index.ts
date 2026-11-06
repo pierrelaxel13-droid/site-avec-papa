@@ -139,7 +139,13 @@ async function paiement(qui: { id: string; courriel: string }, d: Record<string,
   if (!ad || !ad.ligne || !ad.cp || !ad.ville || !/^[A-Z]{2}$/.test(ad.pays || "")) {
     throw new Refus("Adresse obligatoire : renseignez l'adresse de votre " + (esp.type === "cabinet" ? "cabinet" : "entreprise") + " avant de vous abonner.");
   }
-  if (await abonnementEnCours(esp)) throw new Refus("Un abonnement est déjà en cours pour cet espace : gérez-le depuis Mon compte.", 409);
+  // Déjà abonné : pas un second abonnement, mais un changement de formule (action « changer »).
+  const enCours = await abonnementEnCours(esp);
+  if (enCours) {
+    if (esp.type === "cabinet") throw new Refus("Votre abonnement est déjà en cours : changez le nombre de clients depuis Mon compte.", 409);
+    if (enCours.formule === d.formule && enCours.periode === d.periode) throw new Refus("C'est déjà votre formule actuelle.", 409);
+    return { changement: true, formule: enCours.formule, periode: enCours.periode, statut: enCours.statut };
+  }
 
   // Le prix : celui que l'installation Stripe a créé (métadonnées formule et période ; TTC).
   const prix = (await stripe("GET", "/v1/prices", { active: "true", limit: 100 })).data as Record<string, any>[];
@@ -223,6 +229,33 @@ async function confirmer(qui: { id: string }, d: Record<string, unknown>) {
   return { ouvert: true, formule: l.formule, statut: l.statut };
 }
 
+/* Changer de formule (01, 02, 03) ou de période sur l'abonnement en cours, chez Stripe.
+   Pendant le mois d'essai : rien n'est facturé, le nouveau prix s'applique à la fin de l'essai.
+   Ensuite : la différence est facturée (ou créditée) tout de suite, au prorata. */
+async function changer(qui: { id: string }, d: Record<string, unknown>) {
+  const esp = await espace(qui, d);
+  if (esp.type !== "entreprise") throw new Refus("Changement de formule réservé aux entreprises.");
+  const formule = String(d.formule || ""), periode = String(d.periode || "");
+  if (!/^(textes|suivi|complet)$/.test(formule) || !/^(an|mois)$/.test(periode)) throw new Refus("Formule inconnue.");
+  const a = await abonnementEnCours(esp);
+  if (!a) throw new Refus("Aucun abonnement payant en cours pour cet espace.", 404);
+  const prix = (await stripe("GET", "/v1/prices", { active: "true", limit: 100 })).data as Record<string, any>[];
+  const choisi = prix.find((p) => (p.metadata || {}).formule === formule && (p.metadata || {}).periode === periode && p.tax_behavior === "inclusive");
+  if (!choisi) throw new Refus("Ce tarif n'est pas encore en ligne : écrivez-nous.", 503);
+  const sub0 = await stripe("GET", `/v1/subscriptions/${a.stripe_abonnement}`);
+  const item = sub0.items.data[0];
+  if (item.price && item.price.id === choisi.id) throw new Refus("C'est déjà votre formule actuelle.", 409);
+  const sub = await stripe("POST", `/v1/subscriptions/${a.stripe_abonnement}`, {
+    items: [{ id: item.id, price: choisi.id }],
+    proration_behavior: sub0.status === "trialing" ? "none" : "always_invoice",
+    cancel_at_period_end: "false",
+    metadata: { formule, periode }
+  });
+  const l = await ecrire(esp, sub);
+  console.log(`Formule changée (${a.formule} ${a.periode} → ${formule} ${periode}).`);
+  return { formule: l.formule, periode: l.periode, statut: l.statut, fin_periode: l.fin_periode };
+}
+
 async function resilier(qui: { id: string }, d: Record<string, unknown>) {
   const esp = await espace(qui, d);
   const a = await abonnementEnCours(esp);
@@ -296,6 +329,7 @@ Deno.serve(async (req) => {
       case "paiement": return repondre(await paiement(await personne(req), d));
       case "confirmer": return repondre(await confirmer(await personne(req), d));
       case "resilier": return repondre(await resilier(await personne(req), d));
+      case "changer": return repondre(await changer(await personne(req), d));
       case "clients": return repondre(await clients(await personne(req), d));
       default: return repondre({ erreur: "Action inconnue." }, 400);
     }

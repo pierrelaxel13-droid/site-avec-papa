@@ -41,7 +41,7 @@
   var formule = D.formules[params.get("formule")] ? params.get("formule") : "complet";
   var periode = params.get("periode") === "mois" ? "mois" : "an";
   var F = D.formules[formule];
-  var entreprise = null, courriel = "", adresseManque = false;
+  var entreprise = null, courriel = "", adresseManque = false, dejaAbonne = false;
   // Pour revenir ici après la création du compte (Mon compte → « Choisir ma formule »).
   try { window.localStorage.setItem("pco-souscrire", JSON.stringify({ formule: formule, periode: periode })); } catch (e) { /* sans effet */ }
 
@@ -89,7 +89,7 @@
       dit.textContent = "Le paiement en ligne ouvre très bientôt. En attendant, écrivez-nous : nous ouvrons votre abonnement à réception.";
       return;
     }
-    b.textContent = "Continuer vers le paiement sécurisé";
+    b.textContent = dejaAbonne ? "Passer à cette formule" : "Continuer vers le paiement sécurisé";
     b.href = pret ? lien + (lien.indexOf("?") === -1 ? "?" : "&") + "client_reference_id=" + encodeURIComponent(entreprise.entreprise_id) +
       (courriel ? "&prefilled_email=" + encodeURIComponent(courriel) : "") +
       (promo ? "&prefilled_promo_code=" + encodeURIComponent(promo) : "") : "#";
@@ -144,10 +144,35 @@
     V.fonction("paiement", { entreprise: entreprise.entreprise_id, formule: formule, periode: periode, code: promo }).then(function (r) {
       b.removeAttribute("data-attente");
       if (r.ok && r.donnees && r.donnees.url) { window.location.href = r.donnees.url; return; }
+      if (r.ok && r.donnees && r.donnees.changement) { changerFormule(b, r.donnees); return; }
       if (r.absente) { window.location.href = lien; return; }
       bouton(); $("#paie-dit").textContent = r.erreur;
     });
   });
+
+  /* Déjà abonné (6 novembre 2026) : on change la formule de l'abonnement en cours, chez Stripe,
+     au lieu d'en ouvrir un second. Pendant le mois d'essai, rien n'est facturé ; ensuite, la
+     différence est facturée ou créditée au prorata. */
+  function changerFormule(b, actuel) {
+    var dit = $("#paie-dit"), nom = function (f) { return (D.formules[f] || {}).l || f; };
+    var essai = actuel.statut === "trialing";
+    var q = "Vous avez déjà l'abonnement « " + nom(actuel.formule) + " » (" + (actuel.periode === "an" ? "annuel" : "mensuel") + ").\n\n" +
+      "Le remplacer par « " + F.l + " » (" + (periode === "an" ? "annuel" : "mensuel") + ") ?\n\n" +
+      (essai ? "Vous êtes dans votre mois d'essai gratuit : rien n'est facturé aujourd'hui ; le nouveau prix s'applique à la fin de l'essai."
+             : "La différence de prix est calculée au prorata et facturée (ou déduite) tout de suite.");
+    bouton();
+    if (!window.confirm(q)) { dit.textContent = "Rien n'a changé : vous gardez votre abonnement actuel."; return; }
+    b.setAttribute("data-attente", "1"); b.textContent = "Changement en cours…";
+    V.fonction("changer", { entreprise: entreprise.entreprise_id, formule: formule, periode: periode }).then(function (r) {
+      b.removeAttribute("data-attente"); bouton();
+      if (!r.ok) { dit.textContent = r.erreur; return; }
+      dit.textContent = "";
+      var m = document.createElement("p"); m.className = "reserve";
+      m.appendChild(document.createTextNode("C'est fait : votre abonnement est maintenant « " + F.l + " » (" + (periode === "an" ? "annuel" : "mensuel") + "). "));
+      var a2 = document.createElement("a"); a2.href = "./"; a2.textContent = "Voir Mon compte"; m.appendChild(a2);
+      dit.appendChild(m);
+    });
+  }
 
   /* L'entreprise abonnée : il faut un compte et une entreprise nommée. */
   var compte = $("#paie-compte");
@@ -173,8 +198,9 @@
         return;
       }
       var actuelle = ["", "textes", "suivi", "complet"][Number(entreprise.rang) || 0] || "";
-      var deja = actuelle ? "<p class=\"precision\">Formule actuelle : « " + D.formules[actuelle].court +
-        " »." + (D.portail ? ' Pour la changer ou la résilier : <a href="./">gérer mon abonnement</a>.' : "") + "</p>" : "";
+      dejaAbonne = !!actuelle;
+      var deja = actuelle ? "<p class=\"precision\">Formule actuelle : « " + D.formules[actuelle].l +
+        " ». Pour en changer, choisissez la formule ci-dessus puis « Passer à cette formule ».</p>" : "";
       var p = document.createElement("p");
       var b = document.createElement("strong"); b.textContent = entreprise.denomination || "Votre entreprise";
       p.appendChild(b);
