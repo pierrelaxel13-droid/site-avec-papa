@@ -306,7 +306,7 @@ function bandeInstallation(a) {
   const appareil = (titre, aide, chemin) => `<li class="appareil">
     <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor"
          stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">${chemin}</svg>
-    <div><h3>${esc(titre)}</h3><p>${aide}</p></div>
+    <div><h3>${esc(titre)}</h3>${aide ? `<p>${aide}</p>` : ""}</div>
   </li>`;
 
   return `<section class="section installation" id="installer">
@@ -324,7 +324,7 @@ function bandeInstallation(a) {
         <p class="etiq" id="etat-installation" role="status" style="margin-top:var(--t3)"></p>
       </div>
       <ul class="appareils">
-        ${appareil("iPhone et iPad", "Dans Safari : <strong>Partager</strong>, puis <strong>Sur l'écran d'accueil</strong>.",
+        ${appareil("iPhone et iPad", "",
           '<rect x="6.5" y="2.5" width="11" height="19" rx="2.4"/><path d="M10.5 5.2h3"/>')}
         ${appareil("Android", "Dans Chrome : le bandeau <strong>Installer</strong>, ou le menu ⋮ puis <strong>Ajouter à l'écran d'accueil</strong>.",
           '<rect x="5.5" y="2.5" width="13" height="19" rx="2.4"/><path d="M10 18.3h4"/>')}
