@@ -34,6 +34,13 @@ on:
                               # où tout le monde tape en même temps
     - cron: "42 5 * * *"      # une fois par jour, 5 h 42 UTC ≈ 7 h 42 à Paris
   workflow_dispatch:           # et à la demande, depuis l'onglet Actions
+    inputs:
+      controle:
+        description: "Vérifier aussi toutes les sources (plus long)"
+        type: boolean
+        default: true
+  # 6 novembre 2026 : GitHub retarde beaucoup les horaires ci-dessus. Supabase (pg_cron,
+  # migration 33) lance donc ce robot chaque matin à 6 h (Paris), sans le contrôle des sources.
 
 # Le robot n'a besoin que d'une chose : écrire dans ce dépôt. Tout le reste
 # lui est refusé, pour que le jeton qu'il porte ne serve à rien d'autre si
@@ -105,7 +112,7 @@ jobs:
       # qui répond, pour que celles qui portent « confirme: true » soient
       # revérifiées contre le vrai serveur. Le rapport reste dans le dépôt.
       - name: Vérifier les sources une par une
-        if: github.event_name == 'workflow_dispatch'
+        if: github.event_name == 'workflow_dispatch' && inputs.controle
         run: |
           node outils/veille.mjs --verifier 2>&1 | tee contenu/sources-rapport.txt
           echo "::notice::$(grep -c 'répond' contenu/sources-rapport.txt) source(s) répondent."
@@ -115,7 +122,7 @@ jobs:
       # courants). Le bilan reste dans contenu/sources-decouverte.json ; on ne
       # change contenu/sources.js qu'à la main, après l'avoir lu.
       - name: Chercher le flux des sources muettes
-        if: github.event_name == 'workflow_dispatch'
+        if: github.event_name == 'workflow_dispatch' && inputs.controle
         run: |
           node outils/veille.mjs --decouvrir 2>&1 | tee contenu/sources-decouverte.txt
           echo "::notice::$(tail -1 contenu/sources-decouverte.txt)"

@@ -38,6 +38,8 @@ jobs:
       BREVO_API_KEY: ${{ secrets.BREVO_API_KEY }}
       BREVO_SMTP_KEY: ${{ secrets.BREVO_SMTP_KEY }}
       RECAP_EXPEDITEUR: ${{ secrets.RECAP_EXPEDITEUR }}
+      SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+      VIGIE_GITHUB_ROBOTS: ${{ secrets.VIGIE_GITHUB_ROBOTS }}
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
@@ -87,3 +89,22 @@ jobs:
           sleep 5
           curl -sS -X POST "https://$PROJET.supabase.co/functions/v1/vigie" -H "content-type: application/json" -d '{"action":"etat"}'; echo
           curl -sS -X POST "https://$PROJET.supabase.co/functions/v1/vigie" -H "content-type: application/json" -d '{"action":"courriels"}'; echo
+      # Le réveil des robots du matin (migration 33) : la clé GitHub, rangée dans le coffre
+      # de Supabase (Vault). Elle n'est jamais affichée ; on vérifie seulement qu'elle marche.
+      - name: Clé GitHub des robots du matin, dans le coffre de Supabase
+        run: |
+          if [ -z "$VIGIE_GITHUB_ROBOTS" ]; then
+            echo "::warning::VIGIE_GITHUB_ROBOTS absent : les robots du matin gardent les horaires GitHub (souvent en retard)."; exit 0; fi
+          code=$(curl -s -o /dev/null -w '%{http_code}' -H "Authorization: Bearer $VIGIE_GITHUB_ROBOTS" -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/workflows/recap.yml")
+          if [ "$code" != "200" ]; then
+            echo "::warning::La clé VIGIE_GITHUB_ROBOTS est refusée par GitHub (code $code) : vérifiez qu'elle donne accès à ce dépôt, avec « Actions : lecture et écriture »."; exit 0; fi
+          printf '%s' "$VIGIE_GITHUB_ROBOTS" > cle.txt
+          psql "$SUPABASE_DB_URL" -v ON_ERROR_STOP=1 -qtA -v cle="$(cat cle.txt)" <<'SQL'
+          select case when exists (select 1 from vault.secrets where name = 'github_robots')
+            then (select vault.update_secret((select id from vault.secrets where name = 'github_robots'), :'cle'))::text
+            else (select vault.create_secret(:'cle', 'github_robots', 'Vigie : lancer les robots du matin (GitHub Actions)'))::text end;
+          SQL
+          rm -f cle.txt
+          echo "Clé GitHub rangée dans le coffre de Supabase."
+          psql "$SUPABASE_DB_URL" -qtA -c "select 'Réveils programmés : ' || coalesce(string_agg(jobname || ' (' || schedule || ' UTC)', ', '), 'aucun (migration 33 pas encore appliquée)') from cron.job where jobname like 'vigie-%'" || true

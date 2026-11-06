@@ -20,6 +20,9 @@ name: Récapitulatif par e-mail
 on:
   schedule:
     - cron: "37 7 * * *"      # 7 h 37 UTC ≈ 8 h 37 ou 9 h 37 à Paris, après le relevé du matin
+  # 6 novembre 2026 : GitHub retarde beaucoup l'horaire ci-dessus (parti à 16 h 21). Supabase
+  # (pg_cron, migration 33) lance donc ce robot chaque matin à 7 h 30 (Paris). Un récapitulatif
+  # déjà envoyé dans la journée ne repart pas (dernier_envoi) : l'horaire GitHub reste en secours.
   workflow_dispatch:
 
 permissions:
