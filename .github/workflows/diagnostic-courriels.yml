@@ -1,0 +1,37 @@
+# Vigie — où en sont les e-mails ? (6 novembre 2026)
+#
+# À lancer à la main (Actions → « Diagnostic des e-mails » → Run workflow).
+# Ne montre jamais une adresse en entier (dépôt public) : première lettre et domaine.
+#  1. La file de la base (prive.courriels) : les 15 derniers e-mails, envoyés ou non.
+#  2. Le journal de Brevo sur 2 jours : remis, refusé, rebond, spam… et le sujet.
+#  3. Chez Brevo : l'adresse d'expédition validée, le domaine authentifié.
+name: Diagnostic des e-mails
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  diagnostic:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    env:
+      SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+      BREVO_API_KEY: ${{ secrets.BREVO_API_KEY }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: 22
+      - name: La file de la base
+        run: |
+          psql "$SUPABASE_DB_URL" -q -c "
+            select id, genre, case when destinataire = 'equipe' then 'équipe (contact@)' else left(destinataire, 1) || '…@' || split_part(destinataire, '@', 2) end as a,
+                   to_char(cree_le at time zone 'Europe/Paris', 'DD/MM HH24:MI') as mis_en_file,
+                   coalesce(to_char(envoye_le at time zone 'Europe/Paris', 'DD/MM HH24:MI'), 'NON ENVOYÉ') as envoye, essais, erreur
+            from prive.courriels order by id desc limit 15"
+          psql "$SUPABASE_DB_URL" -tA -c "select 'Réveil immédiat (pg_net) : ' || case when to_regnamespace('net') is not null then 'branché' else 'ABSENT' end"
+      - name: Le journal de Brevo et l'expéditeur
+        run: node outils/diagnostic-courriels.mjs
