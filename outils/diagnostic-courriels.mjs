@@ -18,8 +18,29 @@ try {
   const d = await brevo("/senders/domains");
   for (const x of d.domains || []) console.log(`Domaine ${x.domain_name} : authentifié ${x.authenticated ? "oui" : "NON"} ; vérifié ${x.verified ? "oui" : "NON"}`);
 } catch (e) { console.log("Domaines : " + e.message); }
+// 4. Un e-mail d'essai à l'adresse du site elle-même, puis ce que Brevo en a fait.
+const exp = process.env.RECAP_EXPEDITEUR || "";
+if (process.env.ESSAI && exp) {
+  const r = await fetch("https://api.brevo.com/v3/smtp/email", { method: "POST",
+    headers: { "api-key": cle, "content-type": "application/json", accept: "application/json" },
+    body: JSON.stringify({ sender: { name: "Vigie réglementaire", email: exp }, to: [{ email: exp }],
+      subject: "Essai d'envoi — Vigie réglementaire", textContent: "Si vous lisez ceci, les e-mails du site partent bien.",
+      htmlContent: "<p>Si vous lisez ceci, les e-mails du site partent bien.</p>" }) });
+  const j = await r.json().catch(() => ({}));
+  console.log(`\nE-mail d'essai à ${masque(exp)} : ${r.ok ? "accepté par Brevo" : "refusé (" + r.status + " " + (j.message || "") + ")"}`);
+  if (j.messageId) {
+    for (let k = 0; k < 8; k++) {
+      await new Promise((ok) => setTimeout(ok, 5000));
+      const e = await brevo("/smtp/statistics/events?limit=10&days=1&messageId=" + encodeURIComponent(j.messageId)).catch(() => ({}));
+      const l = (e.events || []).map((x) => x.event + (x.reason ? " (" + x.reason + ")" : ""));
+      if (l.some((x) => /delivered|error|bounce|blocked|invalid/i.test(x))) { console.log("Résultat : " + l.join(", ")); break; }
+      if (k === 7) console.log("Résultat après 40 s : " + (l.join(", ") || "rien encore"));
+    }
+  }
+}
+
 try {
-  const j = await brevo("/smtp/statistics/events?limit=60&days=2&sort=desc");
+  const j = await brevo("/smtp/statistics/events?limit=20&days=1&sort=desc");
   const ev = j.events || [];
   console.log(`\nJournal Brevo, 2 derniers jours : ${ev.length} événement(s)`);
   for (const e of ev) {

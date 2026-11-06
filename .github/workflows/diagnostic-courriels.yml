@@ -9,6 +9,11 @@ name: Diagnostic des e-mails
 
 on:
   workflow_dispatch:
+    inputs:
+      essai:
+        description: "Envoyer un e-mail d'essai à l'adresse du site (contact@)"
+        type: boolean
+        default: true
 
 permissions:
   contents: read
@@ -20,6 +25,8 @@ jobs:
     env:
       SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
       BREVO_API_KEY: ${{ secrets.BREVO_API_KEY }}
+      RECAP_EXPEDITEUR: ${{ secrets.RECAP_EXPEDITEUR }}
+      ESSAI: ${{ inputs.essai && '1' || '' }}
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
