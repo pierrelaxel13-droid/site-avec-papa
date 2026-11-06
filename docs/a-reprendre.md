@@ -24,7 +24,7 @@ Reste à faire :
   exports PDF). À trancher : ce qui change exactement à l'écran.
 - **Les collègues du cabinet** : inviter quelqu'un dans le cabinet (la base
   le permet déjà, `inviter(cabinet => …)`, il manque l'écran).
-- **Le prix** : 49 / 42 / 35 € par client, marque blanche dès 6 clients —
+- **Le prix** : 32 / 28 / 25 € HT par client (6 novembre 2026), marque blanche dès 6 clients —
   à confirmer ; la facturation au nombre de clients viendra avec Stripe.
 
 ## 2. Perplexity : les conseils de l'IA, réservés aux formules 2 et 3

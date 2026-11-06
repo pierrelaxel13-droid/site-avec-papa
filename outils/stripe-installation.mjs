@@ -45,9 +45,9 @@ export const OFFRES = {
 export const CONSULTANT = {
   nom: "Offre consultant QSE",
   paliers: [
-    { de: 1, a: 5, mois: 49 },
-    { de: 6, a: 15, mois: 42 },
-    { de: 16, a: null, mois: 35 }
+    { de: 1, a: 5, mois: 32 },
+    { de: 6, a: 15, mois: 28 },
+    { de: 16, a: null, mois: 25 }
   ]
 };
 const PLAFOND_CLIENTS = 500;

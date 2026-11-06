@@ -56,7 +56,7 @@ assert.ok(base.prices.some((x) => x.unit_amount === 104280 && x.recurring.interv
 assert.deepEqual(desactives, [["/v1/payment_links/plink_vieux", "false"], ["/v1/prices/price_vieux", "false"]],
   "les anciens lien et prix hors taxes de l'outil sont désactivés ; le prix créé à la main n'est pas touché");
 assert.deepEqual(Object.keys(b1.liens.consultant), ["p1", "p2", "p3"]);
-assert.ok(base.prices.some((x) => x.unit_amount === 5040 && x.recurring.interval === "month"), "42 € HT → 50,40 € TTC");
+assert.ok(base.prices.some((x) => x.unit_amount === 3360 && x.recurring.interval === "month"), "28 € HT → 33,60 € TTC");
 
 assert.equal(b1.portail, "https://billing.stripe.com/p/login/test_x");
 assert.match(b1.liens.complet.mois, /^https:\/\/buy\.stripe\.com\//);

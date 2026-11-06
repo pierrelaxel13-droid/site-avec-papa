@@ -189,9 +189,9 @@ const FORMULES = {
    formule complète. Marque blanche (logo, nom, couleurs, exports PDF) dès 6. */
 const OFFRE_CONSULTANT = {
   paliers: [
-    { de: 1, a: 5, mois: 49, blanche: false },
-    { de: 6, a: 15, mois: 42, blanche: true },
-    { de: 16, a: null, mois: 35, blanche: true }
+    { de: 1, a: 5, mois: 32, blanche: false },
+    { de: 6, a: 15, mois: 28, blanche: true },
+    { de: 16, a: null, mois: 25, blanche: true }
   ],
   equivalent: "complet"   // la formule que chaque client final reçoit
 };
