@@ -22,6 +22,19 @@
     $("#paie-merci").hidden = false;
     $("#paie-formulaire").hidden = true;
     try { window.localStorage.removeItem("pco-souscrire"); } catch (e) { /* sans effet */ }
+    // Retour du paiement par la fonction serveur : la formule s'ouvre tout de suite (6 novembre 2026).
+    if (params.get("session") && V && V.fonction) {
+      var m = document.createElement("p"); m.className = "precision"; m.textContent = "Ouverture de votre abonnement…";
+      $("#paie-merci").appendChild(m);
+      var essai = function (n) {
+        V.fonction("confirmer", { session: params.get("session") }).then(function (r) {
+          if (r.ok && r.donnees.ouvert) { m.textContent = "C'est fait : votre abonnement est ouvert. Vous pouvez accéder à votre espace dès maintenant."; return; }
+          if (n < 3 && r.ok) { setTimeout(function () { essai(n + 1); }, 3000); return; }
+          m.textContent = "Votre abonnement s'ouvre dans les minutes qui viennent.";
+        });
+      };
+      essai(0);
+    }
     return;
   }
 
@@ -112,7 +125,20 @@
   });
   $("#paie-cgv").addEventListener("change", bouton);
   $("#paie-payer").addEventListener("click", function (e) {
-    if (this.getAttribute("aria-disabled") === "true") { e.preventDefault(); bouton(); }
+    if (this.getAttribute("aria-disabled") === "true") { e.preventDefault(); bouton(); return; }
+    // Le paiement par la fonction serveur (6 novembre 2026) : la page Stripe s'ouvre avec l'adresse
+    // déjà connue, donc la TVA affichée dès le début. Si la fonction ne répond pas : le lien de paiement.
+    var b = this, lien = b.getAttribute("href") || "";
+    if (!entreprise || !V || !V.fonction || !/^https:/.test(lien)) return;
+    e.preventDefault();
+    if (b.getAttribute("data-attente")) return;
+    b.setAttribute("data-attente", "1"); b.textContent = "Ouverture du paiement sécurisé…";
+    V.fonction("paiement", { entreprise: entreprise.entreprise_id, formule: formule, periode: periode, code: promo }).then(function (r) {
+      b.removeAttribute("data-attente");
+      if (r.ok && r.donnees && r.donnees.url) { window.location.href = r.donnees.url; return; }
+      if (r.absente) { window.location.href = lien; return; }
+      bouton(); $("#paie-dit").textContent = r.erreur;
+    });
   });
 
   /* L'entreprise abonnée : il faut un compte et une entreprise nommée. */

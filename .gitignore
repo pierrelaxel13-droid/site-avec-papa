@@ -13,3 +13,4 @@ node_modules/
 
 # Le bilan d'un passage du robot (outils/veille.mjs) : il change à chaque fois.
 releve-bilan.json
+supabase/functions/vigie/gabarits.mjs

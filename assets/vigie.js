@@ -287,6 +287,22 @@
     return rpc("suis_administrateur").then(function (r) { return r.ok && r.donnees === true; });
   }
   function adminVue() { return rpc("admin_vue"); }
+  /* La fonction serveur « vigie » (supabase/functions/vigie, 6 novembre 2026) :
+     paiement avec la TVA affichée, résiliation, nombre de clients.
+     absente : la fonction ne répond pas (pas encore déployée, hors ligne) ;
+     la page prend alors le chemin d'avant (lien de paiement, portail Stripe). */
+  function fonction(action, donnees) {
+    return session().then(function (s) {
+      var corps = { action: action };
+      Object.keys(donnees || {}).forEach(function (k) { corps[k] = donnees[k]; });
+      return appel("/functions/v1/vigie", { corps: corps, jeton: s ? s.jeton : null }).then(function (r) {
+        if (r.ok) return { ok: true, donnees: r.j };
+        var absente = r.statut <= 0 || r.statut === 404 || r.statut === 503 || (r.statut >= 500 && !r.j.erreur);
+        return { ok: false, absente: absente, erreur: r.j.erreur || "Le service ne répond pas. Réessayez dans un instant." };
+      });
+    });
+  }
+
   function adminAbonnement(entreprise, formule) {
     return rpc("admin_abonnement", { entreprise: entreprise, nouvelle_formule: formule || null });
   }
@@ -299,7 +315,7 @@
     changer: changer, deconnecter: deconnecter, arrivee: arrivee,
     rpc: rpc, rpcPublic: rpcPublic, lire: lireTable, mesEntreprises: mesEntreprises, creerEntreprise: creerEntreprise,
     mesAcces: mesAcces, espaceChoisi: espaceChoisi, choisir: choisir, mesCabinets: mesCabinets,
-    suisAdministrateur: suisAdministrateur, adminVue: adminVue, adminAbonnement: adminAbonnement,
+    suisAdministrateur: suisAdministrateur, adminVue: adminVue, adminAbonnement: adminAbonnement, fonction: fonction,
     pageDuSite: pageDuSite
   };
 

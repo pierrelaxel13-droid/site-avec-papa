@@ -337,6 +337,14 @@ createServer(async (req, res) => {
   let corps = null;
   try { corps = texte ? JSON.parse(texte) : null; } catch { return repond(400, { message: "JSON invalide" }); }
   const porteur = (req.headers.authorization || "").replace(/^Bearer /, "");
+  // La fonction serveur « vigie » (supabase/functions/vigie), lancée à part sous Deno :
+  // VIGIE_FONCTION=http://localhost:8000 (essais seulement).
+  if (url.pathname === "/functions/v1/vigie") {
+    if (!process.env.VIGIE_FONCTION) return repond(404, { message: "Requested function was not found" });
+    const r = await fetch(process.env.VIGIE_FONCTION, { method: "POST", body: texte,
+      headers: { "content-type": "application/json", ...(porteur ? { authorization: "Bearer " + porteur } : {}) } });
+    return repond(r.status, await r.json().catch(() => ({})));
+  }
   try {
     const [statut, j] = url.pathname.startsWith("/auth/v1/")
       ? await auth(url.pathname, url.searchParams, req.method === "GET" ? null : corps || {}, porteur)

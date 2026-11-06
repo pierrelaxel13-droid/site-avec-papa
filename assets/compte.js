@@ -765,12 +765,36 @@
             }
             return x;
           };
+          /* Par la fonction serveur (6 novembre 2026) : le geste est fait directement chez Stripe,
+             sans passer par le portail. Si elle ne répond pas : le lien d'avant (portail ou e-mail). */
+          var serveur = function (x, action, args, attente) {
+            x.addEventListener("click", function (ev) {
+              if (ev.defaultPrevented || !V.fonction) return;
+              ev.preventDefault();
+              if (x.getAttribute("data-attente")) return;
+              var avant = x.textContent, secours = x.href;
+              x.setAttribute("data-attente", "1"); x.textContent = attente;
+              V.fonction(action, args()).then(function (r) {
+                x.removeAttribute("data-attente"); x.textContent = avant;
+                if (r.ok) { window.location.reload(); return; }
+                if (r.absente) { window.location.href = secours; return; }
+                $("#etat-abo").textContent = r.erreur;
+              });
+            });
+          };
+          var ici2 = function (extra) {
+            var o = estCabinet ? { cabinet: esp.id } : { entreprise: esp.id };
+            Object.keys(extra || {}).forEach(function (k) { o[k] = extra[k]; });
+            return o;
+          };
           var note = document.createElement("p"); note.className = "precision";
           if (a.resiliation_prevue) {
             note.textContent = "Résiliation enregistrée : votre abonnement s'arrête le " + jourAbo(a.fin_periode) +
               ", sans nouveau prélèvement. Vous gardez tout votre accès jusqu'à cette date.";
             zr.appendChild(note);
-            if (portail) zr.appendChild(lien("Annuler la résiliation", "Annulation de la résiliation"));
+            var rep = lien("Annuler la résiliation", "Annulation de la résiliation");
+            serveur(rep, "resilier", function () { return ici2({ reprendre: true }); }, "Annulation…");
+            zr.appendChild(rep);
           } else {
             var b = lien(annuel ? "Ne pas renouveler mon abonnement" : "Résilier mon abonnement",
               annuel ? "Non-renouvellement" : "Résiliation");
@@ -778,18 +802,31 @@
               var q = annuel
                 ? "Ne pas renouveler votre abonnement annuel ?\n\nIl reste actif jusqu'au " + jourAbo(a.fin_periode) + ", puis s'arrête sans nouveau prélèvement."
                 : "Résilier votre abonnement mensuel ?\n\nIl s'arrête à la fin du mois en cours, déjà payé (" + jourAbo(a.fin_periode) + "), sans nouveau prélèvement.";
-              if (!window.confirm(q + (portail ? "\n\nVous allez être dirigé vers notre espace de paiement sécurisé (Stripe) pour confirmer." : "\n\nUn e-mail de demande va s'ouvrir : envoyez-le pour confirmer."))) ev.preventDefault();
+              if (!window.confirm(q + (V.fonction ? "" : portail ? "\n\nVous allez être dirigé vers notre espace de paiement sécurisé (Stripe) pour confirmer." : "\n\nUn e-mail de demande va s'ouvrir : envoyez-le pour confirmer."))) ev.preventDefault();
             });
+            serveur(b, "resilier", function () { return ici2(); }, "Résiliation…");
             note.textContent = a.statut === "trialing"
               ? "Mois d'essai gratuit jusqu'au " + jourAbo(a.fin_periode) + " : en résiliant avant cette date, vous ne payez rien."
               : annuel
               ? "Abonnement annuel : vous pouvez choisir de ne pas le renouveler. Il reste actif jusqu'au " + jourAbo(a.fin_periode) + ", puis s'arrête."
               : "Abonnement mensuel : résiliable à tout moment. Il s'arrête à la fin du mois en cours, déjà payé ; aucun nouveau prélèvement.";
             zr.appendChild(note);
-            if (a.formule === "consultant" && portail) {
+            if (a.formule === "consultant") {
               // Le consultant change seul son nombre de clients (6 novembre 2026).
               var nb = lien("Modifier le nombre de clients", "Modification du nombre de clients");
               nb.classList.remove("abo-bouton-resilier");
+              var voulu = 0;
+              nb.addEventListener("click", function (ev) {
+                if (!V.fonction) return;
+                var t = window.prompt("Nombre de clients couverts par votre abonnement" +
+                  (a.clients_max ? " (actuellement " + a.clients_max + ")" : "") + " :", a.clients_max || "");
+                voulu = parseInt(t, 10);
+                if (t === null || !(voulu >= 1 && voulu <= 500)) {
+                  ev.preventDefault();
+                  if (t !== null) $("#etat-abo").textContent = "Indiquez un nombre de clients de 1 à 500.";
+                }
+              });
+              serveur(nb, "clients", function () { return { cabinet: esp.id, nombre: voulu }; }, "Modification…");
               zr.appendChild(nb);
             }
             zr.appendChild(b);
