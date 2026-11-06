@@ -269,6 +269,22 @@ export async function installer(stripe, { tva = "" } = {}) {
     if (client) await stripe("DELETE", `/v1/customers/${client.id}`).catch(() => {});
   }
 
+  // Les droits de la clé (6 novembre 2026) : pour résilier et modifier depuis le site, il faut
+  // écrire sur les abonnements. On le vérifie sans rien changer : on vise un abonnement qui
+  // n'existe pas. « No such subscription » : le droit est là ; 401/403 : il manque.
+  bilan.droits = [];
+  if (tva === "auto") {
+    for (const [nom, chemin, params] of [["Abonnements (écriture)", "/v1/subscriptions/sub_vigie_essai_droits_inexistant", { metadata: { essai: "droits" } }],
+                                        ["Clients (écriture)", "/v1/customers/cus_vigie_essai_droits_inexistant", { metadata: { essai: "droits" } }],
+                                        ["Sessions de paiement (écriture)", "/v1/checkout/sessions/cs_vigie_essai_droits_inexistant/expire", {}]]) {
+      try { await stripe("POST", chemin, params); bilan.droits.push(`${nom} : oui`); }
+      catch (e) {
+        bilan.droits.push(/ 404 /.test(e.message) || /No such/i.test(e.message) ? `${nom} : oui` :
+          / 40[13] /.test(e.message) ? `${nom} : NON (${e.message.replace(/^Stripe [A-Z]+ \S+ : /, "")})` : `${nom} : ? (${e.message})`);
+      }
+    }
+  }
+
   // Les anciens liens et prix posés par cet outil (hors taxes, 5 novembre 2026), qui ne
   // servent plus : désactivés, pour qu'un ancien lien ne fasse plus payer hors taxes.
   // Seulement ce que l'outil a créé (métadonnée « formule ») ; le reste n'est pas touché.
@@ -371,6 +387,7 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   b.taxe.forEach((x) => console.log("TVA : " + x));
   b.liensTva.forEach((x) => console.log("Lien " + x));
   (b.essaisTva || []).forEach((x) => console.log("Essai TVA : " + x));
+  (b.droits || []).forEach((x) => console.log("Droit de la clé : " + x));
   console.log(`Mode Stripe : ${mode}. Liens de paiement : ${Object.values(b.liens).flatMap((l) => Object.values(l)).length}. Portail : ${b.portail ? "oui" : "non"}.`);
   const chemin = join(RACINE, "contenu", "paiement.js");
   await writeFile(chemin, reecrire(await readFile(chemin, "utf8"), b.liens, b.portail));
