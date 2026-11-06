@@ -4610,7 +4610,6 @@ ${formAdresse("cab", "Adresse du cabinet")}
           </div>
           <div class="compte-corps">
           <form id="form-entreprise" method="post" novalidate hidden>
-            <p><strong>Dernière étape : qui êtes-vous ?</strong> <span id="e-explique"></span></p>
             <fieldset class="champ choix-type">
               <legend>Vous êtes</legend>
               <label><input type="radio" name="e-type" value="entreprise" checked> Une entreprise

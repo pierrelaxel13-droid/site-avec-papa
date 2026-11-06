@@ -303,9 +303,6 @@
     var typeChoisi = function () {
       var cabinet = ($('input[name="e-type"]:checked') || {}).value === "cabinet";
       $("#e-nom-l").textContent = cabinet ? "Nom de votre cabinet" : "Nom de l'entreprise";
-      $("#e-explique").textContent = cabinet
-        ? "Vous y créerez l'espace de chacun de vos clients ; vous en serez le responsable du compte."
-        : "C'est elle qui portera l'abonnement, le plan de veille et le registre ; vous en serez le responsable du compte.";
     };
     var types = document.querySelectorAll('input[name="e-type"]');
     for (var t = 0; t < types.length; t++) types[t].addEventListener("change", typeChoisi);
