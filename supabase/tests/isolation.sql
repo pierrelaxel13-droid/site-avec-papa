@@ -1094,6 +1094,8 @@ select tests.refuse($$select public.cabinet_places('00000000-0000-0000-0000-0000
 reset role;
 select tests.refuse($$update public.entreprises set consultant_id = '00000000-0000-0000-0000-00000000c100' where id = '00000000-0000-0000-0000-00000000b000'$$,
   'le rattachement d''une entreprise au cabinet est refusé aussi, une fois le nombre atteint');
+-- Dans ce test, tout se passe dans la même transaction (même « now() ») : on date Q0 la veille pour qu'il soit bien le plus ancien.
+update public.entreprises set cree_le = now() - interval '1 day' where id = current_setting('tests.q0')::uuid;
 select tests.ok(prive.rang_entreprise(current_setting('tests.q0')::uuid) = 3 and prive.rang_entreprise(current_setting('tests.q1')::uuid) = 3,
   'les clients couverts par l''abonnement ont la veille complète');
 update public.abonnements set clients_max = 1 where stripe_abonnement = 'sub_essai_q';
