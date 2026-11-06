@@ -230,7 +230,6 @@
       var dita = $("#" + x + "-adresse-etat");
       lireAd().then(function (ad) {
         Object.keys(ca).forEach(function (k) { if (ad[k]) ca[k].value = ad[k]; });
-        if (!ad.ligne && admin) dita.textContent = "Adresse à renseigner : elle est obligatoire pour vous abonner.";
       });
       if (!admin) {
         Object.keys(ca).forEach(function (k) { ca[k].disabled = true; });
