@@ -38,6 +38,7 @@ jobs:
         env:
           STRIPE_SETUP_KEY: ${{ secrets.STRIPE_SETUP_KEY || secrets.CLAUDE_STRIPE }}
           STRIPE_TVA: ${{ inputs.tva }}
+          STRIPE_ESSAI_SESSION: "1"
         run: node outils/stripe-installation.mjs
       - name: Le site se construit avec
         run: node build.mjs > /dev/null

@@ -148,6 +148,7 @@ export async function installer(stripe, { tva = "" } = {}) {
         });
       }
       bilan.liens[formule][periode] = lien.url;
+      if (formule === "textes" && periode === "mois") (bilan.prixIds = bilan.prixIds || {}).textesMois = prix.id;
       gardes.prix.add(prix.id); gardes.liens.add(lien.id); nouveauxLiens[lien.id] = lien;
     }
   }
@@ -219,6 +220,26 @@ export async function installer(stripe, { tva = "" } = {}) {
       bilan.essaisTva.push(`${prod.name} (code ${prod.tax_code || "aucun"}) : TVA ${((c.tax_amount_inclusive || 0) / 100).toFixed(2)} € sur 46,80 € — ` +
         `${b.taxability_reason || "?"}${b.tax_rate_details ? `, taux ${b.tax_rate_details.percentage_decimal} %` : ""}`);
     } catch (e) { bilan.essaisTva.push(`${prod.name} : calcul d'essai impossible (${e.message})`); }
+  }
+
+  // Diagnostic TVA, 2 (6 novembre 2026) : une vraie session de paiement Stripe Checkout,
+  // comme celle d'un lien de paiement, pour un client d'essai à Istres. On lit la TVA que
+  // Stripe y met, puis on ferme la session et on supprime le client : rien n'est facturé.
+  if (tva === "auto" && process.env.STRIPE_ESSAI_SESSION === "1") {
+    const prixEssai = (bilan.prixIds || {}).textesMois;
+    let client = null;
+    try {
+      client = await stripe("POST", "/v1/customers", { name: "Essai TVA (à supprimer)", email: "essai-tva@example.com",
+        address: { country: "FR", postal_code: "13800", city: "Istres", line1: "1 rue de l'essai" }, metadata: { essai: "tva" } });
+      const sess = await stripe("POST", "/v1/checkout/sessions", { mode: "subscription", customer: client.id,
+        line_items: [{ price: prixEssai, quantity: 1 }], automatic_tax: { enabled: "true" },
+        success_url: `${SITE}compte/paiement.html?merci=1`, cancel_url: `${SITE}compte/paiement.html` });
+      const t = sess.total_details || {};
+      bilan.essaisTva.push(`session Checkout (client à Istres) : total ${(sess.amount_total / 100).toFixed(2)} €, TVA ${((t.amount_tax || 0) / 100).toFixed(2)} €` +
+        `, calcul ${(sess.automatic_tax || {}).status || "?"}`);
+      await stripe("POST", `/v1/checkout/sessions/${sess.id}/expire`, {}).catch(() => {});
+    } catch (e) { bilan.essaisTva.push(`session Checkout d'essai impossible (${e.message})`); }
+    if (client) await stripe("DELETE", `/v1/customers/${client.id}`).catch(() => {});
   }
 
   // Les anciens liens et prix posés par cet outil (hors taxes, 5 novembre 2026), qui ne
