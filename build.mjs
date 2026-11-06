@@ -4729,12 +4729,12 @@ ${formAdresse("cab", "Adresse du cabinet")}
         <!-- Les e-mails (4 novembre 2026) : récapitulatif quotidien et rappels. -->
         <div class="ligne-reglage ligne-bascule">
           <label for="p-recap"><span class="lb-texte"><span>Récapitulatif quotidien par e-mail</span>
-            <span class="lb-aide">Chaque matin, les textes parus qui touchent votre plan de veille, présentés comme le tableau « Ma veille réglementaire ». Aucun e-mail les jours sans nouveau texte.</span></span>
+            <span class="lb-aide">Chaque matin, les textes publiés qui vous concernent vous sont envoyés.</span></span>
             <input type="checkbox" role="switch" id="p-recap" disabled></label>
         </div>
         <div class="ligne-reglage ligne-bascule">
           <label for="p-rappels"><span class="lb-texte"><span>Rappels des actions en retard</span>
-            <span class="lb-aide">Un e-mail quand le délai d'une action du plan d'actions est dépassé, puis chaque semaine tant qu'elle n'est pas validée.</span></span>
+            <span class="lb-aide">Vous êtes averti quand une action du plan d'actions n'est pas réalisée dans les délais impartis.</span></span>
             <input type="checkbox" role="switch" id="p-rappels" disabled></label>
         </div>
         <p class="etat-compte" id="etat-recap" role="status"></p>
