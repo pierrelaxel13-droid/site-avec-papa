@@ -4858,3 +4858,7 @@ ol.etapes-carres p { margin: 0; color: var(--encre-douce); text-align: center; m
 .cab-adresse-ligne { display: grid; gap: .55rem; grid-template-columns: minmax(0, 9rem) minmax(0, 1fr); }
 .cab-adresse .champ { margin: 0; }
 @media (max-width: 480px) { .cab-adresse-ligne { grid-template-columns: 1fr; } }
+
+/* Mon compte : « Accéder à mon espace » en haut à gauche (6 novembre 2026). */
+.compte-acces { margin: .6rem 0 0; }
+.compte-acces:has(> [hidden]) { display: none; }

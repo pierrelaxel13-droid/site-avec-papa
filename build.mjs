@@ -4552,6 +4552,7 @@ function pageMonCompte() {
       <div>
         <h1>Mon compte</h1>
         <p class="compte-connecte">Connecté avec <span class="compte-adresse" id="compte-adresse"></span></p>
+        <p class="compte-acces"><a class="bouton bouton-accent" id="entreprise-ouvrir" href="../app/" hidden>Accéder à mon espace</a></p>
         <p class="etat-compte" id="etat-compte" role="status">Un instant…</p>
       </div>
       <div class="compte-tete-actions">
@@ -4597,7 +4598,6 @@ function pageMonCompte() {
             ${formAdresse("ent", "Adresse de l'entreprise")}
             <div class="compte-corps compte-consultant" id="entreprise-consultant" hidden></div>
             <div class="compte-actions">
-              <a class="bouton bouton-accent" id="entreprise-ouvrir" href="../app/" hidden>Ouvrir mon espace</a>
               <a class="bouton bouton-accent" id="entreprise-tarifs" href="../abonnement.html" hidden>Choisir ma formule</a>
             </div>
           </div>

@@ -119,7 +119,7 @@
       deja.appendChild(t);
       var actions = document.createElement("span");
       actions.className = "rangee";
-      var ouvrir = lien(vers("compte/"), "Ouvrir mon espace");
+      var ouvrir = lien(vers("compte/"), "Accéder à mon espace");
       ouvrir.className = "bouton bouton-accent";
       entree(retour).then(function (ou) { ouvrir.href = vers(ou); });
       var sortir = bouton("Se déconnecter", function () {
