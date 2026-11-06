@@ -223,6 +223,23 @@ export async function installer(stripe, { tva = "" } = {}) {
   conf = conf ? await stripe("POST", `/v1/billing_portal/configurations/${conf.id}`, reglages)
               : await stripe("POST", "/v1/billing_portal/configurations", reglages);
   bilan.portail = (conf.login_page || {}).url || "";
+
+  // La TVA à 0 sur la page de paiement (6 novembre 2026) : Stripe Tax ne collecte une
+  // taxe que dans un pays où le compte est inscrit (Stripe → Taxes → Inscriptions).
+  // On lit seulement l'état, sans rien changer.
+  bilan.taxe = [];
+  try {
+    const t = await stripe("GET", "/v1/tax/settings");
+    bilan.taxe.push(`Stripe Tax : ${t.status === "active" ? "actif" : `pas actif (${t.status || "?"} : ${((t.status_details || {}).pending || {}).missing_fields || ""})`}` +
+      `, adresse d'origine : ${t.head_office && t.head_office.address && t.head_office.address.country ? t.head_office.address.country : "absente"}` +
+      `, comportement par défaut : ${(t.defaults || {}).tax_behavior || "non réglé"}`);
+  } catch (e) { bilan.taxe.push(`réglages Stripe Tax illisibles (${e.message})`); }
+  try {
+    const r = await tous(stripe, "/v1/tax/registrations", { status: "all" });
+    const actives = r.filter((x) => x.status === "active").map((x) => `${x.country} (${x.country_options && x.country_options[x.country.toLowerCase()] ? x.country_options[x.country.toLowerCase()].type : "?"})`);
+    bilan.taxe.push(`inscriptions actives : ${actives.length ? actives.join(", ") : "AUCUNE — la TVA est calculée à 0"}` +
+      (r.length > actives.length ? ` ; autres : ${r.filter((x) => x.status !== "active").map((x) => `${x.country} ${x.status}`).join(", ")}` : ""));
+  } catch (e) { bilan.taxe.push(`inscriptions illisibles (${e.message})`); }
   return bilan;
 }
 
@@ -248,6 +265,7 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   b.produits.forEach((x) => console.log("Produit " + x));
   b.prix.forEach((x) => console.log("Prix " + x));
   b.retires.forEach((x) => console.log("Désactivé : " + x));
+  b.taxe.forEach((x) => console.log("TVA : " + x));
   console.log(`Mode Stripe : ${mode}. Liens de paiement : ${Object.values(b.liens).flatMap((l) => Object.values(l)).length}. Portail : ${b.portail ? "oui" : "non"}.`);
   const chemin = join(RACINE, "contenu", "paiement.js");
   await writeFile(chemin, reecrire(await readFile(chemin, "utf8"), b.liens, b.portail));

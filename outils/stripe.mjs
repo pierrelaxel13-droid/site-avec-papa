@@ -60,6 +60,8 @@ export function ligneDe(abonnement, pour) {
     stripe_client: typeof abonnement.customer === "object" ? abonnement.customer.id : abonnement.customer || null,
     entreprise_id: f.formule === "consultant" ? null : pour || null,
     consultant_id: f.formule === "consultant" ? pour || null : null,
+    // Offre consultant : le nombre de clients payé (quantité choisie au paiement, migration 26).
+    clients_max: f.formule === "consultant" && Number.isInteger(item.quantity) ? item.quantity : null,
     formule: f.formule, periode: f.periode,
     statut: String(abonnement.status || "inconnu"),
     fin_periode: fin ? new Date(fin * 1000).toISOString() : null,
@@ -129,13 +131,13 @@ export async function synchroniser({ stripe, sql, jours = 7, maintenant = Date.n
   // 3. Écrire : une ligne par abonnement Stripe. Une entreprise inconnue est ignorée (et dite).
   if (lignes.length) {
     const r = sql(`with x as (select * from jsonb_to_recordset(:'j'::jsonb) as x(stripe_abonnement text, stripe_client text,
-        entreprise_id uuid, consultant_id uuid, formule text, periode text, statut text, fin_periode timestamptz, resiliation_prevue boolean)),
+        entreprise_id uuid, consultant_id uuid, formule text, periode text, statut text, fin_periode timestamptz, resiliation_prevue boolean, clients_max integer)),
       ok as (select x.* from x where (x.formule <> 'consultant' and exists (select 1 from public.entreprises e where e.id = x.entreprise_id))
                                 or (x.formule = 'consultant' and exists (select 1 from public.consultants c where c.id = x.consultant_id))),
-      ecrits as (insert into public.abonnements (entreprise_id, consultant_id, formule, periode, statut, fin_periode, resiliation_prevue, stripe_client, stripe_abonnement, maj_le)
-        select entreprise_id, consultant_id, formule, periode, statut, fin_periode, coalesce(resiliation_prevue, false), stripe_client, stripe_abonnement, now() from ok
+      ecrits as (insert into public.abonnements (entreprise_id, consultant_id, formule, periode, statut, fin_periode, resiliation_prevue, clients_max, stripe_client, stripe_abonnement, maj_le)
+        select entreprise_id, consultant_id, formule, periode, statut, fin_periode, coalesce(resiliation_prevue, false), clients_max, stripe_client, stripe_abonnement, now() from ok
         on conflict (stripe_abonnement) do update set formule = excluded.formule, periode = excluded.periode,
-          statut = excluded.statut, fin_periode = excluded.fin_periode, resiliation_prevue = excluded.resiliation_prevue,
+          statut = excluded.statut, fin_periode = excluded.fin_periode, resiliation_prevue = excluded.resiliation_prevue, clients_max = excluded.clients_max,
           stripe_client = excluded.stripe_client, maj_le = now()
         returning stripe_abonnement)
       select json_build_object('ecrits', (select count(*) from ecrits),

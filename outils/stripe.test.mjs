@@ -37,6 +37,9 @@ ok(!!ligneDe(abo("sub_3", "active", "???", "month", 1), null).erreur, "ligne : f
   const C = "44444444-4444-4444-4444-444444444444";
   const lc = ligneDe(abo("sub_C", "active", "Offre consultant QSE", "month", 1800000000), C);
   ok(lc.formule === "consultant" && lc.consultant_id === C && lc.entreprise_id === null, "offre consultant : la ligne va au cabinet");
+  const aq = abo("sub_Q", "active", "Offre consultant QSE", "month", 1800000000); aq.items.data[0].quantity = 3;
+  ok(ligneDe(aq, C).clients_max === 3, "offre consultant : le nombre de clients payé est lu");
+  ok(ligneDe(abo("sub_T", "active", "Textes", "month", 1), C).clients_max === null, "formule d'entreprise : pas de nombre de clients");
   const le = ligneDe(abo("sub_E", "active", "Textes", "month", 1800000000), C);
   ok(le.entreprise_id === C && le.consultant_id === null, "formule d'entreprise : la ligne va à l'entreprise");
 }

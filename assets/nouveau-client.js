@@ -26,6 +26,8 @@
       $("#nc-cabinet").textContent = "Cabinet « " + (cabinet.nom || "") + " »";
       $("#nc-principal").hidden = false;
       $("#nc-nom").focus();
+      // Le nombre de clients de l'abonnement (migration 26) : atteint, on le dit.
+      if (window.VIGIE_PLACES) window.VIGIE_PLACES(cabinet.id, $("#form-nc"), $("#form-nc").getAttribute("data-contact"), cabinet.nom);
     });
   });
 

@@ -5064,7 +5064,7 @@ function pageCabinet(V, NAF, SOURCES) {
   </div>
 </section>`;
   return page({ titre: `Espace consultant | ${SITE.nom}`, description: `Votre cabinet de conseil sur ${SITE.nom} : le tableau de bord de vos clients.`,
-    racine: "../", zone: "public", corps, donneesPlan: true, scripts: ["assets/textes-plan.js", "assets/compte.js"], installation: false, piedCourt: true,
+    racine: "../", zone: "public", corps, donneesPlan: true, scripts: ["assets/textes-plan.js", "assets/places.js", "assets/compte.js"], installation: false, piedCourt: true,
     attrsBody: ' data-page="cabinet"' });
 }
 
@@ -5106,7 +5106,7 @@ function pageNouveauClient(V, NAF, demo = null) {
         </ol>
       </aside>
       <div class="nc-panneau">
-        <form class="nc-form" id="form-nc" novalidate>
+        <form class="nc-form" id="form-nc" data-contact="${esc(SITE.courriel)}" novalidate>
           <h2>Le client</h2>
           <div class="nc-champ">
             <label for="nc-nom">Nom de l'entreprise cliente</label>
@@ -5151,7 +5151,7 @@ function pageNouveauClient(V, NAF, demo = null) {
   </div>
 </section>`;
   return page({ titre: `${demo ? "Démonstration — " : ""}Créer l'accès d'un client | ${SITE.nom}`, description: "Espace consultant : créer l'espace et l'accès d'une entreprise cliente.",
-    racine: "../", zone: "public", corps, scripts: [demo ? "assets/nouveau-client-demo.js" : "assets/nouveau-client.js", "assets/nouveau-client-apercu.js"], installation: false, piedCourt: true, attrsBody: ' data-page="cabinet"' });
+    racine: "../", zone: "public", corps, scripts: [...(demo ? ["assets/nouveau-client-demo.js"] : ["assets/places.js", "assets/nouveau-client.js"]), "assets/nouveau-client-apercu.js"], installation: false, piedCourt: true, attrsBody: ' data-page="cabinet"' });
 }
 
 /* La démonstration consultant (demo/cabinet.html) : la page « Mon cabinet »

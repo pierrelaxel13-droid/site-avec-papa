@@ -1067,6 +1067,47 @@ select tests.ok((select count(*) from prive.courriels where genre = 'facture' an
                 and exists (select 1 from prive.courriels where genre = 'facture' and donnees ->> 'numero' = 'F-COURRIEL-1' and destinataire = 'b_admin@test.fr'),
   'une facture déposée prévient le responsable du compte, lui seul');
 
+-- ---- Le nombre de clients de l'abonnement consultant (migration 26) -------
+insert into public.consultants (id, nom) values ('00000000-0000-0000-0000-00000000c100', 'Cabinet Q (essai)');
+insert into public.membres_consultant (consultant_id, user_id, role) values
+  ('00000000-0000-0000-0000-00000000c100', '00000000-0000-0000-0000-0000000000c1', 'admin');
+select tests.qui('00000000-0000-0000-0000-0000000000c1', 'c_membre@test.fr');
+set local role authenticated;
+select set_config('tests.q0', public.creer_entreprise_cliente('00000000-0000-0000-0000-00000000c100', 'Client Q0 préparé (essai)')::text, true);
+reset role;
+insert into public.abonnements (consultant_id, formule, periode, statut, stripe_abonnement, clients_max)
+  values ('00000000-0000-0000-0000-00000000c100', 'consultant', 'mois', 'active', 'sub_essai_q', 2);
+set local role authenticated;
+select tests.ok((public.cabinet_places('00000000-0000-0000-0000-00000000c100') ->> 'max')::int = 2, 'l''espace consultant lit le nombre de clients payé');
+select set_config('tests.q1', public.creer_entreprise_cliente('00000000-0000-0000-0000-00000000c100', 'Client Q1 (essai)')::text, true);
+do $$ begin
+  perform public.creer_entreprise_cliente('00000000-0000-0000-0000-00000000c100', 'Client Q2 de trop (essai)');
+  raise exception 'ÉCHEC : un client de plus que l''abonnement a été accepté';
+exception when others then
+  if sqlerrm <> 'Vous devez modifier votre abonnement pour ajouter un client supplémentaire.' then raise; end if;
+  raise notice 'ok : abonné pour 2 clients, le troisième est refusé avec le message demandé';
+end $$;
+reset role;
+select tests.qui('00000000-0000-0000-0000-0000000000b1', 'b_admin@test.fr');
+set local role authenticated;
+select tests.refuse($$select public.cabinet_places('00000000-0000-0000-0000-00000000c100')$$, 'un autre compte ne lit pas le nombre de clients d''un cabinet');
+reset role;
+select tests.refuse($$update public.entreprises set consultant_id = '00000000-0000-0000-0000-00000000c100' where id = '00000000-0000-0000-0000-00000000b000'$$,
+  'le rattachement d''une entreprise au cabinet est refusé aussi, une fois le nombre atteint');
+select tests.ok(prive.rang_entreprise(current_setting('tests.q0')::uuid) = 3 and prive.rang_entreprise(current_setting('tests.q1')::uuid) = 3,
+  'les clients couverts par l''abonnement ont la veille complète');
+update public.abonnements set clients_max = 1 where stripe_abonnement = 'sub_essai_q';
+select tests.ok(prive.rang_entreprise(current_setting('tests.q0')::uuid) = 3 and prive.rang_entreprise(current_setting('tests.q1')::uuid) = 0,
+  'au-delà du nombre payé, l''espace du client en trop reste fermé (le plus ancien garde l''accès)');
+update public.abonnements set clients_max = 3 where stripe_abonnement = 'sub_essai_q';
+select tests.qui('00000000-0000-0000-0000-0000000000c1', 'c_membre@test.fr');
+set local role authenticated;
+select tests.ok(public.creer_entreprise_cliente('00000000-0000-0000-0000-00000000c100', 'Client Q2 (essai)') is not null,
+  'l''abonnement augmenté, le client supplémentaire s''inscrit');
+reset role;
+update public.abonnements set clients_max = null where stripe_abonnement = 'sub_essai_q';
+select tests.ok(prive.places_cabinet('00000000-0000-0000-0000-00000000c100') is null, 'un abonnement sans quantité (offert) : pas de limite');
+
 do $$ begin raise notice 'TOUS LES TESTS D''ISOLATION SONT PASSÉS'; end $$;
 
 rollback;

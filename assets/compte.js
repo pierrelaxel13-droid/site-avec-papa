@@ -1052,6 +1052,8 @@
         });
         $("#cabinet-demarrage").hidden = faites === Object.keys(etapes).length;
         cabinetP.hidden = false;
+        // Le nombre de clients de l'abonnement (migration 26) : atteint, on le dit.
+        if (window.VIGIE_PLACES) window.VIGIE_PLACES(cabinet.id, $("#form-client"), CONTACT, cabinet.nom);
       });
     };
 
@@ -1061,7 +1063,11 @@
       if (!nom) { dit.textContent = "Entrez le nom de l'entreprise cliente."; return; }
       dit.textContent = "Création…";
       V.rpc("creer_entreprise_cliente", { cabinet: cabinet.id, denomination: nom }).then(function (r) {
-        if (!r.ok) { dit.textContent = r.erreur; return; }
+        if (!r.ok) {
+          dit.textContent = r.erreur;
+          if (window.VIGIE_PLACES) window.VIGIE_PLACES(cabinet.id, $("#form-client"), CONTACT, cabinet.nom);
+          return;
+        }
         $("#cl-nom").value = "";
         dit.textContent = "L'espace de « " + nom + " » est créé. Ouvrez-le pour régler son plan, puis invitez votre client.";
         chargerCabinet();
