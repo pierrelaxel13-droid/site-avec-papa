@@ -4811,3 +4811,18 @@ ol.etapes-carres p { margin: 0; color: var(--encre-douce); text-align: center; m
 .pc-paliers li { display: flex; justify-content: space-between; gap: 1rem; flex-wrap: wrap; padding: .6rem .85rem; border: 1px solid var(--filet); border-radius: var(--r1); font-size: .92rem; color: var(--encre-douce); }
 .pc-paliers li strong { font-weight: 600; }
 .pc-paliers li.pc-actif { border-color: var(--accent); background: var(--accent-clair); color: inherit; }
+
+/* « Mes clients » : ouvrir la fiche, créer le compte, supprimer (6 novembre 2026). */
+.mc-actions { display: flex; flex-wrap: wrap; gap: .4rem; justify-content: flex-end; flex-shrink: 0; }
+.mc-liste li.mc-creer { display: block; background: var(--carte-pale); }
+.mc-creer label { display: block; font-size: .85rem; font-weight: 600; margin-bottom: .35rem; }
+.mc-creer-ligne { display: flex; gap: .5rem; flex-wrap: wrap; }
+.mc-creer-ligne input { flex: 1 1 14rem; min-width: 0; padding: .5rem .7rem; font: inherit; border: 1px solid var(--filet-controle); border-radius: var(--r1); background: var(--carte); color: var(--encre); }
+.mc-creer .etat-compte { margin: .4rem 0 0; font-size: .85rem; }
+.mc-creer p { margin: 0; font-size: .9rem; }
+@media (max-width: 640px) {
+  .mc-actions { justify-content: stretch; }
+  .mc-actions > * { flex: 1 1 100%; justify-content: center; text-align: center; }
+}
+.mc-liste li:not(.mc-creer) { flex-wrap: wrap; }
+.mc-liste li .mc-texte { flex: 1 1 15rem; }

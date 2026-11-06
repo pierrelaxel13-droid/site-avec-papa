@@ -300,6 +300,62 @@
             (x.membres > 0 ? "Compte créé" : "En attente : le client n'a pas encore créé son compte");
           t.appendChild(d);
           li.appendChild(t);
+          /* Avant « Supprimer » (6 novembre 2026, demande d'Axel) : créer le compte du
+             client (son responsable reçoit l'invitation) et ouvrir sa fiche, la même
+             que celle qu'il voit lui-même. */
+          var actions = document.createElement("div"); actions.className = "mc-actions";
+          li.appendChild(actions);
+          if (x.acces) {
+            var o = document.createElement("a");
+            o.className = "bouton bouton-accent bouton-petit"; o.textContent = "Ouvrir la fiche client";
+            o.href = vers("app/index.html");
+            o.setAttribute("aria-label", "Ouvrir la fiche de " + x.denomination);
+            o.addEventListener("click", function () { V.choisir(x.id); });
+            actions.appendChild(o);
+          }
+          if (!(x.membres > 0) && x.acces && cab.role !== "lecteur") {
+            var cc = document.createElement("button");
+            cc.type = "button"; cc.className = "bouton bouton-sobre bouton-petit"; cc.textContent = "Créer le compte client";
+            cc.setAttribute("aria-expanded", "false");
+            cc.addEventListener("click", function () {
+              var deja = li.nextElementSibling && li.nextElementSibling.classList.contains("mc-creer") ? li.nextElementSibling : null;
+              if (deja) { deja.remove(); cc.setAttribute("aria-expanded", "false"); return; }
+              cc.setAttribute("aria-expanded", "true");
+              var zone = document.createElement("li"); zone.className = "mc-creer";
+              var f = document.createElement("form"); f.setAttribute("novalidate", "");
+              var id = "mc-inv-" + x.id;
+              var lab = document.createElement("label"); lab.htmlFor = id;
+              lab.textContent = "E-mail du responsable de « " + x.denomination + " »";
+              var champ = document.createElement("input"); champ.type = "email"; champ.id = id; champ.autocomplete = "off";
+              champ.inputMode = "email"; champ.spellcheck = false;
+              var ok = document.createElement("button"); ok.type = "submit"; ok.className = "bouton bouton-accent bouton-petit"; ok.textContent = "Envoyer l'invitation";
+              var etat = document.createElement("p"); etat.className = "etat-compte"; etat.setAttribute("role", "status");
+              var ligneF = document.createElement("div"); ligneF.className = "mc-creer-ligne";
+              ligneF.appendChild(champ); ligneF.appendChild(ok);
+              f.appendChild(lab); f.appendChild(ligneF); f.appendChild(etat);
+              f.addEventListener("submit", function (ev) {
+                ev.preventDefault();
+                var adresse = champ.value.trim().toLowerCase();
+                if (!/^[^\s@,;]+@[^\s@,;]+\.[^\s@,;]+$/.test(adresse)) { etat.textContent = "Entrez une adresse e-mail valable."; champ.focus(); return; }
+                ok.disabled = true; etat.textContent = "Création du compte…";
+                V.rpc("inviter", { courriel: adresse, role: "admin", entreprise: x.id }).then(function (r3) {
+                  ok.disabled = false;
+                  if (!r3.ok) { etat.textContent = r3.erreur; return; }
+                  f.textContent = "";
+                  var fait = document.createElement("p");
+                  var fort = document.createElement("strong"); fort.textContent = "Un e-mail d'invitation part à " + adresse + " dans les minutes qui suivent.";
+                  fait.appendChild(fort);
+                  fait.appendChild(document.createTextNode(" Il y crée son compte et devient le responsable du compte de « " + x.denomination + " » (lien valable 7 jours)."));
+                  f.appendChild(fait);
+                  cc.remove();
+                });
+              });
+              zone.appendChild(f);
+              li.after(zone);
+              champ.focus();
+            });
+            actions.appendChild(cc);
+          }
           if (cab.role === "admin") {
             var b = document.createElement("button");
             b.type = "button"; b.className = "bouton bouton-sobre bouton-petit mc-retirer"; b.textContent = "Supprimer";
@@ -316,7 +372,7 @@
                 mesClients(cab);
               });
             });
-            li.appendChild(b);
+            actions.appendChild(b);
           }
           ul.appendChild(li);
         });
