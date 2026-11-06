@@ -51,6 +51,9 @@ export const CONSULTANT = {
   ]
 };
 const PLAFOND_CLIENTS = 500;
+// Le mois d'essai gratuit des formules 01 à 03, mensuelles et annuelles (6 novembre 2026,
+// demande d'Axel) : la carte est enregistrée, rien n'est prélevé avant 30 jours.
+export const ESSAI_JOURS = 30;
 // La marque du prix à paliers en vigueur : un changement de prix en crée un nouveau.
 export const signaturePaliers = () => CONSULTANT.paliers.map((p) => `${p.de}-${p.a || "inf"}:${centimesTTC(p.mois)}`).join(",");
 
@@ -61,7 +64,7 @@ export const signaturePaliers = () => CONSULTANT.paliers.map((p) => `${p.de}-${p
    (STRIPE_TVA=auto) détaille la TVA comprise sur la page et les factures. */
 export const TAUX_TVA = 0.2;
 export const centimesTTC = (ht) => Math.round(ht * (1 + TAUX_TVA) * 100);
-const messageTva = (ht) => `Prix TTC, TVA 20 % incluse : ${ht.toLocaleString("fr-FR", { minimumFractionDigits: 2 })} € HT + ` +
+const messageTva = (ht) => `Premier mois gratuit : rien n'est prélevé avant 30 jours. Ensuite, prix TTC, TVA 20 % incluse : ${ht.toLocaleString("fr-FR", { minimumFractionDigits: 2 })} € HT + ` +
   `${((centimesTTC(ht) - ht * 100) / 100).toLocaleString("fr-FR", { minimumFractionDigits: 2 })} € de TVA = ${(centimesTTC(ht) / 100).toLocaleString("fr-FR", { minimumFractionDigits: 2 })} € TTC. ` +
   "Le détail de la TVA s'affiche dès que votre adresse est saisie.";
 const ttc = (ht) => (centimesTTC(ht) / 100).toLocaleString("fr-FR", { minimumFractionDigits: 2 });
@@ -136,7 +139,7 @@ export async function installer(stripe, { tva = "" } = {}) {
         bilan.prix.push(`créé : ${o.nom}, ${ttc(o[periode])} € TTC (${o[periode]} € HT) par ${periode}`);
       }
       let lien = tousLiens.find((x) => (x.metadata || {}).formule === formule && (x.metadata || {}).periode === periode &&
-        (x.metadata || {}).prix === prix.id);
+        (x.metadata || {}).prix === prix.id && (x.metadata || {}).essai === String(ESSAI_JOURS));
       if (!lien) {
         lien = await stripe("POST", "/v1/payment_links", {
           line_items: [{ price: prix.id, quantity: 1 }],
@@ -147,8 +150,9 @@ export async function installer(stripe, { tva = "" } = {}) {
           tax_id_collection: { enabled: "true" },
           ...(tva === "auto" ? { automatic_tax: { enabled: "true" } } : {}),
           after_completion: { type: "redirect", redirect: { url: retour } },
-          subscription_data: { metadata: { formule, periode } },
-          metadata: { formule, periode, prix: prix.id }
+          subscription_data: { metadata: { formule, periode }, trial_period_days: ESSAI_JOURS },
+          payment_method_collection: "always",
+          metadata: { formule, periode, prix: prix.id, essai: String(ESSAI_JOURS) }
         });
       }
       bilan.liens[formule][periode] = lien.url;

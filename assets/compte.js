@@ -711,7 +711,7 @@
           prel.textContent = "Aucun";
         } else {
           formule.textContent = (NOMS_ABO[a.formule] || a.formule) + (a.periode === "an" ? " · paiement annuel" : " · paiement mensuel") +
-            (a.statut === "trialing" ? " (période d'essai)" : "");
+            (a.statut === "trialing" ? " (mois d'essai gratuit)" : "");
           if (a.offert) {
             fin.textContent = a.fin_periode ? jourAbo(a.fin_periode) : "Sans date de fin";
             prel.textContent = "Aucun : abonnement ouvert par nos soins";
@@ -722,6 +722,7 @@
             fin.textContent = a.fin_periode ? "Aucune : reconduction automatique le " + jourAbo(a.fin_periode) : "Aucune : reconduction automatique";
             prel.textContent = a.fin_periode ? jourAbo(a.fin_periode) : "—";
             if (a.statut === "past_due") prel.textContent += " — le dernier paiement n'est pas passé";
+            if (a.statut === "trialing") prel.textContent += " — fin du mois d'essai gratuit";
           }
         }
         /* Résilier (mensuel, à tout moment) ou ne pas renouveler (annuel), 5 novembre 2026.
@@ -764,7 +765,9 @@
                 : "Résilier votre abonnement mensuel ?\n\nIl s'arrête à la fin du mois en cours, déjà payé (" + jourAbo(a.fin_periode) + "), sans nouveau prélèvement.";
               if (!window.confirm(q + (portail ? "\n\nVous allez être dirigé vers notre espace de paiement sécurisé (Stripe) pour confirmer." : "\n\nUn e-mail de demande va s'ouvrir : envoyez-le pour confirmer."))) ev.preventDefault();
             });
-            note.textContent = annuel
+            note.textContent = a.statut === "trialing"
+              ? "Mois d'essai gratuit jusqu'au " + jourAbo(a.fin_periode) + " : en résiliant avant cette date, vous ne payez rien."
+              : annuel
               ? "Abonnement annuel : vous pouvez choisir de ne pas le renouveler. Il reste actif jusqu'au " + jourAbo(a.fin_periode) + ", puis s'arrête."
               : "Abonnement mensuel : résiliable à tout moment. Il s'arrête à la fin du mois en cours, déjà payé ; aucun nouveau prélèvement.";
             zr.appendChild(note);

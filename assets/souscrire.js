@@ -50,6 +50,13 @@
     $("#paie-total").innerHTML = D.tva === "ht"
       ? ligne("Prix HT", eur(montant) + " HT" + par) + ligne("TVA 20 %", eur(montant * 0.2)) + ligne("Total TTC", eur(montant * 1.2) + " TTC" + par, true)
       : ligne("Total", eur(montant) + par, true) + '<div class="paie-mention"><dd>' + D.mention + "</dd></div>";
+    // Le mois d'essai gratuit (6 novembre 2026) : rien aujourd'hui, premier prélèvement 30 jours après.
+    if (D.essai) {
+      var d = new Date(); d.setDate(d.getDate() + D.essai);
+      $("#paie-total").innerHTML += ligne("À payer aujourd'hui", "0 € — 1<sup>er</sup> mois d'essai gratuit", true) +
+        ligne("Premier prélèvement", "le " + d.toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" }) +
+          ", sauf résiliation avant");
+    }
     var u = new URL(window.location.href);
     u.searchParams.set("formule", formule); u.searchParams.set("periode", periode);
     window.history.replaceState(null, "", u.pathname + u.search);

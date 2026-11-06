@@ -213,7 +213,8 @@ for (const [id, f] of Object.entries(FORMULES)) {
   // « N mois offerts » : les mois que l'année épargne, arrondis au mois le plus proche.
   f.moisOfferts = Math.round(12 - f.an / f.mois);
   if (f.moisOfferts < 1) throw new Error(`FORMULES.${id} : ${f.an} € par an n'offre aucun mois sur ${f.mois} € par mois.`);
-  f.offre = f.moisOfferts === 1 ? "1 mois offert" : `${f.moisOfferts} mois offerts`;
+  // « 1 mois économisé » (et plus « offert ») : à ne pas confondre avec le mois d'essai gratuit (6 novembre 2026).
+  f.offre = f.moisOfferts === 1 ? "1 mois économisé" : `${f.moisOfferts} mois économisés`;
   f.montant = eur(f.mois);                 // « 59 € »
   f.prix = `${eur(f.mois)} par mois`;      // « 59 € par mois »
   f.prixAn = `${eur(f.an)} par an`;        // « 590 € par an »
@@ -3671,7 +3672,7 @@ function pageAccueil(V, D, METIERS, ECRANS, C = null, NAF = null, SOURCES = [], 
     ] },
     { theme: "Prix et démarrage", questions: [
       ["Combien ça coûte ?",
-       `<p><strong>${prixListe} par mois selon la formule, ou à l'année avec ${(() => { const n = [...new Set(Object.values(FORMULES).map((f) => f.moisOfferts))].sort(); return n.length === 1 ? FORMULES.textes.offre : `${n[0]} à ${n[n.length - 1]} mois offerts`; })()}.</strong> Sans devis.</p>
+       `<p><strong>${prixListe} par mois selon la formule, ou à l'année avec ${(() => { const n = [...new Set(Object.values(FORMULES).map((f) => f.moisOfferts))].sort(); return n.length === 1 ? FORMULES.textes.offre : `${n[0]} à ${n[n.length - 1]} mois économisés`; })()}. Le premier mois est gratuit.</strong> Sans devis.</p>
         <ul>
           ${Object.values(FORMULES).map((f) => `<li><strong>${esc(f.l)}</strong> — ${esc(f.prixAn)}, ou ${esc(f.prix)} : ${esc(f.ouvre.replace(/^En plus : /, "en plus de la formule précédente, "))}</li>`).join("\n          ")}
         </ul>
@@ -4306,6 +4307,7 @@ function pageAbonnement(V) {
         <!-- L'année d'abord : en entreprise, la veille est une ligne de budget annuel. -->
         <p class="prix"><span class="grand">${esc(eur(f.an))}</span> <span class="etiq">par an</span></p>
         <p class="engagement-an">Engagement sur un an</p>
+        <p class="essai-gratuit">1<sup>er</sup> mois d'essai gratuit</p>
         <p class="offre-an"><span class="pastille-offre">${esc(f.offre)}</span> ou <strong>${esc(f.prix)}</strong></p>
         <p class="engagement-mois">Mensuel : sans engagement de durée</p>
         ${mentionTVA()}
@@ -4812,7 +4814,7 @@ function pageSouscrire() {
     formules: Object.fromEntries(Object.entries(FORMULES).map(([id, f]) => [id, {
       l: f.carte || f.l, court: f.l, an: eur(f.an), mois: eur(f.mois), montantAn: f.an, montantMois: f.mois, offre: f.offre }])),
     liens: Object.fromEntries(Object.keys(FORMULES).map((id) => [id, { an: lienPaiement(id, "an"), mois: lienPaiement(id, "mois") }])),
-    tva: SITE.tva, mention: TVA.mention, courriel: SITE.courriel, portail: lienPaiement("portail")
+    tva: SITE.tva, mention: TVA.mention, courriel: SITE.courriel, portail: lienPaiement("portail"), essai: 30
   };
   const corps = `
 <section class="section compte-page">

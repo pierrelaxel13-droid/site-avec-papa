@@ -34,6 +34,8 @@ const srv = http.createServer((q, r) => {
       else if (u.pathname === "/v1/payment_links") {
         assert.equal(p.get("after_completion[redirect][url]"), p.get("metadata[formule]") === "consultant"
           ? "https://vigie-reglementaire.fr/compte/paiement-consultant.html?merci=1" : "https://vigie-reglementaire.fr/compte/paiement.html?merci=1");
+        if (p.get("metadata[formule]") !== "consultant") assert.equal(p.get("subscription_data[trial_period_days]"), "30", "mois d'essai gratuit");
+        else assert.equal(p.get("subscription_data[trial_period_days]"), null, "pas d'essai pour l'offre consultant");
         if (p.get("metadata[formule]") === "consultant") {
           assert.equal(p.get("line_items[0][adjustable_quantity][enabled]"), "true");
           assert.ok(Number(p.get("line_items[0][adjustable_quantity][minimum]")) >= 1);
@@ -62,7 +64,7 @@ assert.ok(base.prices.some((x) => x.unit_amount === 104280 && x.recurring.interv
 assert.deepEqual(desactives, [["/v1/payment_links/plink_vieux", "false"], ["/v1/prices/price_vieux", "false"]],
   "les anciens lien et prix hors taxes de l'outil sont désactivés ; le prix créé à la main n'est pas touché");
 assert.deepEqual(Object.keys(b1.liens.consultant), ["lien"]);
-assert.ok(base.payment_links.some((l) => /39,00 € HT \+ 7,80 € de TVA = 46,80 € TTC/.test(((l.custom_text || {}).submit || {}).message || "")),
+assert.ok(base.payment_links.some((l) => /Premier mois gratuit.*39,00 € HT \+ 7,80 € de TVA = 46,80 € TTC/.test(((l.custom_text || {}).submit || {}).message || "")),
   "la page Stripe dit la TVA dès l'ouverture, au-dessus du bouton Payer");
 const aPaliers = base.prices.find((x) => x.billing_scheme === "tiered");
 assert.equal(aPaliers.tiers_mode, "volume", "le prix par client suit le nombre total de clients");
