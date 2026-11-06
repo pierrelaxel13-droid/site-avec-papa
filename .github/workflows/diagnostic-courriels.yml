@@ -46,6 +46,14 @@ jobs:
                    coalesce(to_char(confirmation_sent_at at time zone 'Europe/Paris', 'DD/MM HH24:MI'), '—') as lien_envoye,
                    coalesce(to_char(email_confirmed_at at time zone 'Europe/Paris', 'DD/MM HH24:MI'), 'PAS CONFIRMÉ') as confirme
             from auth.users where email not like 'essai-auto-%' order by created_at desc limit 6"
+          echo "Les 6 derniers abonnements :"
+          psql "$SUPABASE_DB_URL" -q -c "
+            select coalesce(left(e.denomination, 12), left(c.nom, 12)) as espace, a.formule, a.periode, a.statut,
+                   a.stripe_abonnement is not null as stripe, a.resiliation_prevue as resil,
+                   to_char(a.maj_le at time zone 'Europe/Paris', 'DD/MM HH24:MI') as maj,
+                   (select count(*) from public.membres_entreprise m where m.entreprise_id = e.id and m.role = 'admin') as admins
+            from public.abonnements a left join public.entreprises e on e.id = a.entreprise_id left join public.consultants c on c.id = a.consultant_id
+            order by a.maj_le desc limit 6"
           psql "$SUPABASE_DB_URL" -tA -c "select 'Réveil immédiat (pg_net) : ' || case when to_regnamespace('net') is not null then 'branché' else 'ABSENT' end"
       - name: Le journal de Brevo et l'expéditeur
         run: node outils/diagnostic-courriels.mjs
