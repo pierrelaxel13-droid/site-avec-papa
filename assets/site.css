@@ -4802,3 +4802,12 @@ ol.etapes-carres p { margin: 0; color: var(--encre-douce); text-align: center; m
 .cs-chiffres dt, .cs-chiffres dd { text-align: center; margin-inline: auto; }
 .cs-note { text-align: center; margin-inline: auto; max-width: 60rem; }
 .cs-page .compteurs > div, .cs-page .compteurs dt, .cs-page .compteurs dd { text-align: center; justify-content: center; align-items: center; }
+
+/* L'abonnement consultant en ligne (6 novembre 2026) : le nombre de clients et les paliers. */
+.pc-nombre { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin: var(--t3) 0; font-weight: 600; }
+.pc-nombre input { width: 6.5rem; padding: .55rem .7rem; font: inherit; font-size: 1.05rem; text-align: center; border: 1px solid var(--filet-controle); border-radius: var(--r1); background: var(--carte); color: var(--encre); }
+.pc-nombre input:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.pc-paliers { list-style: none; margin: 0; padding: 0; display: grid; gap: .4rem; }
+.pc-paliers li { display: flex; justify-content: space-between; gap: 1rem; flex-wrap: wrap; padding: .6rem .85rem; border: 1px solid var(--filet); border-radius: var(--r1); font-size: .92rem; color: var(--encre-douce); }
+.pc-paliers li strong { font-weight: 600; }
+.pc-paliers li.pc-actif { border-color: var(--accent); background: var(--accent-clair); color: inherit; }

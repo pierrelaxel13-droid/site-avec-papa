@@ -16,7 +16,9 @@ ok(formuleDe({ ...mois }, { name: "Vigie — Textes" }).formule === "textes", "n
 ok(formuleDe({ ...mois }, { name: "État des lieux réglementaire, plan d'actions" }).formule === "suivi", "nom de carte : plan d'actions");
 ok(formuleDe({ ...mois }, { name: "Autre chose" }) === null, "produit inconnu : rien");
 ok(formuleDe({ recurring: { interval: "week" } }, { name: "Veille complète" }) === null, "période inconnue : rien");
-ok(formuleDe({ ...mois, metadata: { formule: "consultant" } }, { name: "Veille complète" }).formule === "complet", "métadonnée hors liste : on retombe sur le nom");
+ok(formuleDe({ ...mois, metadata: { formule: "inconnue" } }, { name: "Veille complète" }).formule === "complet", "métadonnée hors liste : on retombe sur le nom");
+ok(formuleDe({ ...mois, metadata: { formule: "consultant" } }, { name: "x" }).formule === "consultant", "offre consultant : métadonnée");
+ok(formuleDe({ ...mois }, { name: "Vigie réglementaire — Offre consultant QSE" }).formule === "consultant", "offre consultant : nom");
 
 // La ligne pour la base.
 const abo = (id, statut, nom, intervalle, fin, ancien) => ({
@@ -30,6 +32,14 @@ ok(l.formule === "complet" && l.periode === "an" && l.statut === "active" && l.s
 ok(ligneDe(abo("sub_2", "past_due", "Textes", "month", 1700000000, true), null).fin_periode === new Date(1700000000 * 1000).toISOString(),
   "ligne : fin de période (API ancienne)");
 ok(!!ligneDe(abo("sub_3", "active", "???", "month", 1), null).erreur, "ligne : formule introuvable, dite");
+
+{
+  const C = "44444444-4444-4444-4444-444444444444";
+  const lc = ligneDe(abo("sub_C", "active", "Offre consultant QSE", "month", 1800000000), C);
+  ok(lc.formule === "consultant" && lc.consultant_id === C && lc.entreprise_id === null, "offre consultant : la ligne va au cabinet");
+  const le = ligneDe(abo("sub_E", "active", "Textes", "month", 1800000000), C);
+  ok(le.entreprise_id === C && le.consultant_id === null, "formule d'entreprise : la ligne va à l'entreprise");
+}
 
 // La synchronisation, avec un faux Stripe et une fausse base.
 const E = "22222222-2222-2222-2222-222222222222";

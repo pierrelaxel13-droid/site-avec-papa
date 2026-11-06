@@ -33,9 +33,10 @@ const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 export function formuleDe(prix, produit) {
   const meta = (o) => (o && o.metadata && String(o.metadata.formule || "").trim().toLowerCase()) || "";
   let formule = meta(prix) || meta(produit);
-  if (!/^(textes|suivi|complet)$/.test(formule)) {
+  if (!/^(textes|suivi|complet|consultant)$/.test(formule)) {
     const nom = String((produit && produit.name) || (prix && prix.nickname) || "").toLowerCase();
-    formule = /veille compl|conformit/.test(nom) ? "complet"
+    formule = /consultant/.test(nom) ? "consultant"
+      : /veille compl|conformit/.test(nom) ? "complet"
       : /suivi|plan d.actions/.test(nom) ? "suivi"
       : /textes|état des lieux|etat des lieux/.test(nom) ? "textes" : "";
   }
@@ -44,7 +45,10 @@ export function formuleDe(prix, produit) {
   return formule && periode ? { formule, periode } : null;
 }
 
-export function ligneDe(abonnement, entreprise) {
+/* « pour » : l'identifiant posé par la page de paiement (client_reference_id) :
+   l'entreprise pour les formules 01 à 03, le cabinet pour l'offre consultant
+   (compte/paiement-consultant.html). */
+export function ligneDe(abonnement, pour) {
   const item = ((abonnement.items && abonnement.items.data) || [])[0] || {};
   const prix = item.price || abonnement.plan || {};
   const produit = typeof prix.product === "object" ? prix.product : null;
@@ -54,7 +58,8 @@ export function ligneDe(abonnement, entreprise) {
   return {
     stripe_abonnement: abonnement.id,
     stripe_client: typeof abonnement.customer === "object" ? abonnement.customer.id : abonnement.customer || null,
-    entreprise_id: entreprise || null,
+    entreprise_id: f.formule === "consultant" ? null : pour || null,
+    consultant_id: f.formule === "consultant" ? pour || null : null,
     formule: f.formule, periode: f.periode,
     statut: String(abonnement.status || "inconnu"),
     fin_periode: fin ? new Date(fin * 1000).toISOString() : null,
@@ -111,7 +116,7 @@ export async function synchroniser({ stripe, sql, jours = 7, maintenant = Date.n
     else bilan.ignores.push(`paiement ${s.id} : sans entreprise (client_reference_id absent ou invalide)`);
   }
   // 2. Les abonnements déjà connus de la base.
-  const connus = JSON.parse(sql("select coalesce(json_object_agg(stripe_abonnement, entreprise_id), '{}') from public.abonnements where stripe_abonnement is not null") || "{}");
+  const connus = JSON.parse(sql("select coalesce(json_object_agg(stripe_abonnement, coalesce(entreprise_id, consultant_id)), '{}') from public.abonnements where stripe_abonnement is not null") || "{}");
   const ids = [...new Set([...Object.keys(pour), ...Object.keys(connus)])];
   const lignes = [];
   for (const id of ids) {
@@ -124,10 +129,11 @@ export async function synchroniser({ stripe, sql, jours = 7, maintenant = Date.n
   // 3. Écrire : une ligne par abonnement Stripe. Une entreprise inconnue est ignorée (et dite).
   if (lignes.length) {
     const r = sql(`with x as (select * from jsonb_to_recordset(:'j'::jsonb) as x(stripe_abonnement text, stripe_client text,
-        entreprise_id uuid, formule text, periode text, statut text, fin_periode timestamptz, resiliation_prevue boolean)),
-      ok as (select x.* from x join public.entreprises e on e.id = x.entreprise_id),
-      ecrits as (insert into public.abonnements (entreprise_id, formule, periode, statut, fin_periode, resiliation_prevue, stripe_client, stripe_abonnement, maj_le)
-        select entreprise_id, formule, periode, statut, fin_periode, coalesce(resiliation_prevue, false), stripe_client, stripe_abonnement, now() from ok
+        entreprise_id uuid, consultant_id uuid, formule text, periode text, statut text, fin_periode timestamptz, resiliation_prevue boolean)),
+      ok as (select x.* from x where (x.formule <> 'consultant' and exists (select 1 from public.entreprises e where e.id = x.entreprise_id))
+                                or (x.formule = 'consultant' and exists (select 1 from public.consultants c where c.id = x.consultant_id))),
+      ecrits as (insert into public.abonnements (entreprise_id, consultant_id, formule, periode, statut, fin_periode, resiliation_prevue, stripe_client, stripe_abonnement, maj_le)
+        select entreprise_id, consultant_id, formule, periode, statut, fin_periode, coalesce(resiliation_prevue, false), stripe_client, stripe_abonnement, now() from ok
         on conflict (stripe_abonnement) do update set formule = excluded.formule, periode = excluded.periode,
           statut = excluded.statut, fin_periode = excluded.fin_periode, resiliation_prevue = excluded.resiliation_prevue,
           stripe_client = excluded.stripe_client, maj_le = now()
@@ -137,7 +143,7 @@ export async function synchroniser({ stripe, sql, jours = 7, maintenant = Date.n
       { j: JSON.stringify(lignes) });
     const res = JSON.parse(r || "{}");
     bilan.ecrits = res.ecrits || 0;
-    (res.inconnues || []).forEach((id) => bilan.ignores.push(`abonnement ${id} : l'entreprise n'existe pas dans la base`));
+    (res.inconnues || []).forEach((id) => bilan.ignores.push(`abonnement ${id} : l'entreprise ou le cabinet n'existe pas dans la base`));
   }
   return bilan;
 }

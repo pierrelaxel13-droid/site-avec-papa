@@ -151,6 +151,9 @@ let NORMES = {};
 let NON_OFFICIELLES = new Set();
 const lienPaiement = (id, periode) =>
   (id === "portail" ? PAIEMENT.portail : PAIEMENT[id] && PAIEMENT[id][periode]) || "";
+// L'offre consultant : un lien par palier (p1, p2, p3), dans l'ordre de OFFRE_CONSULTANT.paliers.
+const lienConsultant = (k) => (PAIEMENT.consultant && PAIEMENT.consultant[`p${k + 1}`]) || "";
+const consultantEnLigne = () => OFFRE_CONSULTANT.paliers.every((p, k) => lienConsultant(k));
 const paiementComplet = () => Object.keys(FORMULES).every((id) => lienPaiement(id, "an") && lienPaiement(id, "mois"));
 
 const FORMULES = {
@@ -4303,17 +4306,24 @@ ${SITE.offreConsultant ? (() => {
       ${O.paliers.map((p, k) => `<article class="formule${k === 1 ? " mise-en-avant" : ""}" data-paraitre>
         <span class="etiq nom-offre">${p.a ? `De ${p.de} à ${p.a} clients` : `${p.de} clients et plus`}</span>
         <p class="prix"><span class="grand">${esc(eur(p.mois))}</span> <span class="etiq">par client et par mois</span></p>
+        <p class="sans-engagement">Abonnement mensuel, sans engagement de durée</p>
         <ul class="formule-donne">
           <li>La veille, le plan d'actions et le registre de conformité de chaque client</li>
           <li>L'espace consultant : le tableau de bord de tous vos clients (textes non lus, conformité, avancement du plan d'actions)</li>
           <li>${p.blanche ? "Votre marque : logo, nom, couleurs (en préparation)" : "Sans marque blanche (dès 6 clients)"}</li>
         </ul>
-        <a class="bouton ${k === 1 ? "bouton-accent" : "bouton-sobre"}" href="compte/creer.html?type=cabinet">Créer mon compte consultant</a>
-        <a class="lien-mois" href="demo/cabinet.html">Voir la démonstration</a>
+        ${consultantEnLigne()
+          ? `<a class="bouton ${k === 1 ? "bouton-accent" : "bouton-sobre"}" href="compte/paiement-consultant.html?clients=${p.de}">S'abonner</a>
+        <a class="lien-mois" href="compte/creer.html?type=cabinet">Créer mon compte consultant</a>`
+          : `<a class="bouton ${k === 1 ? "bouton-accent" : "bouton-sobre"}" href="compte/creer.html?type=cabinet">Créer mon compte consultant</a>
+        <a class="lien-mois" href="demo/cabinet.html">Voir la démonstration</a>`}
       </article>`).join("\n      ")}
     </div>
-    <p class="note-source" style="margin-top:var(--t4)">L'abonnement consultant s'ouvre sur demande, après la création de votre compte :
-    le paiement en ligne n'est pas encore disponible pour cette offre. <a href="consultants.html">Tout savoir sur l'offre consultant</a>.</p>
+    <p class="note-source" style="margin-top:var(--t4)">${consultantEnLigne()
+      ? `Abonnement mensuel, sans engagement de durée : vous indiquez le nombre de clients que vous suivez et le prix par client suit le palier.
+    Paiement en ligne sécurisé par Stripe, après la création de votre compte consultant.`
+      : `L'abonnement consultant s'ouvre sur demande, après la création de votre compte :
+    le paiement en ligne n'est pas encore disponible pour cette offre.`} <a href="consultants.html">Tout savoir sur l'offre consultant</a>.</p>
   </div>
 </section>
 `;
@@ -4632,7 +4642,7 @@ function pageMonCompte() {
             <p>Votre mot de passe, votre adresse, vos e-mails, vos données personnelles.</p>
           </header>
           <div class="compte-corps compte-lignes">
-        <div class="abo-bloc" id="abo-bloc" data-portail="${esc(lienPaiement("portail"))}" hidden>
+        <div class="abo-bloc" id="abo-bloc" data-portail="${esc(lienPaiement("portail"))}"${consultantEnLigne() ? " data-consultant-en-ligne" : ""} hidden>
           <div class="abo-tete">
             <span class="abo-libelle">Mon abonnement</span>
             <a class="lien-nu" id="abo-changer" href="../abonnement.html">Changer d'abonnement</a>
@@ -4739,6 +4749,26 @@ function pageMonCompte() {
    prélèvement : ses coordonnées bancaires ne passent jamais par ce site.
    L'identifiant de l'entreprise part avec (client_reference_id) : le robot
    outils/stripe.mjs s'en sert pour ouvrir la formule dans la base. */
+/* La carte « Moyen de paiement » et ses mentions légales : la même pour les
+   formules d'entreprise et pour l'offre consultant. */
+function carteMoyensPaiement() {
+  return `      <div class="carte-connexion">
+        <h2>Moyen de paiement</h2>
+        <ul class="paie-moyens">
+          <li><span class="paie-icone" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5.5" width="18" height="13" rx="2"/><path d="M3 10h18M7 15h3"/></svg></span>
+            <span><strong>Carte bancaire</strong><span class="precision">CB, Visa, Mastercard. Débitée à chaque échéance.</span></span></li>
+          <li><span class="paie-icone" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10 12 4l9 6M5 10v8M9.5 10v8M14.5 10v8M19 10v8M3 20h18"/></svg></span>
+            <span><strong>Prélèvement SEPA</strong></span></li>
+        </ul>
+        <p class="precision mentions-paiement">Paiement sécurisé par Stripe Payments Europe, Ltd., établissement agréé par la Banque
+        centrale d'Irlande. Vos coordonnées bancaires sont saisies et conservées par Stripe (norme PCI DSS) : Vigie réglementaire n'y a
+        jamais accès. Prix hors taxes, TVA de 20 % en sus ; une facture est émise à chaque échéance. Le prélèvement SEPA repose
+        sur un mandat signé en ligne. Abonnement soumis à nos <a href="../cgv.html">conditions générales de vente</a> ; vos données
+        sont traitées selon notre <a href="../confidentialite.html">politique de confidentialité</a>.
+        <a href="../mentions-legales.html">Mentions légales</a>.</p>
+      </div>`;
+}
+
 function pageSouscrire() {
   const donnees = {
     formules: Object.fromEntries(Object.entries(FORMULES).map(([id, f]) => [id, {
@@ -4786,21 +4816,7 @@ function pageSouscrire() {
         <p class="precision">Renouvelé automatiquement à chaque échéance ; résiliable à tout moment pour l'échéance suivante.</p>
       </div>
 
-      <div class="carte-connexion">
-        <h2>Moyen de paiement</h2>
-        <ul class="paie-moyens">
-          <li><span class="paie-icone" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5.5" width="18" height="13" rx="2"/><path d="M3 10h18M7 15h3"/></svg></span>
-            <span><strong>Carte bancaire</strong><span class="precision">CB, Visa, Mastercard. Débitée à chaque échéance.</span></span></li>
-          <li><span class="paie-icone" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10 12 4l9 6M5 10v8M9.5 10v8M14.5 10v8M19 10v8M3 20h18"/></svg></span>
-            <span><strong>Prélèvement SEPA</strong></span></li>
-        </ul>
-        <p class="precision mentions-paiement">Paiement sécurisé par Stripe Payments Europe, Ltd., établissement agréé par la Banque
-        centrale d'Irlande. Vos coordonnées bancaires sont saisies et conservées par Stripe (norme PCI DSS) : Vigie réglementaire n'y a
-        jamais accès. Prix hors taxes, TVA de 20 % en sus ; une facture est émise à chaque échéance. Le prélèvement SEPA repose
-        sur un mandat signé en ligne. Abonnement soumis à nos <a href="../cgv.html">conditions générales de vente</a> ; vos données
-        sont traitées selon notre <a href="../confidentialite.html">politique de confidentialité</a>.
-        <a href="../mentions-legales.html">Mentions légales</a>.</p>
-      </div>
+${carteMoyensPaiement()}
 
       <div class="carte-connexion">
         <h2>Entreprise abonnée</h2>
@@ -4821,6 +4837,74 @@ function pageSouscrire() {
 </section>`;
   return page({ titre: `Votre abonnement | ${SITE.nom}`, description: "Paiement de l'abonnement, par carte ou par prélèvement.",
     racine: "../", zone: "public", corps, attrsBody: ' data-page="compte"', scripts: ["assets/compte.js", "assets/souscrire.js"],
+    installation: false, piedCourt: true });
+}
+
+/* L'abonnement consultant en ligne (6 novembre 2026, demandé par Axel) :
+   compte/paiement-consultant.html. Le consultant indique son nombre de
+   clients ; le palier en découle (OFFRE_CONSULTANT), puis la page de paiement
+   Stripe de ce palier, avec client_reference_id = l'identifiant du cabinet
+   (le robot outils/stripe.mjs ouvre ainsi l'abonnement du cabinet). Abonnement
+   mensuel, sans engagement. */
+function pageSouscrireConsultant() {
+  const O = OFFRE_CONSULTANT;
+  const donnees = {
+    paliers: O.paliers.map((p, k) => ({ de: p.de, a: p.a, mois: p.mois, lien: lienConsultant(k) })),
+    tva: SITE.tva, mention: TVA.mention, courriel: SITE.courriel, portail: lienPaiement("portail")
+  };
+  const corps = `
+<section class="section compte-page">
+  <div class="enveloppe">
+    <div class="compte-tete">
+      <p class="fil"><a href="../abonnement.html#consultants">← Nos offres consultant</a></p>
+      <h1>Votre abonnement consultant</h1>
+    </div>
+    <div class="connexion connexion-seule" id="paiement-consultant" data-paiement="${esc(JSON.stringify(donnees))}">
+      ${comptesFermes()}
+
+      <div class="carte-connexion" id="pc-merci" hidden>
+        <h2>Merci, votre paiement est enregistré</h2>
+        <p>Votre abonnement consultant s'ouvre dans les minutes qui suivent, dès que Stripe nous confirme le paiement.
+        Les espaces de vos clients s'ouvrent avec lui. Vous recevez la facture par courriel.</p>
+        <p class="rangee" style="margin-top:var(--t4)"><a class="bouton bouton-accent" href="cabinet.html">Mon espace consultant</a></p>
+      </div>
+
+      <div id="pc-formulaire">
+      <div class="carte-connexion">
+        <h2>Récapitulatif</h2>
+        <p class="paie-offre">Offre consultant QSE · abonnement mensuel</p>
+        <label class="pc-nombre" for="pc-clients"><span>Nombre de clients suivis</span>
+          <input type="number" id="pc-clients" min="${O.paliers[0].de}" max="500" step="1" value="${O.paliers[0].de}" inputmode="numeric"></label>
+        <ul class="pc-paliers" id="pc-paliers">
+          ${O.paliers.map((p, k) => `<li data-palier="${k}"><span>${p.a ? `De ${p.de} à ${p.a} clients` : `${p.de} clients et plus`}</span>
+            <strong>${esc(eur(p.mois))} par client et par mois</strong></li>`).join("\n          ")}
+        </ul>
+        <dl class="paie-total" id="pc-total"></dl>
+        <p class="precision">Abonnement mensuel, sans engagement de durée : renouvelé chaque mois, résiliable à tout moment pour la fin du mois en cours.
+        Le nombre de clients se confirme sur la page de paiement ; pour le changer ensuite, écrivez-nous.</p>
+      </div>
+
+${carteMoyensPaiement()}
+
+      <div class="carte-connexion">
+        <h2>Cabinet abonné</h2>
+        <div id="pc-compte"><p class="precision">Un instant…</p></div>
+      </div>
+
+      <div class="carte-connexion">
+        <label class="paie-cgv"><input type="checkbox" id="pc-cgv">
+          <span>J'ai lu et j'accepte les <a href="../cgv.html" target="_blank" rel="noopener">conditions générales de vente</a>.</span></label>
+        <p class="rangee" style="margin-top:var(--t4)">
+          <a class="bouton bouton-accent bouton-large" id="pc-payer" href="#" aria-disabled="true">Continuer vers le paiement sécurisé</a>
+        </p>
+        <p class="etat-compte" id="pc-dit" role="status"></p>
+      </div>
+      </div>
+    </div>
+  </div>
+</section>`;
+  return page({ titre: `Votre abonnement consultant | ${SITE.nom}`, description: "Paiement de l'abonnement consultant, mensuel et sans engagement.",
+    racine: "../", zone: "public", corps, attrsBody: ' data-page="compte"', scripts: ["assets/compte.js", "assets/souscrire-consultant.js"],
     installation: false, piedCourt: true });
 }
 
@@ -4913,7 +4997,7 @@ function pageCabinet(V, NAF, SOURCES) {
         <p><strong>Votre abonnement consultant n'est pas encore ouvert.</strong> Vous pouvez déjà créer l'espace
         de vos clients ; ils s'ouvrent avec l'abonnement.</p>
         <p class="rangee" style="margin-top:var(--t3)">
-          <a class="bouton bouton-accent" id="cabinet-demander" href="mailto:${esc(SITE.courriel)}">S'abonner</a>
+          <a class="bouton bouton-accent" id="cabinet-demander" href="${consultantEnLigne() ? "paiement-consultant.html" : `mailto:${esc(SITE.courriel)}`}"${consultantEnLigne() ? " data-en-ligne" : ""}>S'abonner</a>
           <a class="bouton bouton-sobre" href="../abonnement.html#consultants">Voir les tarifs</a>
         </p>
       </div>
@@ -4943,7 +5027,8 @@ function pageCabinet(V, NAF, SOURCES) {
           <li data-etape="invite"><span class="cs-coche" aria-hidden="true"></span><div><strong>Inviter votre client</strong>
             <span class="cs-etape-detail" data-detail>Il crée son compte et a accès à son profil.</span></div></li>
           <li data-etape="abonnement"><span class="cs-coche" aria-hidden="true"></span><div><strong>Ouvrir votre abonnement consultant</strong>
-            <span class="cs-etape-detail" data-detail>${O.paliers.map((p) => `${p.a ? `${p.de} à ${p.a}` : `${p.de} et plus`} clients : ${esc(eur(p.mois))} par client et par mois`).join(" · ")}.</span></div></li>
+            <span class="cs-etape-detail" data-detail>${O.paliers.map((p) => `${p.a ? `${p.de} à ${p.a}` : `${p.de} et plus`} clients : ${esc(eur(p.mois))} par client et par mois`).join(" · ")}.
+            Abonnement mensuel, sans engagement.${consultantEnLigne() ? ` <a href="paiement-consultant.html">S'abonner en ligne</a>.` : ""}</span></div></li>
         </ol>
         <p class="cs-exemple"><a href="../demo/cabinet.html">Voir un exemple avec des clients fictifs</a></p>
       </section>
@@ -5700,6 +5785,7 @@ async function main() {
   // Le nom de domaine du site (GitHub Pages) : vigie-reglementaire.fr.
   await writeFile(join(SORTIE, "CNAME"), new URL(SITE.adresseWeb).hostname + "\n");
   await writeFile(join(SORTIE, "compte", "paiement.html"), pageSouscrire());
+  if (SITE.offreConsultant) await writeFile(join(SORTIE, "compte", "paiement-consultant.html"), pageSouscrireConsultant());
   await writeFile(join(SORTIE, "compte", "cabinet.html"), pageCabinet(V, NAF, SOURCES));
   await writeFile(join(SORTIE, "compte", "nouveau-client.html"), pageNouveauClient(V, NAF));
   await writeFile(join(SORTIE, "compte", "invitation.html"), pageInvitation());

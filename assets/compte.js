@@ -599,7 +599,7 @@
         // Un cabinet consultant : son offre est sur la page consultants ; et le récapitulatif
         // et les rappels ne concernent que le plan d'une entreprise, qu'il n'a pas.
         if (!(d.entreprises || []).length) {
-          $("#abo-changer").href = vers("consultants.html");
+          $("#abo-changer").href = vers(bloc.hasAttribute("data-consultant-en-ligne") ? "compte/paiement-consultant.html" : "consultants.html");
           [].forEach.call(document.querySelectorAll(".ligne-bascule"), function (x) { x.hidden = true; });
           var er = $("#etat-recap"); if (er) er.hidden = true;
         }
@@ -1020,7 +1020,7 @@
           : "Pas encore de client : ajoutez le premier ci-dessous.");
         var inactif = $("#cabinet-inactif");
         inactif.hidden = !!cabinet.actif;
-        if (!cabinet.actif) {
+        if (!cabinet.actif && !$("#cabinet-demander").hasAttribute("data-en-ligne")) {
           $("#cabinet-demander").href = "mailto:" + CONTACT + "?subject=" + encodeURIComponent("Ouvrir l'abonnement consultant — " + cabinet.nom) +
             "&body=" + encodeURIComponent("Bonjour,\n\nPouvez-vous ouvrir l'abonnement consultant du cabinet « " + cabinet.nom +
               " » ?\nCompte : " + ((V.utilisateur() || {}).courriel || "") + "\n");

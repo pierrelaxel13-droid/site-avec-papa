@@ -9,6 +9,10 @@
      2. un lien de paiement par prix : les moyens de paiement activés dans Stripe
         (carte, prélèvement SEPA…), codes promo
         acceptés, retour vers compte/paiement.html?merci=1 ;
+     2 bis. l'offre consultant (métadonnée « formule » = consultant) : un prix
+        HT par client et par mois pour chaque palier (build.mjs,
+        OFFRE_CONSULTANT), et un lien de paiement par palier où le consultant
+        indique son nombre de clients, dans les bornes du palier ;
      3. le portail client : factures, moyen de paiement, et résiliation « à la
         fin de la période payée » (mensuel : fin du mois ; annuel : pas de
         renouvellement), avec sa page de connexion ;
@@ -20,7 +24,7 @@
    La clé : STRIPE_SETUP_KEY, une clé RESTREINTE, en ÉCRITURE sur Produits,
    Prix, Liens de paiement et Portail client (Billing portal). Elle va dans
    les secrets GitHub, jamais ici, et peut être supprimée après l'installation.
-   STRIPE_TVA=auto : TVA calculée par Stripe Tax (à activer avant dans Stripe).
+   TVA calculée par Stripe Tax (activée dans Stripe) ; STRIPE_TVA=non pour s'en passer.
    ========================================================================== */
 import { readFile, writeFile } from "node:fs/promises";
 import { dirname, join, resolve } from "node:path";
@@ -35,6 +39,27 @@ export const OFFRES = {
   suivi:   { nom: "02 — État des lieux réglementaire et plan d'actions", an: 650, mois: 59 },
   complet: { nom: "03 — Veille complète", an: 869, mois: 79 }
 };
+
+// L'offre consultant : prix HT par client et par mois, selon le nombre de clients
+// (les mêmes que build.mjs, OFFRE_CONSULTANT). « a: null » : sans limite haute.
+export const CONSULTANT = {
+  nom: "Offre consultant QSE",
+  paliers: [
+    { de: 3, a: 5, mois: 49 },
+    { de: 6, a: 15, mois: 42 },
+    { de: 16, a: null, mois: 35 }
+  ]
+};
+const PLAFOND_CLIENTS = 500;
+
+/* Les prix Stripe sont TTC, TVA de 20 % comprise (tax_behavior « inclusive ») :
+   la page de paiement Stripe affiche ainsi d'emblée le montant que le client
+   paie, au lieu du hors taxes complété par la TVA une fois l'adresse saisie
+   (demande d'Axel, 6 novembre 2026). 39 € HT → 46,80 € TTC. Stripe Tax
+   (STRIPE_TVA=auto) détaille la TVA comprise sur la page et les factures. */
+export const TAUX_TVA = 0.2;
+export const centimesTTC = (ht) => Math.round(ht * (1 + TAUX_TVA) * 100);
+const ttc = (ht) => (centimesTTC(ht) / 100).toLocaleString("fr-FR", { minimumFractionDigits: 2 });
 
 /* Les paramètres Stripe, en formulaire : { a: { b: 1 }, c: [{ d: 2 }] } → a[b]=1&c[0][d]=2 */
 export function formulaire(o, prefixe = "", sortie = new URLSearchParams()) {
@@ -81,6 +106,7 @@ export async function installer(stripe, { tva = "" } = {}) {
   const tousPrix = await tous(stripe, "/v1/prices", { active: "true" });
   const tousLiens = await tous(stripe, "/v1/payment_links", { active: "true" });
   const retour = `${SITE}compte/paiement.html?merci=1`;
+  const gardes = { prix: new Set(), liens: new Set() };
 
   for (const [formule, o] of Object.entries(OFFRES)) {
     let p = produits.find((x) => (x.metadata || {}).formule === formule);
@@ -88,16 +114,19 @@ export async function installer(stripe, { tva = "" } = {}) {
       p = await stripe("POST", "/v1/products", { name: `Vigie réglementaire — ${o.nom}`, metadata: { formule },
         ...(tva === "auto" ? { tax_code: "txcd_10103001" } : {}) });   // logiciel en ligne (SaaS) pour entreprises
       bilan.produits.push(`créé : ${o.nom}`);
-    } else bilan.produits.push(`repris : ${o.nom}`);
+    } else {
+      if (tva === "auto" && !p.tax_code) await stripe("POST", `/v1/products/${p.id}`, { tax_code: "txcd_10103001" });
+      bilan.produits.push(`repris : ${o.nom}`);
+    }
     bilan.liens[formule] = {};
     for (const periode of ["an", "mois"]) {
-      const montant = o[periode] * 100, intervalle = periode === "an" ? "year" : "month";
+      const montant = centimesTTC(o[periode]), intervalle = periode === "an" ? "year" : "month";
       let prix = tousPrix.find((x) => x.product === p.id && x.unit_amount === montant && x.currency === "eur" &&
-        x.recurring && x.recurring.interval === intervalle);
+        x.tax_behavior === "inclusive" && x.recurring && x.recurring.interval === intervalle);
       if (!prix) {
         prix = await stripe("POST", "/v1/prices", { product: p.id, currency: "eur", unit_amount: montant,
-          recurring: { interval: intervalle }, tax_behavior: "exclusive", metadata: { formule, periode } });
-        bilan.prix.push(`créé : ${o.nom}, ${o[periode]} € HT par ${periode}`);
+          recurring: { interval: intervalle }, tax_behavior: "inclusive", metadata: { formule, periode, ht: String(o[periode]) } });
+        bilan.prix.push(`créé : ${o.nom}, ${ttc(o[periode])} € TTC (${o[periode]} € HT) par ${periode}`);
       }
       let lien = tousLiens.find((x) => (x.metadata || {}).formule === formule && (x.metadata || {}).periode === periode &&
         (x.metadata || {}).prix === prix.id);
@@ -116,7 +145,62 @@ export async function installer(stripe, { tva = "" } = {}) {
         });
       }
       bilan.liens[formule][periode] = lien.url;
+      gardes.prix.add(prix.id); gardes.liens.add(lien.id);
     }
+  }
+
+  // L'offre consultant : un produit, un prix par palier, un lien par palier.
+  const retourCabinet = `${SITE}compte/paiement-consultant.html?merci=1`;
+  let pc = produits.find((x) => (x.metadata || {}).formule === "consultant");
+  if (!pc) {
+    pc = await stripe("POST", "/v1/products", { name: `Vigie réglementaire — ${CONSULTANT.nom}`, metadata: { formule: "consultant" },
+      unit_label: "client", ...(tva === "auto" ? { tax_code: "txcd_10103001" } : {}) });
+    bilan.produits.push(`créé : ${CONSULTANT.nom}`);
+  } else bilan.produits.push(`repris : ${CONSULTANT.nom}`);
+  bilan.liens.consultant = {};
+  for (const [k, palier] of CONSULTANT.paliers.entries()) {
+    const montant = centimesTTC(palier.mois), nom = `p${k + 1}`;
+    let prix = tousPrix.find((x) => x.product === pc.id && x.unit_amount === montant && x.currency === "eur" &&
+      x.tax_behavior === "inclusive" && x.recurring && x.recurring.interval === "month");
+    if (!prix) {
+      prix = await stripe("POST", "/v1/prices", { product: pc.id, currency: "eur", unit_amount: montant,
+        recurring: { interval: "month" }, tax_behavior: "inclusive", metadata: { formule: "consultant", palier: nom, ht: String(palier.mois) } });
+      bilan.prix.push(`créé : ${CONSULTANT.nom}, ${ttc(palier.mois)} € TTC (${palier.mois} € HT) par client et par mois`);
+    }
+    const de = palier.de, a = palier.a || PLAFOND_CLIENTS;
+    let lien = tousLiens.find((x) => (x.metadata || {}).formule === "consultant" && (x.metadata || {}).prix === prix.id &&
+      (x.metadata || {}).bornes === `${de}-${a}`);
+    if (!lien) {
+      lien = await stripe("POST", "/v1/payment_links", {
+        line_items: [{ price: prix.id, quantity: de, adjustable_quantity: { enabled: "true", minimum: de, maximum: a } }],
+        allow_promotion_codes: "true",
+        billing_address_collection: "required",
+        tax_id_collection: { enabled: "true" },
+        ...(tva === "auto" ? { automatic_tax: { enabled: "true" } } : {}),
+        after_completion: { type: "redirect", redirect: { url: retourCabinet } },
+        subscription_data: { metadata: { formule: "consultant", palier: nom } },
+        metadata: { formule: "consultant", palier: nom, prix: prix.id, bornes: `${de}-${a}` }
+      });
+    }
+    bilan.liens.consultant[nom] = lien.url;
+    gardes.prix.add(prix.id); gardes.liens.add(lien.id);
+  }
+
+  // Les anciens liens et prix posés par cet outil (hors taxes, 5 novembre 2026), qui ne
+  // servent plus : désactivés, pour qu'un ancien lien ne fasse plus payer hors taxes.
+  // Seulement ce que l'outil a créé (métadonnée « formule ») ; le reste n'est pas touché.
+  bilan.retires = [];
+  const notreFormule = (x) => /^(textes|suivi|complet|consultant)$/.test((x.metadata || {}).formule || "");
+  for (const l of tousLiens.filter((x) => notreFormule(x) && !gardes.liens.has(x.id))) {
+    try { await stripe("POST", `/v1/payment_links/${l.id}`, { active: "false" }); }
+    catch (e) { bilan.retires.push(`non désactivé (${e.message})`); continue; }
+    bilan.retires.push(`lien ${(l.metadata || {}).formule} ${(l.metadata || {}).periode || (l.metadata || {}).palier || ""}`.trim());
+  }
+  for (const x of tousPrix.filter((x) => notreFormule(x) && !gardes.prix.has(x.id))) {
+    // Un prix « par défaut » de son produit ne se désactive pas : sans gravité, aucun lien ne le propose plus.
+    try { await stripe("POST", `/v1/prices/${x.id}`, { active: "false" }); }
+    catch (e) { bilan.retires.push(`prix ${(x.metadata || {}).formule} gardé (${e.message})`); continue; }
+    bilan.retires.push(`prix ${(x.metadata || {}).formule} ${(x.unit_amount / 100).toLocaleString("fr-FR")} €`);
   }
 
   // Le portail client : factures, carte ou IBAN, résiliation à la fin de la période payée.
@@ -144,7 +228,9 @@ export async function installer(stripe, { tva = "" } = {}) {
 
 /* contenu/paiement.js : on remplace seulement l'objet window.PAIEMENT. */
 export function reecrire(source, liens, portail) {
-  const ligne = (f, l) => `  ${(f + ":").padEnd(8)} { an: "${l.an}", mois: "${l.mois}" },`;
+  const ligne = (f, l) => f === "consultant"
+    ? `  consultant: { ${Object.entries(l).map(([k, u]) => `${k}: "${u}"`).join(", ")} },   // par palier : 3 à 5, 6 à 15, 16 et plus`
+    : `  ${(f + ":").padEnd(8)} { an: "${l.an}", mois: "${l.mois}" },`;
   const objet = `window.PAIEMENT = {
   //         à l'année · au mois (installés par outils/stripe-installation.mjs)
 ${Object.entries(liens).map(([f, l]) => ligne(f, l)).join("\n")}
@@ -158,9 +244,10 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   if (!cle) { console.log("::error::Il manque le secret STRIPE_SETUP_KEY (clé restreinte en écriture)."); process.exit(1); }
   if (/^sk_/.test(cle)) { console.log("::error::STRIPE_SETUP_KEY est une clé secrète complète (sk_…). Utilisez une clé RESTREINTE (rk_…)."); process.exit(1); }
   const mode = /_test_/.test(cle) ? "TEST" : "RÉEL";
-  const b = await installer(clientStripe(cle), { tva: process.env.STRIPE_TVA || "" });
+  const b = await installer(clientStripe(cle), { tva: /^(non|aucune?)$/i.test(process.env.STRIPE_TVA || "") ? "" : "auto" });
   b.produits.forEach((x) => console.log("Produit " + x));
   b.prix.forEach((x) => console.log("Prix " + x));
+  b.retires.forEach((x) => console.log("Désactivé : " + x));
   console.log(`Mode Stripe : ${mode}. Liens de paiement : ${Object.values(b.liens).flatMap((l) => Object.values(l)).length}. Portail : ${b.portail ? "oui" : "non"}.`);
   const chemin = join(RACINE, "contenu", "paiement.js");
   await writeFile(chemin, reecrire(await readFile(chemin, "utf8"), b.liens, b.portail));

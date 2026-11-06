@@ -12,9 +12,9 @@ on:
   workflow_dispatch:
     inputs:
       tva:
-        description: "TVA calculée par Stripe Tax (« auto », à activer avant dans Stripe) ou rien"
+        description: "TVA calculée par Stripe Tax (« auto ») ou « non »"
         required: false
-        default: ""
+        default: "auto"
 
 permissions:
   contents: write
