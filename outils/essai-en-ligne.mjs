@@ -231,14 +231,17 @@ async function essai() {
     await pk.waitForURL(/compte\/cabinet\.html/, { timeout: 30000 });
     await pk.waitForSelector("#cabinet-principal:not([hidden])", { timeout: 30000 });
     ok(await pk.locator("#cabinet-inactif").isVisible(), "un consultant crée son cabinet ; l'abonnement pas encore ouvert est dit en haut");
-    await pk.fill("#cl-nom", "Client essai automatique");
-    await pk.click("#form-client button[type=submit]");
-    await pk.waitForFunction(() => /Client essai automatique/.test(document.querySelector("#cabinet-clients").innerText), null, { timeout: 30000 });
-    ok(true, "il crée l'espace d'un client, qui apparaît dans « Vos clients »");
+    // « Gérer vos clients » a quitté l'espace consultant (6 novembre 2026) : la liste est dans
+    // Mon compte, « Mes clients ». L'espace du client se crée comme le fait le site (sans
+    // invitation : aucun e-mail ne part vers une adresse d'essai).
+    await pk.evaluate(() => window.VIGIE.mesCabinets().then((r) =>
+      window.VIGIE.rpc("creer_entreprise_cliente", { cabinet: r.cabinets[0].cabinet_id, denomination: "Client essai automatique" })));
     sql(`insert into public.abonnements (consultant_id, formule, periode, statut)
            select consultant_id, 'consultant', 'mois', 'offert' from public.membres_consultant where user_id = ${litteral(uidConsultant)}`);
-    await pk.reload();
-    await pk.locator("#cabinet-clients article", { hasText: "Client essai automatique" }).locator("text=Ouvrir son espace").click();
+    await pk.goto(SITE + "compte/");
+    await pk.waitForFunction(() => /Client essai automatique/.test((document.querySelector("#mc-liste") || {}).innerText || ""), null, { timeout: 30000 });
+    ok(true, "il crée l'espace d'un client, qui apparaît dans Mon compte, « Mes clients »");
+    await pk.locator("#mc-liste li", { hasText: "Client essai automatique" }).locator("text=Ouvrir la fiche client").click();
     await pk.waitForURL(/app\/index\.html/, { timeout: 30000 });
     await pret(pk);
     ok((await pk.locator(".bandeau-consultant").innerText()).includes("Client : « Client essai automatique »"),
