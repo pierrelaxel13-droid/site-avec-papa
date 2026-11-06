@@ -35,6 +35,26 @@ async function principal() {
     console.log("::warning::Il manque " + [!url && "SUPABASE_DB_URL", !cle && "BREVO_API_KEY", !expediteur && "RECAP_EXPEDITEUR"].filter(Boolean).join(", ") + " : aucun e-mail ne part, la file attend.");
     return;
   }
+  // D'abord la fonction serveur « vigie » : elle verrouille chaque e-mail, donc pas de doublon
+  // si elle envoie au même moment. Le robot n'envoie lui-même que si elle ne répond pas.
+  const fonction = process.env.VIGIE_FONCTION_URL || "https://denpxyqbvjcwsbxjtqpd.supabase.co/functions/v1/vigie";
+  if (fonction !== "aucune") {
+    try {
+      let total = 0, echecs = 0, j = {};
+      for (let tour = 0; tour < 10; tour++) {   // 20 e-mails par appel
+        const r = await fetch(fonction, { method: "POST", headers: { "content-type": "application/json" },
+          body: JSON.stringify({ action: "courriels" }), signal: AbortSignal.timeout(60000) });
+        j = r.ok ? await r.json() : {};
+        if (!Number.isInteger(j.envoyes) || j.attente) break;
+        total += j.envoyes; echecs += j.echecs || 0;
+        if (j.envoyes + (j.echecs || 0) < 20) break;
+      }
+      if (Number.isInteger(j.envoyes) && !j.attente) {
+        console.log(`Fonction serveur : ${total} e-mail(s) envoyé(s), ${echecs} en échec.`);
+        return;
+      }
+    } catch { /* la fonction ne répond pas : le robot envoie lui-même */ }
+  }
   const sql = (q, vars = {}) => execFileSync("psql", [url, "-qtA", "-v", "ON_ERROR_STOP=1", ...Object.entries(vars).flatMap(([k, v]) => ["-v", `${k}=${v}`])],
     { input: q + ";\n" }).toString().trim();
   const file = JSON.parse(sql("select prive.courriels_a_envoyer()") || "[]");

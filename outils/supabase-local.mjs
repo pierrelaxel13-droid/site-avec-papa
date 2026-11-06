@@ -342,7 +342,7 @@ createServer(async (req, res) => {
   if (url.pathname === "/functions/v1/vigie") {
     if (!process.env.VIGIE_FONCTION) return repond(404, { message: "Requested function was not found" });
     const r = await fetch(process.env.VIGIE_FONCTION, { method: "POST", body: texte,
-      headers: { "content-type": "application/json", ...(porteur ? { authorization: "Bearer " + porteur } : {}) } });
+      headers: { "content-type": "application/json", apikey: req.headers.apikey || "", ...(porteur ? { authorization: "Bearer " + porteur } : {}) } });
     return repond(r.status, await r.json().catch(() => ({})));
   }
   try {

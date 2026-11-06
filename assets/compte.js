@@ -802,7 +802,7 @@
               var q = annuel
                 ? "Ne pas renouveler votre abonnement annuel ?\n\nIl reste actif jusqu'au " + jourAbo(a.fin_periode) + ", puis s'arrête sans nouveau prélèvement."
                 : "Résilier votre abonnement mensuel ?\n\nIl s'arrête à la fin du mois en cours, déjà payé (" + jourAbo(a.fin_periode) + "), sans nouveau prélèvement.";
-              if (!window.confirm(q + (V.fonction ? "" : portail ? "\n\nVous allez être dirigé vers notre espace de paiement sécurisé (Stripe) pour confirmer." : "\n\nUn e-mail de demande va s'ouvrir : envoyez-le pour confirmer."))) ev.preventDefault();
+              if (!window.confirm(q + (portail ? "\n\nVous allez être dirigé vers notre espace de paiement sécurisé (Stripe) pour confirmer." : "\n\nUn e-mail de demande va s'ouvrir : envoyez-le pour confirmer."))) ev.preventDefault();
             });
             serveur(b, "resilier", function () { return ici2(); }, "Résiliation…");
             note.textContent = a.statut === "trialing"

@@ -297,7 +297,9 @@
       Object.keys(donnees || {}).forEach(function (k) { corps[k] = donnees[k]; });
       return appel("/functions/v1/vigie", { corps: corps, jeton: s ? s.jeton : null }).then(function (r) {
         if (r.ok) return { ok: true, donnees: r.j };
-        var absente = r.statut <= 0 || r.statut === 404 || r.statut === 503 || (r.statut >= 500 && !r.j.erreur);
+        // Une réponse de la fonction porte toujours « erreur » ; sans elle, c'est Supabase qui
+        // dit que la fonction n'existe pas (404) ou ne répond pas (5xx). 503 : pas encore branchée.
+        var absente = r.statut <= 0 || r.statut === 503 || (!r.j.erreur && (r.statut === 404 || r.statut >= 500));
         return { ok: false, absente: absente, erreur: r.j.erreur || "Le service ne répond pas. Réessayez dans un instant." };
       });
     });

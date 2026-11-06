@@ -59,7 +59,8 @@ async function stripe(methode: string, chemin: string, params: Record<string, un
   const r = await fetch(u, {
     method: methode,
     headers: { Authorization: `Bearer ${cle}`, "Stripe-Version": "2024-06-20", "content-type": "application/x-www-form-urlencoded" },
-    body: methode === "GET" ? undefined : corps
+    body: methode === "GET" ? undefined : corps,
+    signal: AbortSignal.timeout(20000)
   });
   const j = await r.json().catch(() => ({}));
   if (!r.ok) {
@@ -73,7 +74,10 @@ async function stripe(methode: string, chemin: string, params: Record<string, un
 async function personne(req: Request) {
   const jeton = (req.headers.get("authorization") || "").replace(/^Bearer\s+/i, "");
   if (!jeton) throw new Refus("Connectez-vous d'abord.", 401);
-  const r = await fetch(env("SUPABASE_URL") + "/auth/v1/user", { headers: { apikey: env("SUPABASE_ANON_KEY"), Authorization: `Bearer ${jeton}` } });
+  // La clé publique : celle que le site envoie (clé publiable), sinon celle fournie par Supabase.
+  const apikey = req.headers.get("apikey") || env("SUPABASE_ANON_KEY");
+  const r = await fetch(env("SUPABASE_URL") + "/auth/v1/user", { headers: { apikey, Authorization: `Bearer ${jeton}` },
+    signal: AbortSignal.timeout(10000) });
   if (!r.ok) throw new Refus("Votre session a expiré : reconnectez-vous.", 401);
   const u = await r.json();
   return { id: String(u.id), courriel: String(u.email || "") };
@@ -246,7 +250,8 @@ async function courriels() {
       const r = await fetch(env("BREVO_API") || "https://api.brevo.com/v3/smtp/email", {
         method: "POST", headers: { "api-key": cle, "content-type": "application/json", accept: "application/json" },
         body: JSON.stringify({ sender: { name: NOM, email: expediteur }, to: [{ email: c.destinataire === "equipe" ? expediteur : c.destinataire }],
-          subject: m.sujet, htmlContent: m.html, textContent: m.texte })
+          subject: m.sujet, htmlContent: m.html, textContent: m.texte }),
+        signal: AbortSignal.timeout(10000)   // ne pas garder la file verrouillée si Brevo traîne
       }).catch(() => null);
       if (r && r.ok) { await t`select prive.courriel_fait(${c.id}, true)`; ok++; }
       else { await t`select prive.courriel_fait(${c.id}, false, ${"envoi refusé (" + (r ? r.status : "réseau") + ")"})`; ko++; }
