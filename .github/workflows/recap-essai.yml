@@ -1,5 +1,5 @@
 # ==========================================================================
-# Vigie réglementaire — e-mail d'essai (rappel d'actions en retard)
+# Vigie réglementaire — e-mail d'essai (textes d'hier ou rappel d'actions en retard)
 # --------------------------------------------------------------------------
 # À lancer à la main : envoie UN rappel d'exemple (actions fictives) à
 # l'adresse saisie, par Brevo. Ne touche pas à la base. L'adresse est masquée
@@ -11,9 +11,17 @@ name: E-mail d'essai
 on:
   workflow_dispatch:
     inputs:
+      genre:
+        description: "Quel e-mail"
+        type: choice
+        options: ["textes d'hier", "rappel d'actions en retard"]
+        default: "textes d'hier"
       destinataire:
-        description: "Adresse qui reçoit l'e-mail d'essai"
-        required: true
+        description: "Adresse qui reçoit l'e-mail (vide : l'adresse du site, contact@)"
+        required: false
+      naf:
+        description: "Code APE pour les textes (vide : tous les sujets)"
+        required: false
 
 permissions:
   contents: read
@@ -24,14 +32,18 @@ jobs:
     timeout-minutes: 5
     steps:
       - name: Masquer l'adresse
+        if: inputs.destinataire != ''
         run: echo "::add-mask::${{ inputs.destinataire }}"
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
           node-version: 22
-      - name: Envoyer le rappel d'exemple
+      - name: Envoyer l'e-mail d'essai
         env:
           RECAP_TEST_A: ${{ inputs.destinataire }}
+          RECAP_TEST_TEXTES: ${{ inputs.genre == 'textes d''hier' && '1' || '' }}
+          RECAP_TEST_NAF: ${{ inputs.naf }}
+          RECAP_TEST_RAPPEL: ${{ inputs.genre != 'textes d''hier' && '1' || '' }}
           BREVO_API_KEY: ${{ secrets.BREVO_API_KEY }}
           RECAP_EXPEDITEUR: ${{ secrets.RECAP_EXPEDITEUR }}
         run: node outils/recap.mjs

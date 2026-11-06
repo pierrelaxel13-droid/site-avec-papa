@@ -178,8 +178,30 @@ async function envoyerEssai(a) {
   catch (e) { console.log("::error::L'envoi a échoué : " + e.message); process.exitCode = 1; }
 }
 
+/* L'essai du récapitulatif (6 novembre 2026) : les textes relevés un jour donné (hier par
+   défaut), pour un code APE (RECAP_TEST_NAF) ou, sans code, pour tous les sujets ; envoyé à
+   une seule adresse (RECAP_TEST_A), sinon à l'adresse du site (RECAP_EXPEDITEUR). */
+async function envoyerEssaiTextes(a) {
+  const cle = process.env.BREVO_API_KEY || "", expediteur = process.env.RECAP_EXPEDITEUR || "";
+  if (!cle || !expediteur) { console.log("::error::Il manque BREVO_API_KEY ou RECAP_EXPEDITEUR."); process.exitCode = 1; return; }
+  const auj = new Date().toLocaleDateString("fr-CA", { timeZone: "Europe/Paris" });
+  const jour = process.env.RECAP_JOUR || new Date(Date.parse(auj) - 86400000).toISOString().slice(0, 10);
+  const V = await charger("assets/referentiel.js", "VEILLE");
+  const JO = JSON.parse(await readFile(resolve(RACINE, "contenu/veille-releve.json"), "utf8"));
+  const naf = (process.env.RECAP_TEST_NAF || "").trim();
+  const plan = naf ? planDe(V, naf, []) : Object.keys(V.domaines);
+  const lignes = textesDuJour(V, JO.textes || [], plan, jour);
+  console.log(`Textes relevés le ${jour} : ${(JO.textes || []).filter((t) => (t.vuLe || t.date) === jour).length} ; pour ${naf ? "le code " + naf : "tous les sujets"} : ${lignes.length}.`);
+  if (!lignes.length) { console.log("::warning::Aucun texte ce jour-là pour ce plan : rien n'est envoyé."); return; }
+  const m = courriel(V, { denomination: naf ? `l'essai (code ${naf})` : "l'essai (tous les sujets)", jour, lignes, jeton: "00000000-0000-0000-0000-000000000000" });
+  m.sujet = "[Essai] " + m.sujet;
+  try { await envoyer({ cle, expediteur, a: a || expediteur, ...m }); console.log("ok : récapitulatif d'essai envoyé" + (a ? "." : " à l'adresse du site.")); }
+  catch (e) { console.log("::error::L'envoi a échoué : " + e.message); process.exitCode = 1; }
+}
+
 async function principal() {
-  if (process.env.RECAP_TEST_A) return envoyerEssai(process.env.RECAP_TEST_A.trim());
+  if (process.env.RECAP_TEST_TEXTES) return envoyerEssaiTextes((process.env.RECAP_TEST_A || "").trim());
+  if (process.env.RECAP_TEST_A || process.env.RECAP_TEST_RAPPEL) return envoyerEssai((process.env.RECAP_TEST_A || "").trim() || process.env.RECAP_EXPEDITEUR || "");
   const jour = process.env.RECAP_JOUR || new Date().toLocaleDateString("fr-CA", { timeZone: "Europe/Paris" });
   const essai = process.env.RECAP_ESSAI || "";
   const url = process.env.SUPABASE_DB_URL || "";
