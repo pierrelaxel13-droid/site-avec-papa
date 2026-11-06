@@ -203,6 +203,24 @@ export async function installer(stripe, { tva = "" } = {}) {
     } else bilan.liensTva.push(`${nom} : calcul de la TVA ${actif ? "actif" : "inactif"}`);
   }
 
+  // Diagnostic TVA (6 novembre 2026) : un calcul d'essai par Stripe Tax, pour chaque produit,
+  // avec une adresse à Istres. Stripe donne la raison d'un 0 (taxability_reason). Rien n'est facturé.
+  bilan.essaisTva = [];
+  const nosProduits = [...produits.filter((x) => /^(textes|suivi|complet|consultant)$/.test((x.metadata || {}).formule || "")), ...(pc && !produits.includes(pc) ? [pc] : [])];
+  for (const prod of tva === "auto" ? nosProduits : []) {
+    try {
+      const c = await stripe("POST", "/v1/tax/calculations", {
+        currency: "eur",
+        customer_details: { address: { country: "FR", postal_code: "13800", city: "Istres", line1: "1 rue de l'essai" }, address_source: "billing" },
+        line_items: [{ amount: 4680, reference: "essai", tax_behavior: "inclusive", product: prod.id }]
+      });
+      const r = (((c.line_items || {}).data || [])[0] || {});
+      const b = (c.tax_breakdown || [])[0] || {};
+      bilan.essaisTva.push(`${prod.name} (code ${prod.tax_code || "aucun"}) : TVA ${((c.tax_amount_inclusive || 0) / 100).toFixed(2)} € sur 46,80 € — ` +
+        `${b.taxability_reason || "?"}${b.tax_rate_details ? `, taux ${b.tax_rate_details.percentage_decimal} %` : ""}`);
+    } catch (e) { bilan.essaisTva.push(`${prod.name} : calcul d'essai impossible (${e.message})`); }
+  }
+
   // Les anciens liens et prix posés par cet outil (hors taxes, 5 novembre 2026), qui ne
   // servent plus : désactivés, pour qu'un ancien lien ne fasse plus payer hors taxes.
   // Seulement ce que l'outil a créé (métadonnée « formule ») ; le reste n'est pas touché.
@@ -304,6 +322,7 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   b.retires.forEach((x) => console.log("Désactivé : " + x));
   b.taxe.forEach((x) => console.log("TVA : " + x));
   b.liensTva.forEach((x) => console.log("Lien " + x));
+  (b.essaisTva || []).forEach((x) => console.log("Essai TVA : " + x));
   console.log(`Mode Stripe : ${mode}. Liens de paiement : ${Object.values(b.liens).flatMap((l) => Object.values(l)).length}. Portail : ${b.portail ? "oui" : "non"}.`);
   const chemin = join(RACINE, "contenu", "paiement.js");
   await writeFile(chemin, reecrire(await readFile(chemin, "utf8"), b.liens, b.portail));
