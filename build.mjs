@@ -205,6 +205,8 @@ const TVA = {
 if (!TVA) throw new Error(`SITE.tva doit valoir "franchise" ou "ht", pas « ${SITE.tva} ».`);
 // L'espace fine insécable (U+202F) que donne toLocaleString n'existe pas dans
 // la police du site : elle s'affichait « 1490 ». On met l'insécable ordinaire.
+// Sous chaque prix (6 novembre 2026, demande d'Axel) : « (TVA applicable à 20 %) ».
+const mentionTVA = () => SITE.tva === "ht" ? `<p class="mention-tva">(TVA applicable à 20\u00a0%)</p>` : "";
 const eur = (n) => `${n.toLocaleString("fr-FR").replace(/\u202f/g, "\u00a0")}\u00a0€${TVA.suffixe}`;
 for (const [id, f] of Object.entries(FORMULES)) {
   // « N mois offerts » : les mois que l'année épargne, arrondis au mois le plus proche.
@@ -3072,7 +3074,7 @@ function encartsDeNous() {
     { titre: "Ce qu'on fait pour vous", lignes: [
       ...Object.values(FORMULES).map((f) => { const o = f.ouvre.replace(/^En plus : /, "en plus, ").replace(/\.$/, "");
         return `<strong>${esc(f.l)}</strong> (${esc(f.prixAn)} ou ${esc(f.prix)}) : ${esc(o.charAt(0).toLowerCase() + o.slice(1))}`; }),
-      `L'année au prix de dix mois. Prix affichés sur la <a href="abonnement.html">page des tarifs</a>, sans devis`
+      `L'année au prix de dix mois. Prix affichés sur la <a href="abonnement.html">page des tarifs</a>, sans devis${SITE.tva === "ht" ? " (TVA applicable à 20\u00a0%)" : ""}`
     ] },
     { titre: `Les audits que ${esc(SITE.nom)} prépare`, lignes: [
       `<strong>ISO 14001</strong> (environnement) et <strong>ISO 45001</strong> (santé et sécurité)`,
@@ -3644,6 +3646,7 @@ function pageAccueil(V, D, METIERS, ECRANS, C = null, NAF = null, SOURCES = [], 
         <ul>
           ${Object.values(FORMULES).map((f) => `<li><strong>${esc(f.l)}</strong> — ${esc(f.prixAn)}, ou ${esc(f.prix)} : ${esc(f.ouvre.replace(/^En plus : /, "en plus de la formule précédente, "))}</li>`).join("\n          ")}
         </ul>
+        ${mentionTVA()}
         <p>Le détail de chaque formule est sur <a href="abonnement.html">la page des tarifs</a>. ${paiementComplet()
         ? "Le paiement se fait en ligne, par Stripe et se renouvelle chaque année ou chaque mois, selon votre choix."
         : "Le paiement en ligne n'est pas encore branché : pour l'instant, on s'abonne par courriel."}</p>`],
@@ -3652,6 +3655,7 @@ function pageAccueil(V, D, METIERS, ECRANS, C = null, NAF = null, SOURCES = [], 
         <ul>
           ${Object.values(FORMULES).map((f) => `<li>${esc(f.pour.replace(/\.$/, ""))} : <strong>${esc(f.l)}</strong> (${esc(f.prixAn)}, ou ${esc(f.prix)}).</li>`).join("\n          ")}
         </ul>
+        ${mentionTVA()}
         <p>En cas de doute, commencez par la démonstration : vous voyez exactement les écrans que chaque formule
         ouvre et vous changez de formule d'un clic.</p>`],
       ["Mon métier est-il couvert ?",
@@ -4273,6 +4277,7 @@ function pageAbonnement(V) {
         <!-- L'année d'abord : en entreprise, la veille est une ligne de budget annuel. -->
         <p class="prix"><span class="grand">${esc(eur(f.an))}</span> <span class="etiq">par an</span></p>
         <p class="offre-an"><span class="pastille-offre">${esc(f.offre)}</span> ou <strong>${esc(f.prix)}</strong></p>
+        ${mentionTVA()}
         ${f.surCarte === false ? "" : `<p class="pour">${esc(f.pour)}</p>`}
         <ul class="formule-donne">${f.donne.map((d) => `<li>${esc(d)}</li>`).join("")}</ul>
         <a class="bouton ${id === "complet" ? "bouton-accent" : "bouton-sobre"}" href="compte/paiement.html?formule=${id}&amp;periode=an">Abonnement annuel</a>
@@ -4306,6 +4311,7 @@ ${SITE.offreConsultant ? (() => {
       ${O.paliers.map((p, k) => `<article class="formule${k === 1 ? " mise-en-avant" : ""}" data-paraitre>
         <span class="etiq nom-offre">${p.a ? `De ${p.de} à ${p.a} clients` : `${p.de} clients et plus`}</span>
         <p class="prix"><span class="grand">${esc(eur(p.mois))}</span> <span class="etiq">par client et par mois</span></p>
+        ${mentionTVA()}
         <p class="sans-engagement">Abonnement mensuel, sans engagement de durée</p>
         <ul class="formule-donne">
           <li>La veille, le plan d'actions et le registre de conformité de chaque client</li>
@@ -4879,6 +4885,7 @@ function pageSouscrireConsultant() {
           ${O.paliers.map((p, k) => `<li data-palier="${k}"><span>${p.a ? `De ${p.de} à ${p.a} clients` : `${p.de} clients et plus`}</span>
             <strong>${esc(eur(p.mois))} par client et par mois</strong></li>`).join("\n          ")}
         </ul>
+        ${mentionTVA()}
         <dl class="paie-total" id="pc-total"></dl>
         <p class="precision">Abonnement mensuel, sans engagement de durée : renouvelé chaque mois, résiliable à tout moment pour la fin du mois en cours.
         Le nombre de clients se confirme sur la page de paiement ; pour le changer ensuite, écrivez-nous.</p>
@@ -5027,7 +5034,7 @@ function pageCabinet(V, NAF, SOURCES) {
           <li data-etape="invite"><span class="cs-coche" aria-hidden="true"></span><div><strong>Inviter votre client</strong>
             <span class="cs-etape-detail" data-detail>Il crée son compte et a accès à son profil.</span></div></li>
           <li data-etape="abonnement"><span class="cs-coche" aria-hidden="true"></span><div><strong>Ouvrir votre abonnement consultant</strong>
-            <span class="cs-etape-detail" data-detail>${O.paliers.map((p) => `${p.a ? `${p.de} à ${p.a}` : `${p.de} et plus`} clients : ${esc(eur(p.mois))} par client et par mois`).join(" · ")}.
+            <span class="cs-etape-detail" data-detail>${O.paliers.map((p) => `${p.a ? `${p.de} à ${p.a}` : `${p.de} et plus`} clients : ${esc(eur(p.mois))} par client et par mois`).join(" · ")}${SITE.tva === "ht" ? " (TVA applicable à 20\u00a0%)" : ""}.
             Abonnement mensuel, sans engagement.${consultantEnLigne() ? ` <a href="paiement-consultant.html">S'abonner en ligne</a>.` : ""}</span></div></li>
         </ol>
         <p class="cs-exemple"><a href="../demo/cabinet.html">Voir un exemple avec des clients fictifs</a></p>

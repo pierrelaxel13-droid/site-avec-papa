@@ -4826,3 +4826,6 @@ ol.etapes-carres p { margin: 0; color: var(--encre-douce); text-align: center; m
 }
 .mc-liste li:not(.mc-creer) { flex-wrap: wrap; }
 .mc-liste li .mc-texte { flex: 1 1 15rem; }
+
+/* Sous chaque prix : « (TVA applicable à 20 %) » (6 novembre 2026). */
+.mention-tva { margin: .15rem 0 .4rem; font-size: .8rem; color: var(--encre-tenue); }
