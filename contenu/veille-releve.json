@@ -6,8 +6,8 @@
   {
    "id": "jorf",
    "nom": "Journal officiel de la République française",
-   "entrees": 139268,
-   "retenus": 632,
+   "entrees": 151274,
+   "retenus": 694,
    "souci": null
   },
   {
@@ -62,7 +62,7 @@
   {
    "id": "bofip",
    "nom": "BOFiP — doctrine fiscale",
-   "entrees": 8,
+   "entrees": 7,
    "retenus": 1,
    "souci": null
   },
@@ -104,7 +104,7 @@
   {
    "id": "ademe",
    "nom": "ADEME — nouvelles publications",
-   "entrees": 87,
+   "entrees": 84,
    "retenus": 2,
    "souci": null
   },
@@ -167,7 +167,7 @@
   {
    "id": "ansm",
    "nom": "ANSM — informations de sécurité",
-   "entrees": 5,
+   "entrees": 0,
    "retenus": 0,
    "souci": null
   },
@@ -221,7 +221,7 @@
      ]
     }
    ],
-   "morceaux": 19,
+   "morceaux": 20,
    "dateTexte": "2026-10-27",
    "vuLe": "2026-11-06",
    "vuA": "2026-11-06T02:29:27Z"
