@@ -5156,6 +5156,8 @@ function pageNouveauClient(V, NAF, demo = null) {
             <div class="nc-lien-ligne"><input type="text" id="nc-lien" readonly>
               <button type="button" class="bouton bouton-sobre" id="nc-copier">Copier le lien</button></div>
             <a class="bouton bouton-sobre nc-envoyer" id="nc-courriel-lien" href="#">L'envoyer aussi depuis ma messagerie</a>
+            <p class="nc-renvoyer"><button type="button" class="bouton bouton-sobre" id="nc-renvoyer">Renvoyer l'invitation</button>
+              <span class="precision" id="nc-renvoyer-dit" role="status">Si le premier e-mail n'est pas arrivé (pensez aussi aux courriers indésirables).</span></p>
           </div>
           <div class="nc-suite">
             <a class="bouton bouton-sobre" id="nc-ouvrir" href="../app/reglages.html">Ouvrir son espace</a>

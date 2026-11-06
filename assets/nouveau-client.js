@@ -65,6 +65,18 @@
               ". Vous verrez votre veille réglementaire, votre plan d'actions et votre registre de conformité.\n\nBien cordialement,");
         }
         $("#nc-ouvrir").onclick = function () { V.choisir(entreprise); };
+        // Renvoyer l'invitation si le premier e-mail n'est pas arrivé (6 novembre 2026).
+        var rv = $("#nc-renvoyer");
+        if (rv) rv.onclick = function () {
+          rv.disabled = true; $("#nc-renvoyer-dit").textContent = "Envoi…";
+          V.rpc("inviter", { courriel: courriel, role: "admin", entreprise: entreprise }).then(function (x2) {
+            rv.disabled = false;
+            if (!x2.ok) { $("#nc-renvoyer-dit").textContent = x2.erreur; return; }
+            var lien2 = V.pageDuSite("compte/invitation.html") + "#jeton=" + encodeURIComponent(x2.donnees);
+            $("#nc-lien").value = lien2;
+            $("#nc-renvoyer-dit").textContent = "Invitation renvoyée à " + courriel + " : elle part dans les minutes qui suivent. Le lien ci-dessus est le nouveau.";
+          });
+        };
         $("#nc-fait").scrollIntoView({ block: "start" });
       };
       if (!courriel) { fin(""); return; }

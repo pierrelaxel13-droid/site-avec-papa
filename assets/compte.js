@@ -379,6 +379,20 @@
                   fait.appendChild(fort);
                   fait.appendChild(document.createTextNode(" Il y crée son compte et devient le responsable du compte de « " + x.denomination + " » (lien valable 7 jours)."));
                   f.appendChild(fait);
+                  // Renvoyer l'invitation si le premier e-mail n'est pas arrivé (6 novembre 2026).
+                  var rv = document.createElement("p"); rv.className = "mc-renvoyer";
+                  var bRv = document.createElement("button"); bRv.type = "button"; bRv.className = "bouton bouton-sobre bouton-petit";
+                  bRv.textContent = "Renvoyer l'invitation";
+                  var dRv = document.createElement("span"); dRv.className = "precision"; dRv.setAttribute("role", "status");
+                  dRv.textContent = " Si le premier e-mail n'est pas arrivé (pensez aussi aux courriers indésirables).";
+                  bRv.addEventListener("click", function () {
+                    bRv.disabled = true; dRv.textContent = " Envoi…";
+                    V.rpc("inviter", { courriel: adresse, role: "admin", entreprise: x.id }).then(function (r4) {
+                      bRv.disabled = false;
+                      dRv.textContent = r4.ok ? " Invitation renvoyée à " + adresse + " : elle part dans les minutes qui suivent." : " " + r4.erreur;
+                    });
+                  });
+                  rv.appendChild(bRv); rv.appendChild(dRv); f.appendChild(rv);
                   cc.remove();
                 });
               });
