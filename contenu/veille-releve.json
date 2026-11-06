@@ -104,7 +104,7 @@
   {
    "id": "ademe",
    "nom": "ADEME — nouvelles publications",
-   "entrees": 86,
+   "entrees": 87,
    "retenus": 2,
    "souci": null
   },
@@ -147,7 +147,7 @@
    "id": "amf",
    "nom": "AMF — Autorité des marchés financiers",
    "entrees": 200,
-   "retenus": 0,
+   "retenus": 1,
    "souci": null
   },
   {
@@ -167,7 +167,7 @@
   {
    "id": "ansm",
    "nom": "ANSM — informations de sécurité",
-   "entrees": 0,
+   "entrees": 5,
    "retenus": 0,
    "souci": null
   },
@@ -303,6 +303,31 @@
    "vuA": "2026-11-06T02:29:27Z"
   },
   {
+   "source": "amf",
+   "sourceNom": "AMF — Autorité des marchés financiers",
+   "genre": "actualite",
+   "id": "https://www.amf-france.org/fr/actualites-publications/evenements-de-lamf/colloques-et-conferences-de-lamf/webinaire-lutte-contre-le-blanchiment-des-capitaux-et-le-financement-du-terrorisme#xts=607212&at_medium=RSS feeds&at_campaign=Toutes les actualités et publications&type=RSS",
+   "titre": "Webinaire - Lutte contre le blanchiment des capitaux et le financement du terrorisme",
+   "nature": "Publication officielle",
+   "date": "2026-11-06",
+   "corps": "Support événement Lutte anti blanchiment Conseil en investissement Obligations professionnelles Webinaire - Lutte contre le blanchiment des capitaux et le financement du terrorisme",
+   "lien": "https://www.amf-france.org/fr/actualites-publications/evenements-de-lamf/colloques-et-conferences-de-lamf/webinaire-lutte-contre-le-blanchiment-des-capitaux-et-le-financement-du-terrorisme#xts=607212&at_medium=RSS feeds&at_campaign=Toutes les actualités et publications&type=RSS",
+   "domaines": [
+    {
+     "id": "finance",
+     "nom": "Services financiers, assurance et LCB-FT",
+     "mots": [
+      "lutte contre le blanchiment",
+      "financement du terrorisme"
+     ]
+    }
+   ],
+   "morceaux": 1,
+   "dateTexte": "",
+   "vuLe": "2026-11-06",
+   "vuA": "2026-11-06T10:56:16Z"
+  },
+  {
    "source": "jorf",
    "sourceNom": "Journal officiel de la République française",
    "genre": "texte",
@@ -351,6 +376,30 @@
    "dateTexte": "",
    "vuLe": "2026-11-05",
    "vuA": "2026-11-04T23:43:26Z"
+  },
+  {
+   "source": "eurlex-l",
+   "sourceNom": "Journal officiel de l'Union européenne — série L",
+   "genre": "texte",
+   "id": "https://eur-lex.europa.eu/./legal-content/AUTO/?uri=CELEX:32026R2409",
+   "titre": "CELEX:32026R2409: Règlement d’exécution (UE) 2026/2409 de la Commission du 5 novembre 2026 soumettant à enregistrement les importations de certains polyéthers polyols originaires de la République populaire de Chine en vue de permettre la perception de droits antidumping sur les importations soumises à enregistrement",
+   "nature": "Texte officiel",
+   "date": "2026-11-05",
+   "corps": "",
+   "lien": "https://eur-lex.europa.eu/./legal-content/AUTO/?uri=CELEX:32026R2409",
+   "domaines": [
+    {
+     "id": "douane",
+     "nom": "Douane et échanges internationaux",
+     "mots": [
+      "importation"
+     ]
+    }
+   ],
+   "morceaux": 0,
+   "dateTexte": "2026-11-05",
+   "vuLe": "2026-11-05",
+   "vuA": "2026-11-06T10:56:16Z"
   },
   {
    "source": "jorf",
@@ -425,30 +474,6 @@
    "dateTexte": "",
    "vuLe": "2026-11-05",
    "vuA": "2026-11-04T17:21:39Z"
-  },
-  {
-   "source": "eurlex-l",
-   "sourceNom": "Journal officiel de l'Union européenne — série L",
-   "genre": "texte",
-   "id": "https://eur-lex.europa.eu/./legal-content/AUTO/?uri=OJ:L_202602409",
-   "titre": "OJ:L_202602409: Règlement d’exécution (UE) 2026/2409 de la Commission du 5 novembre 2026 soumettant à enregistrement les importations de certains polyéthers polyols originaires de la République populaire de Chine en vue de permettre la perception de droits antidumping sur les importations soumises à enregistrement",
-   "nature": "Texte officiel",
-   "date": "2026-11-05",
-   "corps": "",
-   "lien": "https://eur-lex.europa.eu/./legal-content/AUTO/?uri=OJ:L_202602409",
-   "domaines": [
-    {
-     "id": "douane",
-     "nom": "Douane et échanges internationaux",
-     "mots": [
-      "importation"
-     ]
-    }
-   ],
-   "morceaux": 0,
-   "dateTexte": "2026-11-05",
-   "vuLe": "2026-11-05",
-   "vuA": "2026-11-06T02:29:27Z"
   },
   {
    "source": "agriculture",
