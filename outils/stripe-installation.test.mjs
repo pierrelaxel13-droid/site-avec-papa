@@ -18,7 +18,10 @@ const srv = http.createServer((q, r) => {
     const meta = (prefixe = "metadata") => Object.fromEntries([...p].filter(([k]) => k.startsWith(prefixe + "[")).map(([k, v]) => [k.slice(prefixe.length + 1, -1), v]));
     const liste = (l) => ({ data: l, has_more: false });
     let rep;
-    if (q.method === "POST" && /^\/v1\/(prices|payment_links)\/[a-z_]+$/.test(u.pathname)) { desactives.push([u.pathname, p.get("active")]);
+    if (q.method === "POST" && /^\/v1\/payment_links\/[a-z_0-9]+$/.test(u.pathname) && p.has("custom_text[submit][message]")) {
+      const l = base.payment_links.find((x) => x.id === u.pathname.split("/").pop());
+      if (l) l.custom_text = { submit: { message: p.get("custom_text[submit][message]") } };
+    } else if (q.method === "POST" && /^\/v1\/(prices|payment_links)\/[a-z_]+$/.test(u.pathname)) { desactives.push([u.pathname, p.get("active")]);
       const [, t, id] = u.pathname.match(/^\/v1\/(prices|payment_links)\/(.+)$/); const l = base[t]; l.splice(l.findIndex((x) => x.id === id), 1); }
     if (q.method === "GET") rep = liste({ "/v1/products": base.products, "/v1/prices": base.prices, "/v1/payment_links": base.payment_links,
       "/v1/billing_portal/configurations": base.configs }[u.pathname] || []);
@@ -59,6 +62,8 @@ assert.ok(base.prices.some((x) => x.unit_amount === 104280 && x.recurring.interv
 assert.deepEqual(desactives, [["/v1/payment_links/plink_vieux", "false"], ["/v1/prices/price_vieux", "false"]],
   "les anciens lien et prix hors taxes de l'outil sont désactivés ; le prix créé à la main n'est pas touché");
 assert.deepEqual(Object.keys(b1.liens.consultant), ["lien"]);
+assert.ok(base.payment_links.some((l) => /39,00 € HT \+ 7,80 € de TVA = 46,80 € TTC/.test(((l.custom_text || {}).submit || {}).message || "")),
+  "la page Stripe dit la TVA dès l'ouverture, au-dessus du bouton Payer");
 const aPaliers = base.prices.find((x) => x.billing_scheme === "tiered");
 assert.equal(aPaliers.tiers_mode, "volume", "le prix par client suit le nombre total de clients");
 assert.deepEqual(aPaliers.tiers, [{ up_to: "5", unit_amount: 3840 }, { up_to: "15", unit_amount: 3360 }, { up_to: "inf", unit_amount: 3000 }],

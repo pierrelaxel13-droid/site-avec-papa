@@ -61,6 +61,9 @@ export const signaturePaliers = () => CONSULTANT.paliers.map((p) => `${p.de}-${p
    (STRIPE_TVA=auto) détaille la TVA comprise sur la page et les factures. */
 export const TAUX_TVA = 0.2;
 export const centimesTTC = (ht) => Math.round(ht * (1 + TAUX_TVA) * 100);
+const messageTva = (ht) => `Prix TTC, TVA 20 % incluse : ${ht.toLocaleString("fr-FR", { minimumFractionDigits: 2 })} € HT + ` +
+  `${((centimesTTC(ht) - ht * 100) / 100).toLocaleString("fr-FR", { minimumFractionDigits: 2 })} € de TVA = ${(centimesTTC(ht) / 100).toLocaleString("fr-FR", { minimumFractionDigits: 2 })} € TTC. ` +
+  "Le détail de la TVA s'affiche dès que votre adresse est saisie.";
 const ttc = (ht) => (centimesTTC(ht) / 100).toLocaleString("fr-FR", { minimumFractionDigits: 2 });
 
 /* Les paramètres Stripe, en formulaire : { a: { b: 1 }, c: [{ d: 2 }] } → a[b]=1&c[0][d]=2 */
@@ -110,6 +113,7 @@ export async function installer(stripe, { tva = "" } = {}) {
   const retour = `${SITE}compte/paiement.html?merci=1`;
   const gardes = { prix: new Set(), liens: new Set() };
   const nouveauxLiens = {};
+  const messagesTva = {};
 
   for (const [formule, o] of Object.entries(OFFRES)) {
     let p = produits.find((x) => (x.metadata || {}).formule === formule);
@@ -149,6 +153,7 @@ export async function installer(stripe, { tva = "" } = {}) {
       }
       bilan.liens[formule][periode] = lien.url;
       if (formule === "textes" && periode === "mois") (bilan.prixIds = bilan.prixIds || {}).textesMois = prix.id;
+      messagesTva[lien.id] = messageTva(o[periode]);
       gardes.prix.add(prix.id); gardes.liens.add(lien.id); nouveauxLiens[lien.id] = lien;
     }
   }
@@ -190,6 +195,9 @@ export async function installer(stripe, { tva = "" } = {}) {
   }
   bilan.liens.consultant = { lien: lienC.url };
   gardes.prix.add(prixC.id); gardes.liens.add(lienC.id); nouveauxLiens[lienC.id] = lienC;
+  messagesTva[lienC.id] = "Prix par client et par mois, TTC (TVA 20 % incluse) : " +
+    CONSULTANT.paliers.map((p) => `${p.a ? `${p.de} à ${p.a}` : `${p.de} et plus`} clients ${ttc(p.mois)} € (${p.mois} € HT)`).join(" ; ") +
+    ". Le détail de la TVA s'affiche dès que votre adresse est saisie.";
 
   // La TVA sur la page de paiement (6 novembre 2026) : chaque lien gardé doit avoir le calcul
   // automatique de Stripe Tax ; un lien créé avant l'activation de Stripe Tax est corrigé ici.
@@ -202,6 +210,14 @@ export async function installer(stripe, { tva = "" } = {}) {
       try { await stripe("POST", `/v1/payment_links/${id}`, { automatic_tax: { enabled: "true" } }); bilan.liensTva.push(`${nom} : calcul de la TVA activé`); }
       catch (e) { bilan.liensTva.push(`${nom} : calcul de la TVA NON activé (${e.message})`); }
     } else bilan.liensTva.push(`${nom} : calcul de la TVA ${actif ? "actif" : "inactif"}`);
+    // Le message TVA au-dessus du bouton « Payer » : Stripe n'affiche le montant de la TVA
+    // qu'une fois l'adresse saisie ; ce message le dit dès l'ouverture de la page.
+    const voulu = messagesTva[id];
+    const actuel = (((l.custom_text || {}).submit) || {}).message || "";
+    if (voulu && actuel !== voulu) {
+      try { await stripe("POST", `/v1/payment_links/${id}`, { custom_text: { submit: { message: voulu } } }); bilan.liensTva.push(`${nom} : message TVA posé`); }
+      catch (e) { bilan.liensTva.push(`${nom} : message TVA NON posé (${e.message})`); }
+    }
   }
 
   // Diagnostic TVA (6 novembre 2026) : un calcul d'essai par Stripe Tax, pour chaque produit,
