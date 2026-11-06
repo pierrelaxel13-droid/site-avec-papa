@@ -163,7 +163,7 @@
       $("#bord-traces").innerHTML = rubrique("Historiques", tout.length
         ? '<ul class="liste-registre">' + tout.map(function (x) { return x.html; }).join("") + "</ul>" +
           '<p style="margin-top:var(--t4)"><a class="lien-fleche" href="conformite.html#registre">Voir tout le registre</a></p>'
-        : '<p class="lecture">Rien encore. Les textes que vous ouvrez, vos décisions, vos actions et vos revues s\'inscriront ici, datés.</p>');
+        : '<p class="lecture">Rien encore. Les textes que vous ouvrez, vos décisions, vos actions et vos revues s\'inscriront ici.</p>');
       V.lire("registre", "select=id&entreprise_id=eq." + M.espace.id).then(function (t) {
         if (n) n.textContent = t.ok ? String((t.donnees || []).length) : "—";
       });
