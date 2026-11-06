@@ -4827,7 +4827,7 @@ function pageSouscrire() {
       <div class="carte-connexion" id="paie-merci" hidden>
         <h2>Merci, votre paiement est enregistré</h2>
         <p>Votre formule s'ouvre dans les minutes qui suivent, dès que Stripe nous confirme le paiement.
-        Par prélèvement SEPA, la confirmation peut prendre quelques jours ouvrés. Vous recevez la facture par courriel.</p>
+        Par prélèvement SEPA, la confirmation peut prendre quelques jours ouvrés. La facture sera à disposition dans votre espace compte.</p>
         <p class="rangee" style="margin-top:var(--t4)"><a class="bouton bouton-accent" href="./">Mon compte</a></p>
       </div>
 
@@ -4907,7 +4907,7 @@ function pageSouscrireConsultant() {
       <div class="carte-connexion" id="pc-merci" hidden>
         <h2>Merci, votre paiement est enregistré</h2>
         <p>Votre abonnement consultant s'ouvre dans les minutes qui suivent, dès que Stripe nous confirme le paiement.
-        Les espaces de vos clients s'ouvrent avec lui. Vous recevez la facture par courriel.</p>
+        Les espaces de vos clients s'ouvrent avec lui. La facture sera à disposition dans votre espace compte.</p>
         <p class="rangee" style="margin-top:var(--t4)"><a class="bouton bouton-accent" href="cabinet.html">Mon espace consultant</a></p>
       </div>
 
