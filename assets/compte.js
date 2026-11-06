@@ -414,6 +414,8 @@
 
     var montrerCabinet = function (cab) {
       var b = $("#compte-cabinet");
+      // « Tableau de bord de mes clients » en haut, à côté de « Se déconnecter » (6 novembre 2026).
+      if ($("#cabinet-tableau")) $("#cabinet-tableau").hidden = !cab;
       if (!cab) { b.hidden = true; return; }
       $("#cabinet-nom").textContent = cab.nom;
       mesClients(cab);

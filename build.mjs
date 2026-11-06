@@ -4555,7 +4555,8 @@ function pageMonCompte() {
       <div>
         <h1>Mon compte</h1>
         <p class="compte-connecte">Connecté avec <span class="compte-adresse" id="compte-adresse"></span></p>
-        <p class="compte-acces"><a class="bouton bouton-accent" id="entreprise-ouvrir" href="../app/" hidden>Accéder à mon espace</a></p>
+        <p class="compte-acces"><a class="bouton bouton-accent" id="entreprise-ouvrir" href="../app/" hidden>Accéder à mon espace</a>
+          <a class="bouton bouton-accent" id="cabinet-tableau" href="cabinet.html" hidden>Tableau de bord de mes clients</a></p>
         <p class="etat-compte" id="etat-compte" role="status">Un instant…</p>
       </div>
       <div class="compte-tete-actions">
@@ -4609,7 +4610,6 @@ function pageMonCompte() {
             <div class="rg-ligne"><span class="rg-libelle">Abonnement</span><div class="rg-champ"><span id="cabinet-statut"></span></div></div>
 ${formAdresse("cab", "Adresse du cabinet")}
             <p class="compte-explique">Ici, votre compte : vos clients, votre abonnement, vos factures. Le suivi de vos clients (textes, actions, conformité) se fait dans l'espace consultant.</p>
-            <div class="compte-actions"><a class="bouton bouton-accent" href="cabinet.html">Tableau de bord de mes clients</a></div>
           </div>
           <div class="compte-corps">
           <form id="form-entreprise" method="post" novalidate hidden>
