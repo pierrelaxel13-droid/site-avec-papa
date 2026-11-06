@@ -118,8 +118,25 @@
       var textes = function (l) { return l.filter(function (a) { return a.k.indexOf("jo:") === 0; }); };
       var ouverts = {};
       lus.ids.forEach(function (k) { ouverts[k] = 1; });
+      var nouv = textes(nouveaux()).length;
+      /* 6 novembre 2026 : les mêmes textes que « Ma veille réglementaire » (assets/textes-veille.js) :
+         tout le plan de veille (textes récents, de référence, codes, fonds), pas seulement le relevé
+         des 14 derniers jours. Les chiffres du tableau de bord et de Ma veille sont alors les mêmes. */
+      var TV = window.TEXTES_VEILLE, p = plan();
+      if (TV && p) {
+        var dedans = {}; p.forEach(function (id) { dedans[id] = 1; });
+        var depuis = new Date(Date.now() - 14 * 864e5).toISOString().slice(0, 10);
+        var app = 0, lus14 = 0, pub = 0;
+        TV.forEach(function (t) {
+          if (!t[1].split(" ").some(function (id) { return dedans[id]; })) return;
+          app++;
+          if (ouverts[t[0]]) lus14++;
+          if (t[2] && t[2] >= depuis) pub++;
+        });
+        return { nouveaux: nouv, publies: pub, applicables: app, lus: lus14 };
+      }
       var applicables = textes(dansPlan());
-      return { nouveaux: textes(nouveaux()).length, publies: textes(tous).length, applicables: applicables.length,
+      return { nouveaux: nouv, publies: textes(tous).length, applicables: applicables.length,
                lus: applicables.filter(function (a) { return ouverts[a.k]; }).length };
     },
     plan: function () { return plan(); },

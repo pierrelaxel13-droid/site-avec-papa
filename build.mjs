@@ -796,7 +796,7 @@ ${rubrique({ etiq: "Historiques", contenu: `
     titre: `Tableau de bord | ${SITE.nom}`,
     description: "Tableau de bord de la veille réglementaire.",
     racine: "../", zone: "app", actif: "bord", corps, verrou: true, formule: "textes", donneesPlan: true,
-    scripts: ["assets/bord-demo.js"]
+    scripts: ["assets/textes-veille.js", "assets/bord-demo.js"]
   });
 }
 
@@ -1161,7 +1161,7 @@ function tableauTextesPlan(V, C, LIENS, plan, JO) {
   const fond = Object.keys(parRef).map((ref) => {
     const ids = parRef[ref], q = dateDuTexte(C, ref), L = lienDuTexte(C, LIENS, ref);
     const src = sourceDeLien(L.url);
-    return { ids, date: (q && q.depuis) || "", ordre: ref, src, html: (dans) => `<tr data-domaines="${esc(ids.join(" "))}" data-date="${esc((q && q.depuis) || "")}" data-source="${esc(src)}" data-cle="ref:${esc(slug(ref))}" data-objet="${esc(ref)}"${dans ? "" : " hidden"}>
+    return { ids, cle: `ref:${slug(ref)}`, date: (q && q.depuis) || "", ordre: ref, src, html: (dans) => `<tr data-domaines="${esc(ids.join(" "))}" data-date="${esc((q && q.depuis) || "")}" data-source="${esc(src)}" data-cle="ref:${esc(slug(ref))}" data-objet="${esc(ref)}"${dans ? "" : " hidden"}>
       <td data-titre="Date">${q && q.depuis ? `<time datetime="${esc(q.depuis)}">${esc(dateFr(q.depuis))}</time><span class="etat-date">Dernière mise à jour</span>` : `<span class="etat-date etat-fond">Texte de référence</span>`}</td>
       <td data-titre="Catégorie">${categorie(ids)}</td>
       <td data-titre="Référence et lien"><a href="texte/${slug(ref)}.html">${esc(ref)}</a>
@@ -1179,7 +1179,7 @@ function tableauTextesPlan(V, C, LIENS, plan, JO) {
     const quand = t.dateTexte || t.date;
     const lien = /^https?:\/\//i.test(t.lien || "") ? t.lien : "";
     const src = sourceDuReleve(t);
-    return { ids, date: quand, ordre: t.titre, src, html: (dans) => `<tr data-domaines="${esc(ids.join(" "))}" data-date="${esc(quand)}" data-source="${esc(src)}" data-cle="${esc(cleJO(t))}" data-objet="${esc(String(t.titre).slice(0, 480))}"${dans ? "" : " hidden"}>
+    return { ids, cle: cleJO(t), date: quand, ordre: t.titre, src, html: (dans) => `<tr data-domaines="${esc(ids.join(" "))}" data-date="${esc(quand)}" data-source="${esc(src)}" data-cle="${esc(cleJO(t))}" data-objet="${esc(String(t.titre).slice(0, 480))}"${dans ? "" : " hidden"}>
       <td data-titre="Date"><time datetime="${esc(quand)}">${esc(dateFr(quand))}</time><span class="etat-date etat-recent">Parution récente</span></td>
       <td data-titre="Catégorie">${categorie(ids)}</td>
       <td data-titre="Référence et lien"><span class="marque-neuf marque-nouveau" hidden>Nouveau texte</span>${lien ? `<a href="${esc(lien)}" target="_blank" rel="noopener">${esc(t.titre)}</a>` : esc(t.titre)}
@@ -1201,7 +1201,7 @@ function tableauTextesPlan(V, C, LIENS, plan, JO) {
     if (!ids.length || !vig.length) return null;
     const tard = vig.reduce((t, x) => (x.depuis && x.depuis > t ? x.depuis : t), "");
     const nom = `${m.codeTitre}, articles ${vig[0].num} à ${vig[vig.length - 1].num}`;
-    return { ids, date: tard, ordre: nom, src: "Légifrance", html: (dans) => `<tr data-domaines="${esc(ids.join(" "))}" data-date="${esc(tard)}" data-source="Légifrance" data-cle="code:${esc(m.id)}" data-objet="${esc(nom)}"${dans ? "" : " hidden"}>
+    return { ids, cle: `code:${m.id}`, date: tard, ordre: nom, src: "Légifrance", html: (dans) => `<tr data-domaines="${esc(ids.join(" "))}" data-date="${esc(tard)}" data-source="Légifrance" data-cle="code:${esc(m.id)}" data-objet="${esc(nom)}"${dans ? "" : " hidden"}>
       <td data-titre="Date">${tard ? `<time datetime="${esc(tard)}">${esc(dateFr(tard))}</time><span class="etat-date">Dernière mise à jour</span>` : `<span class="etat-date etat-fond">Texte de référence</span>`}</td>
       <td data-titre="Catégorie">${categorie(ids)}</td>
       <td data-titre="Référence et lien"><a href="code/${esc(m.id)}.html">${esc(nom)}</a>
@@ -1219,7 +1219,7 @@ function tableauTextesPlan(V, C, LIENS, plan, JO) {
   const anciens = !(FONDS && FONDS.textes) ? [] : FONDS.textes.map((t) => {
     const ids = t.domaines.map((d) => d.id).filter((id) => V.domaines[id]);
     if (!ids.length) return null;
-    return { ids, date: t.date, ordre: t.titre, src: "Légifrance", html: (dans) => `<tr data-domaines="${esc(ids.join(" "))}" data-date="${esc(t.date)}" data-source="Légifrance" data-cle="legi:${esc(t.id)}" data-objet="${esc(String(t.titre).slice(0, 480))}"${dans ? "" : " hidden"}>
+    return { ids, cle: `legi:${t.id}`, date: t.date, ordre: t.titre, src: "Légifrance", html: (dans) => `<tr data-domaines="${esc(ids.join(" "))}" data-date="${esc(t.date)}" data-source="Légifrance" data-cle="legi:${esc(t.id)}" data-objet="${esc(String(t.titre).slice(0, 480))}"${dans ? "" : " hidden"}>
       <td data-titre="Date"><time datetime="${esc(t.date)}">${esc(dateFr(t.date))}</time><span class="etat-date etat-fond">Texte en vigueur</span></td>
       <td data-titre="Catégorie">${categorie(ids)}</td>
       <td data-titre="Référence et lien"><a href="${esc(t.lien)}" target="_blank" rel="noopener">${esc(t.titre)}</a>
@@ -1237,6 +1237,9 @@ function tableauTextesPlan(V, C, LIENS, plan, JO) {
   anciens.sort((a, b) => (a.date < b.date ? 1 : -1)).forEach((x) => x.ids.forEach((id) => {
     (FRAGMENTS_FONDS[id] = FRAGMENTS_FONDS[id] || []).push(x.html(true));
   }));
+  /* Toutes les lignes de « Ma veille réglementaire » (clé, sujets, date), pour que le tableau
+     de bord et l'espace consultant comptent exactement les mêmes textes (6 novembre 2026). */
+  TEXTES_VEILLE = recents.concat(fond, sections, anciens).map((x) => [x.cle, x.ids.join(" "), String(x.date || "").slice(0, 10)]);
   const toutes = recents.concat(fond, sections).sort((a, b) =>
     a.date !== b.date ? (a.date < b.date ? 1 : -1) : a.ordre.localeCompare(b.ordre, "fr"));
   if (!toutes.length) return "";
@@ -1376,6 +1379,7 @@ function appActions(V, D, C, LIENS, JO = null) {
 }
 
 let TEXTES_CLES = [];
+let TEXTES_VEILLE = [];
 let FICHES = {};   // contenu/textes.js, posé au chargement (analyse des textes de référence)
 let FRAGMENTS_FONDS = {};  // sujet → lignes du fonds, écrites dans app/fonds/<sujet>.html
 let FONDS = null;       // contenu/fonds-legi.json : textes non codifiés en vigueur depuis 50 ans (outils/fonds-legi.mjs)
@@ -5088,7 +5092,7 @@ function pageCabinet(V, NAF, SOURCES) {
   </div>
 </section>`;
   return page({ titre: `Espace consultant | ${SITE.nom}`, description: `Votre cabinet de conseil sur ${SITE.nom} : le tableau de bord de vos clients.`,
-    racine: "../", zone: "public", corps, donneesPlan: true, scripts: ["assets/textes-plan.js", "assets/places.js", "assets/compte.js"], installation: false, piedCourt: true,
+    racine: "../", zone: "public", corps, donneesPlan: true, scripts: ["assets/textes-plan.js", "assets/textes-veille.js", "assets/places.js", "assets/compte.js"], installation: false, piedCourt: true,
     attrsBody: ' data-page="cabinet"' });
 }
 
@@ -5747,6 +5751,8 @@ async function main() {
   for (const f of habillage) empreinte.update(await readFile(join(SORTIE, "assets", f)));
   empreinte.update(plan);
   empreinte.update(avis);
+  empreinte.update(JSON.stringify(TEXTES_VEILLE));
+  empreinte.update(JSON.stringify(TEXTES_CLES));
   const version = empreinte.digest("hex").slice(0, 12);
   VERSION = version;
   const worker = (await readFile(resolve(RACINE, "sw.js"), "utf8")).replaceAll("__EMPREINTE__", version);
@@ -5809,6 +5815,7 @@ async function main() {
     console.log(`  fonds LEGI          ${FONDS.textes.length} textes en vigueur, en ${Object.keys(FRAGMENTS_FONDS).length} fichiers par sujet`);
   }
   await writeFile(join(SORTIE, "app", "conformite.html"), appConformite(V, D, C, LIENS, JO));
+  await writeFile(join(SORTIE, "assets", "textes-veille.js"), "/* Les lignes de Ma veille réglementaire : [clé, sujets, date]. Engendré par build.mjs. */\nwindow.TEXTES_VEILLE = " + JSON.stringify(TEXTES_VEILLE) + ";\n");
   await writeFile(join(SORTIE, "assets", "textes-plan.js"), "/* Les textes du plan de veille : [clé, sujets]. Engendré par build.mjs. */\nwindow.TEXTES_PLAN = " + JSON.stringify(TEXTES_CLES) + ";\n");
   await writeFile(join(SORTIE, "app", "actions.html"), appActions(V, D, C, LIENS, JO));
   await writeFile(join(SORTIE, "app", "releve.html"), renvoi("Relevé", "plan.html", "Ma veille réglementaire"));

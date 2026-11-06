@@ -1139,6 +1139,14 @@
         if (!lus[t[0]]) nl++;
         if (conf[t[0]]) nc++;
       });
+      // Les textes non lus : comptés sur les lignes de « Ma veille réglementaire » du client
+      // (assets/textes-veille.js), comme son tableau de bord (6 novembre 2026).
+      if (window.TEXTES_VEILLE) {
+        nl = 0;
+        window.TEXTES_VEILLE.forEach(function (t) {
+          if (t[1].split(" ").some(function (id) { return sujets[id]; }) && !lus[t[0]]) nl++;
+        });
+      }
       x.nonLus = nl;
       x.conformite = x.total ? Math.round(nc / x.total * 100) : null;
       return x;
