@@ -230,7 +230,6 @@ const PAYS = [["FR", "France"], ["BE", "Belgique"], ["LU", "Luxembourg"], ["CH",
 /* Le formulaire d'adresse de Mon compte (entreprise « ent », cabinet « cab ») : assets/compte.js le branche. */
 const formAdresse = (x, titre) => `<form class="cab-adresse" id="${x}-adresse" novalidate>
               <p class="cab-adresse-titre"><strong>${esc(titre)}</strong> <span class="rg-obligatoire">obligatoire</span></p>
-              <p class="precision">Elle figure sur vos factures et sert au calcul de la TVA lors du paiement.</p>
               <div class="champ"><label for="${x}-ligne">Adresse</label>
                 <input type="text" id="${x}-ligne" required maxlength="200" autocomplete="street-address" placeholder="12 rue de la République"></div>
               <div class="cab-adresse-ligne">
@@ -2838,8 +2837,7 @@ function appReglages(V, D, NAF, METIERS) {
           <p>Votre code APE détermine les sujets de votre veille réglementaire.</p>
         </header>
         ${ligne("e-nom", "Nom de l'entreprise", `<input type="text" id="e-nom" name="nom" placeholder="${esc(D.entreprise.nom)}" autocomplete="organization">`)}
-        ${ligne("e-adresse", "Adresse <span class=\"rg-obligatoire\">obligatoire</span>", `<input type="text" id="e-adresse" name="adresse" required maxlength="200" placeholder="12 rue de la République" autocomplete="street-address">`,
-          `<p class="rg-aide">Elle figure sur vos factures et sert au calcul de la TVA lors du paiement.</p>`)}
+        ${ligne("e-adresse", "Adresse <span class=\"rg-obligatoire\">obligatoire</span>", `<input type="text" id="e-adresse" name="adresse" required maxlength="200" placeholder="12 rue de la République" autocomplete="street-address">`)}
         ${ligne("e-cp", "Code postal <span class=\"rg-obligatoire\">obligatoire</span>", `<input type="text" id="e-cp" name="cp" required maxlength="12" placeholder="13800" autocomplete="postal-code" inputmode="numeric">`)}
         ${ligne("e-ville", "Ville <span class=\"rg-obligatoire\">obligatoire</span>", `<input type="text" id="e-ville" name="ville" required placeholder="${esc(D.entreprise.ville)}" autocomplete="address-level2">`)}
         ${ligne("e-pays", "Pays <span class=\"rg-obligatoire\">obligatoire</span>", `<select id="e-pays" name="pays" required autocomplete="country">${optionsPays()}</select>`)}
