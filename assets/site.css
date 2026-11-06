@@ -4867,3 +4867,6 @@ ol.etapes-carres p { margin: 0; color: var(--encre-douce); text-align: center; m
 .essai-gratuit { display: inline-block; margin: 0 0 .5rem; padding: .2rem .65rem; border-radius: 999px; font-size: .8rem; font-weight: 700;
   color: var(--vert); background: var(--vert-fond); }
 .essai-gratuit { width: fit-content; }
+
+/* Espace consultant : chaque chiffre centré dans sa case, en largeur et en hauteur (6 novembre 2026). */
+.cs-chiffres > div { display: flex; flex-direction: column; align-items: center; justify-content: center; }
