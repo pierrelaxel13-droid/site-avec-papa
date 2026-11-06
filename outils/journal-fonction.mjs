@@ -5,7 +5,7 @@ const jeton = (process.env.SUPABASE_ACCESS_TOKEN || "").trim(), ref = "denpxyqbv
 if (!jeton) { console.log("SUPABASE_ACCESS_TOKEN absent."); process.exit(0); }
 const fin = new Date(), debut = new Date(fin - 3600e3);
 const q = async (sql) => {
-  const u = `https://api.supabase.com/v1/projects/${ref}/analytics/endpoints/logs.all?` + new URLSearchParams({
+  const u = `https://api.supabase.com/v1/projects/${ref}/analytics/endpoints/logs?` + new URLSearchParams({
     sql, iso_timestamp_start: debut.toISOString(), iso_timestamp_end: fin.toISOString() });
   const r = await fetch(u, { headers: { Authorization: `Bearer ${jeton}` } });
   if (!r.ok) return { erreur: r.status + " " + (await r.text()).slice(0, 200) };
