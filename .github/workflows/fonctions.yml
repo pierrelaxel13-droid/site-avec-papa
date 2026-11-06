@@ -49,6 +49,16 @@ jobs:
             if [ -n "${!n}" ]; then echo "$n : présent"; else echo "::warning::$n : absent"; fi
           done
           if [ -z "$SUPABASE_ACCESS_TOKEN" ]; then echo "::error::Sans SUPABASE_ACCESS_TOKEN, rien ne peut être déployé."; exit 1; fi
+          # Le genre de jeton (jamais sa valeur) : il faut un jeton personnel « sbp_… ».
+          t=$(printf '%s' "$SUPABASE_ACCESS_TOKEN" | tr -d '[:space:]')
+          case "$t" in
+            sbp_*) echo "SUPABASE_ACCESS_TOKEN : jeton personnel (sbp_…), bon format." ;;
+            sb_secret_*) echo "::error::SUPABASE_ACCESS_TOKEN contient la clé secrète du projet (sb_secret_…), pas un jeton personnel. Créer un jeton sur supabase.com/dashboard/account/tokens (il commence par sbp_)."; exit 1 ;;
+            sb_publishable_*) echo "::error::SUPABASE_ACCESS_TOKEN contient la clé publique du projet (sb_publishable_…). Créer un jeton sur supabase.com/dashboard/account/tokens (il commence par sbp_)."; exit 1 ;;
+            eyJ*) echo "::error::SUPABASE_ACCESS_TOKEN contient une clé du projet (anon ou service_role, eyJ…), pas un jeton personnel. Créer un jeton sur supabase.com/dashboard/account/tokens (il commence par sbp_)."; exit 1 ;;
+            *) echo "::error::SUPABASE_ACCESS_TOKEN n'a pas le format attendu (sbp_… ; ${#t} caractères reçus). Créer un jeton sur supabase.com/dashboard/account/tokens."; exit 1 ;;
+          esac
+          echo "SUPABASE_ACCESS_TOKEN=$t" >> "$GITHUB_ENV"
       - name: Déployer la fonction
         run: |
           cp outils/courriels-gabarits.mjs supabase/functions/vigie/gabarits.mjs
