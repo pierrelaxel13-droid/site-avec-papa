@@ -537,7 +537,7 @@ ${piedCourt ? "" : `
           <li><a href="${a("abonnement.html")}">Nos offres</a></li>
           ${SITE.offreConsultant ? `<li><a href="${a("consultants.html")}">Offre consultants QSE</a></li>` : ""}
           <li><a href="${a("abonnement.html")}#essayer">Démonstration gratuite</a></li>
-          ${lienPaiement("portail") ? `<li><a href="${esc(lienPaiement("portail"))}">Gérer mon abonnement</a></li>` : ""}
+          ${lienPaiement("portail") ? `<li><a href="${a("compte/")}">Gérer mon abonnement</a></li>` : ""}
         </ul>
       </nav>
       ${zone === "app" ? `<nav aria-label="L'application">
@@ -4324,7 +4324,7 @@ function pageAbonnement(V) {
     ${paiementComplet() ? `<p class="reserve reserve-ok" style="margin-top:var(--t5)">
       <strong>Paiement en ligne, sécurisé par Stripe.</strong>
       Par carte bancaire ou par prélèvement SEPA.
-      ${lienPaiement("portail") ? `Vous pouvez <a href="${esc(lienPaiement("portail"))}">gérer ou résilier votre abonnement</a> à tout moment.` : ""}
+      ${lienPaiement("portail") ? `Vous pouvez <a href="compte/">gérer ou résilier votre abonnement</a> à tout moment.` : ""}
     </p>` : ""}
   </div>
 </section>

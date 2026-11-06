@@ -136,7 +136,7 @@
       });
       if (cabinet.actif) {
         compte.insertAdjacentHTML("beforeend", '<p class="precision">Votre abonnement consultant est déjà ouvert.' +
-          (D.portail ? ' Pour le gérer ou le résilier : <a href="' + D.portail + '">gérer mon abonnement</a>.' : "") + "</p>");
+          (D.portail ? ' Pour le gérer ou le résilier : <a href="./">gérer mon abonnement</a>.' : "") + "</p>");
       }
       bouton();
     });

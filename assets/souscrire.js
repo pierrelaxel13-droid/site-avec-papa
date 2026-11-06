@@ -140,7 +140,7 @@
       }
       var actuelle = ["", "textes", "suivi", "complet"][Number(entreprise.rang) || 0] || "";
       var deja = actuelle ? "<p class=\"precision\">Formule actuelle : « " + D.formules[actuelle].court +
-        " »." + (D.portail ? ' Pour la changer ou la résilier : <a href="' + D.portail + '">gérer mon abonnement</a>.' : "") + "</p>" : "";
+        " »." + (D.portail ? ' Pour la changer ou la résilier : <a href="./">gérer mon abonnement</a>.' : "") + "</p>" : "";
       var p = document.createElement("p");
       var b = document.createElement("strong"); b.textContent = entreprise.denomination || "Votre entreprise";
       p.appendChild(b);
