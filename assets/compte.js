@@ -745,7 +745,7 @@
           // Un abonnement ouvert par nos soins (sans Stripe) : résilié ici, aussitôt,
           // sans e-mail (6 novembre 2026, migration 27).
           var n2 = document.createElement("p"); n2.className = "precision";
-          n2.textContent = "Cet abonnement a été ouvert par nos soins. Vous pouvez le résilier ici : il s'arrête aussitôt.";
+          n2.textContent = "";   // seul le bouton « Résilier mon abonnement » (demande d'Axel)
           var x2 = document.createElement("button"); x2.type = "button";
           x2.className = "bouton bouton-sobre bouton-petit abo-bouton-resilier"; x2.textContent = "Résilier mon abonnement";
           x2.addEventListener("click", function () {
