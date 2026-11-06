@@ -52,6 +52,7 @@
 
   function peindre() {
     $("#paie-offre").textContent = F.l;
+    $("#paie-formule").value = formule;
     // Chaque choix dit son prix HT et TTC (TVA à 20 %).
     var ttc = function (n) { return D.tva === "ht" ? " · " + eur(n * 1.2) + " TTC" : ""; };
     $("#paie-prix-an").textContent = F.an + " par an" + ttc(F.montantAn);
@@ -122,6 +123,13 @@
 
   [].forEach.call(document.querySelectorAll('input[name="paie-periode"]'), function (r) {
     r.addEventListener("change", function () { periode = r.value; peindre(); });
+  });
+  // Le choix de la formule (6 novembre 2026) : les trois, dans un menu déroulant.
+  $("#paie-formule").addEventListener("change", function () {
+    if (!D.formules[this.value]) return;
+    formule = this.value; F = D.formules[formule];
+    try { window.localStorage.setItem("pco-souscrire", JSON.stringify({ formule: formule, periode: periode })); } catch (e) { /* sans effet */ }
+    peindre();
   });
   $("#paie-cgv").addEventListener("change", bouton);
   $("#paie-payer").addEventListener("click", function (e) {

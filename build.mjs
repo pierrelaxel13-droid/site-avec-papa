@@ -4834,7 +4834,12 @@ function pageSouscrire() {
       <div id="paie-formulaire">
       <div class="carte-connexion">
         <h2>Récapitulatif</h2>
-        <p class="paie-offre" id="paie-offre"></p>
+        <div class="champ paie-choix">
+          <label for="paie-formule">Formule</label>
+          <select id="paie-formule">${Object.keys(FORMULES).map((id, i) =>
+            `<option value="${id}">${String(i + 1).padStart(2, "0")} — ${esc({ textes: "État des lieux", suivi: "État des lieux et plan d'actions", complet: "Veille complète" }[id] || FORMULES[id].l)}</option>`).join("")}</select>
+        </div>
+        <p class="paie-offre precision" id="paie-offre"></p>
         <div class="paie-periodes" role="radiogroup" aria-label="Durée">
           <label class="paie-periode"><input type="radio" name="paie-periode" value="an">
             <span><strong>Annuel</strong><span class="precision">Engagement sur un an</span><span class="precision" id="paie-prix-an"></span></span></label>
