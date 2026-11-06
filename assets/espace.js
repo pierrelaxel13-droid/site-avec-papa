@@ -105,8 +105,7 @@
     var html = "";
     if (!plan) {
       html = rubrique("Pour commencer",
-        '<p class="lecture">Votre tableau de bord se remplit à partir de votre plan de veille et votre plan se fait ' +
-        "à partir de votre code APE et de quelques questions sur votre situation.</p>" +
+        '<p class="lecture">Pour individualiser votre état de veille réglementaire, complétez les informations sur votre entreprise.</p>' +
         '<p class="rangee" style="margin-top:var(--t4)"><a class="bouton bouton-accent" href="reglages.html">Renseigner mon entreprise</a></p>');
       plan = [];
     }
