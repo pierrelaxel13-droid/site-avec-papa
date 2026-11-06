@@ -116,12 +116,16 @@ async function essai() {
     await p.goto(SITE + "app/reglages.html"); await pret(p);
     await p.selectOption("#e-naf", "43.32A");
     await p.dispatchEvent("#e-naf", "change");
+    // L'adresse est obligatoire (6 novembre 2026).
+    await p.fill("#e-adresse", "1 rue de l'essai"); await p.fill("#e-cp", "13800");
     await p.fill("#e-ville", "Istres"); await p.fill("#e-effectif", "12");
     await p.locator("#e-contexte input[type=checkbox]").first().check();
     await p.click("#form-entreprise button[type=submit]");
     await p.waitForFunction(() => /Enregistré dans votre compte/.test(document.querySelector("#e-etat").textContent), null, { timeout: 30000 });
     ok(sql(`select naf || '|' || implantation || '|' || effectif from public.entreprises where id = ${litteral(e)}`) === "43.32A|Istres|12",
       "réglages enregistrés dans la base");
+    ok(sql(`select reglages->'adresse'->>'pays' from public.entreprises where id = ${litteral(e)}`) === "FR",
+      "l'adresse (obligatoire) est enregistrée, avec le pays");
 
     // 3. Le plan : cocher une revue.
     await p.goto(SITE + "app/plan.html"); await pret(p);
