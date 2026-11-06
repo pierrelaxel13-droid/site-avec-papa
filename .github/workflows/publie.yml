@@ -95,3 +95,7 @@ jobs:
     steps:
       - id: publication
         uses: actions/deploy-pages@v4
+        with:
+          # Le site pèse plus de 100 Mo : GitHub Pages dépasse parfois les 10 minutes par défaut
+          # (échec du 6 novembre, « Timeout reached »). 20 minutes.
+          timeout: 1200000

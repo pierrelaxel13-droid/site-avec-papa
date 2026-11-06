@@ -44,26 +44,33 @@ jobs:
         with:
           node-version: 22
       - name: Les secrets sont-ils là (présence seulement)
+        id: pret
         run: |
           for n in SUPABASE_ACCESS_TOKEN STRIPE_CLE BREVO_API_KEY BREVO_SMTP_KEY RECAP_EXPEDITEUR; do
             if [ -n "${!n}" ]; then echo "$n : présent"; else echo "::warning::$n : absent"; fi
           done
-          if [ -z "$SUPABASE_ACCESS_TOKEN" ]; then echo "::error::Sans SUPABASE_ACCESS_TOKEN, rien ne peut être déployé."; exit 1; fi
+          # Un jeton absent ou mal choisi : un avertissement, pas un échec (pas d'e-mail d'alerte
+          # de GitHub à chaque envoi) ; rien n'est déployé et le site garde le chemin d'avant.
+          non() { echo "::warning::$1 Rien n'est déployé : le site continue sans la fonction serveur."; echo "pret=non" >> "$GITHUB_OUTPUT"; exit 0; }
+          if [ -z "$SUPABASE_ACCESS_TOKEN" ]; then non "SUPABASE_ACCESS_TOKEN est absent."; fi
           # Le genre de jeton (jamais sa valeur) : il faut un jeton personnel « sbp_… ».
           t=$(printf '%s' "$SUPABASE_ACCESS_TOKEN" | tr -d '[:space:]')
           case "$t" in
             sbp_*) echo "SUPABASE_ACCESS_TOKEN : jeton personnel (sbp_…), bon format." ;;
-            sb_secret_*) echo "::error::SUPABASE_ACCESS_TOKEN contient la clé secrète du projet (sb_secret_…), pas un jeton personnel. Créer un jeton sur supabase.com/dashboard/account/tokens (il commence par sbp_)."; exit 1 ;;
-            sb_publishable_*) echo "::error::SUPABASE_ACCESS_TOKEN contient la clé publique du projet (sb_publishable_…). Créer un jeton sur supabase.com/dashboard/account/tokens (il commence par sbp_)."; exit 1 ;;
-            eyJ*) echo "::error::SUPABASE_ACCESS_TOKEN contient une clé du projet (anon ou service_role, eyJ…), pas un jeton personnel. Créer un jeton sur supabase.com/dashboard/account/tokens (il commence par sbp_)."; exit 1 ;;
-            *) echo "::error::SUPABASE_ACCESS_TOKEN n'a pas le format attendu (sbp_… ; ${#t} caractères reçus). Créer un jeton sur supabase.com/dashboard/account/tokens."; exit 1 ;;
+            sb_secret_*) non "SUPABASE_ACCESS_TOKEN contient la clé secrète du projet (sb_secret_…), pas un jeton personnel. Créer un jeton sur supabase.com/dashboard/account/tokens (il commence par sbp_)." ;;
+            sb_publishable_*) non "SUPABASE_ACCESS_TOKEN contient la clé publique du projet (sb_publishable_…). Créer un jeton sur supabase.com/dashboard/account/tokens (il commence par sbp_)." ;;
+            eyJ*) non "SUPABASE_ACCESS_TOKEN contient une clé du projet (anon ou service_role, eyJ…), pas un jeton personnel. Créer un jeton sur supabase.com/dashboard/account/tokens (il commence par sbp_)." ;;
+            *) non "SUPABASE_ACCESS_TOKEN n'a pas le format attendu (sbp_… ; ${#t} caractères reçus). Créer un jeton sur supabase.com/dashboard/account/tokens." ;;
           esac
           echo "SUPABASE_ACCESS_TOKEN=$t" >> "$GITHUB_ENV"
+          echo "pret=oui" >> "$GITHUB_OUTPUT"
       - name: Déployer la fonction
+        if: steps.pret.outputs.pret == 'oui'
         run: |
           cp outils/courriels-gabarits.mjs supabase/functions/vigie/gabarits.mjs
           npx -y supabase@2.122.0 functions deploy vigie --project-ref "$PROJET" --use-api --no-verify-jwt
       - name: Donner ses secrets à la fonction
+        if: steps.pret.outputs.pret == 'oui'
         run: |
           f=$(mktemp); chmod 600 "$f"
           [ -n "$STRIPE_CLE" ] && printf 'STRIPE_SECRET_KEY=%s\n' "$STRIPE_CLE" >> "$f"
@@ -72,8 +79,10 @@ jobs:
           if [ -s "$f" ]; then npx -y supabase@2.122.0 secrets set --project-ref "$PROJET" --env-file "$f" > /dev/null && echo "Secrets posés."; fi
           rm -f "$f"
       - name: E-mails de Supabase Auth par Brevo, en français
+        if: steps.pret.outputs.pret == 'oui'
         run: node outils/auth-smtp.mjs
       - name: La fonction répond-elle
+        if: steps.pret.outputs.pret == 'oui'
         run: |
           sleep 5
           curl -sS -X POST "https://$PROJET.supabase.co/functions/v1/vigie" -H "content-type: application/json" -d '{"action":"etat"}'; echo
