@@ -42,8 +42,9 @@
 
 window.PAIEMENT = {
   //         à l'année · au mois (installés par outils/stripe-installation.mjs)
-  textes:  { an: "https://buy.stripe.com/cNieVd1ai5kPaGZ6LKfjG00", mois: "https://buy.stripe.com/dRm4gz6uCcNhbL3eecfjG01" },
-  suivi:   { an: "https://buy.stripe.com/aFa7sL9GOdRl9CV3zyfjG02", mois: "https://buy.stripe.com/00w8wP2emaF9g1j2vufjG03" },
-  complet: { an: "https://buy.stripe.com/eVqeVd4mu00v02lc64fjG04", mois: "https://buy.stripe.com/00w4gzg5c00vdTb3zyfjG05" },
+  textes:  { an: "https://buy.stripe.com/00w4gz7yG3cH3ex4DCfjG06", mois: "https://buy.stripe.com/8x200jbOWfZt02leecfjG07" },
+  suivi:   { an: "https://buy.stripe.com/8x24gz5qy9B5g1jfigfjG08", mois: "https://buy.stripe.com/eVq00jaKS14z4iB7POfjG09" },
+  complet: { an: "https://buy.stripe.com/8x27sL8CK3cH4iB9XWfjG0a", mois: "https://buy.stripe.com/7sY3cv3iq6oT5mF6LKfjG0b" },
+  consultant: { p1: "https://buy.stripe.com/5kQ5kD6uC3cH3ex5HGfjG0c", p2: "https://buy.stripe.com/00w5kD5qy3cH02l5HGfjG0d", p3: "https://buy.stripe.com/14AdR9f189B57uN8TSfjG0e" },   // par palier : 3 à 5, 6 à 15, 16 et plus
   portail: "https://billing.stripe.com/p/login/cNieVd1ai5kPaGZ6LKfjG00"    // Gérer ou résilier son abonnement
 };
