@@ -62,8 +62,8 @@
     }
     var ht = p.mois * n;
     $("#pc-total").innerHTML = D.tva === "ht"
-      ? ligne(n + " clients × " + eur(p.mois) + " HT", eur(ht) + " HT par mois") + ligne("TVA 20 %", eur(ht * 0.2)) +
-        ligne("Total TTC", eur(ht * 1.2) + " TTC par mois", true)
+      ? ligne(n + " clients × " + eur(p.mois) + " HT", eur(ht) + " HT par mois") +
+        ligne("Total TTC", eur(ht * 1.2) + " TTC par mois", true) + ligne("dont TVA 20 %", eur(ht * 0.2))
       : ligne("Total", eur(ht) + " par mois", true) + '<div class="paie-mention"><dd>' + D.mention + "</dd></div>";
     // Le mois d'essai gratuit (6 novembre 2026) : rien aujourd'hui, premier prélèvement 30 jours après.
     if (D.essai) {

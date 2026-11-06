@@ -60,7 +60,7 @@
     var montant = periode === "an" ? F.montantAn : F.montantMois;
     var par = periode === "an" ? " par an" : " par mois";
     $("#paie-total").innerHTML = D.tva === "ht"
-      ? ligne("Prix HT", eur(montant) + " HT" + par) + ligne("TVA 20 %", eur(montant * 0.2)) + ligne("Total TTC", eur(montant * 1.2) + " TTC" + par, true)
+      ? ligne("Prix HT", eur(montant) + " HT" + par) + ligne("Total TTC", eur(montant * 1.2) + " TTC" + par, true) + ligne("dont TVA 20 %", eur(montant * 0.2))
       : ligne("Total", eur(montant) + par, true) + '<div class="paie-mention"><dd>' + D.mention + "</dd></div>";
     // Le mois d'essai gratuit (6 novembre 2026) : rien aujourd'hui, premier prélèvement 30 jours après.
     if (D.essai) {
