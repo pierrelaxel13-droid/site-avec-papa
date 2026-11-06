@@ -649,11 +649,17 @@
       };
       V.rpc("mon_abonnement").then(function (r) {
         if (!r.ok || !r.donnees) return;
-        var d = r.donnees, esp = (d.entreprises || [])[0] || (d.cabinets || [])[0];
+        // Le responsable d'un cabinet voit l'abonnement de son cabinet (c'est lui qui le paie),
+        // même s'il est aussi membre d'une entreprise (6 novembre 2026).
+        var d = r.donnees;
+        var cabAdmin = (d.cabinets || []).filter(function (c) { return c.role === "admin"; })[0];
+        var esp = cabAdmin || (d.entreprises || [])[0] || (d.cabinets || [])[0];
         if (!esp) return;
+        var estCabinet = (d.cabinets || []).indexOf(esp) !== -1;
         var a = esp.abonnement, actif = a && /^(active|trialing|past_due|offert)$/.test(a.statut);
         // Un cabinet consultant : son offre est sur la page consultants ; et le récapitulatif
         // et les rappels ne concernent que le plan d'une entreprise, qu'il n'a pas.
+        if (estCabinet) $("#abo-changer").href = vers(bloc.hasAttribute("data-consultant-en-ligne") ? "compte/paiement-consultant.html" : "consultants.html");
         if (!(d.entreprises || []).length) {
           $("#abo-changer").href = vers(bloc.hasAttribute("data-consultant-en-ligne") ? "compte/paiement-consultant.html" : "consultants.html");
           [].forEach.call(document.querySelectorAll(".ligne-bascule"), function (x) { x.hidden = true; });
@@ -735,10 +741,23 @@
             zr.appendChild(b);
           }
           zr.hidden = false;
+        } else if (actif && a.offert && esp.role === "admin") {
+          // Un abonnement ouvert par nos soins (sans Stripe) : on l'arrête sur demande.
+          var dest2 = document.body.getAttribute("data-courriel") || "";
+          var qui2 = (V.utilisateur() || {}).courriel || "";
+          var n2 = document.createElement("p"); n2.className = "precision";
+          n2.textContent = "Cet abonnement a été ouvert par nos soins : pour l'arrêter, envoyez-nous votre demande. Il s'arrête à la date que vous indiquez.";
+          var x2 = document.createElement("a");
+          x2.className = "bouton bouton-sobre bouton-petit abo-bouton-resilier"; x2.textContent = "Résilier mon abonnement";
+          x2.href = "mailto:" + dest2 + "?subject=" + encodeURIComponent("Résiliation — " + esp.nom) +
+            "&body=" + encodeURIComponent("Bonjour,\n\nJe souhaite résilier l'abonnement de « " + esp.nom + " » (" + (NOMS_ABO[a.formule] || a.formule) +
+              ").\nCompte : " + qui2 + "\n\nBien cordialement,");
+          zr.appendChild(n2); zr.appendChild(x2);
+          zr.hidden = false;
         }
         // L'abonnement consultant : combien de clients il couvre (migration 26).
-        if (a && a.formule === "consultant" && actif && (d.cabinets || [])[0]) {
-          V.rpc("cabinet_places", { c: d.cabinets[0].id }).then(function (rp) {
+        if (a && a.formule === "consultant" && actif && estCabinet) {
+          V.rpc("cabinet_places", { c: esp.id }).then(function (rp) {
             if (!rp.ok || !rp.donnees || rp.donnees.max === null || rp.donnees.max === undefined) return;
             formule.textContent += " · " + rp.donnees.max + " client" + (rp.donnees.max > 1 ? "s" : "") +
               " couvert" + (rp.donnees.max > 1 ? "s" : "") + " (" + rp.donnees.clients + " utilisé" + (rp.donnees.clients > 1 ? "s" : "") + ")";
