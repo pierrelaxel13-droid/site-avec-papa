@@ -1131,6 +1131,31 @@ set local role authenticated;
 select tests.refuse($$select public.resilier_offert('00000000-0000-0000-0000-00000000b000', null)$$, 'plus rien à résilier : refusé avec un message');
 reset role;
 
+-- ---- L'adresse du cabinet (migration 28) --------------------------------
+select tests.qui('00000000-0000-0000-0000-0000000000c2', 'c_lecteur@test.fr');
+set local role authenticated;
+select tests.refuse($$select public.cabinet_adresse('00000000-0000-0000-0000-00000000c000', '{"ligne":"1 rue A","cp":"13800","ville":"Istres","pays":"FR"}')$$,
+  'un utilisateur en lecture seule du cabinet ne change pas son adresse');
+reset role;
+select tests.qui('00000000-0000-0000-0000-0000000000c1', 'c_membre@test.fr');
+set local role authenticated;
+select tests.refuse($$select public.cabinet_adresse('00000000-0000-0000-0000-00000000c000', '{"ligne":"1 rue A","cp":"13800","ville":"Istres"}')$$,
+  'sans pays, l''adresse est refusée (obligatoire)');
+select public.cabinet_adresse('00000000-0000-0000-0000-00000000c000', '{"ligne":" 1 rue A ","cp":"13800","ville":"Istres","pays":"FR"}');
+select tests.ok((public.cabinet_adresse_lire('00000000-0000-0000-0000-00000000c000') ->> 'ville') = 'Istres', 'le responsable du cabinet enregistre son adresse, avec le pays');
+reset role;
+select tests.qui('00000000-0000-0000-0000-0000000000b1', 'b_admin@test.fr');
+set local role authenticated;
+select tests.refuse($$select public.cabinet_adresse_lire('00000000-0000-0000-0000-00000000c000')$$, 'un autre compte ne lit pas l''adresse du cabinet');
+select tests.refuse($$select public.entreprise_adresse('00000000-0000-0000-0000-00000000a000', '{"ligne":"1 rue A","cp":"13800","ville":"Istres","pays":"FR"}')$$,
+  'ni ne change l''adresse d''une autre entreprise');
+select public.entreprise_adresse('00000000-0000-0000-0000-00000000b000', '{"ligne":"3 place B","cp":"13800","ville":"Istres","pays":"FR"}');
+reset role;
+select tests.ok((select reglages->'adresse'->>'ligne' = '3 place B' and implantation = 'Istres' from public.entreprises where id = '00000000-0000-0000-0000-00000000b000'),
+  'le responsable du compte enregistre l''adresse de son entreprise depuis Mon compte, sans abonnement à jour');
+set local role authenticated;
+reset role;
+
 do $$ begin raise notice 'TOUS LES TESTS D''ISOLATION SONT PASSÉS'; end $$;
 
 rollback;

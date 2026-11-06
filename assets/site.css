@@ -4843,3 +4843,18 @@ ol.etapes-carres p { margin: 0; color: var(--encre-douce); text-align: center; m
 .tableau-actions tr.pa-depasse.pa-propose .pa-delai { border: 1px solid var(--rouge); border-style: solid; color: var(--rouge); background: var(--rouge-fond); font-weight: 700; }
 .tableau-actions tr[data-etat="retard"] .pa-etat { color: var(--rouge); font-weight: 700; }
 .tableau-actions tr.pa-depasse .pa-etat { color: var(--rouge); font-weight: 700; }
+
+/* Réglages : l'adresse obligatoire (6 novembre 2026). */
+.rg-obligatoire {
+  display: inline-block; margin-left: .4rem; padding: .05rem .45rem; border: 1px solid var(--accent-filet);
+  border-radius: 999px; font-size: .72rem; font-weight: 600; color: var(--accent); background: var(--accent-clair); vertical-align: .1em;
+}
+:root[data-theme="dark"] .rg-obligatoire { color: #C9BDFF; background: transparent; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .rg-obligatoire { color: #C9BDFF; background: transparent; } }
+
+/* Mon compte : l'adresse du cabinet (6 novembre 2026). */
+.cab-adresse { padding: .9rem 1.25rem 1rem; border-top: 1px solid var(--filet); display: grid; gap: .55rem; }
+.cab-adresse p { margin: 0; }
+.cab-adresse-ligne { display: grid; gap: .55rem; grid-template-columns: minmax(0, 9rem) minmax(0, 1fr); }
+.cab-adresse .champ { margin: 0; }
+@media (max-width: 480px) { .cab-adresse-ligne { grid-template-columns: 1fr; } }

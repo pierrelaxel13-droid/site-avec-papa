@@ -219,6 +219,32 @@ for (const [id, f] of Object.entries(FORMULES)) {
   f.prixAn = `${eur(f.an)} par an`;        // « 590 € par an »
 }
 
+/* Les pays de l'adresse (6 novembre 2026) : code ISO, que Stripe attend, et nom. France d'abord. */
+const PAYS = [["FR", "France"], ["BE", "Belgique"], ["LU", "Luxembourg"], ["CH", "Suisse"], ["MC", "Monaco"],
+  ["DE", "Allemagne"], ["AT", "Autriche"], ["BG", "Bulgarie"], ["CY", "Chypre"], ["HR", "Croatie"], ["DK", "Danemark"],
+  ["ES", "Espagne"], ["EE", "Estonie"], ["FI", "Finlande"], ["GR", "Grèce"], ["HU", "Hongrie"], ["IE", "Irlande"],
+  ["IT", "Italie"], ["LV", "Lettonie"], ["LT", "Lituanie"], ["MT", "Malte"], ["NL", "Pays-Bas"], ["PL", "Pologne"],
+  ["PT", "Portugal"], ["CZ", "Tchéquie"], ["RO", "Roumanie"], ["SK", "Slovaquie"], ["SI", "Slovénie"], ["SE", "Suède"],
+  ["GB", "Royaume-Uni"], ["MA", "Maroc"], ["TN", "Tunisie"], ["DZ", "Algérie"], ["CA", "Canada"]];
+/* Le formulaire d'adresse de Mon compte (entreprise « ent », cabinet « cab ») : assets/compte.js le branche. */
+const formAdresse = (x, titre) => `<form class="cab-adresse" id="${x}-adresse" novalidate>
+              <p class="cab-adresse-titre"><strong>${esc(titre)}</strong> <span class="rg-obligatoire">obligatoire</span></p>
+              <p class="precision">Elle figure sur vos factures et sert au calcul de la TVA lors du paiement.</p>
+              <div class="champ"><label for="${x}-ligne">Adresse</label>
+                <input type="text" id="${x}-ligne" required maxlength="200" autocomplete="street-address" placeholder="12 rue de la République"></div>
+              <div class="cab-adresse-ligne">
+                <div class="champ"><label for="${x}-cp">Code postal</label>
+                  <input type="text" id="${x}-cp" required maxlength="12" autocomplete="postal-code" inputmode="numeric" placeholder="13800"></div>
+                <div class="champ"><label for="${x}-ville">Ville</label>
+                  <input type="text" id="${x}-ville" required maxlength="120" autocomplete="address-level2" placeholder="Istres"></div>
+              </div>
+              <div class="champ"><label for="${x}-pays">Pays</label>
+                <select id="${x}-pays" required autocomplete="country">${optionsPays()}</select></div>
+              <p class="rangee"><button type="submit" class="bouton bouton-sobre">Enregistrer l'adresse</button></p>
+              <p class="etat-compte" id="${x}-adresse-etat" role="status"></p>
+            </form>`;
+const optionsPays = (choisi = "FR") => PAYS.map(([c, n]) => `<option value="${c}"${c === choisi ? " selected" : ""}>${esc(n)}</option>`).join("");
+
 /* --- Le manifeste : ce qui rend l'application installable ------------------- */
 /* Android veut du PNG en 192 et 512 et une icône « maskable » qu'il peut
    rogner jusqu'à 20 % du bord sans manger le dessin. assets/icones/ est
@@ -2811,7 +2837,11 @@ function appReglages(V, D, NAF, METIERS) {
           <p>Votre code APE détermine les sujets de votre veille réglementaire.</p>
         </header>
         ${ligne("e-nom", "Nom de l'entreprise", `<input type="text" id="e-nom" name="nom" placeholder="${esc(D.entreprise.nom)}" autocomplete="organization">`)}
-        ${ligne("e-ville", "Commune", `<input type="text" id="e-ville" name="ville" placeholder="${esc(D.entreprise.ville)}" autocomplete="address-level2">`)}
+        ${ligne("e-adresse", "Adresse <span class=\"rg-obligatoire\">obligatoire</span>", `<input type="text" id="e-adresse" name="adresse" required maxlength="200" placeholder="12 rue de la République" autocomplete="street-address">`,
+          `<p class="rg-aide">Elle figure sur vos factures et sert au calcul de la TVA lors du paiement.</p>`)}
+        ${ligne("e-cp", "Code postal <span class=\"rg-obligatoire\">obligatoire</span>", `<input type="text" id="e-cp" name="cp" required maxlength="12" placeholder="13800" autocomplete="postal-code" inputmode="numeric">`)}
+        ${ligne("e-ville", "Ville <span class=\"rg-obligatoire\">obligatoire</span>", `<input type="text" id="e-ville" name="ville" required placeholder="${esc(D.entreprise.ville)}" autocomplete="address-level2">`)}
+        ${ligne("e-pays", "Pays <span class=\"rg-obligatoire\">obligatoire</span>", `<select id="e-pays" name="pays" required autocomplete="country">${optionsPays()}</select>`)}
         ${NAF ? ligne("e-activite", "Votre activité", `<input type="text" id="e-activite" name="activite" autocomplete="off" spellcheck="false"
                  placeholder="plomberie chauffage, boulangerie, transport de marchandises…">`,
           `<p class="rg-aide">Décrivez-la avec vos mots : nous retrouvons votre code APE.</p>
@@ -4291,8 +4321,7 @@ function pageAbonnement(V) {
 
     ${paiementComplet() ? `<p class="reserve reserve-ok" style="margin-top:var(--t5)">
       <strong>Paiement en ligne, sécurisé par Stripe.</strong>
-      Par carte bancaire ou par prélèvement SEPA, chaque année ou chaque mois.
-      Vos coordonnées bancaires ne passent jamais par ce site.
+      Par carte bancaire ou par prélèvement SEPA.
       ${lienPaiement("portail") ? `Vous pouvez <a href="${esc(lienPaiement("portail"))}">gérer ou résilier votre abonnement</a> à tout moment.` : ""}
     </p>` : ""}
   </div>
@@ -4565,6 +4594,7 @@ function pageMonCompte() {
             <div class="rg-ligne"><span class="rg-libelle">Entreprise</span><div class="rg-champ"><strong id="entreprise-nom"></strong></div></div>
             <div class="rg-ligne"><span class="rg-libelle">Votre rôle</span><div class="rg-champ"><span id="entreprise-role"></span></div></div>
             <div class="rg-ligne"><span class="rg-libelle">Formule</span><div class="rg-champ"><span id="entreprise-formule"></span></div></div>
+            ${formAdresse("ent", "Adresse de l'entreprise")}
             <div class="compte-corps compte-consultant" id="entreprise-consultant" hidden></div>
             <div class="compte-actions">
               <a class="bouton bouton-accent" id="entreprise-ouvrir" href="../app/" hidden>Ouvrir mon espace</a>
@@ -4574,6 +4604,7 @@ function pageMonCompte() {
           <div id="compte-cabinet" hidden>
             <div class="rg-ligne"><span class="rg-libelle">Cabinet</span><div class="rg-champ"><strong id="cabinet-nom"></strong></div></div>
             <div class="rg-ligne"><span class="rg-libelle">Abonnement</span><div class="rg-champ"><span id="cabinet-statut"></span></div></div>
+${formAdresse("cab", "Adresse du cabinet")}
             <p class="compte-explique">Ici, votre compte : vos clients, votre abonnement, vos factures. Le suivi de vos clients (textes, actions, conformité) se fait dans l'espace consultant.</p>
             <div class="compte-actions"><a class="bouton bouton-accent" href="cabinet.html">Tableau de bord de mes clients</a></div>
           </div>

@@ -219,6 +219,34 @@
       a.hidden = false;
     };
 
+    /* L'adresse, obligatoire avant de s'abonner (6 novembre 2026) : le même formulaire pour
+       l'entreprise (« ent ») et le cabinet (« cab »). Les Réglages ne s'ouvrent qu'avec
+       l'abonnement : c'est ici qu'on la donne avant de payer. */
+    var brancherAdresse = function (x, admin, refus, lireAd, ecrireAd) {
+      var fa = $("#" + x + "-adresse");
+      if (!fa || fa.getAttribute("data-branche")) return;
+      fa.setAttribute("data-branche", "1");
+      var ca = { ligne: $("#" + x + "-ligne"), cp: $("#" + x + "-cp"), ville: $("#" + x + "-ville"), pays: $("#" + x + "-pays") };
+      var dita = $("#" + x + "-adresse-etat");
+      lireAd().then(function (ad) {
+        Object.keys(ca).forEach(function (k) { if (ad[k]) ca[k].value = ad[k]; });
+        if (!ad.ligne && admin) dita.textContent = "Adresse à renseigner : elle est obligatoire pour vous abonner.";
+      });
+      if (!admin) {
+        Object.keys(ca).forEach(function (k) { ca[k].disabled = true; });
+        fa.querySelector("button").hidden = true;
+        dita.textContent = refus;
+      }
+      fa.addEventListener("submit", function (ev) {
+        ev.preventDefault();
+        var ad = { ligne: ca.ligne.value.trim(), cp: ca.cp.value.trim(), ville: ca.ville.value.trim(), pays: ca.pays.value };
+        var manque = [["ligne", "l'adresse"], ["cp", "le code postal"], ["ville", "la ville"], ["pays", "le pays"]].filter(function (k) { return !ad[k[0]]; });
+        if (manque.length) { dita.textContent = "Adresse obligatoire : indiquez " + manque.map(function (k) { return k[1]; }).join(", ") + "."; ca[manque[0][0]].focus(); return; }
+        dita.textContent = "Enregistrement…";
+        ecrireAd(ad).then(function (r) { dita.textContent = r.ok ? "Adresse enregistrée." : r.erreur; });
+      });
+    };
+
     var montrerEntreprise = function () {
       Promise.all([V.mesEntreprises(), V.mesCabinets()]).then(function (x) {
         var r = x[0], c = x[1];
@@ -234,6 +262,10 @@
         $("#form-entreprise").hidden = true;
         var e = r.entreprises[0];
         $("#entreprise-nom").textContent = e.denomination;
+        brancherAdresse("ent", e.role === "admin", "Seul le responsable du compte de l'entreprise change son adresse.",
+          function () { return V.rpc("espace_lire", { e: e.entreprise_id }).then(function (r) {
+            return (r.ok && r.donnees && r.donnees.entreprise && (r.donnees.entreprise.reglages || {}).adresse) || {}; }); },
+          function (ad) { return V.rpc("entreprise_adresse", { e: e.entreprise_id, adresse: ad }); });
         $("#entreprise-role").textContent = e.role === "admin" ? "Responsable du compte"
           : e.role === "lecteur" ? "Lecture seule" : "Utilisateur";
         var f = $("#entreprise-formule"), ouvrir = $("#entreprise-ouvrir"), tarifs = $("#entreprise-tarifs");
@@ -385,6 +417,10 @@
       if (!cab) { b.hidden = true; return; }
       $("#cabinet-nom").textContent = cab.nom;
       mesClients(cab);
+      // L'adresse du cabinet, obligatoire (6 novembre 2026, migration 28).
+      brancherAdresse("cab", cab.role === "admin", "Seul le responsable du compte du cabinet change son adresse.",
+        function () { return V.rpc("cabinet_adresse_lire", { c: cab.cabinet_id }).then(function (r) { return (r.ok && r.donnees) || {}; }); },
+        function (ad) { return V.rpc("cabinet_adresse", { c: cab.cabinet_id, adresse: ad }); });
       $("#cabinet-statut").textContent = cab.actif
         ? "Ouvert : vos clients ont la veille complète"
         : "Aucun abonnement en cours";

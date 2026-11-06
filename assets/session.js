@@ -208,6 +208,10 @@
           sansFormule("L'abonnement de votre cabinet n'est pas encore ouvert",
             "L'espace de « " + e.denomination + " » s'ouvre avec lui. Votre page cabinet dit comment l'ouvrir.",
             "Mon cabinet", "compte/cabinet.html");
+        } else if (!e.rang && e.role === "admin" && /reglages\.html$/.test(CHEMIN)) {
+          // Les Réglages s'ouvrent avant l'abonnement (6 novembre 2026, demande d'Axel) : le
+          // responsable du compte y règle son entreprise et son adresse, obligatoire pour payer.
+          appliquer("textes", true);
         } else if (!e.rang) {
           sansFormule("Votre espace ouvre avec l'abonnement",
             "Le compte de « " + e.denomination + " » est prêt. Choisissez votre formule : l'espace s'ouvre dès qu'elle est active.",

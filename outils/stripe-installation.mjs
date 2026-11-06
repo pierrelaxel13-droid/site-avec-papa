@@ -206,6 +206,9 @@ export async function installer(stripe, { tva = "" } = {}) {
     const l = [...tousLiens, ...Object.values(nouveauxLiens)].find((x) => x.id === id) || {};
     const actif = !!(l.automatic_tax && l.automatic_tax.enabled === true);
     const nom = `${(l.metadata || {}).formule || "?"} ${(l.metadata || {}).periode || ""}`.trim();
+    // La période d'essai (6 novembre 2026) : lue, pour savoir si le premier mois est facturé.
+    const essai = ((l.subscription_data || {}).trial_period_days) || 0;
+    bilan.liensTva.push(`${nom} : période d'essai ${essai ? essai + " jours (rien de facturé avant la fin)" : "aucune (facturé dès le paiement)"}`);
     if (tva === "auto" && !actif) {
       try { await stripe("POST", `/v1/payment_links/${id}`, { automatic_tax: { enabled: "true" } }); bilan.liensTva.push(`${nom} : calcul de la TVA activé`); }
       catch (e) { bilan.liensTva.push(`${nom} : calcul de la TVA NON activé (${e.message})`); }

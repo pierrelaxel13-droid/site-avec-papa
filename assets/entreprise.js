@@ -362,6 +362,7 @@
 
     var champs = {
       nom: $("#e-nom"), naf: $("#e-naf"), ville: $("#e-ville"),
+      adresse: $("#e-adresse"), cp: $("#e-cp"), pays: $("#e-pays"),
       effectif: $("#e-effectif"), responsable: $("#e-responsable")
     };
     var hoteContexte = $("#e-contexte");
@@ -575,6 +576,10 @@
         if (garde[k]) champs[k].value = garde[k];
       });
       if (garde.effectif != null) champs.effectif.value = garde.effectif;
+      var ad = garde.adresse || {};
+      if (champs.adresse && ad.ligne) champs.adresse.value = ad.ligne;
+      if (champs.cp && ad.cp) champs.cp.value = ad.cp;
+      if (champs.pays && ad.pays) champs.pays.value = ad.pays;
       if (garde.naf && P.div[division(garde.naf)]) {
         champs.naf.value = garde.naf;
         /* Un réglage enregistré avant la nomenclature complète ne contenait que
@@ -602,12 +607,25 @@
 
     form.addEventListener("submit", function (e) {
       e.preventDefault();
+      // L'adresse est obligatoire dans un compte (6 novembre 2026) : factures et TVA au paiement.
+      // (La démonstration ne l'exige pas.)
+      if (champs.adresse && COMPTE) {
+        var manque = [["adresse", "l'adresse"], ["cp", "le code postal"], ["ville", "la ville"], ["pays", "le pays"]]
+          .filter(function (x) { return !String(champs[x[0]].value || "").trim(); });
+        if (manque.length) {
+          etat.textContent = "Adresse obligatoire : indiquez " + manque.map(function (x) { return x[1]; }).join(", ") + ".";
+          champs[manque[0][0]].focus();
+          return;
+        }
+      }
       var o = {
         nom: champs.nom.value.trim(),
         naf: champs.naf.value,
         ville: champs.ville.value.trim(),
         effectif: champs.effectif.value.trim(),
         responsable: champs.responsable.value.trim(),
+        adresse: champs.adresse ? { ligne: champs.adresse.value.trim(), cp: champs.cp.value.trim(),
+                                    ville: champs.ville.value.trim(), pays: champs.pays.value } : undefined,
         contexte: contexteCoche(),
         plus: (function () {
           var p = {};

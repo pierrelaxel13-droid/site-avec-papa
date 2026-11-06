@@ -28,7 +28,7 @@
   var formule = D.formules[params.get("formule")] ? params.get("formule") : "complet";
   var periode = params.get("periode") === "mois" ? "mois" : "an";
   var F = D.formules[formule];
-  var entreprise = null, courriel = "";
+  var entreprise = null, courriel = "", adresseManque = false;
   // Pour revenir ici après la création du compte (Mon compte → « Choisir ma formule »).
   try { window.localStorage.setItem("pco-souscrire", JSON.stringify({ formule: formule, periode: periode })); } catch (e) { /* sans effet */ }
 
@@ -59,7 +59,7 @@
   function bouton() {
     var b = $("#paie-payer"), dit = $("#paie-dit");
     var lien = (D.liens[formule] || {})[periode] || "";
-    var pret = !!(lien && entreprise && $("#paie-cgv").checked);
+    var pret = !!(lien && entreprise && !adresseManque && $("#paie-cgv").checked);
     b.setAttribute("aria-disabled", pret ? "false" : "true");
     b.classList.toggle("bouton-inactif", !pret);
     if (!lien) {
@@ -73,7 +73,8 @@
     b.href = pret ? lien + (lien.indexOf("?") === -1 ? "?" : "&") + "client_reference_id=" + encodeURIComponent(entreprise.entreprise_id) +
       (courriel ? "&prefilled_email=" + encodeURIComponent(courriel) : "") +
       (promo ? "&prefilled_promo_code=" + encodeURIComponent(promo) : "") : "#";
-    dit.textContent = !entreprise ? "" : !$("#paie-cgv").checked ? "Cochez l'acceptation des conditions générales de vente pour continuer." : "";
+    dit.textContent = !entreprise ? "" : adresseManque ? "Adresse obligatoire : renseignez l'adresse de votre entreprise avant de vous abonner."
+      : !$("#paie-cgv").checked ? "Cochez l'acceptation des conditions générales de vente pour continuer." : "";
   }
 
   /* Le code promo (4 novembre 2026) : il part vers la page de paiement
@@ -141,6 +142,22 @@
       compte.textContent = "";
       compte.appendChild(p); compte.appendChild(c);
       if (deja) compte.insertAdjacentHTML("beforeend", deja);
+      // L'adresse est obligatoire (6 novembre 2026) : factures et TVA au paiement.
+      V.rpc("espace_lire", { e: entreprise.entreprise_id }).then(function (r) {
+        var ad = (r.ok && r.donnees && r.donnees.entreprise && (r.donnees.entreprise.reglages || {}).adresse) || {};
+        adresseManque = !(ad.ligne && ad.cp && ad.ville && ad.pays);
+        if (adresseManque) {
+          var q = document.createElement("p"); q.className = "reserve";
+          q.appendChild(document.createTextNode("Adresse obligatoire : indiquez l'adresse de votre entreprise (avec le pays) avant de vous abonner. "));
+          var a = document.createElement("a"); a.href = "./#ent-adresse"; a.textContent = "Renseigner l'adresse";
+          q.appendChild(a); compte.appendChild(q);
+        } else {
+          var c2 = document.createElement("p"); c2.className = "precision";
+          c2.textContent = "Adresse : " + ad.ligne + ", " + ad.cp + " " + ad.ville + " (" + ad.pays + ")";
+          compte.appendChild(c2);
+        }
+        bouton();
+      });
       bouton();
     });
   });

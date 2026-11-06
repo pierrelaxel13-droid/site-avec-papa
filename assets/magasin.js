@@ -202,7 +202,8 @@
       effectif: en.effectif != null ? String(en.effectif) : "",
       responsable: rg.responsable || "",
       contexte: Object.keys(reponses || {}).filter(function (k) { return reponses[k]; }),
-      plus: rg.plus || {}
+      plus: rg.plus || {},
+      adresse: rg.adresse || {}
     };
   }
 

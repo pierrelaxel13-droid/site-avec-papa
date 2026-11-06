@@ -124,6 +124,11 @@ select 'null'`,
   mes_cabinets: () => "select coalesce(json_agg(t), '[]') from public.mes_cabinets() t",
   cabinet_vue: (a) => `select public.cabinet_vue(${litteral(a.c)})`,
   cabinet_places: (a) => `select public.cabinet_places(${litteral(a.c)}::uuid)`,
+  cabinet_adresse_lire: (a) => `select public.cabinet_adresse_lire(${litteral(a.c)}::uuid)`,
+  cabinet_adresse: (a) => `select public.cabinet_adresse(${litteral(a.c)}::uuid, ${litteral(JSON.stringify(a.adresse || {}))}::jsonb) \\g /dev/null
+select 'null'`,
+  entreprise_adresse: (a) => `select public.entreprise_adresse(${litteral(a.e)}::uuid, ${litteral(JSON.stringify(a.adresse || {}))}::jsonb) \\g /dev/null
+select 'null'`,
   resilier_offert: (a) => `select to_json(public.resilier_offert(${litteral(a.entreprise)}::uuid, ${litteral(a.cabinet)}::uuid))`,
   cabinet_retirer_client: (a) => `select to_json(public.cabinet_retirer_client(${litteral(a.c)}::uuid, ${litteral(a.e)}::uuid))`,
   creer_cabinet: (a) => `select to_json(public.creer_cabinet(${litteral(a.nom)}))`,

@@ -25,7 +25,7 @@
     return;
   }
 
-  var min = D.paliers[0].de, cabinet = null, courriel = "";
+  var min = D.paliers[0].de, cabinet = null, courriel = "", adresseManque = false;
   var champ = $("#pc-clients");
   var depart = parseInt(params.get("clients"), 10);
   if (depart >= min && depart <= 500) champ.value = depart;
@@ -58,7 +58,7 @@
   function bouton() {
     var b = $("#pc-payer"), dit = $("#pc-dit");
     var k = palier(nombre()), lien = k >= 0 ? D.paliers[k].lien : "";
-    var pret = !!(lien && cabinet && $("#pc-cgv").checked);
+    var pret = !!(lien && cabinet && !adresseManque && $("#pc-cgv").checked);
     b.setAttribute("aria-disabled", pret ? "false" : "true");
     b.classList.toggle("bouton-inactif", !pret);
     if (k >= 0 && !lien) {
@@ -73,7 +73,8 @@
     b.href = pret ? lien + (lien.indexOf("?") === -1 ? "?" : "&") + "client_reference_id=" + encodeURIComponent(cabinet.cabinet_id) +
       (courriel ? "&prefilled_email=" + encodeURIComponent(courriel) : "") : "#";
     dit.textContent = k < 0 ? "L'offre consultant commence à " + min + " clients."
-      : !cabinet ? "" : !$("#pc-cgv").checked ? "Cochez l'acceptation des conditions générales de vente pour continuer." : "";
+      : !cabinet ? "" : adresseManque ? "Adresse obligatoire : renseignez l'adresse de votre cabinet avant de vous abonner."
+      : !$("#pc-cgv").checked ? "Cochez l'acceptation des conditions générales de vente pour continuer." : "";
   }
 
   champ.addEventListener("input", peindre);
@@ -110,6 +111,23 @@
       b.textContent = cabinet.nom || "Votre cabinet"; p.appendChild(b);
       var c = document.createElement("p"); c.className = "precision"; c.textContent = "Compte : " + courriel;
       compte.appendChild(p); compte.appendChild(c);
+      // L'adresse est obligatoire (6 novembre 2026, migration 28).
+      V.rpc("cabinet_adresse_lire", { c: cabinet.cabinet_id }).then(function (r) {
+        var ad = (r.ok && r.donnees) || {};
+        adresseManque = !(ad.ligne && ad.cp && ad.ville && ad.pays);
+        var q = document.createElement("p");
+        if (adresseManque) {
+          q.className = "reserve";
+          q.appendChild(document.createTextNode("Adresse obligatoire : indiquez l'adresse de votre cabinet (avec le pays) avant de vous abonner. "));
+          var a = document.createElement("a"); a.href = "./#cab-adresse"; a.textContent = "Renseigner l'adresse";
+          q.appendChild(a);
+        } else {
+          q.className = "precision";
+          q.textContent = "Adresse : " + ad.ligne + ", " + ad.cp + " " + ad.ville + " (" + ad.pays + ")";
+        }
+        compte.appendChild(q);
+        bouton();
+      });
       if (cabinet.actif) {
         compte.insertAdjacentHTML("beforeend", '<p class="precision">Votre abonnement consultant est déjà ouvert.' +
           (D.portail ? ' Pour le gérer ou le résilier : <a href="' + D.portail + '">gérer mon abonnement</a>.' : "") + "</p>");
