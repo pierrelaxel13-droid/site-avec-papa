@@ -45,6 +45,6 @@ window.PAIEMENT = {
   textes:  { an: "https://buy.stripe.com/00w4gz7yG3cH3ex4DCfjG06", mois: "https://buy.stripe.com/8x200jbOWfZt02leecfjG07" },
   suivi:   { an: "https://buy.stripe.com/8x24gz5qy9B5g1jfigfjG08", mois: "https://buy.stripe.com/eVq00jaKS14z4iB7POfjG09" },
   complet: { an: "https://buy.stripe.com/8x27sL8CK3cH4iB9XWfjG0a", mois: "https://buy.stripe.com/7sY3cv3iq6oT5mF6LKfjG0b" },
-  consultant: { p1: "https://buy.stripe.com/aFa14nf184gL3exfigfjG0f", p2: "https://buy.stripe.com/00w5kD5qy3cH02l5HGfjG0d", p3: "https://buy.stripe.com/14AdR9f189B57uN8TSfjG0e" },   // par palier : 1 à 5, 6 à 15, 16 et plus
+  consultant: { p1: "https://buy.stripe.com/aFacN59GO3cH9CV7POfjG0g", p2: "https://buy.stripe.com/cNi14n4mueVpcP7b20fjG0h", p3: "https://buy.stripe.com/8x26oH4mu5kPg1j6LKfjG0i" },   // par palier : 1 à 5, 6 à 15, 16 et plus
   portail: "https://billing.stripe.com/p/login/cNieVd1ai5kPaGZ6LKfjG00"    // Gérer ou résilier son abonnement
 };
