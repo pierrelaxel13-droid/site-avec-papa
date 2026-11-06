@@ -26,7 +26,8 @@ const srv = http.createServer((q, r) => {
       posts.push(u.pathname);
       if (u.pathname === "/v1/products") base.products.push(rep = { id: "prod_" + ++n, metadata: meta() });
       else if (u.pathname === "/v1/prices") base.prices.push(rep = { id: "price_" + ++n, product: p.get("product"), currency: p.get("currency"),
-        unit_amount: Number(p.get("unit_amount")), tax_behavior: p.get("tax_behavior"), metadata: meta(), recurring: { interval: p.get("recurring[interval]") } });
+        unit_amount: Number(p.get("unit_amount")), tax_behavior: p.get("tax_behavior"), metadata: meta(), billing_scheme: p.get("billing_scheme"), tiers_mode: p.get("tiers_mode"),
+        tiers: [0, 1, 2].filter((i) => p.has(`tiers[${i}][up_to]`)).map((i) => ({ up_to: p.get(`tiers[${i}][up_to]`), unit_amount: Number(p.get(`tiers[${i}][unit_amount]`)) })), recurring: { interval: p.get("recurring[interval]") } });
       else if (u.pathname === "/v1/payment_links") {
         assert.equal(p.get("after_completion[redirect][url]"), p.get("metadata[formule]") === "consultant"
           ? "https://vigie-reglementaire.fr/compte/paiement-consultant.html?merci=1" : "https://vigie-reglementaire.fr/compte/paiement.html?merci=1");
@@ -38,6 +39,8 @@ const srv = http.createServer((q, r) => {
         base.payment_links.push(rep = { id: "plink_" + ++n, url: "https://buy.stripe.com/test_" + n, metadata: meta() });
       } else if (u.pathname.startsWith("/v1/billing_portal/configurations")) {
         assert.equal(p.get("features[subscription_cancel][mode]"), "at_period_end");
+        assert.equal(p.get("features[subscription_update][default_allowed_updates][0]"), "quantity", "le consultant change seul son nombre de clients");
+        assert.ok(p.get("features[subscription_update][products][0][prices][0]"), "seul le prix consultant est modifiable");
         rep = { id: "bpc_1", metadata: meta(), login_page: { url: "https://billing.stripe.com/p/login/test_x" } };
         if (!base.configs.length) base.configs.push(rep);
       }
@@ -48,15 +51,18 @@ const srv = http.createServer((q, r) => {
 await new Promise((ok) => srv.listen(0, ok));
 const stripe = clientStripe("rk_test_essai", `http://localhost:${srv.address().port}`);
 const b1 = await installer(stripe);
-assert.equal(base.products.length, 4); assert.equal(base.prices.length, 1 + 9); assert.equal(base.payment_links.length, 9);
+assert.equal(base.products.length, 4); assert.equal(base.prices.length, 1 + 7); assert.equal(base.payment_links.length, 7);
 // Prix TTC, TVA comprise : la page Stripe affiche ce que le client paie.
 assert.ok(base.prices.slice(1).every((x) => x.tax_behavior === "inclusive"));
 assert.ok(base.prices.some((x) => x.unit_amount === 4680 && x.recurring.interval === "month"), "39 € HT → 46,80 € TTC");
 assert.ok(base.prices.some((x) => x.unit_amount === 104280 && x.recurring.interval === "year"), "869 € HT → 1 042,80 € TTC");
 assert.deepEqual(desactives, [["/v1/payment_links/plink_vieux", "false"], ["/v1/prices/price_vieux", "false"]],
   "les anciens lien et prix hors taxes de l'outil sont désactivés ; le prix créé à la main n'est pas touché");
-assert.deepEqual(Object.keys(b1.liens.consultant), ["p1", "p2", "p3"]);
-assert.ok(base.prices.some((x) => x.unit_amount === 3360 && x.recurring.interval === "month"), "28 € HT → 33,60 € TTC");
+assert.deepEqual(Object.keys(b1.liens.consultant), ["lien"]);
+const aPaliers = base.prices.find((x) => x.billing_scheme === "tiered");
+assert.equal(aPaliers.tiers_mode, "volume", "le prix par client suit le nombre total de clients");
+assert.deepEqual(aPaliers.tiers, [{ up_to: "5", unit_amount: 3840 }, { up_to: "15", unit_amount: 3360 }, { up_to: "inf", unit_amount: 3000 }],
+  "32, 28 et 25 € HT → 38,40, 33,60 et 30,00 € TTC");
 
 assert.equal(b1.portail, "https://billing.stripe.com/p/login/test_x");
 assert.match(b1.liens.complet.mois, /^https:\/\/buy\.stripe\.com\//);
@@ -72,7 +78,7 @@ assert.match(nouveau, /complet: \{ an: "https:\/\/buy\.stripe\.com\/test_\d+", m
 assert.match(nouveau, /portail: "https:\/\/billing\.stripe\.com\/p\/login\/test_x"/);
 assert.match(nouveau, /CE QU'IL FAUT RÉGLER DANS STRIPE/, "le mode d'emploi en tête du fichier est gardé");
 const w = {}; new Function("window", nouveau)(w); assert.equal(Object.keys(w.PAIEMENT).length, 5);
-assert.match(w.PAIEMENT.consultant.p2, /^https:\/\/buy\.stripe\.com\//);
+assert.match(w.PAIEMENT.consultant.lien, /^https:\/\/buy\.stripe\.com\//);
 // Les prix de l'outil sont ceux du site.
 const build = await readFile(new URL("../build.mjs", import.meta.url), "utf8");
 for (const p of CONSULTANT.paliers) assert.match(build, new RegExp(`\\{ de: ${p.de}, a: ${p.a}, mois: ${p.mois},`));

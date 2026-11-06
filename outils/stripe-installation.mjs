@@ -10,9 +10,9 @@
         (carte, prélèvement SEPA…), codes promo
         acceptés, retour vers compte/paiement.html?merci=1 ;
      2 bis. l'offre consultant (métadonnée « formule » = consultant) : un prix
-        HT par client et par mois pour chaque palier (build.mjs,
-        OFFRE_CONSULTANT), et un lien de paiement par palier où le consultant
-        indique son nombre de clients, dans les bornes du palier ;
+        à paliers par client et par mois (build.mjs, OFFRE_CONSULTANT) et un
+        lien de paiement où le consultant indique son nombre de clients ;
+        il le change ensuite seul dans le portail client ;
      3. le portail client : factures, moyen de paiement, et résiliation « à la
         fin de la période payée » (mensuel : fin du mois ; annuel : pas de
         renouvellement), avec sa page de connexion ;
@@ -51,6 +51,8 @@ export const CONSULTANT = {
   ]
 };
 const PLAFOND_CLIENTS = 500;
+// La marque du prix à paliers en vigueur : un changement de prix en crée un nouveau.
+export const signaturePaliers = () => CONSULTANT.paliers.map((p) => `${p.de}-${p.a || "inf"}:${centimesTTC(p.mois)}`).join(",");
 
 /* Les prix Stripe sont TTC, TVA de 20 % comprise (tax_behavior « inclusive ») :
    la page de paiement Stripe affiche ainsi d'emblée le montant que le client
@@ -149,7 +151,11 @@ export async function installer(stripe, { tva = "" } = {}) {
     }
   }
 
-  // L'offre consultant : un produit, un prix par palier, un lien par palier.
+  // L'offre consultant (6 novembre 2026) : un produit, UN prix à paliers (« volume » :
+  // le prix par client dépend du nombre total de clients) et un lien de paiement.
+  // Le consultant change seul son nombre de clients dans le portail client : Stripe
+  // applique de lui-même le prix du palier, et le robot outils/stripe.mjs recopie le
+  // nombre dans la base (la limite de clients, migration 26).
   const retourCabinet = `${SITE}compte/paiement-consultant.html?merci=1`;
   let pc = produits.find((x) => (x.metadata || {}).formule === "consultant");
   if (!pc) {
@@ -157,34 +163,31 @@ export async function installer(stripe, { tva = "" } = {}) {
       unit_label: "client", ...(tva === "auto" ? { tax_code: "txcd_10103001" } : {}) });
     bilan.produits.push(`créé : ${CONSULTANT.nom}`);
   } else bilan.produits.push(`repris : ${CONSULTANT.nom}`);
-  bilan.liens.consultant = {};
-  for (const [k, palier] of CONSULTANT.paliers.entries()) {
-    const montant = centimesTTC(palier.mois), nom = `p${k + 1}`;
-    let prix = tousPrix.find((x) => x.product === pc.id && x.unit_amount === montant && x.currency === "eur" &&
-      x.tax_behavior === "inclusive" && x.recurring && x.recurring.interval === "month");
-    if (!prix) {
-      prix = await stripe("POST", "/v1/prices", { product: pc.id, currency: "eur", unit_amount: montant,
-        recurring: { interval: "month" }, tax_behavior: "inclusive", metadata: { formule: "consultant", palier: nom, ht: String(palier.mois) } });
-      bilan.prix.push(`créé : ${CONSULTANT.nom}, ${ttc(palier.mois)} € TTC (${palier.mois} € HT) par client et par mois`);
-    }
-    const de = palier.de, a = palier.a || PLAFOND_CLIENTS;
-    let lien = tousLiens.find((x) => (x.metadata || {}).formule === "consultant" && (x.metadata || {}).prix === prix.id &&
-      (x.metadata || {}).bornes === `${de}-${a}`);
-    if (!lien) {
-      lien = await stripe("POST", "/v1/payment_links", {
-        line_items: [{ price: prix.id, quantity: de, adjustable_quantity: { enabled: "true", minimum: de, maximum: a } }],
-        allow_promotion_codes: "true",
-        billing_address_collection: "required",
-        tax_id_collection: { enabled: "true" },
-        ...(tva === "auto" ? { automatic_tax: { enabled: "true" } } : {}),
-        after_completion: { type: "redirect", redirect: { url: retourCabinet } },
-        subscription_data: { metadata: { formule: "consultant", palier: nom } },
-        metadata: { formule: "consultant", palier: nom, prix: prix.id, bornes: `${de}-${a}` }
-      });
-    }
-    bilan.liens.consultant[nom] = lien.url;
-    gardes.prix.add(prix.id); gardes.liens.add(lien.id);
+  const signature = signaturePaliers();
+  let prixC = tousPrix.find((x) => x.product === pc.id && (x.metadata || {}).paliers === signature && x.tax_behavior === "inclusive");
+  if (!prixC) {
+    prixC = await stripe("POST", "/v1/prices", { product: pc.id, currency: "eur", recurring: { interval: "month" },
+      billing_scheme: "tiered", tiers_mode: "volume", tax_behavior: "inclusive",
+      tiers: CONSULTANT.paliers.map((p) => ({ up_to: p.a || "inf", unit_amount: centimesTTC(p.mois) })),
+      metadata: { formule: "consultant", paliers: signature } });
+    bilan.prix.push(`créé : ${CONSULTANT.nom}, à paliers : ${CONSULTANT.paliers.map((p) => `${p.a ? `${p.de}-${p.a}` : `${p.de}+`} → ${ttc(p.mois)} € TTC (${p.mois} € HT)`).join(" ; ")} par client et par mois`);
   }
+  let lienC = tousLiens.find((x) => (x.metadata || {}).formule === "consultant" && (x.metadata || {}).prix === prixC.id);
+  if (!lienC) {
+    lienC = await stripe("POST", "/v1/payment_links", {
+      line_items: [{ price: prixC.id, quantity: CONSULTANT.paliers[0].de,
+        adjustable_quantity: { enabled: "true", minimum: CONSULTANT.paliers[0].de, maximum: PLAFOND_CLIENTS } }],
+      allow_promotion_codes: "true",
+      billing_address_collection: "required",
+      tax_id_collection: { enabled: "true" },
+      ...(tva === "auto" ? { automatic_tax: { enabled: "true" } } : {}),
+      after_completion: { type: "redirect", redirect: { url: retourCabinet } },
+      subscription_data: { metadata: { formule: "consultant" } },
+      metadata: { formule: "consultant", prix: prixC.id }
+    });
+  }
+  bilan.liens.consultant = { lien: lienC.url };
+  gardes.prix.add(prixC.id); gardes.liens.add(lienC.id);
 
   // Les anciens liens et prix posés par cet outil (hors taxes, 5 novembre 2026), qui ne
   // servent plus : désactivés, pour qu'un ancien lien ne fasse plus payer hors taxes.
@@ -214,6 +217,10 @@ export async function installer(stripe, { tva = "" } = {}) {
       invoice_history: { enabled: "true" },
       payment_method_update: { enabled: "true" },
       customer_update: { enabled: "true", allowed_updates: ["address", "tax_id", "email"] },
+      // Le consultant change seul son nombre de clients ; la différence est facturée tout de suite,
+      // au prorata. Seul le produit consultant est modifiable ici (les formules 01 à 03 non).
+      subscription_update: { enabled: "true", default_allowed_updates: ["quantity"], proration_behavior: "always_invoice",
+        products: [{ product: pc.id, prices: [prixC.id] }] },
       subscription_cancel: { enabled: "true", mode: "at_period_end", proration_behavior: "none",
         cancellation_reason: { enabled: "true", options: ["too_expensive", "unused", "switched_service", "other"] } }
     },
@@ -246,7 +253,7 @@ export async function installer(stripe, { tva = "" } = {}) {
 /* contenu/paiement.js : on remplace seulement l'objet window.PAIEMENT. */
 export function reecrire(source, liens, portail) {
   const ligne = (f, l) => f === "consultant"
-    ? `  consultant: { ${Object.entries(l).map(([k, u]) => `${k}: "${u}"`).join(", ")} },   // par palier : 1 à 5, 6 à 15, 16 et plus`
+    ? `  consultant: { ${Object.entries(l).map(([k, u]) => `${k}: "${u}"`).join(", ")} },   // un seul lien, prix à paliers`
     : `  ${(f + ":").padEnd(8)} { an: "${l.an}", mois: "${l.mois}" },`;
   const objet = `window.PAIEMENT = {
   //         à l'année · au mois (installés par outils/stripe-installation.mjs)

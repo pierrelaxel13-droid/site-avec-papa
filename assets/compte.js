@@ -726,9 +726,23 @@
               ? "Abonnement annuel : vous pouvez choisir de ne pas le renouveler. Il reste actif jusqu'au " + jourAbo(a.fin_periode) + ", puis s'arrête."
               : "Abonnement mensuel : résiliable à tout moment. Il s'arrête à la fin du mois en cours, déjà payé ; aucun nouveau prélèvement.";
             zr.appendChild(note);
+            if (a.formule === "consultant" && portail) {
+              // Le consultant change seul son nombre de clients (6 novembre 2026).
+              var nb = lien("Modifier le nombre de clients", "Modification du nombre de clients");
+              nb.classList.remove("abo-bouton-resilier");
+              zr.appendChild(nb);
+            }
             zr.appendChild(b);
           }
           zr.hidden = false;
+        }
+        // L'abonnement consultant : combien de clients il couvre (migration 26).
+        if (a && a.formule === "consultant" && actif && (d.cabinets || [])[0]) {
+          V.rpc("cabinet_places", { c: d.cabinets[0].id }).then(function (rp) {
+            if (!rp.ok || !rp.donnees || rp.donnees.max === null || rp.donnees.max === undefined) return;
+            formule.textContent += " · " + rp.donnees.max + " client" + (rp.donnees.max > 1 ? "s" : "") +
+              " couvert" + (rp.donnees.max > 1 ? "s" : "") + " (" + rp.donnees.clients + " utilisé" + (rp.donnees.clients > 1 ? "s" : "") + ")";
+          });
         }
 
         var liste = $("#abo-liste");
@@ -1109,7 +1123,7 @@
         $("#cabinet-demarrage").hidden = faites === Object.keys(etapes).length;
         cabinetP.hidden = false;
         // Le nombre de clients de l'abonnement (migration 26) : atteint, on le dit.
-        if (window.VIGIE_PLACES) window.VIGIE_PLACES(cabinet.id, $("#form-client"), CONTACT, cabinet.nom);
+        if (window.VIGIE_PLACES) window.VIGIE_PLACES(cabinet.id, $("#form-client"), CONTACT, cabinet.nom, cabinetP.getAttribute("data-portail") || "");
       });
     };
 
@@ -1121,7 +1135,7 @@
       V.rpc("creer_entreprise_cliente", { cabinet: cabinet.id, denomination: nom }).then(function (r) {
         if (!r.ok) {
           dit.textContent = r.erreur;
-          if (window.VIGIE_PLACES) window.VIGIE_PLACES(cabinet.id, $("#form-client"), CONTACT, cabinet.nom);
+          if (window.VIGIE_PLACES) window.VIGIE_PLACES(cabinet.id, $("#form-client"), CONTACT, cabinet.nom, cabinetP.getAttribute("data-portail") || "");
           return;
         }
         $("#cl-nom").value = "";

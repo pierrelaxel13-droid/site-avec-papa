@@ -4,7 +4,10 @@
    Un consultant abonné pour N clients ne peut pas en inscrire un de plus sans
    augmenter son abonnement : la base le refuse (migration 26). Ici, on le dit
    avant qu'il remplisse le formulaire, avec le moyen de modifier l'abonnement.
-   window.VIGIE_PLACES(cabinetId, formulaire, contact)
+   window.VIGIE_PLACES(cabinetId, formulaire, contact, nom, portail)
+   « Modifier mon abonnement » ouvre le portail client Stripe : le consultant y
+   change seul son nombre de clients ; le robot (outils/stripe.mjs) le recopie
+   dans la base dans les 15 minutes.
    ========================================================================== */
 (function () {
   "use strict";
@@ -14,7 +17,7 @@
       "&body=" + encodeURIComponent("Bonjour,\n\nMon abonnement couvre " + max + " client" + (max > 1 ? "s" : "") +
         ". Je souhaite le passer à " + (max + 1) + " clients.\n");
   }
-  window.VIGIE_PLACES = function (cabinet, form, contact, nom) {
+  window.VIGIE_PLACES = function (cabinet, form, contact, nom, portail) {
     var V = window.VIGIE;
     if (!V || !form || !cabinet) return;
     var bloc = form.parentNode.querySelector(".places-pleines");
@@ -35,9 +38,18 @@
       var q = document.createElement("p");
       q.textContent = "Votre abonnement couvre " + d.max + " client" + (d.max > 1 ? "s" : "") + " et vous en avez " + d.clients + ". ";
       var a = document.createElement("a");
-      a.href = modifier(contact, nom, d.max); a.textContent = "Modifier mon abonnement";
+      var qui = (V.utilisateur() || {}).courriel || "";
+      a.href = portail ? portail + (qui ? (portail.indexOf("?") === -1 ? "?" : "&") + "prefilled_email=" + encodeURIComponent(qui) : "")
+                       : modifier(contact, nom, d.max);
+      a.textContent = "Modifier mon abonnement";
       q.appendChild(a); q.appendChild(document.createTextNode("."));
       bloc.appendChild(q);
+      if (portail) {
+        var r2 = document.createElement("p"); r2.className = "precision";
+        r2.textContent = "Dans « Modifier mon abonnement », changez le nombre de clients : le prix par client suit le palier. " +
+          "Le nouveau nombre est pris en compte ici dans les 15 minutes qui suivent.";
+        bloc.appendChild(r2);
+      }
     });
   };
   window.VIGIE_PLACES.MESSAGE = MESSAGE;

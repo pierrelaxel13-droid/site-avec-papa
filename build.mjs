@@ -152,7 +152,8 @@ let NON_OFFICIELLES = new Set();
 const lienPaiement = (id, periode) =>
   (id === "portail" ? PAIEMENT.portail : PAIEMENT[id] && PAIEMENT[id][periode]) || "";
 // L'offre consultant : un lien par palier (p1, p2, p3), dans l'ordre de OFFRE_CONSULTANT.paliers.
-const lienConsultant = (k) => (PAIEMENT.consultant && PAIEMENT.consultant[`p${k + 1}`]) || "";
+// Depuis le 6 novembre 2026 : un seul lien (« lien »), le prix à paliers étant chez Stripe.
+const lienConsultant = (k) => (PAIEMENT.consultant && (PAIEMENT.consultant.lien || PAIEMENT.consultant[`p${k + 1}`])) || "";
 const consultantEnLigne = () => OFFRE_CONSULTANT.paliers.every((p, k) => lienConsultant(k));
 const paiementComplet = () => Object.keys(FORMULES).every((id) => lienPaiement(id, "an") && lienPaiement(id, "mois"));
 
@@ -4888,7 +4889,8 @@ function pageSouscrireConsultant() {
         ${mentionTVA()}
         <dl class="paie-total" id="pc-total"></dl>
         <p class="precision">Abonnement mensuel, sans engagement de durée : renouvelé chaque mois, résiliable à tout moment pour la fin du mois en cours.
-        Le nombre de clients se confirme sur la page de paiement ; pour le changer ensuite, écrivez-nous.</p>
+        Le nombre de clients se confirme sur la page de paiement ; vous le changez ensuite vous-même dans « Gérer mon abonnement »
+        et le prix par client suit le palier.</p>
       </div>
 
 ${carteMoyensPaiement()}
@@ -4999,7 +5001,7 @@ function pageCabinet(V, NAF, SOURCES) {
         <p class="rangee" style="margin-top:var(--t4)"><a class="bouton bouton-accent" href="./">Mon compte</a></p>
       </div>
     </div>
-    <div id="cabinet-principal" data-contact="${esc(SITE.courriel)}" hidden>
+    <div id="cabinet-principal" data-contact="${esc(SITE.courriel)}" data-portail="${esc(lienPaiement("portail"))}" hidden>
       <div class="reserve" id="cabinet-inactif" hidden>
         <p><strong>Votre abonnement consultant n'est pas encore ouvert.</strong> Vous pouvez déjà créer l'espace
         de vos clients ; ils s'ouvrent avec l'abonnement.</p>
@@ -5113,7 +5115,7 @@ function pageNouveauClient(V, NAF, demo = null) {
         </ol>
       </aside>
       <div class="nc-panneau">
-        <form class="nc-form" id="form-nc" data-contact="${esc(SITE.courriel)}" novalidate>
+        <form class="nc-form" id="form-nc" data-contact="${esc(SITE.courriel)}" data-portail="${esc(lienPaiement("portail"))}" novalidate>
           <h2>Le client</h2>
           <div class="nc-champ">
             <label for="nc-nom">Nom de l'entreprise cliente</label>
