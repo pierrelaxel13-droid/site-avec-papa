@@ -3236,7 +3236,6 @@ function pageConsultants() {
     <p class="rangee rangee-centre">
       <a class="bouton bouton-accent" href="compte/creer.html?type=cabinet">Créer mon compte consultant</a>
       <a class="bouton bouton-sobre" href="demo/cabinet.html">Voir la démonstration</a>
-      <a class="bouton bouton-sobre" href="mailto:${esc(SITE.courriel)}?subject=${encodeURIComponent("Offre consultant")}">En parler</a>
     </p>
   </div>
 </section>
