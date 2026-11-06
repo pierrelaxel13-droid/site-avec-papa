@@ -925,7 +925,7 @@ reset role;
 -- ---- Récapitulatif quotidien et rappels (migration 19) -------------------
 select tests.qui('00000000-0000-0000-0000-0000000000a1', 'a_admin@test.fr');
 set local role authenticated;
-select tests.ok((public.mon_recap() ->> 'recap')::boolean = false and (public.mon_recap() ->> 'rappels')::boolean, 'par défaut : pas de récapitulatif, rappels actifs');
+select tests.ok((public.mon_recap() ->> 'recap')::boolean and (public.mon_recap() ->> 'rappels')::boolean, 'par défaut : récapitulatif et rappels actifs (6 novembre 2026)');
 select public.regler_recap(true, null);
 select tests.ok((public.mon_recap() ->> 'recap')::boolean, 'on demande le récapitulatif');
 select tests.refuse('select * from prive.recap_quotidien', 'la table des réglages ne se lit pas en direct');

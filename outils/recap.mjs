@@ -188,15 +188,39 @@ async function envoyerEssaiTextes(a) {
   const jour = process.env.RECAP_JOUR || new Date(Date.parse(auj) - 86400000).toISOString().slice(0, 10);
   const V = await charger("assets/referentiel.js", "VEILLE");
   const JO = JSON.parse(await readFile(resolve(RACINE, "contenu/veille-releve.json"), "utf8"));
-  const naf = (process.env.RECAP_TEST_NAF || "").trim();
-  const plan = naf ? planDe(V, naf, []) : Object.keys(V.domaines);
+  let naf = (process.env.RECAP_TEST_NAF || "").trim(), contexte = [], nom = "", dests = a ? [a] : [];
+  // Une entreprise nommée : son plan (code APE et situations) et l'adresse de ses responsables
+  // de compte, lus dans la base. Les adresses ne s'écrivent jamais dans le journal.
+  const ent = (process.env.RECAP_TEST_ENTREPRISE || "").trim();
+  if (ent) {
+    const url = process.env.SUPABASE_DB_URL || "";
+    if (!url) { console.log("::error::SUPABASE_DB_URL absent."); process.exitCode = 1; return; }
+    const r = execFileSync("psql", [url, "-qtA", "-v", "ON_ERROR_STOP=1", "-v", `nom=${ent}`], { input: `select coalesce(json_agg(json_build_object(
+        'denomination', e.denomination, 'naf', e.naf,
+        'contexte', coalesce((select json_agg(x.declencheur) from public.reponses x where x.entreprise_id = e.id and x.valeur), '[]'),
+        'courriels', coalesce((select json_agg(u.email) from public.membres_entreprise m join auth.users u on u.id = m.user_id
+                               where m.entreprise_id = e.id and m.role = 'admin' and u.email_confirmed_at is not null), '[]'))), '[]')
+      from public.entreprises e where e.active and lower(btrim(e.denomination)) = lower(btrim(:'nom'));\n` }).toString().trim();
+    const l = JSON.parse(r || "[]");
+    if (!l.length) { console.log("::error::Aucune entreprise ne porte ce nom (vérifiez l'orthographe exacte)."); process.exitCode = 1; return; }
+    if (l.length > 1) console.log(`::warning::${l.length} entreprises portent ce nom : la première est prise.`);
+    nom = l[0].denomination; naf = naf || l[0].naf || ""; contexte = l[0].contexte || [];
+    if (!a) dests = l[0].courriels || [];
+    if (!dests.length) { console.log("::error::Cette entreprise n'a pas de responsable de compte à l'adresse confirmée."); process.exitCode = 1; return; }
+    if (!naf) console.log("::warning::Cette entreprise n'a pas encore de code APE : tous les sujets sont pris.");
+  }
+  const plan = naf ? planDe(V, naf, contexte) : Object.keys(V.domaines);
   const lignes = textesDuJour(V, JO.textes || [], plan, jour);
-  console.log(`Textes relevés le ${jour} : ${(JO.textes || []).filter((t) => (t.vuLe || t.date) === jour).length} ; pour ${naf ? "le code " + naf : "tous les sujets"} : ${lignes.length}.`);
+  console.log(`Textes relevés le ${jour} : ${(JO.textes || []).filter((t) => (t.vuLe || t.date) === jour).length} ; pour ${nom ? "cette entreprise" : naf ? "le code " + naf : "tous les sujets"} : ${lignes.length}.`);
   if (!lignes.length) { console.log("::warning::Aucun texte ce jour-là pour ce plan : rien n'est envoyé."); return; }
-  const m = courriel(V, { denomination: naf ? `l'essai (code ${naf})` : "l'essai (tous les sujets)", jour, lignes, jeton: "00000000-0000-0000-0000-000000000000" });
+  const m = courriel(V, { denomination: nom || (naf ? `l'essai (code ${naf})` : "l'essai (tous les sujets)"), jour, lignes, jeton: "00000000-0000-0000-0000-000000000000" });
   m.sujet = "[Essai] " + m.sujet;
-  try { await envoyer({ cle, expediteur, a: a || expediteur, ...m }); console.log("ok : récapitulatif d'essai envoyé" + (a ? "." : " à l'adresse du site.")); }
-  catch (e) { console.log("::error::L'envoi a échoué : " + e.message); process.exitCode = 1; }
+  if (!dests.length) dests = [expediteur];
+  for (const d of dests) {
+    try { await envoyer({ cle, expediteur, a: d, ...m }); }
+    catch (e) { console.log("::error::L'envoi a échoué : " + e.message); process.exitCode = 1; return; }
+  }
+  console.log(`ok : récapitulatif d'essai envoyé à ${dests.length} adresse(s)${nom ? " (responsable(s) du compte de l'entreprise)" : a ? "" : " (adresse du site)"}.`);
 }
 
 async function principal() {

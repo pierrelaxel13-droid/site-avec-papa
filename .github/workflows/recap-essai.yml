@@ -16,6 +16,9 @@ on:
         type: choice
         options: ["textes d'hier", "rappel d'actions en retard"]
         default: "textes d'hier"
+      entreprise:
+        description: "Nom exact de l'entreprise : l'e-mail part à son responsable de compte, avec son plan de veille"
+        required: false
       destinataire:
         description: "Adresse qui reçoit l'e-mail (vide : l'adresse du site, contact@)"
         required: false
@@ -43,6 +46,8 @@ jobs:
           RECAP_TEST_A: ${{ inputs.destinataire }}
           RECAP_TEST_TEXTES: ${{ inputs.genre == 'textes d''hier' && '1' || '' }}
           RECAP_TEST_NAF: ${{ inputs.naf }}
+          RECAP_TEST_ENTREPRISE: ${{ inputs.entreprise }}
+          SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
           RECAP_TEST_RAPPEL: ${{ inputs.genre != 'textes d''hier' && '1' || '' }}
           BREVO_API_KEY: ${{ secrets.BREVO_API_KEY }}
           RECAP_EXPEDITEUR: ${{ secrets.RECAP_EXPEDITEUR }}
