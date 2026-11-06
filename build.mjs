@@ -5025,7 +5025,8 @@ function pageCabinet(V, NAF, SOURCES) {
         <p class="etat-compte" id="cabinet-etat" role="status">Chargement…</p>
       </div>
       <p class="rangee cs-tete-boutons"><a class="bouton bouton-accent" href="nouveau-client.html">Créer l'accès d'un client</a>
-      <a class="bouton bouton-sobre" href="./" title="Mes clients, mon abonnement, mes factures, mon mot de passe">Mon compte</a></p>
+      <a class="bouton bouton-sobre" href="./" title="Mes clients, mon abonnement, mes factures, mon mot de passe">Mon compte</a>
+      <a class="bouton bouton-sobre" href="./#abo-bloc">Gérer ou résilier mon abonnement</a></p>
     </div>
     ${comptesFermes()}
     <div class="connexion connexion-seule" id="cabinet-aucun" hidden>

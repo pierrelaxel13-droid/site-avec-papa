@@ -803,6 +803,11 @@
           });
           zr.appendChild(n2); zr.appendChild(x2);
           zr.hidden = false;
+        } else if (!actif && esp.role === "admin" && !esp.par_cabinet) {
+          // Rien à résilier : on le dit, plutôt qu'un espace vide (6 novembre 2026).
+          var n5 = document.createElement("p"); n5.className = "precision";
+          n5.textContent = "Aucun abonnement en cours : il n'y a rien à résilier.";
+          zr.appendChild(n5); zr.hidden = false;
         } else if (esp.par_cabinet && !actif) {
           // Le client d'un consultant : c'est le cabinet qui est abonné et qui paie.
           var n3 = document.createElement("p"); n3.className = "precision";
