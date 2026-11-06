@@ -80,6 +80,20 @@ export function gabarit(genre, d) {
         "", `Vous la retrouvez dans Mon compte, rubrique « Mes factures » : ${lien}`].join("\n")
     };
   }
+  if (genre === "nouveau_compte") {
+    // Pour l'équipe (6 novembre 2026) : un nouveau compte vient de s'ouvrir.
+    const sujet = `Nouveau compte : ${d.espace || "?"} (${d.type || "?"})`;
+    const quand = d.le ? new Date(d.le).toLocaleString("fr-FR", { timeZone: "Europe/Paris", dateStyle: "long", timeStyle: "short" }) : "";
+    const lignes = [["Espace", d.espace], ["Type", d.type], ["Cabinet", d.cabinet], ["Compte", d.courriel], ["Le", quand]].filter((x) => x[1]);
+    return {
+      sujet,
+      html: cadre(sujet, "Un nouveau compte vient de s'ouvrir sur le site.",
+        `<table role="presentation" cellpadding="0" cellspacing="0" style="font-size:14px;line-height:1.6">${lignes.map(([k, v]) =>
+          `<tr><td style="padding:2px 14px 2px 0;color:#5E5E79">${esc(k)}</td><td style="padding:2px 0"><strong>${esc(v)}</strong></td></tr>`).join("")}</table>`,
+        "Ouvrir l'administration", `${SITE}compte/admin.html`, "E-mail envoyé à l'équipe du site à chaque nouveau compte."),
+      texte: [`${NOM}`, "", "Un nouveau compte vient de s'ouvrir sur le site.", "", ...lignes.map(([k, v]) => `${k} : ${v}`), "", `${SITE}compte/admin.html`].join("\n")
+    };
+  }
   throw new Error(`genre d'e-mail inconnu : ${genre}`);
 }
 
@@ -104,7 +118,8 @@ async function principal() {
   let ok = 0, ko = 0;
   for (const c of file) {
     try {
-      await envoyer(cle, expediteur, c.destinataire, gabarit(c.genre, c.donnees || {}));
+      // « equipe » : l'adresse du site elle-même (l'adresse d'expédition), jamais écrite dans le dépôt.
+      await envoyer(cle, expediteur, c.destinataire === "equipe" ? expediteur : c.destinataire, gabarit(c.genre, c.donnees || {}));
       sql("select prive.courriel_fait(:i, true)", { i: c.id });
       ok++;
     } catch (e) {

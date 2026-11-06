@@ -1156,6 +1156,13 @@ select tests.ok((select reglages->'adresse'->>'ligne' = '3 place B' and implanta
 set local role authenticated;
 reset role;
 
+-- ---- L'équipe prévenue à chaque nouveau compte (migration 29) ------------
+select tests.ok((select count(*) from prive.courriels where genre = 'nouveau_compte' and destinataire = 'equipe'
+                 and donnees ->> 'espace' = 'Entreprise A (essai)') = 1,
+  'un nouveau compte (premier membre de l''espace) prévient l''équipe, une seule fois');
+select tests.ok((select donnees ->> 'type' from prive.courriels where genre = 'nouveau_compte' and donnees ->> 'espace' = 'Cabinet C (essai)') = 'cabinet consultant',
+  'un nouveau cabinet consultant aussi');
+
 do $$ begin raise notice 'TOUS LES TESTS D''ISOLATION SONT PASSÉS'; end $$;
 
 rollback;

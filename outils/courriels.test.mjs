@@ -15,4 +15,8 @@ assert.match(f.sujet, /VR-2026-0001/);
 assert.match(f.html, /70,80 € TTC/);
 assert.match(f.html, /5 novembre 2026/);
 assert.throws(() => gabarit("autre", {}));
+{
+  const g = gabarit("nouveau_compte", { espace: "BBBB", type: "entreprise", courriel: "x@y.fr", le: "2026-11-06T15:00:00Z" });
+  if (!/Nouveau compte : BBBB \(entreprise\)/.test(g.sujet) || !/x@y\.fr/.test(g.html) || !/x@y\.fr/.test(g.texte)) throw new Error("gabarit nouveau_compte");
+}
 console.log("courriels : ok");
