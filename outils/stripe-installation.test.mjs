@@ -32,7 +32,7 @@ const srv = http.createServer((q, r) => {
           ? "https://vigie-reglementaire.fr/compte/paiement-consultant.html?merci=1" : "https://vigie-reglementaire.fr/compte/paiement.html?merci=1");
         if (p.get("metadata[formule]") === "consultant") {
           assert.equal(p.get("line_items[0][adjustable_quantity][enabled]"), "true");
-          assert.ok(Number(p.get("line_items[0][adjustable_quantity][minimum]")) >= 3);
+          assert.ok(Number(p.get("line_items[0][adjustable_quantity][minimum]")) >= 1);
         }
         assert.equal(p.get("payment_method_types[0]"), null, "les moyens de paiement viennent du tableau de bord Stripe");
         base.payment_links.push(rep = { id: "plink_" + ++n, url: "https://buy.stripe.com/test_" + n, metadata: meta() });

@@ -45,7 +45,7 @@ export const OFFRES = {
 export const CONSULTANT = {
   nom: "Offre consultant QSE",
   paliers: [
-    { de: 3, a: 5, mois: 49 },
+    { de: 1, a: 5, mois: 49 },
     { de: 6, a: 15, mois: 42 },
     { de: 16, a: null, mois: 35 }
   ]
@@ -229,7 +229,7 @@ export async function installer(stripe, { tva = "" } = {}) {
 /* contenu/paiement.js : on remplace seulement l'objet window.PAIEMENT. */
 export function reecrire(source, liens, portail) {
   const ligne = (f, l) => f === "consultant"
-    ? `  consultant: { ${Object.entries(l).map(([k, u]) => `${k}: "${u}"`).join(", ")} },   // par palier : 3 à 5, 6 à 15, 16 et plus`
+    ? `  consultant: { ${Object.entries(l).map(([k, u]) => `${k}: "${u}"`).join(", ")} },   // par palier : 1 à 5, 6 à 15, 16 et plus`
     : `  ${(f + ":").padEnd(8)} { an: "${l.an}", mois: "${l.mois}" },`;
   const objet = `window.PAIEMENT = {
   //         à l'année · au mois (installés par outils/stripe-installation.mjs)
