@@ -4609,7 +4609,6 @@ function pageMonCompte() {
             <div class="rg-ligne"><span class="rg-libelle">Cabinet</span><div class="rg-champ"><strong id="cabinet-nom"></strong></div></div>
             <div class="rg-ligne"><span class="rg-libelle">Abonnement</span><div class="rg-champ"><span id="cabinet-statut"></span></div></div>
 ${formAdresse("cab", "Adresse du cabinet")}
-            <p class="compte-explique">Ici, votre compte : vos clients, votre abonnement, vos factures. Le suivi de vos clients (textes, actions, conformité) se fait dans l'espace consultant.</p>
           </div>
           <div class="compte-corps">
           <form id="form-entreprise" method="post" novalidate hidden>
