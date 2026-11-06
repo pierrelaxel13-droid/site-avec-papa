@@ -17,7 +17,7 @@ on:
         options: ["textes d'hier", "rappel d'actions en retard"]
         default: "textes d'hier"
       entreprise:
-        description: "Nom exact de l'entreprise : l'e-mail part à son responsable de compte, avec son plan de veille"
+        description: "Nom de l'entreprise (ou « dernier compte ») : l'e-mail part à son responsable de compte, avec son plan de veille"
         required: false
       destinataire:
         description: "Adresse qui reçoit l'e-mail (vide : l'adresse du site, contact@)"

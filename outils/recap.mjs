@@ -200,7 +200,11 @@ async function envoyerEssaiTextes(a) {
         'contexte', coalesce((select json_agg(x.declencheur) from public.reponses x where x.entreprise_id = e.id and x.valeur), '[]'),
         'courriels', coalesce((select json_agg(u.email) from public.membres_entreprise m join auth.users u on u.id = m.user_id
                                where m.entreprise_id = e.id and m.role = 'admin' and u.email_confirmed_at is not null), '[]'))), '[]')
-      from public.entreprises e where e.active and lower(btrim(e.denomination)) = lower(btrim(:'nom'));\n` }).toString().trim();
+      from public.entreprises e where e.active and (
+        lower(regexp_replace(e.denomination, '\\s', '', 'g')) = lower(regexp_replace(:'nom', '\\s', '', 'g'))
+        or (lower(:'nom') = 'dernier compte' and e.id in (select m.entreprise_id from public.membres_entreprise m
+              where m.role = 'admin' and m.user_id = (select u.id from auth.users u where u.email_confirmed_at is not null
+                and u.email not like 'essai-auto-%' order by u.created_at desc limit 1))));\n` }).toString().trim();
     const l = JSON.parse(r || "[]");
     if (!l.length) { console.log("::error::Aucune entreprise ne porte ce nom (vérifiez l'orthographe exacte)."); process.exitCode = 1; return; }
     if (l.length > 1) console.log(`::warning::${l.length} entreprises portent ce nom : la première est prise.`);
