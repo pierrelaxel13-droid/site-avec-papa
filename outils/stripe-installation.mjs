@@ -109,6 +109,7 @@ export async function installer(stripe, { tva = "" } = {}) {
   const tousLiens = await tous(stripe, "/v1/payment_links", { active: "true" });
   const retour = `${SITE}compte/paiement.html?merci=1`;
   const gardes = { prix: new Set(), liens: new Set() };
+  const nouveauxLiens = {};
 
   for (const [formule, o] of Object.entries(OFFRES)) {
     let p = produits.find((x) => (x.metadata || {}).formule === formule);
@@ -147,7 +148,7 @@ export async function installer(stripe, { tva = "" } = {}) {
         });
       }
       bilan.liens[formule][periode] = lien.url;
-      gardes.prix.add(prix.id); gardes.liens.add(lien.id);
+      gardes.prix.add(prix.id); gardes.liens.add(lien.id); nouveauxLiens[lien.id] = lien;
     }
   }
 
@@ -187,7 +188,20 @@ export async function installer(stripe, { tva = "" } = {}) {
     });
   }
   bilan.liens.consultant = { lien: lienC.url };
-  gardes.prix.add(prixC.id); gardes.liens.add(lienC.id);
+  gardes.prix.add(prixC.id); gardes.liens.add(lienC.id); nouveauxLiens[lienC.id] = lienC;
+
+  // La TVA sur la page de paiement (6 novembre 2026) : chaque lien gardé doit avoir le calcul
+  // automatique de Stripe Tax ; un lien créé avant l'activation de Stripe Tax est corrigé ici.
+  bilan.liensTva = [];
+  for (const id of gardes.liens) {
+    const l = [...tousLiens, ...Object.values(nouveauxLiens)].find((x) => x.id === id) || {};
+    const actif = !!(l.automatic_tax && l.automatic_tax.enabled === true);
+    const nom = `${(l.metadata || {}).formule || "?"} ${(l.metadata || {}).periode || ""}`.trim();
+    if (tva === "auto" && !actif) {
+      try { await stripe("POST", `/v1/payment_links/${id}`, { automatic_tax: { enabled: "true" } }); bilan.liensTva.push(`${nom} : calcul de la TVA activé`); }
+      catch (e) { bilan.liensTva.push(`${nom} : calcul de la TVA NON activé (${e.message})`); }
+    } else bilan.liensTva.push(`${nom} : calcul de la TVA ${actif ? "actif" : "inactif"}`);
+  }
 
   // Les anciens liens et prix posés par cet outil (hors taxes, 5 novembre 2026), qui ne
   // servent plus : désactivés, pour qu'un ancien lien ne fasse plus payer hors taxes.
@@ -289,6 +303,7 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   b.prix.forEach((x) => console.log("Prix " + x));
   b.retires.forEach((x) => console.log("Désactivé : " + x));
   b.taxe.forEach((x) => console.log("TVA : " + x));
+  b.liensTva.forEach((x) => console.log("Lien " + x));
   console.log(`Mode Stripe : ${mode}. Liens de paiement : ${Object.values(b.liens).flatMap((l) => Object.values(l)).length}. Portail : ${b.portail ? "oui" : "non"}.`);
   const chemin = join(RACINE, "contenu", "paiement.js");
   await writeFile(chemin, reecrire(await readFile(chemin, "utf8"), b.liens, b.portail));
