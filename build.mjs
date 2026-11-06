@@ -4615,7 +4615,7 @@ ${formAdresse("cab", "Adresse du cabinet")}
               <label><input type="radio" name="e-type" value="entreprise" checked> Une entreprise
                 <span class="aide">vous suivez votre propre veille</span></label>
               <label><input type="radio" name="e-type" value="cabinet"> Un cabinet de conseil QSE
-                <span class="aide">vous suivez celle de vos clients</span></label>
+                <span class="aide">vous suivez la veille réglementaire de vos clients</span></label>
             </fieldset>
             <div class="champ">
               <label for="e-nom" id="e-nom-l">Nom de l'entreprise</label>
