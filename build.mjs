@@ -5031,7 +5031,7 @@ function pageCabinet(V, NAF, SOURCES) {
             <span class="cs-etape-detail" data-detail></span></div></li>
           <li data-etape="client"><span class="cs-coche" aria-hidden="true"></span><div><strong>Créer l'espace de votre premier client</strong>
             <span class="cs-etape-detail" data-detail><a href="nouveau-client.html">Créer un espace client</a>.</span></div></li>
-          <li data-etape="plan"><span class="cs-coche" aria-hidden="true"></span><div><strong>Régler son plan de veille</strong>
+          <li data-etape="plan"><span class="cs-coche" aria-hidden="true"></span><div><strong>Régler son plan de veille (se rendre dans Mon compte, liste des clients)</strong>
             <span class="cs-etape-detail" data-detail>Ouvrez son espace, puis Réglages : son code APE et ses situations décident des textes suivis.</span></div></li>
           <li data-etape="invite"><span class="cs-coche" aria-hidden="true"></span><div><strong>Inviter votre client</strong>
             <span class="cs-etape-detail" data-detail>Il crée son compte et a accès à son profil.</span></div></li>
