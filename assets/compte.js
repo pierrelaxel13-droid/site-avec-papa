@@ -754,6 +754,16 @@
               ").\nCompte : " + qui2 + "\n\nBien cordialement,");
           zr.appendChild(n2); zr.appendChild(x2);
           zr.hidden = false;
+        } else if (esp.par_cabinet && !actif) {
+          // Le client d'un consultant : c'est le cabinet qui est abonné et qui paie.
+          var n3 = document.createElement("p"); n3.className = "precision";
+          n3.textContent = "Votre veille est comprise dans l'abonnement de votre cabinet consultant : il n'y a rien à résilier de votre côté. " +
+            "Pour arrêter, adressez-vous à votre consultant ; vous pouvez aussi lui retirer l'accès à votre espace.";
+          zr.appendChild(n3); zr.hidden = false;
+        } else if (actif && esp.role !== "admin") {
+          var n4 = document.createElement("p"); n4.className = "precision";
+          n4.textContent = "Seul le responsable du compte de « " + esp.nom + " » peut résilier l'abonnement.";
+          zr.appendChild(n4); zr.hidden = false;
         }
         // L'abonnement consultant : combien de clients il couvre (migration 26).
         if (a && a.formule === "consultant" && actif && estCabinet) {
