@@ -4314,8 +4314,8 @@ ${SITE.offreConsultant ? (() => {
       ${O.paliers.map((p, k) => `<article class="formule${k === 1 ? " mise-en-avant" : ""}" data-paraitre>
         <span class="etiq nom-offre">${p.a ? `De ${p.de} à ${p.a} clients` : `${p.de} clients et plus`}</span>
         <p class="prix"><span class="grand">${esc(eur(p.mois))}</span> <span class="etiq">par client et par mois</span></p>
+        <p class="engagement-mois">Mensuel : sans engagement de durée</p>
         ${mentionTVA()}
-        <p class="sans-engagement">Abonnement mensuel, sans engagement de durée</p>
         <ul class="formule-donne">
           <li>La veille, le plan d'actions et le registre de conformité de chaque client</li>
           <li>L'espace consultant : le tableau de bord de tous vos clients (textes non lus, conformité, avancement du plan d'actions)</li>
