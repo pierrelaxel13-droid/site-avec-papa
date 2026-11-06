@@ -252,7 +252,7 @@ export async function installer(stripe, { tva = "" } = {}) {
     try {
       const r0 = await tous(stripe, "/v1/tax/registrations", { status: "all" });
       if (!r0.some((x) => x.country === "FR" && /^(active|scheduled)$/.test(x.status))) {
-        await stripe("POST", "/v1/tax/registrations", { country: "FR", active_from: "now", country_options: { fr: { type: "standard" } } });
+        await stripe("POST", "/v1/tax/registrations", { country: "FR", active_from: "now", country_options: { fr: { type: "standard", standard: { place_of_supply_scheme: "standard" } } } });
         bilan.taxe.push("inscription France créée (TVA collectée dès maintenant)");
       }
     } catch (e) { bilan.taxe.push(`inscription France NON créée (${e.message})`); }
