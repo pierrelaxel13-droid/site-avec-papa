@@ -594,7 +594,7 @@
       } else if (a && a.type === "email_change") {
         annonce("Votre nouvelle adresse est confirmée : c'est désormais elle qui vous connecte.");
       } else if (a) {
-        annonce("Votre adresse est confirmée. Bienvenue dans " + (document.body.getAttribute("data-nom") || "Vigie") + ".");
+        annonce("Votre adresse est confirmée. Bienvenue dans Vigie réglementaire.");
       }
       V.session().then(function (s) {
         if (s) { montrer(s); return; }
