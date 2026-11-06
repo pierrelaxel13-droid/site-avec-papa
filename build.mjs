@@ -4553,11 +4553,11 @@ function pageMonCompte() {
       <div>
         <h1>Mon compte</h1>
         <p class="compte-connecte">Connecté avec <span class="compte-adresse" id="compte-adresse"></span></p>
-        <p class="compte-acces"><a class="bouton bouton-accent" id="entreprise-ouvrir" href="../app/" hidden>Accéder à mon espace</a></p>
         <p class="etat-compte" id="etat-compte" role="status">Un instant…</p>
       </div>
       <div class="compte-tete-actions">
         <a class="bouton bouton-sobre" id="compte-admin" href="admin.html" hidden>Espace administrateur</a>
+        <a class="bouton bouton-sobre" id="entreprise-ouvrir" href="../app/" hidden>Accéder à mon espace</a>
         <a class="bouton bouton-sobre" id="cabinet-tableau" href="cabinet.html" hidden>Tableaux de bord de mes clients</a>
         <button type="button" class="bouton bouton-sobre" id="compte-sortir">Se déconnecter</button>
       </div>
