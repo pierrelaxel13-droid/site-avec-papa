@@ -241,6 +241,22 @@ export async function installer(stripe, { tva = "" } = {}) {
       `, adresse d'origine : ${t.head_office && t.head_office.address && t.head_office.address.country ? t.head_office.address.country : "absente"}` +
       `, comportement par défaut : ${(t.defaults || {}).tax_behavior || "non réglé"}`);
   } catch (e) { bilan.taxe.push(`réglages Stripe Tax illisibles (${e.message})`); }
+  // Les « taux de taxe » créés à la main (Produits → Taux de taxe) : Stripe Tax ne s'en sert pas.
+  try {
+    const tr = await tous(stripe, "/v1/tax_rates", { active: "true" });
+    if (tr.length) bilan.taxe.push(`taux de taxe manuels : ${tr.map((x) => `${x.display_name || "?"} ${x.percentage} % ${x.country || ""} (${x.inclusive ? "inclus" : "en sus"})`).join(", ")} — non utilisés par Stripe Tax`);
+  } catch (e) { bilan.taxe.push(`taux de taxe illisibles (${e.message})`); }
+  // Sans inscription en France, Stripe Tax calcule 0 : on l'inscrit (demande d'Axel, 6 novembre 2026 :
+  // l'entreprise est immatriculée à la TVA en France, FR 22504851312). Taux normal, dès maintenant.
+  if (tva === "auto") {
+    try {
+      const r0 = await tous(stripe, "/v1/tax/registrations", { status: "all" });
+      if (!r0.some((x) => x.country === "FR" && /^(active|scheduled)$/.test(x.status))) {
+        await stripe("POST", "/v1/tax/registrations", { country: "FR", active_from: "now", country_options: { fr: { type: "standard" } } });
+        bilan.taxe.push("inscription France créée (TVA collectée dès maintenant)");
+      }
+    } catch (e) { bilan.taxe.push(`inscription France NON créée (${e.message})`); }
+  }
   try {
     const r = await tous(stripe, "/v1/tax/registrations", { status: "all" });
     const actives = r.filter((x) => x.status === "active").map((x) => `${x.country} (${x.country_options && x.country_options[x.country.toLowerCase()] ? x.country_options[x.country.toLowerCase()].type : "?"})`);
