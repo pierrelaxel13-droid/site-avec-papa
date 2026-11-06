@@ -742,16 +742,24 @@
           }
           zr.hidden = false;
         } else if (actif && a.offert && esp.role === "admin") {
-          // Un abonnement ouvert par nos soins (sans Stripe) : on l'arrête sur demande.
-          var dest2 = document.body.getAttribute("data-courriel") || "";
-          var qui2 = (V.utilisateur() || {}).courriel || "";
+          // Un abonnement ouvert par nos soins (sans Stripe) : résilié ici, aussitôt,
+          // sans e-mail (6 novembre 2026, migration 27).
           var n2 = document.createElement("p"); n2.className = "precision";
-          n2.textContent = "Cet abonnement a été ouvert par nos soins : pour l'arrêter, envoyez-nous votre demande. Il s'arrête à la date que vous indiquez.";
-          var x2 = document.createElement("a");
+          n2.textContent = "Cet abonnement a été ouvert par nos soins. Vous pouvez le résilier ici : il s'arrête aussitôt.";
+          var x2 = document.createElement("button"); x2.type = "button";
           x2.className = "bouton bouton-sobre bouton-petit abo-bouton-resilier"; x2.textContent = "Résilier mon abonnement";
-          x2.href = "mailto:" + dest2 + "?subject=" + encodeURIComponent("Résiliation — " + esp.nom) +
-            "&body=" + encodeURIComponent("Bonjour,\n\nJe souhaite résilier l'abonnement de « " + esp.nom + " » (" + (NOMS_ABO[a.formule] || a.formule) +
-              ").\nCompte : " + qui2 + "\n\nBien cordialement,");
+          x2.addEventListener("click", function () {
+            if (!window.confirm("Résilier l'abonnement de « " + esp.nom + " » ?\n\nIl s'arrête aussitôt" +
+              (estCabinet ? " : les espaces de vos clients se ferment." : "."))) return;
+            x2.disabled = true; n2.textContent = "Résiliation…";
+            V.rpc("resilier_offert", estCabinet ? { entreprise: null, cabinet: esp.id } : { entreprise: esp.id, cabinet: null }).then(function (r5) {
+              if (!r5.ok) { x2.disabled = false; n2.textContent = r5.erreur; return; }
+              formule.textContent = (NOMS_ABO[a.formule] || a.formule) + " — résilié";
+              fin.textContent = "Terminé aujourd'hui"; prel.textContent = "Aucun";
+              n2.textContent = "Votre abonnement est résilié.";
+              x2.remove();
+            });
+          });
           zr.appendChild(n2); zr.appendChild(x2);
           zr.hidden = false;
         } else if (esp.par_cabinet && !actif) {

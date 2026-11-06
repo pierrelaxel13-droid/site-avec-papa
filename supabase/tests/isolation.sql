@@ -1108,6 +1108,27 @@ reset role;
 update public.abonnements set clients_max = null where stripe_abonnement = 'sub_essai_q';
 select tests.ok(prive.places_cabinet('00000000-0000-0000-0000-00000000c100') is null, 'un abonnement sans quantité (offert) : pas de limite');
 
+-- ---- Résilier soi-même un abonnement ouvert par nos soins (migration 27) ----
+insert into public.abonnements (entreprise_id, formule, periode, statut)
+  values ('00000000-0000-0000-0000-00000000b000', 'complet', 'mois', 'offert');
+select tests.qui('00000000-0000-0000-0000-0000000000a1', 'a_admin@test.fr');
+set local role authenticated;
+select tests.refuse($$select public.resilier_offert('00000000-0000-0000-0000-00000000b000', null)$$, 'un autre compte ne résilie pas l''abonnement d''une entreprise');
+reset role;
+select tests.qui('00000000-0000-0000-0000-0000000000b1', 'b_admin@test.fr');
+set local role authenticated;
+select tests.ok(public.resilier_offert('00000000-0000-0000-0000-00000000b000', null) = 1, 'le responsable du compte résilie l''abonnement offert, sans e-mail');
+reset role;
+select tests.ok((select statut = 'canceled' and fini_le is not null from public.abonnements
+                 where entreprise_id = '00000000-0000-0000-0000-00000000b000' and formule = 'complet' and stripe_abonnement is null),
+  'l''abonnement offert est arrêté aussitôt');
+select tests.ok((select statut = 'active' from public.abonnements where entreprise_id = '00000000-0000-0000-0000-00000000b000' and formule = 'textes'),
+  'un abonnement payé n''est pas touché');
+select tests.qui('00000000-0000-0000-0000-0000000000b1', 'b_admin@test.fr');
+set local role authenticated;
+select tests.refuse($$select public.resilier_offert('00000000-0000-0000-0000-00000000b000', null)$$, 'plus rien à résilier : refusé avec un message');
+reset role;
+
 do $$ begin raise notice 'TOUS LES TESTS D''ISOLATION SONT PASSÉS'; end $$;
 
 rollback;
