@@ -48,6 +48,9 @@
     var propose = !a && tr.getAttribute("data-application") || "";
     if (document.activeElement !== delai && !delai.getAttribute("data-touche")) delai.value = a && a.echeance ? String(a.echeance).slice(0, 10) : propose;
     tr.classList.toggle("pa-propose", !!propose && delai.value === propose);
+    // Toute date de réalisation dépassée en rouge (6 novembre 2026, demande d'Axel) : enregistrée
+    // ou seulement proposée (date d'application d'un texte déjà en vigueur), tant que l'action n'est pas réalisée.
+    tr.classList.toggle("pa-depasse", etat !== "faite" && !!delai.value && delai.value < aujourdhui());
     if (document.activeElement !== resp) resp.value = a ? a.responsable || "" : "";
     var fini = etat === "faite";
     delai.disabled = resp.disabled = fini || lecture;
@@ -57,6 +60,7 @@
       ? "✓ Réalisée le " + jour(a.faite_le) + (a.par && a.par !== "vous" ? " par " + a.par : "")
       : etat === "retard" ? "En retard depuis le " + jour(a.echeance)
       : etat === "ouverte" ? "À réaliser pour le " + jour(a.echeance)
+      : propose && propose < aujourdhui() ? "Date d'application du texte dépassée : fixez une nouvelle date et enregistrez."
       : propose ? "Délai proposé : la date d'application du texte. Enregistrez pour le retenir."
       : "Délai à renseigner";
   }
@@ -98,7 +102,10 @@
       peindre(tr);
       var etat = tr.querySelector(".pa-etat");
       // Une date saisie à la main n'est plus remplacée par la date proposée.
-      tr.querySelector(".pa-delai").addEventListener("input", function () { this.setAttribute("data-touche", "1"); tr.classList.remove("pa-propose"); });
+      tr.querySelector(".pa-delai").addEventListener("input", function () {
+        this.setAttribute("data-touche", "1"); tr.classList.remove("pa-propose");
+        tr.classList.toggle("pa-depasse", tr.getAttribute("data-etat") !== "faite" && !!this.value && this.value < aujourdhui());
+      });
       tr.querySelector(".pa-enregistrer").addEventListener("click", function () {
         var delai = tr.querySelector(".pa-delai").value;
         if (!delai) { etat.textContent = "Choisissez un délai de réalisation."; tr.querySelector(".pa-delai").focus(); return; }

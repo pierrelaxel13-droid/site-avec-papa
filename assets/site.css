@@ -4837,3 +4837,9 @@ ol.etapes-carres p { margin: 0; color: var(--encre-douce); text-align: center; m
 /* Cartes « Installer l'application » sans consigne (6 novembre 2026) : le titre centré sur l'icône. */
 .appareil { align-items: center; }
 .appareil h3:only-child { margin: 0; }
+
+/* Plan d'actions : toute date de réalisation dépassée en rouge, même proposée (6 novembre 2026). */
+.tableau-actions tr.pa-depasse .pa-delai,
+.tableau-actions tr.pa-depasse.pa-propose .pa-delai { border: 1px solid var(--rouge); border-style: solid; color: var(--rouge); background: var(--rouge-fond); font-weight: 700; }
+.tableau-actions tr[data-etat="retard"] .pa-etat { color: var(--rouge); font-weight: 700; }
+.tableau-actions tr.pa-depasse .pa-etat { color: var(--rouge); font-weight: 700; }
