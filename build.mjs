@@ -181,7 +181,7 @@ const FORMULES = {
              pour: "Vous passez un audit ou une certification.",
              ouvre: "Tout, le registre de preuves et le conseil de l'IA pour votre métier compris.",
              donne: ["Tout ce que donne l'offre État des lieux réglementaire et plan d'actions",
-                     "Établissement d'un tableau de synthèse de veille réglementaire"] }
+                     "Établissement d'un registre de conformité réglementaire"] }
 };
 
 /* --- L'offre consultant ----------------------------------------------------
