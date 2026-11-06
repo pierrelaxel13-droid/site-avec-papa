@@ -52,6 +52,12 @@
       ? ligne(n + " clients × " + eur(p.mois) + " HT", eur(ht) + " HT par mois") + ligne("TVA 20 %", eur(ht * 0.2)) +
         ligne("Total TTC", eur(ht * 1.2) + " TTC par mois", true)
       : ligne("Total", eur(ht) + " par mois", true) + '<div class="paie-mention"><dd>' + D.mention + "</dd></div>";
+    // Le mois d'essai gratuit (6 novembre 2026) : rien aujourd'hui, premier prélèvement 30 jours après.
+    if (D.essai) {
+      var d = new Date(); d.setDate(d.getDate() + D.essai);
+      $("#pc-total").innerHTML += ligne("À payer aujourd'hui", "0 € — 1<sup>er</sup> mois d'essai gratuit", true) +
+        ligne("Premier prélèvement", "le " + d.toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" }) + ", sauf résiliation avant");
+    }
     bouton();
   }
 

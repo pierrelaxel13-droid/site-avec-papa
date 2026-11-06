@@ -34,8 +34,7 @@ const srv = http.createServer((q, r) => {
       else if (u.pathname === "/v1/payment_links") {
         assert.equal(p.get("after_completion[redirect][url]"), p.get("metadata[formule]") === "consultant"
           ? "https://vigie-reglementaire.fr/compte/paiement-consultant.html?merci=1" : "https://vigie-reglementaire.fr/compte/paiement.html?merci=1");
-        if (p.get("metadata[formule]") !== "consultant") assert.equal(p.get("subscription_data[trial_period_days]"), "30", "mois d'essai gratuit");
-        else assert.equal(p.get("subscription_data[trial_period_days]"), null, "pas d'essai pour l'offre consultant");
+        assert.equal(p.get("subscription_data[trial_period_days]"), "30", "mois d'essai gratuit, consultants compris");
         if (p.get("metadata[formule]") === "consultant") {
           assert.equal(p.get("line_items[0][adjustable_quantity][enabled]"), "true");
           assert.ok(Number(p.get("line_items[0][adjustable_quantity][minimum]")) >= 1);

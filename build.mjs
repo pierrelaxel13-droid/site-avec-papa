@@ -4343,6 +4343,7 @@ ${SITE.offreConsultant ? (() => {
       ${O.paliers.map((p, k) => `<article class="formule${k === 1 ? " mise-en-avant" : ""}" data-paraitre>
         <span class="etiq nom-offre">${p.a ? `De ${p.de} à ${p.a} clients` : `${p.de} clients et plus`}</span>
         <p class="prix"><span class="grand">${esc(eur(p.mois))}</span> <span class="etiq">par client et par mois</span></p>
+        <p class="essai-gratuit">1<sup>er</sup> mois d'essai gratuit</p>
         <p class="engagement-mois">Mensuel : sans engagement de durée</p>
         ${mentionTVA()}
         <ul class="formule-donne">
@@ -4890,7 +4891,7 @@ function pageSouscrireConsultant() {
   const O = OFFRE_CONSULTANT;
   const donnees = {
     paliers: O.paliers.map((p, k) => ({ de: p.de, a: p.a, mois: p.mois, lien: lienConsultant(k) })),
-    tva: SITE.tva, mention: TVA.mention, courriel: SITE.courriel, portail: lienPaiement("portail")
+    tva: SITE.tva, mention: TVA.mention, courriel: SITE.courriel, portail: lienPaiement("portail"), essai: 30
   };
   const corps = `
 <section class="section compte-page">

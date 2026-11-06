@@ -51,8 +51,9 @@ export const CONSULTANT = {
   ]
 };
 const PLAFOND_CLIENTS = 500;
-// Le mois d'essai gratuit des formules 01 à 03, mensuelles et annuelles (6 novembre 2026,
-// demande d'Axel) : la carte est enregistrée, rien n'est prélevé avant 30 jours.
+// Le mois d'essai gratuit des formules 01 à 03, mensuelles et annuelles, et de l'offre
+// consultant (6 novembre 2026, demande d'Axel) : la carte est enregistrée, rien n'est
+// prélevé avant 30 jours.
 export const ESSAI_JOURS = 30;
 // La marque du prix à paliers en vigueur : un changement de prix en crée un nouveau.
 export const signaturePaliers = () => CONSULTANT.paliers.map((p) => `${p.de}-${p.a || "inf"}:${centimesTTC(p.mois)}`).join(",");
@@ -183,7 +184,8 @@ export async function installer(stripe, { tva = "" } = {}) {
       metadata: { formule: "consultant", paliers: signature } });
     bilan.prix.push(`créé : ${CONSULTANT.nom}, à paliers : ${CONSULTANT.paliers.map((p) => `${p.a ? `${p.de}-${p.a}` : `${p.de}+`} → ${ttc(p.mois)} € TTC (${p.mois} € HT)`).join(" ; ")} par client et par mois`);
   }
-  let lienC = tousLiens.find((x) => (x.metadata || {}).formule === "consultant" && (x.metadata || {}).prix === prixC.id);
+  let lienC = tousLiens.find((x) => (x.metadata || {}).formule === "consultant" && (x.metadata || {}).prix === prixC.id &&
+    (x.metadata || {}).essai === String(ESSAI_JOURS));
   if (!lienC) {
     lienC = await stripe("POST", "/v1/payment_links", {
       line_items: [{ price: prixC.id, quantity: CONSULTANT.paliers[0].de,
@@ -193,13 +195,15 @@ export async function installer(stripe, { tva = "" } = {}) {
       tax_id_collection: { enabled: "true" },
       ...(tva === "auto" ? { automatic_tax: { enabled: "true" } } : {}),
       after_completion: { type: "redirect", redirect: { url: retourCabinet } },
-      subscription_data: { metadata: { formule: "consultant" } },
-      metadata: { formule: "consultant", prix: prixC.id }
+      // Le mois d'essai gratuit vaut aussi pour les consultants (6 novembre 2026, demande d'Axel).
+      subscription_data: { metadata: { formule: "consultant" }, trial_period_days: ESSAI_JOURS },
+      payment_method_collection: "always",
+      metadata: { formule: "consultant", prix: prixC.id, essai: String(ESSAI_JOURS) }
     });
   }
   bilan.liens.consultant = { lien: lienC.url };
   gardes.prix.add(prixC.id); gardes.liens.add(lienC.id); nouveauxLiens[lienC.id] = lienC;
-  messagesTva[lienC.id] = "Prix par client et par mois, TTC (TVA 20 % incluse) : " +
+  messagesTva[lienC.id] = "Premier mois gratuit : rien n'est prélevé avant 30 jours. Ensuite, prix par client et par mois, TTC (TVA 20 % incluse) : " +
     CONSULTANT.paliers.map((p) => `${p.a ? `${p.de} à ${p.a}` : `${p.de} et plus`} clients ${ttc(p.mois)} € (${p.mois} € HT)`).join(" ; ") +
     ". Le détail de la TVA s'affiche dès que votre adresse est saisie.";
 

@@ -268,11 +268,11 @@ export function pagesLegales({ page, SITE, FORMULES, TVA, esc, eur }) {
         en avoir informé le Client ${decider} <em>proposition : au moins 30 jours à l'avance</em>.</p>` },
       { t: "Paiement et facturation", c: `
         <p><strong>Mois d'essai gratuit.</strong> Les abonnements « 01 », « 02 » et « 03 », mensuels comme annuels,
-        commencent par une période d'essai gratuite de 30 jours. Le moyen de paiement est enregistré à la
+        et l'offre consultant commencent par une période d'essai gratuite de 30 jours. Le moyen de paiement est enregistré à la
         souscription, mais rien n'est prélevé pendant l'essai. Le Client peut résilier à tout moment pendant
         l'essai, depuis son espace client, sans aucun frais : l'abonnement s'arrête alors à la fin de l'essai.
         À défaut, le premier prélèvement a lieu le lendemain de la fin de l'essai et l'abonnement suit ensuite
-        les règles ci-dessous. L'offre consultant ne comporte pas de période d'essai.</p>
+        les règles ci-dessous.</p>
         <p>L'abonnement annuel est payable d'avance pour douze mois ; l'abonnement mensuel, d'avance chaque mois.
         Le paiement se fait en ligne, par carte bancaire ou par prélèvement SEPA (le Client signe alors un mandat
         de prélèvement en ligne) et il est traité par le prestataire de paiement de l'éditeur, Stripe. L'éditeur
