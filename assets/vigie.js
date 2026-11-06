@@ -141,6 +141,12 @@
       .then(function (r) {
         if (!r.ok) return erreur(r);
         if (r.j.access_token) { garder(sessionDepuis(r.j)); return { ok: true, connecte: true }; }
+        // Adresse déjà inscrite et confirmée : Supabase répond « ok » sans rien envoyer
+        // (liste d'identités vide). On le dit, plutôt que d'attendre un e-mail qui ne viendra pas.
+        var ids = r.j.identities || (r.j.user || {}).identities;
+        if (Array.isArray(ids) && !ids.length) {
+          return { ok: false, existe: true, erreur: "Un compte existe déjà avec cette adresse. Connectez-vous, ou utilisez « Mot de passe oublié » si vous ne vous en souvenez plus." };
+        }
         return { ok: true, attente: true };
       });
   }
