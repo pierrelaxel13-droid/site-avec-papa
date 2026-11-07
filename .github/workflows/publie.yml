@@ -82,7 +82,7 @@ jobs:
       - name: Les tests du robot des paiements
         run: node outils/stripe.test.mjs
 
-      - uses: actions/upload-pages-artifact@v3
+      - uses: actions/upload-pages-artifact@56afc609e74202658d3ffba0e8f6dda462b719fa # v3.0.1
         with:
           path: _site
 
@@ -94,7 +94,7 @@ jobs:
       url: ${{ steps.publication.outputs.page_url }}
     steps:
       - id: publication
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@d6db90164ac5ed86f2b6aed7e0febac5b3c0c03e # v4.0.5
         with:
           # Le site pèse plus de 100 Mo : GitHub Pages dépasse parfois les 10 minutes par défaut
           # (échec du 6 novembre, « Timeout reached »). 20 minutes.

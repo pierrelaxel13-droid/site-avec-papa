@@ -26,7 +26,7 @@
    Le journal ne contient jamais une clé ni une adresse électronique.
    ========================================================================== */
 import postgres from "npm:postgres@3.4.5";
-import { gabarit, NOM } from "./gabarits.mjs";
+import { factice, gabarit, NOM } from "./gabarits.mjs";
 
 const env = (k: string) => Deno.env.get(k) || "";
 const SITE = env("VIGIE_SITE") || "https://vigie-reglementaire.fr/";
@@ -40,6 +40,14 @@ let base: ReturnType<typeof postgres> | null = null;
 function sql() {
   if (!base) base = postgres(env("SUPABASE_DB_URL"), { prepare: false, max: 2, idle_timeout: 20 });
   return base;
+}
+
+/* Les limites d'appels (7 novembre 2026, revue de sécurité) : chaque appel à Stripe a un coût
+   et crée des objets (clients, pages de paiement). prive.depasse() compte les passages dans la
+   base (migration 34). Au-delà : un refus poli, sans rien appeler. */
+async function limite(cle: string, maxi: number, fenetre: string) {
+  const [{ trop }] = await sql()`select prive.depasse(${cle}, ${maxi}, ${fenetre}::interval) as trop`;
+  if (trop) throw new Refus("Trop de demandes en peu de temps. Réessayez dans quelques minutes.", 429);
 }
 
 class Refus extends Error { constructor(m: string, public statut = 400) { super(m); } }
@@ -185,10 +193,19 @@ async function paiement(qui: { id: string; courriel: string }, d: Record<string,
   const [connu] = esp.type === "cabinet"
     ? await sql()`select stripe_client from public.abonnements where consultant_id = ${esp.id} and stripe_client is not null order by maj_le desc limit 1`
     : await sql()`select stripe_client from public.abonnements where entreprise_id = ${esp.id} and stripe_client is not null order by maj_le desc limit 1`;
-  let cus: string;
+  let cus = "";
   try {
-    cus = connu ? (await stripe("POST", `/v1/customers/${connu.stripe_client}`, client)).id : "";
+    if (connu && /^cus_[A-Za-z0-9]+$/.test(connu.stripe_client)) cus = (await stripe("POST", `/v1/customers/${connu.stripe_client}`, client)).id;
   } catch { cus = ""; }
+  // Sinon, un client Stripe déjà créé pour cet espace (une page de paiement ouverte puis
+  // abandonnée) : on le reprend, plutôt que d'en créer un à chaque clic.
+  if (!cus) {
+    try {
+      const deja = ((await stripe("GET", "/v1/customers", { email: qui.courriel, limit: 20 })).data || []) as Record<string, any>[];
+      const lui = deja.find((c) => (c.metadata || {})[esp.colonne] === esp.id);
+      if (lui) cus = (await stripe("POST", `/v1/customers/${lui.id}`, client)).id;
+    } catch { cus = ""; }
+  }
   if (!cus) cus = (await stripe("POST", "/v1/customers", client)).id;
 
   // Le code promo saisi sur le site : appliqué d'office s'il existe ; sinon, la page Stripe le demande.
@@ -292,8 +309,9 @@ async function courriels() {
   let ok = 0, ko = 0;
   await sql().begin(async (t) => {
     const file = await t`select id, genre, destinataire, donnees from prive.courriels
-      where envoye_le is null and essais < 5 order by id limit 20 for update skip locked`;
+      where envoye_le is null and essais < 5 order by id limit 10 for update skip locked`;
     for (const c of file) {
+      if (c.destinataire !== "equipe" && factice(c.destinataire)) { await t`select prive.courriel_fait(${c.id}, true)`; continue; }
       const m = gabarit(c.genre, c.donnees || {});
       const r = await fetch(env("BREVO_API") || "https://api.brevo.com/v3/smtp/email", {
         method: "POST", headers: { "api-key": cle, "content-type": "application/json", accept: "application/json" },
@@ -325,12 +343,18 @@ Deno.serve(async (req) => {
     const d = await req.json().catch(() => ({})) as Record<string, unknown>;
     switch (d.action) {
       case "etat": return repondre({ stripe: !!env("STRIPE_SECRET_KEY"), brevo: !!(env("BREVO_API_KEY") && env("RECAP_EXPEDITEUR")), base: !!env("SUPABASE_DB_URL") });
-      case "courriels": return repondre(await courriels());
-      case "paiement": return repondre(await paiement(await personne(req), d));
-      case "confirmer": return repondre(await confirmer(await personne(req), d));
-      case "resilier": return repondre(await resilier(await personne(req), d));
-      case "changer": return repondre(await changer(await personne(req), d));
-      case "clients": return repondre(await clients(await personne(req), d));
+      case "courriels":
+        // Appelée par la base à chaque e-mail mis en file, et sans connexion : 60 passages par minute
+        // au plus pour tout le site (au-delà, le prochain passage ou le robot GitHub les envoie).
+        try { await limite("fn:courriels", 60, "1 minute"); } catch { return repondre({ envoyes: 0, attente: "trop d'appels" }); }
+        return repondre(await courriels());
+      case "paiement": case "confirmer": case "resilier": case "changer": case "clients": {
+        const qui = await personne(req);
+        await limite(`fn:${d.action}:${qui.id}`, d.action === "confirmer" ? 30 : 15, "1 hour");
+        await limite("fn:stripe:site", 600, "1 hour");
+        const f = { paiement, confirmer, resilier, changer, clients }[d.action as string]!;
+        return repondre(await f(qui, d));
+      }
       default: return repondre({ erreur: "Action inconnue." }, 400);
     }
   } catch (e) {

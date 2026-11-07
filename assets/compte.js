@@ -1609,7 +1609,7 @@
           (c.erreurs || []).forEach(function (a) {
             li.appendChild(el("span", "admin-details" + (a.niveau === "grave" ? " admin-alerte" : ""), (a.niveau === "grave" ? "Grave : " : "") + a.quoi));
           });
-          if (d.passage) { var a = el("a", "", "Voir le passage chez GitHub"); a.href = d.passage; a.target = "_blank"; a.rel = "noopener"; li.appendChild(a); }
+          if (d.passage && /^https:\/\/github\.com\//.test(d.passage)) { var a = el("a", "", "Voir le passage chez GitHub"); a.href = d.passage; a.target = "_blank"; a.rel = "noopener"; li.appendChild(a); }
           ul.appendChild(li);
         });
       });

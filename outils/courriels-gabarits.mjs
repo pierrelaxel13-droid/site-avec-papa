@@ -10,6 +10,10 @@
 const ENV = (globalThis.process && globalThis.process.env) || {};
 export const SITE = ENV.RECAP_SITE || "https://vigie-reglementaire.fr/";
 export const NOM = "Vigie réglementaire";
+/* Les adresses fictives (comptes du test automatique, exemples) : jamais envoyées. Un envoi vers
+   elles revient en « rebond définitif » chez Brevo, ce qui abîme la réputation du domaine et
+   envoie nos vrais e-mails en indésirables (7 novembre 2026). */
+export const factice = (a) => /@((?:[^@]+\.)?example\.(?:com|org|net)|[^@]+\.(?:test|invalid|example|localhost))$/i.test(String(a || "").trim());
 const esc = (v) => String(v == null ? "" : v).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 const jour = (iso) => (iso ? new Date(String(iso).slice(0, 10) + "T12:00:00Z").toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" }) : "");
 const ROLES = { admin: "responsable du compte", membre: "utilisateur", lecteur: "utilisateur en lecture seule" };

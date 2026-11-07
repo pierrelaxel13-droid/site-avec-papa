@@ -99,12 +99,10 @@ jobs:
             "https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/workflows/recap.yml")
           if [ "$code" != "200" ]; then
             echo "::warning::La clé VIGIE_GITHUB_ROBOTS est refusée par GitHub (code $code) : vérifiez qu'elle donne accès à ce dépôt, avec « Actions : lecture et écriture »."; exit 0; fi
-          printf '%s' "$VIGIE_GITHUB_ROBOTS" > cle.txt
-          psql "$SUPABASE_DB_URL" -v ON_ERROR_STOP=1 -qtA -v cle="$(cat cle.txt)" <<'SQL'
+          psql "$SUPABASE_DB_URL" -v ON_ERROR_STOP=1 -qtA -v cle="$VIGIE_GITHUB_ROBOTS" <<'SQL'
           select case when exists (select 1 from vault.secrets where name = 'github_robots')
             then (select vault.update_secret((select id from vault.secrets where name = 'github_robots'), :'cle'))::text
             else (select vault.create_secret(:'cle', 'github_robots', 'Vigie : lancer les robots du matin (GitHub Actions)'))::text end;
           SQL
-          rm -f cle.txt
           echo "Clé GitHub rangée dans le coffre de Supabase."
           psql "$SUPABASE_DB_URL" -qtA -c "select 'Réveils programmés : ' || coalesce(string_agg(jobname || ' (' || schedule || ' UTC)', ', '), 'aucun (migration 33 pas encore appliquée)') from cron.job where jobname like 'vigie-%'" || true

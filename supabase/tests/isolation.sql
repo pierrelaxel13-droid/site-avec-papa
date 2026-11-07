@@ -1163,6 +1163,28 @@ select tests.ok((select count(*) from prive.courriels where genre = 'nouveau_com
 select tests.ok((select donnees ->> 'type' from prive.courriels where genre = 'nouveau_compte' and donnees ->> 'espace' = 'Cabinet C (essai)') = 'cabinet consultant',
   'un nouveau cabinet consultant aussi');
 
+-- ---- Les limites contre les abus (migration 34) ------------------------
+select tests.qui('00000000-0000-0000-0000-0000000000b1', 'b_admin@test.fr');
+set local role authenticated;
+select tests.refuse($$select public.inviter('pas-une-adresse', 'membre', '00000000-0000-0000-0000-00000000b000', null)$$,
+  'une invitation vers une adresse invalide est refusée');
+select tests.refuse($$select public.inviter('a@b.fr"><script>', 'membre', '00000000-0000-0000-0000-00000000b000', null)$$,
+  'une adresse piégée aussi');
+select public.inviter('spam@test.fr', 'membre', '00000000-0000-0000-0000-00000000b000', null) from generate_series(1, 5);
+select tests.refuse($$select public.inviter('spam@test.fr', 'membre', '00000000-0000-0000-0000-00000000b000', null)$$,
+  'pas plus de 5 invitations par jour vers une même adresse');
+select public.inviter('rafale' || i || '@test.fr', 'membre', '00000000-0000-0000-0000-00000000b000', null) from generate_series(1, 24) i;  -- 1 + 5 + 24 = 30 dans l'heure
+select tests.refuse($$select public.inviter('rafale-de-trop@test.fr', 'membre', '00000000-0000-0000-0000-00000000b000', null)$$,
+  'pas plus de 30 invitations par heure depuis un même compte');
+select tests.refuse('select * from prive.compteurs', 'les compteurs ne se lisent pas depuis le site');
+select tests.refuse($$select prive.depasse('x', 1, interval '1 hour')$$, 'et ne se manipulent pas');
+reset role;
+delete from prive.compteurs where cle like 'creer:cabinet:%';   -- la mise en place du jeu d'essai a déjà créé des cabinets
+set local role authenticated;
+select public.creer_cabinet('Cabinet de trop ' || i) from generate_series(1, 5) i;
+select tests.refuse($$select public.creer_cabinet('Cabinet de trop 6')$$, 'pas plus de 5 cabinets créés par jour depuis un même compte');
+reset role;
+
 do $$ begin raise notice 'TOUS LES TESTS D''ISOLATION SONT PASSÉS'; end $$;
 
 rollback;

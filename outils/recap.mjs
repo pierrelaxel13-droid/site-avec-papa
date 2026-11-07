@@ -26,6 +26,7 @@ import { execFileSync } from "node:child_process";
 import { dirname, resolve, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { applicationDuTexte, CATEGORIES_TABLEAU, dateFr } from "./textes-communs.mjs";
+import { factice } from "./courriels-gabarits.mjs";
 
 const RACINE = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const SITE = process.env.RECAP_SITE || "https://vigie-reglementaire.fr/";
@@ -249,6 +250,7 @@ async function principal() {
   const faits = [];
   for (const d of dests) {
     if (!essai && d.dernier_envoi === jour) continue;      // déjà envoyé aujourd'hui
+    if (!essai && factice(d.courriel)) continue;            // adresse fictive (test automatique) : jamais envoyée
     const lignes = textesDuJour(V, JO.textes || [], planDe(V, d.naf, d.contexte), jour);
     if (!lignes.length) { vides++; continue; }
     const m = courriel(V, { denomination: d.denomination, jour, lignes, jeton: d.jeton });
@@ -264,6 +266,7 @@ async function principal() {
   let nRappels = 0;
   const notes = [];
   for (const r of rappels) {
+    if (!essai && factice(r.courriel)) continue;
     const id = String(r.user_id).replace(/[^0-9a-f-]/gi, "");
     const jeton = r.jeton || (essai ? "essai" : sql(`select prive.jeton_de('${id}')`));
     const m = rappel({ denomination: r.denomination, jour, actions: r.actions, jeton });

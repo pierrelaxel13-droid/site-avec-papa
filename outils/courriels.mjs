@@ -17,7 +17,7 @@
    ========================================================================== */
 import { execFileSync } from "node:child_process";
 
-import { gabarit, NOM, SITE } from "./courriels-gabarits.mjs";
+import { factice, gabarit, NOM, SITE } from "./courriels-gabarits.mjs";
 export { gabarit };
 
 async function envoyer(cle, expediteur, a, m) {
@@ -41,13 +41,13 @@ async function principal() {
   if (fonction !== "aucune") {
     try {
       let total = 0, echecs = 0, j = {};
-      for (let tour = 0; tour < 10; tour++) {   // 20 e-mails par appel
+      for (let tour = 0; tour < 20; tour++) {   // 10 e-mails par appel
         const r = await fetch(fonction, { method: "POST", headers: { "content-type": "application/json" },
           body: JSON.stringify({ action: "courriels" }), signal: AbortSignal.timeout(60000) });
         j = r.ok ? await r.json() : {};
         if (!Number.isInteger(j.envoyes) || j.attente) break;
         total += j.envoyes; echecs += j.echecs || 0;
-        if (j.envoyes + (j.echecs || 0) < 20) break;
+        if (j.envoyes + (j.echecs || 0) < 10) break;
       }
       if (Number.isInteger(j.envoyes) && !j.attente) {
         console.log(`Fonction serveur : ${total} e-mail(s) envoyé(s), ${echecs} en échec.`);
@@ -60,6 +60,7 @@ async function principal() {
   const file = JSON.parse(sql("select prive.courriels_a_envoyer()") || "[]");
   let ok = 0, ko = 0;
   for (const c of file) {
+    if (c.destinataire !== "equipe" && factice(c.destinataire)) { sql("select prive.courriel_fait(:i, true)", { i: c.id }); continue; }
     try {
       // « equipe » : l'adresse du site elle-même (l'adresse d'expédition), jamais écrite dans le dépôt.
       await envoyer(cle, expediteur, c.destinataire === "equipe" ? expediteur : c.destinataire, gabarit(c.genre, c.donnees || {}));

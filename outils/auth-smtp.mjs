@@ -42,6 +42,12 @@ export function reglages({ login, cle, expediteur }) {
     smtp_host: "smtp-relay.brevo.com", smtp_port: "587", smtp_user: login, smtp_pass: cle,
     smtp_admin_email: expediteur, smtp_sender_name: NOM, smtp_max_frequency: 30,
     rate_limit_email_sent: 100,
+    // La sécurité des comptes (7 novembre 2026, revue de sécurité) :
+    password_min_length: 10,                    // comme le site ; Supabase acceptait 6 par un appel direct
+    mailer_autoconfirm: false,                  // l'adresse doit être confirmée avant d'entrer
+    mailer_secure_email_change_enabled: true,   // changer d'adresse : confirmation sur l'ancienne ET la nouvelle
+    refresh_token_rotation_enabled: true,       // un jeton de session volé ne sert qu'une fois
+    security_refresh_token_reuse_interval: 10,
     mailer_subjects_confirmation: "Confirmez votre adresse — Vigie réglementaire",
     mailer_templates_confirmation_content: modele("Confirmez votre adresse",
       "Vous venez de créer votre compte Vigie réglementaire. Pour l'activer, confirmez votre adresse électronique :",
@@ -89,6 +95,8 @@ async function principal() {
   if (!p.ok) { let m = ""; try { m = ((await p.json()) || {}).message || ""; } catch { /* rien */ } throw new Error(`Supabase refuse les réglages (${p.status}${m ? " : " + m : ""}).`); }
   const b = await p.json();
   console.log(`Après : SMTP ${b.smtp_host} ; expéditeur « ${b.smtp_sender_name} » ; limite ${b.rate_limit_email_sent} e-mails par heure ; modèles en français.`);
+  console.log(`Sécurité des comptes : mot de passe d'au moins ${b.password_min_length} caractères ; adresse à confirmer : ${b.mailer_autoconfirm ? "NON" : "oui"} ; ` +
+    `changement d'adresse doublement confirmé : ${b.mailer_secure_email_change_enabled ? "oui" : "NON"} ; jetons de session renouvelés : ${b.refresh_token_rotation_enabled ? "oui" : "NON"}.`);
 }
 
 if (import.meta.url === `file://${process.argv[1]}`) principal().catch((e) => { console.log("::error::" + e.message); process.exitCode = 1; });

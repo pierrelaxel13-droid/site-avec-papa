@@ -380,6 +380,16 @@ const POLITIQUE = "default-src 'self'; script-src 'self'; style-src 'self' 'unsa
   `font-src 'self'; connect-src 'self'${SUPABASE ? " " + SUPABASE : ""}; manifest-src 'self'; worker-src 'self'; frame-src 'none'; object-src 'none'; ` +
   "base-uri 'none'; form-action 'self'" + (/^https:/.test(SUPABASE) || !SUPABASE ? "; upgrade-insecure-requests" : "");
 
+/* Les liens sûrs (7 novembre 2026, revue de sécurité) : le relevé recopie des liens venus de
+   sources extérieures (flux RSS des ministères, du Journal officiel…). Si l'une d'elles était
+   piratée, un lien « javascript: » ou « data: » deviendrait un piège sur le site. Dernier filet,
+   sur chaque page écrite : tout lien dont l'adresse n'est pas http(s), mailto, tel, une ancre
+   ou un chemin du site est neutralisé. */
+function liensSurs(html) {
+  return html.replace(/\b(href|src|action|formaction)\s*=\s*"\s*([a-z][a-z0-9+.-]*)\s*:/gi, (tout, attr, schema) =>
+    /^(https?|mailto|tel)$/i.test(schema) ? tout : `${attr}="#refuse-`);
+}
+
 function page({ titre, description, racine = "", zone = "public", actif = "", corps,
                 attrsBody = "", verrou = false, donneesPlan = false, formule = "", scripts = [], installation = true,
                 piedCourt = zone === "app" }) {
@@ -414,7 +424,7 @@ function page({ titre, description, racine = "", zone = "public", actif = "", co
       ${lien("app/reglages.html", "Réglages", "reglages")}
       ${selecteurTheme}`;
 
-  return tailleDesIcones(`<!doctype html>
+  return liensSurs(tailleDesIcones(`<!doctype html>
 <html lang="fr">
 <head>
 <meta charset="utf-8">
@@ -592,7 +602,7 @@ ${zone === "app" ? `<script src="${a("assets/espace.js")}"></script>` : ""}
 ${scripts.map((f) => `<script src="${a(f)}"></script>`).join("\n")}
 </body>
 </html>
-`);
+`));
 }
 
 /* Chaque icône (dessin de 24 sur 24) porte une taille par défaut sur elle-même.
@@ -5811,7 +5821,7 @@ async function main() {
   await writeFile(join(SORTIE, "app", "plan.html"), appPlan(V, D, C, LIENS, JO));
   if (Object.keys(FRAGMENTS_FONDS).length) {
     await mkdir(join(SORTIE, "app", "fonds"), { recursive: true });
-    for (const [id, l] of Object.entries(FRAGMENTS_FONDS)) await writeFile(join(SORTIE, "app", "fonds", `${id}.html`), l.join("\n"));
+    for (const [id, l] of Object.entries(FRAGMENTS_FONDS)) await writeFile(join(SORTIE, "app", "fonds", `${id}.html`), liensSurs(l.join("\n")));
     console.log(`  fonds LEGI          ${FONDS.textes.length} textes en vigueur, en ${Object.keys(FRAGMENTS_FONDS).length} fichiers par sujet`);
   }
   await writeFile(join(SORTIE, "app", "conformite.html"), appConformite(V, D, C, LIENS, JO));
