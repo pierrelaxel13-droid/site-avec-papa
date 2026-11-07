@@ -46,7 +46,13 @@ function sql() {
    et crée des objets (clients, pages de paiement). prive.depasse() compte les passages dans la
    base (migration 34). Au-delà : un refus poli, sans rien appeler. */
 async function limite(cle: string, maxi: number, fenetre: string) {
-  const [{ trop }] = await sql()`select prive.depasse(${cle}, ${maxi}, ${fenetre}::interval) as trop`;
+  let trop = false;
+  try {
+    trop = (await sql()`select prive.depasse(${cle}, ${maxi}, ${fenetre}::interval) as trop`)[0].trop;
+  } catch (e) {
+    // Le compteur lui-même en panne (base pas encore à jour…) : on laisse passer plutôt que de tout bloquer.
+    console.log("Compteur indisponible : " + (e instanceof Error ? e.message : String(e)).slice(0, 120));
+  }
   if (trop) throw new Refus("Trop de demandes en peu de temps. Réessayez dans quelques minutes.", 429);
 }
 
@@ -346,7 +352,8 @@ Deno.serve(async (req) => {
       case "courriels":
         // Appelée par la base à chaque e-mail mis en file, et sans connexion : 60 passages par minute
         // au plus pour tout le site (au-delà, le prochain passage ou le robot GitHub les envoie).
-        try { await limite("fn:courriels", 60, "1 minute"); } catch { return repondre({ envoyes: 0, attente: "trop d'appels" }); }
+        try { await limite("fn:courriels", 60, "1 minute"); }
+        catch (e) { if (e instanceof Refus) return repondre({ envoyes: 0, attente: "trop d'appels" }); throw e; }
         return repondre(await courriels());
       case "paiement": case "confirmer": case "resilier": case "changer": case "clients": {
         const qui = await personne(req);
